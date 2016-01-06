@@ -38,7 +38,7 @@ laml$gene.summary
 ```{r, echo=TRUE}
 plotmafSummary(laml)
 ```
-![image1](https://github.com/PoisonAlien/maftools/blob/master/images/image1 = 250x250)
+![image1](https://github.com/PoisonAlien/maftools/blob/master/images/image1)
 
 #### oncoplot to summarize maf file
 `oncoplot` This function uses slightly modified [oncoprint](https://github.com/jokergoo/ComplexHeatmap/blob/908b32ee4c495c74adfa077c967024a77c56b375/vignettes/oncoprint.R) script from [ComplexHeatmap](https://github.com/jokergoo/ComplexHeatmap) package by [Zuguang Gu](https://github.com/jokergoo), while taking care of format conversions and with some added fucntionalities.
