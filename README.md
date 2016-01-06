@@ -47,6 +47,9 @@ plotmafSummary(laml)
 #We will plot top ten mutated genes
 oncoplot(maf = laml, top = 10)
 ```
+![image2](https://github.com/PoisonAlien/maftools/blob/master/images/image2)
+
+Use arguments drawRowBar, drawColBar to control side and upper barplots.
 
 ##Adding annotations to oncoplot
 We can add annotations to the bottom of the plot.
@@ -58,6 +61,7 @@ head(laml.fab.anno)
 #We will plot same top ten mutated genes with FAB classification as annotation.
 oncoplot(maf = laml, top = 10, annotation = laml.fab.anno)
 ```
+![image3](https://github.com/PoisonAlien/maftools/blob/master/images/image3)
 
 ##oncoprint 
 `oncoprint` draws a matrix similar to [oncoprint](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do).
@@ -65,8 +69,7 @@ oncoplot(maf = laml, top = 10, annotation = laml.fab.anno)
 ```{r, echo=TRUE,fig.height=1.5,fig.width=7,fig.align='center'}
 oncoprint(maf = laml, genes = c('DNMT3A', 'NPM1'), sort = T, legend = T, removeNonMutated = T)
 ```
-
-Use arguments drawRowBar, drawColBar to control side and upper barplots.
+![image4](https://github.com/PoisonAlien/maftools/blob/master/images/image4)
 
 ##Classify SNVs into Trasitions and Transversions
 Each Single Nucleotide Variant can be classified into [Trasition or Transversion]((http://www.mun.ca/biology/scarr/Transitions_vs_Transversions.html)). Variants can also be divided into six different classes, which helps to know us which kind of conversions are more frequent in a given type of cancer.  
@@ -74,6 +77,7 @@ Each Single Nucleotide Variant can be classified into [Trasition or Transversion
 ```{r, echo=TRUE,fig.height=4,fig.width=6, warning=FALSE,fig.align='center'}
 laml.titv.summary = titv(maf = laml, plot = T)
 ```
+![image5](https://github.com/PoisonAlien/maftools/blob/master/images/image5)
 
 It also returns a list of dataframes with raw counts for each conversion, fraction of each conversion and Ti to Tv ratios.
 
@@ -102,6 +106,7 @@ mutExclusive(maf = laml, genes = c('NPM1', 'RUNX1'))
 #We can visualize this pair using oncoprint
 oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNonMutated = T)
 ```
+![image6](https://github.com/PoisonAlien/maftools/blob/master/images/image6)
 
 ##Extract adjacent bases
 One can also extract n number of adjacent (3' and 5') bases to the mutated locus using `addBases`. This is helpful in looking for [somatic-signatures](http://cancer.sanger.ac.uk/cosmic/signatures). This requires faidx indexed reference genome (fasta file).
