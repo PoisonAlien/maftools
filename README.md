@@ -1,10 +1,9 @@
----
-output: html_document
----
-###mafTools - A package to process and visualize maf files. 
 
-## Installation:
+###maftools - An R package to process and visualize maf files. 
+
+### Installation:
 `library("devtools")`
+
 `install_github(repo = "PoisonAlien/maftools")`
 
 #### Dependencies: 
