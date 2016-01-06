@@ -1,0 +1,19 @@
+Package: maftools
+Type: Package
+Title: A set of functions for processing MAF (Mutation Annotation Format) files.
+Version: 0.1
+Date: 2015-12-14
+Author: Anand M <<anand_mt@hotmail.com>>
+Maintainer: Anand M <anand_mt@hotmail.com>
+Description: Process MAF files.
+License: MIT
+LazyData: TRUE
+Depends:
+    data.table,
+    plyr,
+    reshape,
+    ggplot2,
+    cowplot,
+    cometExactTest,
+    RColorBrewer
+RoxygenNote: 5.0.1
