@@ -8,7 +8,7 @@ Maintainer: Anand M <anand_mt@hotmail.com>
 Description: Process MAF files.
 License: MIT
 LazyData: TRUE
-Depends:
+Depends: 
     data.table,
     plyr,
     reshape,
@@ -17,3 +17,6 @@ Depends:
     cometExactTest,
     RColorBrewer
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

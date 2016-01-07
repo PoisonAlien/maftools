@@ -6,4 +6,7 @@
 \usage{
 getCounts(var, bam, MapQuality, BaseQuality, ref_genome)
 }
+\description{
+This is an accessory function. Use \code{addReadCounts()}
+}
 
