@@ -108,6 +108,15 @@ oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNo
 ```
 ![image6](https://github.com/PoisonAlien/maftools/blob/master/images/image6)
 
+####Tumor Heterogenity
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package.
+
+```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7}
+#We will run this for sample TCGA.AB.2972
+inferHetrogentiy(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'TumorVAF_WU')
+```
+![image7](https://github.com/PoisonAlien/maftools/blob/master/images/image7)
+
 #### Extract adjacent bases
 One can also extract n number of adjacent (3' and 5') bases to the mutated locus using `addBases`. This is helpful in looking for [somatic-signatures](http://cancer.sanger.ac.uk/cosmic/signatures). This requires faidx indexed reference genome (fasta file).
 

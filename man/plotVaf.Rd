@@ -13,6 +13,12 @@ plotVaf(maf, vafCol = NULL, genes = NULL, density = F, violin = F,
 \item{vafCol}{manually specify column name for vafs. Default looks for column 't_vaf'}
 
 \item{genes}{specify genes for which plots has to be generated}
+
+\item{density}{logical whether to plot density plot of vaf}
+
+\item{violin}{plots violin plot}
+
+\item{top}{if \code{genes} is NULL plots top n number of genes. Defaults to 5.}
 }
 \value{
 ggplot object which can be further modified.

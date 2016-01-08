@@ -10,13 +10,9 @@
 #' @return ggplot object which can be further modified.
 #' @export
 
-
-
 plotVaf = function(maf, vafCol = NULL, genes = NULL, density = F, violin = F, top = 5){
 
   dat = maf$data
-
-  math.df = data.frame()
 
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
