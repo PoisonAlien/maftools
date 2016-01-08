@@ -106,6 +106,11 @@ Many genes in cancer show strong exclusiveness in mutation pattern. We can detec
 
 ```{r, echo = TRUE, fig.height=1.5,fig.width=7,fig.align='center'}
 mutExclusive(maf = laml, genes = c('NPM1', 'RUNX1'))
+
+#Output
+##   n.00 n.01 n.10 n.11 gene1 gene2                pval
+## 1  124   18   54    0  NPM1 RUNX1 0.00109823009964897
+
 #We can visualize this pair using oncoprint
 oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNonMutated = T)
 ```
