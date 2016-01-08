@@ -10,7 +10,7 @@ With advances in Cancer Genomics, maf format is being widley accepted and used t
 `install_github(repo = "PoisonAlien/maftools")`
 
 #### Dependencies: 
-data.table, ggplot2, plyr, reshape, [cometExactTest](https://cran.r-project.org/web/packages/cometExactTest/)
+data.table, ggplot2, plyr, reshape, [cometExactTest](https://cran.r-project.org/web/packages/cometExactTest/), [mclust](https://cran.r-project.org/web/packages/mclust/index.html)
 
 Bioconductor packages:  [ComplexHeatmap](https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html), [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html) and [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html).
 
@@ -117,7 +117,7 @@ oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNo
 ![image6](https://github.com/PoisonAlien/maftools/blob/master/images/image6)
 
 ####Tumor Heterogenity
-Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package.
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package.
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7}
 #We will run this for sample TCGA.AB.2972
