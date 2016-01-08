@@ -32,6 +32,9 @@ laml$variant.classification.summary
 
 #Based on frequcy of mutated geens
 laml$gene.summary
+
+#oncomatrix
+laml$oncoMatrix
 ```
 #### Quicky plot maf stats
 
