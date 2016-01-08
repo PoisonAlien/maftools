@@ -2,7 +2,7 @@
 
 export(addBases)
 export(addReadCounts)
-export(inferHetrogentiy)
+export(inferHeterogentiy)
 export(math.score)
 export(mutExclusive)
 export(oncoplot)
