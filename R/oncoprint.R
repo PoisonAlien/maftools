@@ -46,7 +46,7 @@ oncoprint = function(maf, genes = NULL, sort = T, legend = T, annotation = NULL,
   names(col) = names = c("Nonstop_Mutation", "Frame_Shift_Del",
                          "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
                          "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",
-                         "Silent", "In_Frame_Ins", "ITD", "In_Frame_Ins", "Translation_Start_Site",
+                         "Silent", "In_Frame_Ins", "ITD", "3'UTR", "Translation_Start_Site",
                          "two_hit")
 
   tc = unique(unlist(apply(mat,1,unique)))
@@ -59,6 +59,11 @@ oncoprint = function(maf, genes = NULL, sort = T, legend = T, annotation = NULL,
   #Make annotation
   if(!is.null(annotation)){
     annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
+
+    if(nrow(annotation[duplicated(annotation$Tumor_Sample_Barcode),]) > 0){
+      annotation = annotation[!duplicated(annotation$Tumor_Sample_Barcode),]
+    }
+
     rownames(annotation) = annotation[,1]
     annotation = annotation[colnames(mat_origin),]
     annotation = annotation[complete.cases(annotation),]

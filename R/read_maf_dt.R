@@ -24,7 +24,7 @@ read.maf = function(maf, removeSilent = T, useAll = F){
   if(length(colnames(maf)[colnames(x = maf) %in% 'Mutation_Status']) > 0){
     if(!useAll){
       message('Using only Somatic variants from Mutation_Status. Switch on useAll to include everything.')
-      maf = subset(maf, Mutation_Status = 'Somatic')
+      maf = subset(maf, Mutation_Status == 'Somatic')
     }else {
       message('Using all variants.')
     }

@@ -45,7 +45,7 @@ oncoplot = function (maf, oncoPlot = TRUE, writeMatrix = FALSE, top = 20, bg = "
   names(col) = names = c('',"Nonstop_Mutation", "Frame_Shift_Del",
                          "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
                          "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",
-                         "Silent", "In_Frame_Ins", "ITD", "In_Frame_Ins", "Translation_Start_Site",
+                         "Silent", "In_Frame_Ins", "ITD", "3'UTR", "Translation_Start_Site",
                          "two_hit")
 
   variant.classes = unique(unlist(as.list(apply(mat_origin, 2, unique))))
