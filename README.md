@@ -124,7 +124,7 @@ proteinMap(maf = laml, gene = 'KIT', label = T)
 ![image8](https://github.com/PoisonAlien/maftools/blob/master/images/image8)
 
 ####Tumor Heterogenity
-Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. (Suggested [SciClone (https://github.com/genome/sciclone)])
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Suggested [SciClone](https://github.com/genome/sciclone)
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7}
 #We will run this for sample TCGA.AB.2972
