@@ -74,12 +74,14 @@ proteinMap = function(maf, gene = NULL, label = F){
 
   if(maxCount+1 %% 2 != 0){
     maxCount = maxCount+2
+  }else{
+    maxCount = maxCount+1
   }
 
   #Plot points
   p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos, y = count, color = Variant_Classification), size = 2)+scale_color_manual(values = col)+
     theme(legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
-    scale_y_continuous(expand = c(0,0), limit = c(0, maxCount))
+    scale_y_continuous(expand = c(0,0), limit = c(0, maxCount))+xlab('')+ylab('Number of Variants')
 
   #Plot background protein domain
   p = p+geom_rect(data = prot, aes(xmin = 0, xmax = len, ymin = 0.1, ymax = 0.3), fill = 'gray')

@@ -116,6 +116,13 @@ oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNo
 ```
 ![image6](https://github.com/PoisonAlien/maftools/blob/master/images/image6)
 
+##Lollipop plots for amino acid changes.
+We can map protein changes on to the Protein structure similar to those draw by [ProteinPaint](https://pecan.stjude.org/proteinpaint/TP53/) or [MutationMapper](http://www.cbioportal.org/mutation_mapper.jsp)
+```{r, echo = TRUE, fig.height=4,fig.width=7,fig.align='center'}
+proteinMap(maf = laml, gene = 'KIT', label = T)
+```
+![image8](https://github.com/PoisonAlien/maftools/blob/master/images/image8)
+
 ####Tumor Heterogenity
 Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package.
 
