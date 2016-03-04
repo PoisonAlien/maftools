@@ -16,7 +16,9 @@ Depends:
     cowplot,
     cometExactTest,
     RColorBrewer,
-    dplyr
+    dplyr,
+    gplots,
+    NMF
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown

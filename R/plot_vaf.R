@@ -42,7 +42,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, density = F, violin = F, to
   }
 
   if(density){
-    gg = ggplot(datm, aes(value, color = Hugo_Symbol))+geom_density(size = 1)+geom_point(aes(y = 0, x = value), size = 3, alpha = 0.6)+xlim(0, max.vaf)
+    gg = ggplot(datm, aes(value, color = Hugo_Symbol))+geom_density(size = 1)+geom_point(aes(y = 0, x = value), size = 3, alpha = 0.6)+xlim(0, max.vaf)+theme(legend.position = 'bottom')
   } else{
     if(violin){
       gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_violin()+ylim(0, max.vaf)+theme(legend.position = 'none')+ylab('vaf')
