@@ -138,9 +138,10 @@ Every cancer, as it progresses leaves a signature characterised by specific patt
 ExtractSignatures uses nmf from [NMF](https://cran.r-project.org/web/packages/NMF/index.html) package to extract signatures. 
 NOTE: Reading fasta file is memory consuming and it occupies ~3gb of memory while extracting adjacent bases from human genome.
 
+Trying this on TCGA Liver MAF file.
 ```{r}
 #Read MAF file
-maf = "~/postDocs/tcga_data/maf_files/hgsc.bcm.edu_LIHC.IlluminaGA_DNASeq.1.somatic.maf"
+maf = "hgsc.bcm.edu_LIHC.IlluminaGA_DNASeq.1.somatic.maf"
 lihc = read.maf(maf = maf, removeSilent = T, useAll = F)
 #Extract adjacent bases from immediate 3' and 5', classify them into 96 conversion classes and decompose the matrix using Non-negative Matrix Factorization.
 lihc.sig = ExtractSignatures(maf = lihc, ref_genome = 'hg19.fa', prefix = 'chr', add = T, n = 4)
@@ -153,7 +154,7 @@ lihc.sig = ExtractSignatures(maf = lihc, ref_genome = 'hg19.fa', prefix = 'chr',
 ## Signature_3 most similar to Signature_1B. Correlation coeff: 0.745515293084315
 ## Signature_4 most similar to Signature_12. Correlation coeff: 0.659942376184283
 ```
-Signature_12 was observed in liver cancers which is what we see in detected Signature_4.
+Signature_4 which corelates will validated Signature_12 was observed in Liver samples characterised by T>C mutations showing transcriptional strand bias.
 
 ![image9](https://github.com/PoisonAlien/maftools/blob/master/images/image9)
 
