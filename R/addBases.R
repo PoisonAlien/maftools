@@ -41,6 +41,15 @@ ExtractSignatures = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreC
     maf = maf[!maf$Chromosome %in% ignoreChr]
   }
 
+  #Some TCGA studies have Start_Position set to as 'position'. Change if so.
+  if(length(grep(pattern = 'Start_position', x = colnames(maf))) > 0){
+    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'Start_Position'
+  }
+
+  if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
+    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'End_Position'
+  }
+
   #seperate snps and indels
   maf.snp = maf[Variant_Type == 'SNP']
   #maf.rest = maf[!maf$Variant_Type %in% 'SNP']
@@ -66,15 +75,6 @@ ExtractSignatures = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreC
     message('missing reference contigs from fasta file.')
     print(chrs.missing)
     stop("Contig names in maf must match to contig names in reference fasta. Use prefix to add or remove prefixes from maf if its necessary. Use ignoreChr to ignore missing contigs.")
-  }
-
-  #Some TCGA studies have Start_Position set to as 'position'. Change if so.
-  if(length(grep(pattern = 'Start_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'Start_Position'
-  }
-
-  if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'End_Position'
   }
 
 
@@ -175,8 +175,7 @@ ExtractSignatures = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreC
   corMat = c()
   for(i in 1:ncol(conv.mat.nmf.signatures)){
     sig = conv.mat.nmf.signatures[,i]
-    apply(sigs, 2, function(x) cor.test(x, sig)$estimate[[1]])
-    corMat = rbind(corMat, apply(sigs, 2, function(x) cor.test(x, sig)$estimate[[1]]))
+    corMat = rbind(corMat, apply(sigs, 2, function(x) cor.test(x, sig)$estimate[[1]])) #Calulate correlation coeff.
   }
   rownames(corMat) = colnames(conv.mat.nmf.signatures)
 
@@ -184,5 +183,5 @@ ExtractSignatures = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreC
     message(rownames(corMat)[i], ' most similar to ',names(which(corMat[i,] == max(corMat[i,]))), '. Correlation coeff: ', max(corMat[i,]), sep=' ')
   }
 
-  return(list(signatures = conv.mat.nmf.signatures, matrix = conv.mat))
+  return(list(signatures = conv.mat.nmf.signatures, matrix = conv.mat, corTable = corMat))
 }

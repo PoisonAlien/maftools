@@ -124,7 +124,7 @@ proteinMap(maf = laml, gene = 'KIT', label = T)
 ![image8](https://github.com/PoisonAlien/maftools/blob/master/images/image8)
 
 ####Tumor Heterogenity
-Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Suggested [SciClone](https://github.com/genome/sciclone)
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Although mlcust performs fairly well, it is recommended to try [SciClone](https://github.com/genome/sciclone) which is far superior for clustering and density estimation.
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7}
 #We will run this for sample TCGA.AB.2972
@@ -132,8 +132,30 @@ inferHetrogentiy(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'TumorVAF_WU')
 ```
 ![image7](https://github.com/PoisonAlien/maftools/blob/master/images/image7)
 
-#### Extract adjacent bases
-One can also extract n number of adjacent (3' and 5') bases to the mutated locus using `addBases`. This is helpful in looking for [somatic-signatures](http://cancer.sanger.ac.uk/cosmic/signatures). This requires faidx indexed reference genome (fasta file).
+#### Extract Mutation Signatures
+Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such signatures, derived from over 7000 cancer samples. Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [21 validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures). 
+
+ExtractSignatures uses nmf from [NMF](https://cran.r-project.org/web/packages/NMF/index.html) package to extract signatures. 
+NOTE: Reading fasta file is memory consuming and it occupies ~3gb of memory while extracting adjacent bases from human genome.
+
+```{r}
+#Read MAF file
+maf = "~/postDocs/tcga_data/maf_files/hgsc.bcm.edu_LIHC.IlluminaGA_DNASeq.1.somatic.maf"
+lihc = read.maf(maf = maf, removeSilent = T, useAll = F)
+#Extract adjacent bases from immediate 3' and 5', classify them into 96 conversion classes and decompose the matrix using Non-negative Matrix Factorization.
+lihc.sig = ExtractSignatures(maf = lihc, ref_genome = 'hg19.fa', prefix = 'chr', add = T, n = 4)
+#Output
+## reading fasta..
+## Extracting trinucleotide context..
+## Comparing against experimentally validated 21 signatures.. (See Alexandrov et.al Nature 2013 for details.)
+## Signature_1 most similar to Signature_4. Correlation coeff: 0.570179145069995
+## Signature_2 most similar to Signature_4. Correlation coeff: 0.270412561060805
+## Signature_3 most similar to Signature_1B. Correlation coeff: 0.745515293084315
+## Signature_4 most similar to Signature_12. Correlation coeff: 0.659942376184283
+```
+Signature_12 was observed in liver cancers which is what we see in detected Signature_4.
+
+![image9](https://github.com/PoisonAlien/maftools/blob/master/images/image9)
 
 #### Add read count and allele frequencies to maf.
 `addReadCounts()` adds read depths for reference and alternate allele from corresponding bam file. This internally runs [bam-readcount](https://github.com/genome/bam-readcount) to get the counts and adds them to maf file. 

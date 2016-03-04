@@ -10,7 +10,16 @@
 titv = function(maf, plot = TRUE)
 {
   maf = maf$data
-  maf = maf[maf$Variant_Type %in% 'SNP']
+  maf = maf[Variant_Type == 'SNP']
+
+  #Some TCGA studies have Start_Position set to as 'position'. Change if so.
+  if(length(grep(pattern = 'Start_position', x = colnames(maf))) > 0){
+    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'Start_Position'
+  }
+
+  if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
+    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'End_Position'
+  }
 
   maf = maf[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
   maf$Tumor_Sample_Barcode = as.factor(as.character(maf$Tumor_Sample_Barcode))
