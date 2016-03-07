@@ -83,16 +83,33 @@ proteinMap = function(maf, gene = NULL, label = F, AACol = NULL){
   prot.snp.sumamry = ddply(prot.dat, .variables = c('Variant_Classification', 'conv', 'pos'), summarise, count =length(AAChange))
   maxCount = max(prot.snp.sumamry$count)
 
-  if(maxCount+1 %% 2 != 0){
-    maxCount = maxCount+2
-  }else{
-    maxCount = maxCount+1
-  }
 
-  #Plot points
-  p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos, y = count, color = Variant_Classification), size = 2, alpha = 0.6)+scale_color_manual(values = col)+
-    theme(legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
-    scale_y_continuous(expand = c(0,0), limit = c(0, maxCount))+xlab('')+ylab('Number of Variants')
+  if(max(prot.snp.sumamry$count) > 10){
+
+    prot.snp.sumamry1 = filter(prot.snp.sumamry, count <= 10)
+    prot.snp.sumamry2 = filter(prot.snp.sumamry, count > 10)
+    maxCount = max(prot.snp.sumamry1$count) + 2
+
+    prot.snp.sumamry$count2 = ifelse(test = prot.snp.sumamry$count > 10, no = prot.snp.sumamry$count, yes = maxCount+2)
+
+    p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+
+      theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
+      scale_y_continuous(breaks = c(0:maxCount, maxCount+2), labels = c(0:maxCount, ''), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
+      geom_text(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2,label = count))+theme(legend.position = 'none')
+
+    p = p+geom_point(data = prot.snp.sumamry1, aes(x = pos, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+
+      theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
+
+  } else{
+
+    maxCount = maxCount+1
+    prot.snp.sumamry$count2 = prot.snp.sumamry$count
+    #Plot points
+    p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos, y = count, color = Variant_Classification), size = 2, alpha = 0.6)+scale_color_manual(values = col)+
+      theme(legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
+      scale_y_continuous(breaks = c(0:maxCount), labels = c(0:maxCount), limit = c(0, maxCount))+xlab('')+ylab('Number of Variants')
+
+  }
 
   #Plot background protein domain
   p = p+geom_rect(data = prot, aes(xmin = 0, xmax = len, ymin = 0.1, ymax = 0.3), fill = 'gray')
@@ -103,12 +120,12 @@ proteinMap = function(maf, gene = NULL, label = F, AACol = NULL){
   }
 
   #Plot lines from protein to points (make lollypops)
-  p = p+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos, y = 0.3, yend = count ))
+  p = p+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos, y = 0.3, yend = count2))
 
   #If user asks to label points, use ggrepel to label.
   if(label){
     require('ggrepel')
-    p = p+geom_text_repel(data = prot.snp.sumamry, aes(pos, count, label = as.character(conv)), force = 1)
+    p = p+geom_text_repel(data = prot.snp.sumamry, aes(pos, count2, label = as.character(conv)), force = 2, nudge_y = 1)
   }
   print(p)
   return(p)
