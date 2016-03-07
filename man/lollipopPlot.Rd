@@ -23,6 +23,6 @@ Draws lollipop plot of amino acid changes.
 }
 \details{
 This function by default looks for field "AAChange" in maf file. One can also manually specify field name containing amino acid changes. Protein Domains are retrieved
-from Uniprot database.
+from Uniprot database. Labelling of amino acid changes requires ggrepel package to be installed.
 }
 

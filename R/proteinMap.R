@@ -106,7 +106,7 @@ lollipopPlot = function(maf, gene = NULL, label = F, AACol = NULL){
     maxCount = maxCount+1
     prot.snp.sumamry$count2 = prot.snp.sumamry$count
     #Plot points
-    p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos, y = count, color = Variant_Classification), size = 2, alpha = 0.6)+scale_color_manual(values = col)+
+    p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+scale_color_manual(values = col)+
       theme(legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
       scale_y_continuous(breaks = c(0:maxCount), labels = c(0:maxCount), limit = c(0, maxCount))+xlab('')+ylab('Number of Variants')
 
