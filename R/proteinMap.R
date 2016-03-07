@@ -99,7 +99,7 @@ proteinMap = function(maf, gene = NULL, label = F, AACol = NULL){
 
   #Plot protein domains. If no domains found, just draw background protein.
   if(nrow(prot) > 0){
-    p = p+geom_rect(data = prot, aes(xmin = Start, xmax = End, ymin = 0.1, ymax = 0.3, fill = Label))
+    p = p+geom_rect(data = prot, aes(xmin = Start, xmax = End, ymin = 0.0, ymax = 0.4, fill = Label))
   }
 
   #Plot lines from protein to points (make lollypops)
