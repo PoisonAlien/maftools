@@ -2,7 +2,7 @@
 
 export(ExtractSignatures)
 export(addReadCounts)
-export(inferHeterogentiy)
+export(inferHeterogeneity)
 export(math.score)
 export(mutExclusive)
 export(oncoplot)

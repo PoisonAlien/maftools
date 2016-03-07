@@ -44,7 +44,7 @@ proteinMap = function(maf, gene = NULL, label = F, AACol = NULL){
   mut = maf$data
 
   if(is.null(AACol)){
-    if(! 'AACol' %in% colnames(mut)){
+    if(! 'AAChange' %in% colnames(mut)){
       message('Available fields:')
       print(colnames(mut))
       stop('AAChange filed not found in MAF. Use AACol to manually specifiy field name containing protein changes.')

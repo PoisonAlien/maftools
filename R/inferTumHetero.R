@@ -15,7 +15,7 @@
 #' @return list of clustering tables.
 #' @export
 
-inferHeterogentiy = function(maf, tsb = NULL, top = 5, vafCol = NULL, plot = T){
+inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, plot = T){
 
   suppressMessages(require(mclust))
 
