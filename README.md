@@ -117,7 +117,7 @@ oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNo
 ![image6](https://github.com/PoisonAlien/maftools/blob/master/images/image6)
 
 ##Lollipop plots for amino acid changes.
-We can map protein changes on to the Protein structure similar to those draw by [ProteinPaint](https://pecan.stjude.org/proteinpaint/TP53/) or [MutationMapper](http://www.cbioportal.org/mutation_mapper.jsp)
+We can map protein changes on to the Protein structure similar to those draw by [ProteinPaint](https://pecan.stjude.org/proteinpaint/TP53/) or [MutationMapper](http://www.cbioportal.org/mutation_mapper.jsp). Labelling requires [ggrepel](https://cran.r-project.org/web/packages/ggrepel/index.html) package.
 ```{r, echo = TRUE, fig.height=4,fig.width=7,fig.align='center'}
 lollipopPlot(maf = laml, gene = 'KIT', label = T)
 ```
