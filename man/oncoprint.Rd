@@ -14,7 +14,13 @@ oncoprint(maf, genes = NULL, sort = T, legend = T, annotation = NULL,
 
 \item{sort}{logical sort oncomatrix for enhanced visualization. Defaults to True.}
 
-\item{top}{how many top genes to be drawn. defaults to 20.}
+\item{legend}{Logical. Hides legend if \code{FALSE}.}
+
+\item{annotation}{\code{data.frame} with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.}
+
+\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations for better visualization.}
+
+\item{top}{how many top genes to be drawn. defaults to 5.}
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
 }

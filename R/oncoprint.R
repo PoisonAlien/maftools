@@ -14,6 +14,9 @@ oncoprint = function(maf, genes = NULL, sort = T, legend = T, annotation = NULL,
 
   mat_origin = maf$numericMatrix
 
+  require(package = "ComplexHeatmap", quietly = T, warn.conflicts = F)
+  require(package = "RColorBrewer", quietly = T, warn.conflicts = F)
+
   #if user doesnt provide a gene vector, use top 5.
   if(is.null(genes)){
     mat = mat_origin[1:top, ]
