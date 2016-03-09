@@ -6,6 +6,7 @@ Date: 2015-12-14
 Author: Anand M <<anand_mt@hotmail.com>>
 Maintainer: Anand M <anand_mt@hotmail.com>
 Description: Process MAF files.
+URL: https://github.com/PoisonAlien/maftools
 License: MIT
 LazyData: TRUE
 Depends:
@@ -18,7 +19,8 @@ Depends:
     RColorBrewer,
     dplyr,
     gplots,
-    NMF
+    NMF,
+    ggrepel
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown
