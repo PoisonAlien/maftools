@@ -4,7 +4,7 @@
 \alias{oncoprint}
 \title{draw an oncoprint similar to the cBioportal output.}
 \usage{
-oncoprint(maf, genes = NULL, sort = T, legend = T, annotation = NULL,
+oncoprint(maf, genes = NULL, sort = T, annotation = NULL,
   removeNonMutated = F, top = 5, showTumorSampleBarcodes = FALSE)
 }
 \arguments{
@@ -13,8 +13,6 @@ oncoprint(maf, genes = NULL, sort = T, legend = T, annotation = NULL,
 \item{genes}{draw oncoprint for these genes. default NULL. Plots top 5 genes.}
 
 \item{sort}{logical sort oncomatrix for enhanced visualization. Defaults to True.}
-
-\item{legend}{Logical. Hides legend if \code{FALSE}.}
 
 \item{annotation}{\code{data.frame} with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.}
 

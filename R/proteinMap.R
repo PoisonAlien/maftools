@@ -68,7 +68,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     if(! 'AAChange' %in% colnames(mut)){
       message('Available fields:')
       print(colnames(mut))
-      stop('AAChange filed not found in MAF. Use AACol to manually specifiy field name containing protein changes.')
+      stop('AAChange field not found in MAF. Use AACol to manually specifiy field name containing protein changes.')
     }
   }else{
     colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange'
