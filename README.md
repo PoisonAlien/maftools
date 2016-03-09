@@ -6,17 +6,16 @@ With advances in Cancer Genomics, maf format is being widley accepted and used t
 #### Installation:
 
 ```{r results='hide'}
-#Install Bioconductor dependency.
+#Install Bioconductor dependencies.
 source("http://bioconductor.org/biocLite.R")
 biocLite("ComplexHeatmap")
+biocLite("VariantAnnotation")
+biocLite("Biostrings")
 
 #Install maftools from github repository.
 library("devtools")
 install_github(repo = "PoisonAlien/maftools")
 ```
-
-#### Other dependencies: 
-[VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html) and [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html).
 
 #### Reading MAF file
 First we read maf file using fuction `read.maf` which also summarises variants by various ways and sorts them. It returns a list of `data.frame`s which can be accessed easily.
