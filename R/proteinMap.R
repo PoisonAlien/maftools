@@ -95,12 +95,6 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     prot.dat = prot.dat[!is.na(prot.dat$pos),]
   }
 
-    # #At present use SNP's
-  # prot.snp = prot.dat[Variant_Type == 'SNP']
-  # prot.snp$ref = substr(x = prot.snp$conv, start = 1, stop = 1)
-  # prot.snp$alt =  substr(x = as.character(prot.snp$conv), start = nchar(prot.snp$conv), stop = nchar(prot.snp$conv))
-  # prot.snp$pos = as.numeric(substr(x = as.character(prot.snp$conv), start = 2, stop = nchar(prot.snp$conv)-1))
-
   prot.snp.sumamry = ddply(prot.dat, .variables = c('Variant_Classification', 'conv', 'pos'), summarise, count =length(AAChange))
   maxCount = max(prot.snp.sumamry$count)
 
@@ -108,18 +102,33 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   if(max(prot.snp.sumamry$count) > 10){
 
     prot.snp.sumamry1 = filter(prot.snp.sumamry, count <= 10)
+
     prot.snp.sumamry2 = filter(prot.snp.sumamry, count > 10)
-    maxCount = max(prot.snp.sumamry1$count) + 2
+
+    if(nrow(prot.snp.sumamry1) == 0){
+      maxCount = 5
+    }else{
+      maxCount = max(prot.snp.sumamry1$count) + 2
+    }
 
     prot.snp.sumamry$count2 = ifelse(test = prot.snp.sumamry$count > 10, no = prot.snp.sumamry$count, yes = maxCount+2)
 
-    p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+
-      theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
-      scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
-      geom_text(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2,label = count))+theme(legend.position = 'none')
+    if(nrow(prot.snp.sumamry1) > 0){
 
-    p = p+geom_point(data = prot.snp.sumamry1, aes(x = pos, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+
-      theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
+      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+
+        theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
+        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
+        geom_text(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2,label = count))+theme(legend.position = 'none')
+
+      p = p+geom_point(data = prot.snp.sumamry1, aes(x = pos, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+
+        theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
+    }else{
+      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+
+        theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
+        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
+        geom_text(data = prot.snp.sumamry2, aes(x = pos, y = maxCount+2,label = count))+theme(legend.position = 'none')+
+        theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
+    }
 
   } else{
 
