@@ -37,9 +37,9 @@ read.maf = function(maf, removeSilent = T, useAll = F){
 
   #remove silent mutations with no/lesser functional impact
   silent = c("Silent", "Intron", "RNA", "3'UTR", "3'Flank", "5'UTR", "5'Flank", "IGR")
+  maf.silent = maf[Variant_Classification %in% silent]
 
   if(removeSilent){
-    maf.silent = maf[Variant_Classification %in% silent]
 
     if(nrow(maf.silent) > 0){
       maf.silent.vc = maf.silent[,.N, .(Tumor_Sample_Barcode, Variant_Classification)]
@@ -68,30 +68,11 @@ read.maf = function(maf, removeSilent = T, useAll = F){
   genes = unique(maf[,Hugo_Symbol])
 
   message('Summerizing..')
-  #Variants per TSB
-  tsb = maf[,.N, Tumor_Sample_Barcode]
-  colnames(tsb)[2] = 'Variants'
-  tsb = tsb[order(tsb$Variants, decreasing = T),]
-
-  #summarise and casting by 'Variant_Classification'
-  vc = maf[,.N, .(Tumor_Sample_Barcode, Variant_Classification )]
-  vc.cast = dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N')
-
-  #summarise and casting by 'Variant_Type'
-  vt = maf[,.N, .(Tumor_Sample_Barcode, Variant_Type )]
-  vt.cast = dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0)
-
-  #summarise and casting by 'Hugo_Symbol'
-  hs = maf[,.N, .(Hugo_Symbol, Variant_Classification)]
-  hs.cast = dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N')
-  hs.cast = hs.cast[order(rowSums(hs.cast[,2:ncol(hs.cast), with = F]), decreasing = T)] #ordering according to frequent mutated gene
-
-  #Make a summarized table
-  summary = data.table(ID = c('Samples',colnames(vc.cast)[2:ncol(vc.cast)]), summary = c(nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
-  print(summary)
+  mafSummary = summarizeMaf(maf = maf)
+  print(mafSummary$summary)
 
   message("Frequently mutated genes..")
-  print(hs.cast)
+  print(mafSummary$gene.summary)
 
   message('Creating oncomatrix..')
   variant.classes = levels(maf[,Variant_Classification])
@@ -182,6 +163,8 @@ read.maf = function(maf, removeSilent = T, useAll = F){
   mdf.copy = as.matrix(mdf.copy[, colnames(mdf)])
   message('Done !')
 
-  return(list(data = maf, variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
-              gene.summary = hs.cast, oncoMatrix = mdf.copy, numericMatrix = mat.numericCode,summary = summary, numericMatrix.classCode = variant.classes))
+  return(list(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+              variant.classification.summary = mafSummary$variant.classification.summary,gene.summary = mafSummary$gene.summary,
+              oncoMatrix = mdf.copy, numericMatrix = mat.numericCode,summary = mafSummary$summary,
+              numericMatrix.classCode = variant.classes, maf.silent = maf.silent))
 }
