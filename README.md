@@ -18,7 +18,7 @@ install_github(repo = "PoisonAlien/maftools")
 ```
 
 #### Reading MAF file
-First we read maf file using fuction `read.maf` which also summarises variants by various ways and sorts them. It returns a list of `data.frame`s which can be accessed easily.
+First we read maf file using fuction `read.maf` which also summarises variants by various ways and sorts them. 
 
 ```{r results='hide'}
 require(maftools)
@@ -27,17 +27,16 @@ laml.maf = system.file('extdata', 'tcga_laml.maf', package = 'maftools')
 laml = read.maf(maf = laml.maf, removeSilent = T, useAll = F)
 ```
 
-MAF file is summarized in various ways which can easily accessed. For example..
+MAF file is read and stored as an MAF object of S4 class. Each slot can be accessed using directly @. However there are accessor methods which can be used also.
+
 
 ```{r, echo=TRUE, size=1}
-#Based on Variant_Classification
-laml$variant.classification.summary
+#MAF file summarized by Genes 
+getGeneSummary(laml)
 
-#Based on frequcy of mutated geens
-laml$gene.summary
+#MFA file summarized by samples (Tumor Sample Barcode)
+getSampleSummary(laml)
 
-#oncomatrix
-laml$oncoMatrix
 ```
 #### Quicky plot maf stats
 
