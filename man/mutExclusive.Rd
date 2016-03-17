@@ -19,9 +19,6 @@ table with number of events in all possible combinations and p-value. Column hea
 \description{
 Performs statistical test between given set of genes for mutual excluisiveness.
 }
-\details{
-This function runs \code{comet_exact_test()} internally between given genes and returns a table containing number of alterations with all possible combinations and significance value.
-}
 \references{
 Leiserson, Mark DM et al. “CoMEt: A Statistical Approach to Identify Combinations of Mutually Exclusive Alterations in Cancer.” Genome Biology 16.1 (2015): 160.
 }

@@ -1,7 +1,7 @@
 #' Plots results from \code{oncodrive}
 #'
 #' @description Takes results from \code{oncodrive} and plots them as a scatter plot. Size of the gene shows number of clusters (hotspots), x-axis can either be an absolute number of variants
-#' accumulated in these clusters or a fraction of total variants found in these clusters. y-axis is fdr values transformed into -log10 for better representation. Lables indicate Gene name with number clusters
+#' accumulated in these clusters or a fraction of total variants found in these clusters. y-axis is fdr values transformed into -log10 for better representation. Labels indicate Gene name with number clusters
 #' observed.
 #' @param  res results from \code{oncodrive}
 #' @param fdrCutOff fdr cutoff to call a gene as a driver.

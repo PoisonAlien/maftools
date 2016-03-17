@@ -27,6 +27,6 @@ ggplot object of the plot, which can be futher modified.
 Draws lollipop plot of amino acid changes.
 }
 \details{
-This function by default looks for field "AAChange" in maf file. One can also manually specify field name containing amino acid changes. Labelling of amino acid changes requires ggrepel package to be installed.
+This function by default looks for field "AAChange" in maf file. One can also manually specify field name containing amino acid changes.
 }
 

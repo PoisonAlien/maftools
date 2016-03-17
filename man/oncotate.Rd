@@ -17,7 +17,7 @@ oncotate(maflite, header = FALSE, basename = NULL)
 returns a dataframe in maf format.
 }
 \description{
-Takes variants as input and annotates them using borads oncotator api (http://www.broadinstitute.org/oncotator/). Output is a dataframe of annotated variants in maf format.
+Takes variants as input and annotates them using Broad's oncotator api (http://www.broadinstitute.org/oncotator/). Output is a dataframe of annotated variants in maf format.
 
 Input should be a five column file with chr, start, end, ref_allele, alt_allele (and so on, but only first five will used, rest will be attached to resulting maf file). Note: Time consuming if input is huge.
 Try to include necessary columns such as Tumor_Sample_Barcode along with above 5 fields.
