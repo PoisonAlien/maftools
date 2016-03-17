@@ -85,14 +85,14 @@ lollipopPlot(maf = laml, gene = 'KIT', label = T)
 ```
 ![image8](https://github.com/PoisonAlien/maftools/blob/master/images/image8)
 
-##Detcting cancer causing genes.
+####Detcting cancer causing genes.
 maftools comes with the function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hotspots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full).
 
 ```{r}
 laml.sig = oncodrive(maf = aml, AACol = 'Protein_Change', minMut = 5, pvalMethod = 'zscore')
 plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = T)
 ```
-![image8](https://github.com/PoisonAlien/maftools/blob/master/images/image10)
+![image10](https://github.com/PoisonAlien/maftools/blob/master/images/image10.png)
 
 #### Annotating variants with Oncotator
 We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API.
