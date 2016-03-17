@@ -147,18 +147,21 @@ Trying this on TCGA Liver MAF file.
 #Read MAF file
 maf = "hgsc.bcm.edu_LIHC.IlluminaGA_DNASeq.1.somatic.maf"
 lihc = read.maf(maf = maf, removeSilent = T, useAll = F)
-#Extract adjacent bases from immediate 3' and 5', classify them into 96 conversion classes and decompose the matrix using Non-negative Matrix Factorization.
-lihc.sig = ExtractSignatures(maf = lihc, ref_genome = 'hg19.fa', prefix = 'chr', add = T, n = 4)
-#Output
-## reading fasta..
-## Extracting trinucleotide context..
+#Extract adjacent bases from immediate 3' and 5', classify them into 96 conversion classes.
+lihc.tnm = trinucleotideMatrix(maf = lihc, ref_genome = 'hg19.fa', prefix = 'chr', add = T)
+## reading fasta (this might take a while)..
+## Extracting adjacent bases..
+## matrix of dimension 198x96
+
+# Decompose extracted matrix using Non-negative Matrix Factorization.
+lihc.signatures = extractSignatures(mat = lihc.tnm)
+## Estimating best rank..
+## Using 2 as a best-fit rank based on maximum cophenetic correlation coefficient.
 ## Comparing against experimentally validated 21 signatures.. (See Alexandrov et.al Nature 2013 for details.)
-## Signature_1 most similar to Signature_4. Correlation coeff: 0.570179145069995
-## Signature_2 most similar to Signature_4. Correlation coeff: 0.270412561060805
-## Signature_3 most similar to Signature_1B. Correlation coeff: 0.745515293084315
-## Signature_4 most similar to Signature_12. Correlation coeff: 0.659942376184283
+## Found Signature_1 most similar to validated Signature_4. Correlation coeff: 0.547099730968907 
+## Found Signature_2 most similar to validated Signature_12. Correlation coeff: 0.647694192108207 
 ```
-Signature_4 which corelates will validated Signature_12 was observed in Liver samples characterised by T>C mutations showing transcriptional strand bias.
+Signature_2 which corelates will validated Signature_12 was observed in Liver samples characterised by T>C mutations showing transcriptional strand bias.
 
 ![image9](https://github.com/PoisonAlien/maftools/blob/master/images/image9)
 
