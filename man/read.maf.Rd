@@ -7,7 +7,7 @@
 read.maf(maf, removeSilent = T, useAll = F)
 }
 \arguments{
-\item{maf}{tab delimited MAF file.}
+\item{maf}{tab delimited MAF file. File can also be gz compressed.}
 
 \item{removeSilent}{logical. Whether to discard silent (with no functional impact) mutations ("Silent","Intron","RNA","3'UTR"). Default is TRUE.}
 

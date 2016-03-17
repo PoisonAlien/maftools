@@ -18,8 +18,8 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     stop('Please provide a gene name.')
   }
 
-  gff = system.file('extdata', 'protein_domains.txt', package = 'maftools')
-  gff = fread(gff, sep = '\t', stringsAsFactors = F, header = T)
+  gff = system.file('extdata', 'protein_domains.txt.gz', package = 'maftools')
+  gff = fread(input = paste('zcat', gff), sep = '\t', stringsAsFactors = F, header = T)
 
   mut = maf@data
 

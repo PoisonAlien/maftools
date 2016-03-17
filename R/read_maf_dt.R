@@ -1,7 +1,7 @@
 #' Read MAF files.
-#' @description Takes tab delimited MAF file as an input and summarizes it in various ways. Also creates oncomatrix - helpful for visualization.
+#' @description Takes tab delimited MAF (can be plain text or gz compressed) file as an input and summarizes it in various ways. Also creates oncomatrix - helpful for visualization.
 #'
-#' @param maf tab delimited MAF file.
+#' @param maf tab delimited MAF file. File can also be gz compressed.
 #' @param removeSilent logical. Whether to discard silent (with no functional impact) mutations ("Silent","Intron","RNA","3'UTR"). Default is TRUE.
 #' @param useAll logical. Whether to use all variants irrespective of values in Mutation_Status. Defaults to False. Only uses with values Somatic.
 #' @return An object of class MAF.
@@ -11,7 +11,13 @@
 read.maf = function(maf, removeSilent = T, useAll = F){
 
   message('reading maf..')
-  suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
+
+  if(as.logical(grep(pattern = 'gz$', x = maf, fixed = F))){
+    suppressWarnings(maf <- fread(input = paste('zcat', maf), sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
+  } else{
+    suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
+  }
+
 
   required.fields = c('Hugo_Symbol', 'Variant_Classification', 'Variant_Type', 'Tumor_Sample_Barcode') #necessary fields.
   missing.fileds = required.fields[!required.fields %in% colnames(maf)] #check if any of them is missing

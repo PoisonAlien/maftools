@@ -1,4 +1,4 @@
-bcr_patient_barcode	fab_category
+Tumor_Sample_Barcode	FAB_classification
 TCGA-AB-2802	M4
 TCGA-AB-2803	M3
 TCGA-AB-2804	M3

@@ -1,4 +1,17 @@
 summarizeMaf = function(maf){
+
+  if('NCBI_Build' %in% colnames(maf)){
+    NCBI_Build = unique(maf[,NCBI_Build])
+  }else{
+    NCBI_Build = NA
+  }
+
+  if('Center' %in% colnames(maf)){
+    Center = unique(maf[,Center])
+  }else{
+    Center = NA
+  }
+
   #Variants per TSB
   tsb = maf[,.N, Tumor_Sample_Barcode]
   colnames(tsb)[2] = 'Variants'
@@ -27,7 +40,7 @@ summarizeMaf = function(maf){
   hs.cast = merge(hs.cast, numMutatedSamples, by = 'Hugo_Symbol')
   hs.cast = hs.cast[order(total, decreasing = T)]
   #Make a summarized table
-  summary = data.table(ID = c('Samples',colnames(vc.cast)[2:ncol(vc.cast)]), summary = c(nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
+  summary = data.table(ID = c('NCBI_Build', 'Center','Samples',colnames(vc.cast)[2:ncol(vc.cast)]), summary = c(NCBI_Build, Center,nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
 
   return(list(variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
               gene.summary = hs.cast, summary = summary))

@@ -23,7 +23,7 @@ First we read maf file using fuction `read.maf` which also summarises variants b
 ```{r results='hide'}
 require(maftools)
 #read TCGA maf file for LAML
-laml.maf = system.file('extdata', 'tcga_laml.maf', package = 'maftools')
+laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 laml = read.maf(maf = laml.maf, removeSilent = T, useAll = F)
 ```
 
