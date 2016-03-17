@@ -8,21 +8,24 @@ summarizeMaf = function(maf){
   vc = maf[,.N, .(Tumor_Sample_Barcode, Variant_Classification )]
   vc.cast = dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N')
   vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = F])]
-  vc.cast[order(total, decreasing = T)]
+  vc.cast = vc.cast[order(total, decreasing = T)]
 
   #summarise and casting by 'Variant_Type'
   vt = maf[,.N, .(Tumor_Sample_Barcode, Variant_Type )]
   vt.cast = dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0)
   vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = F])]
-  vt.cast[order(total, decreasing = T)]
+  vt.cast = vt.cast[order(total, decreasing = T)]
 
   #summarise and casting by 'Hugo_Symbol'
   hs = maf[,.N, .(Hugo_Symbol, Variant_Classification)]
   hs.cast = dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N')
   hs.cast = hs.cast[order(rowSums(hs.cast[,2:ncol(hs.cast), with = F]), decreasing = T)] #ordering according to frequent mutated gene
   hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = F])]
-  hs.cast[order(total, decreasing = T)]
-
+  #Get in how many samples a gene ismutated
+  numMutatedSamples = maf[,.(MutatedSamples = length(unique(Tumor_Sample_Barcode))), by = Hugo_Symbol]
+  #Merge and sort
+  hs.cast = merge(hs.cast, numMutatedSamples, by = 'Hugo_Symbol')
+  hs.cast = hs.cast[order(total, decreasing = T)]
   #Make a summarized table
   summary = data.table(ID = c('Samples',colnames(vc.cast)[2:ncol(vc.cast)]), summary = c(nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
 

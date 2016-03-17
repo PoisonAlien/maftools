@@ -19,7 +19,4 @@ list of \code{data.table}s with samples in which given genes are mutated.
 \description{
 Extracts Tumor Sample Barcodes where the given genes are mutated.
 }
-\details{
-This function by default looks for field "AAChange" in maf file. One can also manually specify field name containing amino acid changes. Labelling of amino acid changes requires ggrepel package to be installed.
-}
 

@@ -34,7 +34,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange'
   }
 
-  prot.dat = mut[Hugo_Symbol == gene, .(Variant_Type, Variant_Classification, AAChange)]
+  prot.dat = mut[Hugo_Symbol %in% gene, .(Variant_Type, Variant_Classification, AAChange)]
   if(nrow(prot.dat) == 0){
     stop(paste(gene, 'does not seem to have any mutations!', sep=' '))
   }
@@ -160,5 +160,5 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     p = p+geom_text_repel(data = prot.snp.sumamry, aes(pos, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
   }
   print(p)
-  return(p)
+  return(prot.snp.sumamry)
 }

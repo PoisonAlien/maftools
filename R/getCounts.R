@@ -1,6 +1,3 @@
-#' accessory function to \code{addReadCounts()}.
-#' @description This is an accessory function. Use \code{addReadCounts()}
-
 getCounts=function(var,bam, MapQuality, BaseQuality, ref_genome){
 
 

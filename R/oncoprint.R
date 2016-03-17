@@ -41,7 +41,7 @@ oncoprint = function(maf, genes = NULL, sort = T, annotation = NULL, removeNonMu
     mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = T)), ])
   }
 
-  char.mat = maf$oncoMatrix
+  char.mat = maf@oncoMatrix
   char.mat = char.mat[rownames(mat),]
   char.mat = char.mat[,colnames(mat)]
   #final matrix for plotting
