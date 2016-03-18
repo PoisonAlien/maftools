@@ -17,6 +17,6 @@ read.maf(maf, removeSilent = T, useAll = F)
 An object of class MAF.
 }
 \description{
-Takes tab delimited MAF file as an input and summarizes it in various ways. Also creates oncomatrix - helpful for visualization.
+Takes tab delimited MAF (can be plain text or gz compressed) file as an input and summarizes it in various ways. Also creates oncomatrix - helpful for visualization.
 }
 

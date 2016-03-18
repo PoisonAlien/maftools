@@ -12,7 +12,7 @@ read.maf = function(maf, removeSilent = T, useAll = F){
 
   message('reading maf..')
 
-  if(as.logical(grep(pattern = 'gz$', x = maf, fixed = F))){
+  if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = F)))){
     suppressWarnings(maf <- fread(input = paste('zcat', maf), sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
   } else{
     suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
