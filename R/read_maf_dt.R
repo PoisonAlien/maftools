@@ -13,7 +13,14 @@ read.maf = function(maf, removeSilent = T, useAll = F){
   message('reading maf..')
 
   if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = F)))){
-    suppressWarnings(maf <- fread(input = paste('zcat', maf), sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
+    #If system is Linux use fread, else use gz connection to read gz file.
+    if(Sys.info()[['sysname']] == 'Linux'){
+      maf = suppressWarnings(fread(input = paste('zcat <', maf), sep = '\t', stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
+    } else{
+      maf.gz = gzfile(description = maf, open = 'r')
+      suppressWarnings(maf <- data.table(read.csv(file = maf.gz, header = T, sep = '\t', stringsAsFactors = F)))
+      close(maf.gz)
+    }
   } else{
     suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
   }
@@ -73,7 +80,7 @@ read.maf = function(maf, removeSilent = T, useAll = F){
   #get all unique genes
   genes = unique(maf[,Hugo_Symbol])
 
-  message('Summerizing..')
+  message('Summarizing..')
   mafSummary = summarizeMaf(maf = maf)
   print(mafSummary$summary)
 

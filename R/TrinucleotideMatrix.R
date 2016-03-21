@@ -42,7 +42,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   }
 
   if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'End_Position'
+    colnames(maf)[which(colnames(maf) == 'End_position')] = 'End_Position'
   }
 
   #seperate snps and indels

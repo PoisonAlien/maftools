@@ -2,12 +2,22 @@ summarizeMaf = function(maf){
 
   if('NCBI_Build' %in% colnames(maf)){
     NCBI_Build = unique(maf[,NCBI_Build])
+    if(length(NCBI_Build) > 1){
+      message('NOTE: Mutiple reference builds found!')
+      NCBI_Build = do.call(paste, c(as.list(NCBI_Build), sep=";"))
+      message(NCBI_Build)
+    }
   }else{
     NCBI_Build = NA
   }
 
   if('Center' %in% colnames(maf)){
     Center = unique(maf[,Center])
+    if(length(Center) > 1){
+      message('Mutiple centers found.')
+      Center = do.call(paste, c(as.list(Center), sep=";"))
+      print(Center)
+    }
   }else{
     Center = NA
   }

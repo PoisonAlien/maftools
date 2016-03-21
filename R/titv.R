@@ -7,7 +7,7 @@
 #' @export
 
 
-titv = function(maf, plot = TRUE)
+titv = function(maf, plot = T)
 {
   maf = maf@data
   maf = maf[Variant_Type == 'SNP']
@@ -18,7 +18,7 @@ titv = function(maf, plot = TRUE)
   }
 
   if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'End_Position'
+    colnames(maf)[which(colnames(maf) == 'End_position')] = 'End_Position'
   }
 
   maf = maf[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
@@ -61,15 +61,16 @@ titv = function(maf, plot = TRUE)
   #add titv classification
   class.summary$TiTv = suppressWarnings( as.character(factor(x = class.summary$class, levels = mut.df$class, labels = mut.df$TiTv)) )
   colnames(TiTv.fractions) = c("Ti", "Tv")
-  if (plot) {
-    p = ggplot(data = class.summary, aes(x = class, y = percent_contribution, color = TiTv)) +
-      geom_boxplot() + theme_minimal() + ylim(0, 100) +
-      xlab("Conversion Class") + theme(axis.line = element_line(colour = "black")) +
-      ylab("Fraction of Mutations")+scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))
-    print(p)
-  }
+
   class.summary.df = as.data.frame(class.summary.df[, c(7, 1:6)])
   colnames(class.summary.df) = c("Tumor_Sample_Barcode", mut.summary[[2]][,1])
   class.summary.df[,2:7] = apply(class.summary.df[,2:7], 2, as.numeric)
-  return(list(fraction.contribution = class.summary.df, raw.counts = mut.raw.counts, TiTv.fractions = TiTv.fractions))
+  titv.res = list(fraction.contribution = class.summary.df, raw.counts = mut.raw.counts, TiTv.fractions = TiTv.fractions)
+
+  if(plot){
+    plotTiTv(res = titv.res)
+  }
+
+  return(titv.res)
+
 }
