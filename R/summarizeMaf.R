@@ -33,6 +33,10 @@ summarizeMaf = function(maf){
   vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = F])]
   vc.cast = vc.cast[order(total, decreasing = T)]
 
+  vc.mean = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = F], 2, mean))))
+  vc.median = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = F], 2, median))))
+
+  
   #summarise and casting by 'Variant_Type'
   vt = maf[,.N, .(Tumor_Sample_Barcode, Variant_Type )]
   vt.cast = dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0)
@@ -50,7 +54,10 @@ summarizeMaf = function(maf){
   hs.cast = merge(hs.cast, numMutatedSamples, by = 'Hugo_Symbol')
   hs.cast = hs.cast[order(total, decreasing = T)]
   #Make a summarized table
-  summary = data.table(ID = c('NCBI_Build', 'Center','Samples',colnames(vc.cast)[2:ncol(vc.cast)]), summary = c(NCBI_Build, Center,nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
+  summary = data.table(ID = c('NCBI_Build', 'Center','Samples',colnames(vc.cast)[2:ncol(vc.cast)]), 
+                       summary = c(NCBI_Build, Center,nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
+  summary[,Mean := vc.mean]
+  summary[,Median := vc.median]
 
   return(list(variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
               gene.summary = hs.cast, summary = summary))

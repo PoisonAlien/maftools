@@ -7,7 +7,7 @@
 plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = F)
 }
 \arguments{
-\item{res}{results from \code{oncodrive}}
+\item{res}{results from \code{\link{oncodrive}}}
 
 \item{fdrCutOff}{fdr cutoff to call a gene as a driver.}
 
