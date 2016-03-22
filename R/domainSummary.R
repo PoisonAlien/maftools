@@ -105,12 +105,14 @@ addPfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos'){
   prot.sum = cbind(prot.sum, gff[prot.sum[,idx]])
   if('AAChange' %in% colnames(prot.sum)){
     prot.sum = prot.sum[,.(HGNC, Start, Variant_Classification, AAChange, N, total, fraction, Label, pfam, Description)]
+    prot.sum = rbind(prot.sum, prot.sum.na)
+    colnames(prot.sum)[c(2, 8)] = c('AAPos', 'DomainLabel')
   }else{
     prot.sum = prot.sum[,.(HGNC, Start, Variant_Classification, N, total, fraction, Label, pfam, Description)]
+    prot.sum = rbind(prot.sum, prot.sum.na)
+    colnames(prot.sum)[c(2, 7)] = c('AAPos', 'DomainLabel')
   }
 
-  prot.sum = rbind(prot.sum, prot.sum.na)
-  colnames(prot.sum)[c(2, 8)] = c('AAPos', 'DomainLabel')
   #print(prot.sum)
   return(prot.sum)
 }
