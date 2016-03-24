@@ -39,7 +39,7 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
     maf = maf[Tumor_Sample_Barcode %in% sampleName]
   }
 
-  if(max(maf[,t_vaf]) > 1){
+  if(max(maf[,t_vaf], na.rm = T) > 1){
     maf[,t_vaf:= t_vaf/100]
   }
 

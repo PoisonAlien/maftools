@@ -99,7 +99,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   prot.dat[,conv := prot.conv]
   pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = prot.dat$conv)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
-  pos = gsub(pattern = '\\^*', replacement = '', x = pos) #Remove * if nonsense mutation starts with *
+  pos = gsub(pattern = '^\\*', replacement = '', x = pos) #Remove * if nonsense mutation starts with *
   pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = T), '[[', 1))
   prot.dat[,pos := pos]
 

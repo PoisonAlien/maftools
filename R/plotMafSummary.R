@@ -7,11 +7,15 @@
 #' @param width plot parameter for output file.
 #' @param height plot parameter for output file.
 #' @param rmOutlier If TRUE removes outlier from boxplot.
+#' @param addStat Can be either mean or median. Default NULL.
 #' @export
 
-plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T){
+plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T, addStat = NULL){
 
   require(cowplot, quietly = T)
+
+
+  addStat.opts = c('mean', 'median')
 
   #hard coded color scheme
   col = c('#CCCCCC',brewer.pal(12, name = "Paired"), brewer.pal(11, name = "Spectral")[1:3], "maroon")
@@ -22,9 +26,9 @@ plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T
                          "two_hit")
 
   vcs = getSampleSummary(maf)
-  vcs[,total:=NULL]
-  vcs = vcs[order(rowSums(vcs[,2:ncol(vcs), with = F]), decreasing = T)] #order tsbs based on number of mutations
-  vcs = vcs[,c(1,order(colSums(x = vcs[,2:ncol(vcs), with =F]), decreasing = T)+1), with =F] #order based on most event
+  #vcs = vcs[,2:(ncol(vcs)-1), with = F]
+  #vcs = vcs[order(rowSums(vcs[,2:ncol(vcs), with = F]), decreasing = T)] #order tsbs based on number of mutations
+  vcs = vcs[,c(1,order(colSums(x = vcs[,2:(ncol(vcs)-1), with =F]), decreasing = T)+1), with =F] #order based on most event
 
   #melt data frame
   vcs.m = melt(vcs, id.vars = 'Tumor_Sample_Barcode')
@@ -36,8 +40,42 @@ plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T
 
 
   #top ggplot
-  vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+
-    theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+background_grid(major = 'xy', minor = 'none')
+
+  if(!is.null(addStat)){
+    if(length(addStat) > 1){
+      stop('addStat can only be either mean or median.')
+    }
+
+    if(! addStat %in% addStat.opts){
+      stop('addStat can only be either mean or median.')
+    }
+
+    if(addStat == 'mean'){
+      mean.line = round(max(maf@summary[,Mean], na.rm = T), 2)
+      df = data.frame(y = c(mean.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Mean: ', mean.line, sep='')))
+
+      vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+
+        theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
+        background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = mean.line, linetype = 2)+
+        geom_label_repel(inherit.aes = F, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
+                         point.padding = unit(1, "lines"), force = 20, size = 3, nudge_y = 2)
+    }else{
+      med.line = round(max(maf@summary[,Median], na.rm = T), 2)
+      df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
+
+      vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+
+        theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
+        background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = med.line, linetype = 2)+
+        geom_label_repel(inherit.aes = F, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
+                         point.padding = unit(1, "lines"), force = 20, size = 3, nudge_y = 2)
+    }
+
+
+  }else{
+    vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+
+      theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
+      background_grid(major = 'xy', minor = 'none')
+  }
 
   #bottom ggplot
   if(rmOutlier){
