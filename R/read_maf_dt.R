@@ -14,12 +14,12 @@ read.maf = function(maf, removeSilent = T, useAll = F){
 
   if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = F)))){
     #If system is Linux use fread, else use gz connection to read gz file.
-    if(Sys.info()[['sysname']] == 'Linux'){
-      maf = suppressWarnings(fread(input = paste('zcat <', maf), sep = '\t', stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
-    } else{
+    if(Sys.info()[['sysname']] == 'windows'){
       maf.gz = gzfile(description = maf, open = 'r')
       suppressWarnings(maf <- data.table(read.csv(file = maf.gz, header = T, sep = '\t', stringsAsFactors = F)))
       close(maf.gz)
+    } else{
+      maf = suppressWarnings(fread(input = paste('zcat <', maf), sep = '\t', stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
     }
   } else{
     suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
