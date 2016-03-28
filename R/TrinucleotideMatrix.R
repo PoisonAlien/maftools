@@ -7,15 +7,27 @@
 #' @param prefix Prefix to add or remove from contig names in MAF file.
 #' @param add If prefix is used, default is to add prefix to contig names in MAF file. If false prefix will be removed from contig names.
 #' @param ignoreChr Chromsomes to remove from analysis. e.g. chrM
+#' @param useSyn Logical. Whether to include synonymous variants in analysis. Defaults to FALSE.
 #' @return A matrix of dimension nx96, where n is the number of samples in the MAF.
 #' @export
 
-trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL){
+trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = F){
 
   suppressPackageStartupMessages(require('VariantAnnotation', quietly = T))
   suppressPackageStartupMessages(require('Biostrings', quietly = T))
 
+  #Synonymous variants
+  maf.silent = maf@maf.silent
+  #Main data
   maf = maf@data
+
+  #in case user read maf without removing silent variants, remove theme here.
+  silent = c("Silent", "Intron", "RNA", "3'UTR", "3'Flank", "5'UTR", "5'Flank", "IGR")
+  maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
+
+  if(useSyn){
+    maf = rbind(maf, maf.silent)
+  }
 
   #one bp up and down.
   up = down = 1

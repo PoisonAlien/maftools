@@ -1,4 +1,4 @@
-#' Performs exact test for mutual exclusive evensts.
+#' Performs exact test for mutual exclusive events.
 #'
 #' @description Performs statistical test between given set of genes for mutual excluisiveness.
 #' @references Leiserson, Mark DM et al. “CoMEt: A Statistical Approach to Identify Combinations of Mutually Exclusive Alterations in Cancer.” Genome Biology 16.1 (2015): 160.

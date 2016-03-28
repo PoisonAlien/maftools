@@ -2,7 +2,7 @@
 % Please edit documentation in R/mutExclusive.R
 \name{mutExclusive}
 \alias{mutExclusive}
-\title{Performs exact test for mutual exclusive evensts.}
+\title{Performs exact test for mutual exclusive events.}
 \usage{
 mutExclusive(maf, genes = NULL, top = 10)
 }

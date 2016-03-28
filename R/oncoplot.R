@@ -11,11 +11,13 @@
 #' @param drawColBar logical plots barplot for each sample.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param annotation data.frame with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.
+#' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
+#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
 #' @export
 
 
 oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRowBar = T, drawColBar = T,
-                     showTumorSampleBarcodes = FALSE, annotation = NULL, annotationColor = NULL , genesToIgnore = NULL) {
+                     showTumorSampleBarcodes = FALSE, annotation = NULL, annotationColor = NULL , genesToIgnore = NULL, removeNonMutated = F) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -23,6 +25,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRow
   require(package = "ComplexHeatmap", quietly = T, warn.conflicts = F)
   require(package = "RColorBrewer", quietly = T, warn.conflicts = F)
 
+  numMat = maf@numericMatrix
   mat_origin = maf@oncoMatrix
 
   #remove genes from genesToIgnore if any
@@ -48,6 +51,8 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRow
   variant.classes = unique(unlist(as.list(apply(mat_origin, 2, unique))))
 
   type_col = structure(col[variant.classes], names = names(col[variant.classes]))
+  type_col = type_col[!is.na(type_col)]
+
   type_name = structure(variant.classes, names = variant.classes)
 
   #annotation if given
@@ -146,6 +151,17 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRow
 
     ha_column_bar = HeatmapAnnotation(column_bar = anno_column_bar, which = "column")
 
+    #To remove samples with no mutations in top n genes, if user says switches removeNonMutated
+    if(removeNonMutated){
+      numMat = numMat[rownames(mat),]
+      numMat = numMat[,colnames(mat)]
+      tsb = colnames(numMat)
+      tsb.exclude = colnames(numMat[,colSums(numMat) == 0])
+      tsb.include = tsb[!tsb %in% tsb.exclude]
+      mat = mat[,tsb.include]
+    }
+
+
     if(drawColBar){
       if(is.null(annotation)){
         ht = Heatmap(mat, rect_gp = gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
@@ -184,7 +200,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRow
       ht_list =  ht_list + ha_row_bar
     }
 
-    legend = legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = gpar(col = type_col), nrow = 1)
+    legend = legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = gpar(col = type_col), nrow = 2)
 
     draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
   }

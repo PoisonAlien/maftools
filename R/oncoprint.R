@@ -5,7 +5,7 @@
 #' @param sort logical sort oncomatrix for enhanced visualization. Defaults to True.
 #' @param annotation \code{data.frame} with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.
 #' @param top how many top genes to be drawn. defaults to 5.
-#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations for better visualization.
+#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @return NULL
 #' @export

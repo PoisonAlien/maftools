@@ -16,7 +16,7 @@ oncoprint(maf, genes = NULL, sort = T, annotation = NULL,
 
 \item{annotation}{\code{data.frame} with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.}
 
-\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations for better visualization.}
+\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization.}
 
 \item{top}{how many top genes to be drawn. defaults to 5.}
 
