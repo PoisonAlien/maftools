@@ -48,7 +48,7 @@ plotmafSummary(laml)
 #### oncoplot to summarize maf file
 `oncoplot` This function uses slightly modified [oncoprint](https://github.com/jokergoo/ComplexHeatmap/blob/908b32ee4c495c74adfa077c967024a77c56b375/vignettes/oncoprint.R) script from [ComplexHeatmap](https://github.com/jokergoo/ComplexHeatmap) package by [Zuguang Gu](https://github.com/jokergoo), while taking care of format conversions and with some added fucntionalities.
 
-```{r, echo=TRUE, fig.height=7,fig.width=14}
+```{r, echo=TRUE, fig.height=7,fig.width=12}
 #We will plot top ten mutated genes
 oncoplot(maf = laml, top = 10)
 ```
@@ -58,7 +58,7 @@ Use arguments drawRowBar, drawColBar to control side and upper barplots.
 
 #### Adding annotations to oncoplot
 We can add annotations to the bottom of the plot.
-```{r, echo=TRUE, fig.height=9,fig.width=16}
+```{r, echo=TRUE, fig.height=9,fig.width=12}
 #Read FAB classification of TCGA LAML barodes.
 laml.fab.anno = system.file('extdata', 'tcga_laml_fab_annotation.txt', package = 'maftools')
 laml.fab.anno = read.delim(laml.fab.anno, sep = '\t')

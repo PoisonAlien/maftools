@@ -21,7 +21,7 @@ titv = function(maf, useSyn = F, plot = T)
   maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
 
   if(useSyn){
-    maf = rbind(maf, maf.silent)
+    maf = rbind(maf, maf.silent, fill = T)
   }
 
   maf = maf[Variant_Type == 'SNP']
@@ -34,10 +34,6 @@ titv = function(maf, useSyn = F, plot = T)
   if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
     colnames(maf)[which(colnames(maf) == 'End_position')] = 'End_Position'
   }
-
-
-
-
 
   maf = maf[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
   maf$Tumor_Sample_Barcode = as.factor(as.character(maf$Tumor_Sample_Barcode))

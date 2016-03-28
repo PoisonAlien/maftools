@@ -26,7 +26,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
 
   if(useSyn){
-    maf = rbind(maf, maf.silent)
+    maf = rbind(maf, maf.silent, fill = T)
   }
 
   #one bp up and down.

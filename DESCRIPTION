@@ -1,6 +1,6 @@
 Package: maftools
 Type: Package
-Title: A set of functions for processing MAF (Mutation Annotation Format) files.
+Title: maftools : Summarize, Analyze and Visualize MAF files.
 Version: 0.1
 Date: 2015-12-14
 Author: Anand M <<anand_mt@hotmail.com>>
