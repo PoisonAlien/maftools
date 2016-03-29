@@ -1,20 +1,18 @@
 ### maftools - An R package to summarize, analyze and visualize MAF files.
 
+####Introduction.
 With advances in Cancer Genomics, maf format is being widley accepted and used to store variants detected. 
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. The [resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of genetic variants is stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). 
-
 This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner either from TCGA sources or any in-house studies as long as the data is in MAF format.
 
-MAF files contain many fields ranging from chromosome names to cosmic annotations. However, most of the analysis in maftools uses following fields.
-
+#### MAF field requirements.
+MAF files contains many fields ranging from chromosome names to cosmic annotations. However, most of the analysis in maftools uses following fields.
   * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_position, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
-  
   * Recommended optional fields: non MAF specific fields containing vaf and amino acid change information. 
-
 Complete specififcation of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
 #### Vignette and a case study.
-A complete documentation of maftools using TCGA LAML<sup>1</sup> MAF file can be found [here](https://github.com/PoisonAlien/maftools/blob/master/inst/doc/maftools.pdf).
+A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](https://github.com/PoisonAlien/maftools/blob/master/inst/doc/maftools.pdf).
 
 #### Installation:
 
@@ -31,7 +29,7 @@ install_github(repo = "PoisonAlien/maftools")
 ```
 
 #### Reading MAF files
-First we read maf file using function `read.maf` which also summarises variants by various ways and sorts them. 
+First we read maf file using function `read.maf` which reads maf, summarises variants in various ways, creates oncomatrix and performs sorting.
 
 ```{r results='hide'}
 require(maftools)
@@ -57,7 +55,7 @@ write.mafSummary(maf = laml, basename = 'laml')
 ```{r, echo=TRUE}
 plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median')
 ```
-![image1](https://github.com/PoisonAlien/maftools/blob/master/images/image1)
+![image1](https://github.com/PoisonAlien/maftools/blob/master/images/image1.png)
 
 #### oncoplot to summarize maf file
 `oncoplot` This function uses modified [oncoprint](https://github.com/jokergoo/ComplexHeatmap/blob/908b32ee4c495c74adfa077c967024a77c56b375/vignettes/oncoprint.R) script from [ComplexHeatmap](https://github.com/jokergoo/ComplexHeatmap) package by [Zuguang Gu](https://github.com/jokergoo) with added functionalities, while taking care of format conversions.
@@ -88,7 +86,7 @@ Each Single Nucleotide Variant can be classified into [Trasition or Transversion
 ```{r, echo=TRUE,fig.height=4,fig.width=6, warning=FALSE,fig.align='center'}
 laml.titv = titv(maf = laml, useSyn = T)
 ```
-![image5](https://github.com/PoisonAlien/maftools/blob/master/images/image5)
+![image5](https://github.com/PoisonAlien/maftools/blob/master/images/image5.png)
 
 It also returns a list of dataframes with raw counts for each conversion, fraction of each conversion and Ti to Tv ratios.
 
@@ -106,10 +104,10 @@ maftools comes with the function `oncodrive` which identifies cancer genes (driv
 laml.sig = oncodrive(maf = aml, AACol = 'Protein_Change', minMut = 5, pvalMethod = 'zscore')
 plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = T)
 ```
-![image10](https://github.com/PoisonAlien/maftools/blob/master/images/image10.png)
+![image10](https://github.com/PoisonAlien/maftools/blob/master/images/image10)
 
 ####Summarizing by pfam domains.
-`pfamDomain` summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce of MuSic tool<sup>3</sup>.
+`pfamDomain` adds domain information and summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce of MuSic tool<sup>3</sup>.
 
 ```{r}
 laml.pfam = pfamDomains(maf = laml, AACol = 'Protein_Change', top = 10)
@@ -118,7 +116,7 @@ laml.pfam$proteinSummary[,1:7, with = F]
 #Domain summary (Printing first 3 columns for display convenience)
 laml.pfam$domainSummary[,1:3, with = F]
 ```
-![image11](https://github.com/PoisonAlien/maftools/blob/master/images/image11)
+![image11](https://github.com/PoisonAlien/maftools/blob/master/images/image11.png)
 
 #### Annotating variants with Oncotator
 We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.
@@ -142,11 +140,9 @@ Many genes in cancer show strong exclusiveness in mutation pattern. We can detec
 
 ```{r, echo = TRUE, fig.height=1.5,fig.width=7,fig.align='center'}
 mutExclusive(maf = laml, genes = c('NPM1', 'RUNX1'))
-
 #Output
 ##   n.00 n.01 n.10 n.11 gene1 gene2                pval
 ## 1  124   18   54    0  NPM1 RUNX1 0.00109823009964897
-
 #We can visualize this pair using oncoprint. `oncoprint` draws a matrix similar to [oncoprint](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do).
 
 oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNonMutated = T)
