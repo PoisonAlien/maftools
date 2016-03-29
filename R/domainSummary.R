@@ -134,7 +134,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   #print(prot.sum)
   p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes, alpha = 0.6))+geom_point()+
     geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel, color = 'maroon'), size = 3, fontface = 'bold', force = 30)+
-    background_grid(major = 'xy', minor = 'none')+theme(legend.position = 'none')
+    background_grid(major = 'xy', minor = 'none')+theme(legend.position = 'none')+background_grid(major = 'xy')
 
   print(p)
 
