@@ -14,7 +14,7 @@ MAF files contain many fields ranging from chromosome names to cosmic annotation
 Complete specififcation of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
 #### Vignette and a case study.
-A complete documentation of maftools using TCGA LAML\small{$^{1}$} MAF file can be found [here](https://github.com/PoisonAlien/maftools/blob/master/inst/doc/maftools.pdf).
+A complete documentation of maftools using TCGA LAML<sup>1</sup> MAF file can be found [here](https://github.com/PoisonAlien/maftools/blob/master/inst/doc/maftools.pdf).
 
 #### Installation:
 
@@ -100,7 +100,7 @@ lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = 'all
 ![image8](https://github.com/PoisonAlien/maftools/blob/master/images/image8)
 
 ####Detcting cancer causing genes.
-maftools comes with the function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hotspots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full)\small{$^{2}$}.
+maftools comes with the function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hotspots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full)<sup>2</sup>.
 
 ```{r}
 laml.sig = oncodrive(maf = aml, AACol = 'Protein_Change', minMut = 5, pvalMethod = 'zscore')
@@ -109,7 +109,7 @@ plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = T)
 ![image10](https://github.com/PoisonAlien/maftools/blob/master/images/image10.png)
 
 ####Summarizing by pfam domains.
-`pfamDomain` summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce of MuSic tool\small{$^{3}$}.
+`pfamDomain` summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce of MuSic tool<sup>3</sup>.
 
 ```{r}
 laml.pfam = pfamDomains(maf = laml, AACol = 'Protein_Change', top = 10)
@@ -121,7 +121,7 @@ laml.pfam$domainSummary[,1:3, with = F]
 ![image11](https://github.com/PoisonAlien/maftools/blob/master/images/image11)
 
 #### Annotating variants with Oncotator
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API\small{$^{4}$}.
+We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.
 
 ```{r}
 var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
@@ -138,7 +138,7 @@ var.maf = oncotate(maflite = var.file, header = T)
 This is quite time consuming if input is big.
 
 #### Mutual Exclusivity and Oncoprint.
-Many genes in cancer show strong exclusiveness in mutation pattern. We can detect such pair of genes using `mutExclusive` which runs `comet_exact_test` from `cometExactTest` package for significance\small{$^{5}$}. 
+Many genes in cancer show strong exclusiveness in mutation pattern. We can detect such pair of genes using `mutExclusive` which runs `comet_exact_test` from `cometExactTest` package for significance<sup>5</sup>. 
 
 ```{r, echo = TRUE, fig.height=1.5,fig.width=7,fig.align='center'}
 mutExclusive(maf = laml, genes = c('NPM1', 'RUNX1'))
@@ -154,7 +154,7 @@ oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNo
 ![image6](https://github.com/PoisonAlien/maftools/blob/master/images/image6)
 
 ####Tumor Heterogenity
-Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Although mlcust performs fairly well, it is recommended to try [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation\small{$^{6}$}.
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Although mlcust performs fairly well, it is recommended to try [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation<sup>5</sup>.
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7}
 #We will run this for sample TCGA.AB.2972
@@ -163,9 +163,9 @@ inferHetrogentiy(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'TumorVAF_WU')
 ![image7](https://github.com/PoisonAlien/maftools/blob/master/images/image7)
 
 #### Extract Mutation Signatures
-Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such signatures, derived from over 7000 cancer samples. Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [21 validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures)\small{$^{7}$}. 
+Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such signatures, derived from over 7000 cancer samples. Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [21 validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures)<sup>6</sup>. 
 
-ExtractSignatures uses `nmf` from [NMF](https://cran.r-project.org/web/packages/NMF/index.html) package to decompose the matrix and extract signatures\small{$^{8}$}. 
+ExtractSignatures uses `nmf` from [NMF](https://cran.r-project.org/web/packages/NMF/index.html) package to decompose the matrix and extract signatures<sup>7</sup>. 
 NOTE: Reading fasta file is memory consuming and it occupies ~3gb of memory while extracting adjacent bases from human genome.
 
 Trying this on TCGA Liver MAF file.
@@ -187,7 +187,7 @@ lihc.signatures = extractSignatures(mat = lihc.tnm)
 ## Found Signature_1 most similar to validated Signature_4. Correlation coeff: 0.547099730968907 
 ## Found Signature_2 most similar to validated Signature_12. Correlation coeff: 0.647694192108207 
 ```
-Signature_2 which corelates will validated Signature_12 was observed in Liver samples characterised by T>C mutations showing transcriptional strand bias\small{$^{7}$}.
+Signature_2 which corelates will validated Signature_12 was observed in Liver samples characterised by T>C mutations showing transcriptional strand bias<sup>8</sup>.
 
 ![image9](https://github.com/PoisonAlien/maftools/blob/master/images/image9)
 
