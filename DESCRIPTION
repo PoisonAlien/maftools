@@ -9,18 +9,18 @@ Description: Process MAF files.
 URL: https://github.com/PoisonAlien/maftools
 License: MIT
 LazyData: TRUE
-Depends:
-    data.table,
+Depends: R (>= 3.1.2), data.table, ggplot2
+Imports:
     plyr,
     reshape,
-    ggplot2,
     cowplot,
     cometExactTest,
     RColorBrewer,
     dplyr,
     gplots,
     NMF,
-    ggrepel
+    ggrepel,
+    methods
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown

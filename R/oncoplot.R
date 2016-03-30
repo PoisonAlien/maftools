@@ -13,11 +13,12 @@
 #' @param annotation data.frame with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
+#' @param colors named vector of colors for each Variant_Classification.
 #' @export
 
 
 oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRowBar = T, drawColBar = T,
-                     showTumorSampleBarcodes = FALSE, annotation = NULL, annotationColor = NULL , genesToIgnore = NULL, removeNonMutated = F) {
+                     showTumorSampleBarcodes = FALSE, annotation = NULL, genesToIgnore = NULL, removeNonMutated = F, colors = NULL) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -40,13 +41,14 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRow
     mat = mat_origin[1:top, ]
   }
 
-  #hard coded colors for variant classification
-  col = c('#CCCCCC',brewer.pal(12, name = "Paired"), brewer.pal(11, name = "Spectral")[1:3], "maroon")
-  names(col) = names = c('',"Nonstop_Mutation", "Frame_Shift_Del",
-                         "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
-                         "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",
-                         "Silent", "In_Frame_Ins", "ITD", "3'UTR", "Translation_Start_Site",
-                         "two_hit")
+  #hard coded colors for variant classification if user doesnt provide any
+  if(is.null(colors)){
+    col = c(brewer.pal(12,name = "Paired"),brewer.pal(11,name = "Spectral")[1:3],'black')
+    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','Silent','Missense_Mutation','IGR','Nonsense_Mutation',
+                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Dell','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
+  }else{
+    col = colors
+  }
 
   variant.classes = unique(unlist(as.list(apply(mat_origin, 2, unique))))
 

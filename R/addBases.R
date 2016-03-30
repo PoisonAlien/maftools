@@ -14,6 +14,7 @@
 
 extractSignatures = function(mat, n = NULL, nTry = 6){
 
+  require(NMF, quietly = T)
   #transpose matrix
   mat = t(mat)
 
@@ -33,7 +34,7 @@ extractSignatures = function(mat, n = NULL, nTry = 6){
 
   if(is.null(n)){
     message('Estimating best rank..')
-    nmfTry = nmfEstimateRank(mat, seq(2,nTry), method='brunet', nrun=10, seed=123456) #try nmf for a range of values
+    nmfTry = NMF::nmfEstimateRank(mat, seq(2,nTry), method='brunet', nrun=10, seed=123456) #try nmf for a range of values
     print(plot(nmfTry, 'cophenetic' ))
     nmf.sum = summary(nmfTry) # Get summary of estimates
     print(nmf.sum)
@@ -42,7 +43,7 @@ extractSignatures = function(mat, n = NULL, nTry = 6){
     n = bestFit
   }
 
-  conv.mat.nmf = nmf(x = mat, rank = n)
+  conv.mat.nmf = NMF::nmf(x = mat, rank = n)
 
   conv.mat.nmf.signatures = basis(conv.mat.nmf)
   conv.mat.nmf.signatures = apply(conv.mat.nmf.signatures, 2, function(x) x/sum(x)) #Scale the signatures

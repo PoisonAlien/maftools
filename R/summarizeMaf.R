@@ -36,7 +36,7 @@ summarizeMaf = function(maf){
   vc.mean = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = F], 2, mean))))
   vc.median = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = F], 2, median))))
 
-  
+
   #summarise and casting by 'Variant_Type'
   vt = maf[,.N, .(Tumor_Sample_Barcode, Variant_Type )]
   vt.cast = dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0)
@@ -54,11 +54,110 @@ summarizeMaf = function(maf){
   hs.cast = merge(hs.cast, numMutatedSamples, by = 'Hugo_Symbol')
   hs.cast = hs.cast[order(total, decreasing = T)]
   #Make a summarized table
-  summary = data.table(ID = c('NCBI_Build', 'Center','Samples',colnames(vc.cast)[2:ncol(vc.cast)]), 
+  summary = data.table(ID = c('NCBI_Build', 'Center','Samples',colnames(vc.cast)[2:ncol(vc.cast)]),
                        summary = c(NCBI_Build, Center,nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
   summary[,Mean := vc.mean]
   summary[,Median := vc.median]
 
   return(list(variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
               gene.summary = hs.cast, summary = summary))
+}
+
+createOncoMatrix = function(maf){
+  message('Creating oncomatrix (this might take a while)..')
+
+  #tsbs
+  tsbs = levels(maf[,Tumor_Sample_Barcode])
+  #get all unique genes
+  genes = unique(maf[,Hugo_Symbol])
+
+  variant.classes = levels(maf[,Variant_Classification])
+  mdf = data.table(Hugo_Symbol = genes)
+
+  #prgress bar for for-loop
+  pb <- txtProgressBar(min = 0, max = length(tsbs), style = 3) #progress bar
+
+  for(i in 1:length(tsbs)) {
+    #message(paste('processing ',tsbs[i]))
+    barcode1 = maf[Tumor_Sample_Barcode == tsbs[i]]
+
+    if (nrow(barcode1) == 0)
+      break
+
+    x = barcode1[,.N, by = .(Hugo_Symbol, Variant_Classification)] #summerize by Hugo_Symbol and Variant_Classification
+
+    x.hits = x[,.N, Hugo_Symbol] #count number of mutation per gene
+    x.multihit.genes = x.hits[N > 1, Hugo_Symbol] #check for genes with >1 mutation
+    x.singlehits = x.hits[N == 1, Hugo_Symbol] #check for genes with single mutation
+
+    xs = x[Hugo_Symbol %in% x.singlehits, .(Hugo_Symbol, Variant_Classification)] #data table for single mutation
+
+    if(length(x.multihit.genes) > 0){
+      xm = data.table(Hugo_Symbol = x.multihit.genes, Variant_Classification = 'Multi_Hit') #data table for multi hit gene but Variant_Classification set to 'multi_hits'
+      x.hits.dt = rbind(xs, xm) #bind them togeather
+      colnames(x.hits.dt)[2] = tsbs[i] #change colnames to TSB
+      mdf = merge(mdf, x.hits.dt, by = 'Hugo_Symbol', all = T) #merge
+    } else{
+      colnames(xs)[2] = tsbs[i]
+      mdf = merge(mdf, xs, by = 'Hugo_Symbol', all = T) #merge
+    }
+    setTxtProgressBar(pb, i)
+  }
+
+  genes = as.character(mdf$Hugo_Symbol)
+  mdf = data.frame(mdf)
+  mdf = mdf[, -1]
+  mdf = data.frame(lapply(mdf, as.character), stringsAsFactors = F)
+  mdf.copy = mdf #make a copy of this
+  mdf.copy[is.na(mdf.copy)] = ""
+  rownames(mdf.copy) = genes
+  mdf[is.na(mdf)] = 0
+
+  variant.classes = as.list(apply(mdf, 2, unique))
+  variant.classes = unique(as.vector(unlist(variant.classes)))
+  variant.classes = variant.classes[!variant.classes == "0"]
+
+  for (i in 1:length(variant.classes)) {
+    mdf[mdf == variant.classes[i]] = i
+  }
+
+  #numeric code for variant classes
+  names(variant.classes) = 1:length(variant.classes)
+
+  #convert dataframe to matrix
+  mdf = as.matrix(apply(mdf, 2, function(x) as.numeric(as.character(x))))
+  rownames(mdf) = genes #this is numeric coded matrix - maybe useful to used
+
+  message('Sorting..')
+  #Add total variants per gene
+  mdf = cbind(mdf, variants = apply(mdf, 1, function(x) {
+    length(x[x != "0"])
+  }))
+
+  #Sort the matrix
+  mdf = mdf[order(mdf[, ncol(mdf)], decreasing = T), ]
+  colnames(mdf) = gsub(pattern = "^X", replacement = "", colnames(mdf))
+  nMut = mdf[, ncol(mdf)]
+  mdf = mdf[, -ncol(mdf)]
+
+  mdf.temp.copy = mdf #temp copy of original unsorted numeric coded matrix
+
+  mdf[mdf != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
+  tmdf = t(mdf) #transposematrix
+  mdf = t(tmdf[do.call(order, c(as.list(as.data.frame(tmdf)), decreasing = T)), ]) #sort
+
+  mdf.temp.copy = mdf.temp.copy[rownames(mdf),] #organise original matrix into sorted matrix
+  mdf.temp.copy = mdf.temp.copy[,colnames(mdf)]
+  mdf = mdf.temp.copy
+
+  mat.numericCode = mdf #This is sorted, numeric coded matrix - maybe useful to user
+
+  mdf[is.na(mdf)] = 0
+  mdf.copy = mdf.copy[rownames(mdf), ]
+  #if names begin with numericasl they will be converted to ^X, sub it to get original id
+  colnames(mdf.copy) = gsub(pattern = '^X', replacement = '', x = colnames(mdf.copy))
+  mdf.copy = as.matrix(mdf.copy[, colnames(mdf)])
+
+  return(list(oncomat = mdf.copy, nummat = mat.numericCode, vc = variant.classes))
+
 }

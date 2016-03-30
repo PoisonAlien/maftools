@@ -13,12 +13,13 @@
 plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T, addStat = NULL){
 
   require(cowplot, quietly = T)
-
+  require(RColorBrewer, quietly = T)
+  require(ggrepel, quietly = T)
 
   addStat.opts = c('mean', 'median')
 
   #hard coded color scheme
-  col = c('#CCCCCC',brewer.pal(12, name = "Paired"), brewer.pal(11, name = "Spectral")[1:3], "maroon")
+  col = c('#CCCCCC', RColorBrewer::brewer.pal(12, name = "Paired"), brewer.pal(11, name = "Spectral")[1:3], "maroon")
   names(col) = names = c('',"Nonstop_Mutation", "Frame_Shift_Del",
                          "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
                          "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",

@@ -6,6 +6,7 @@
 #' @export
 plotSignatures = function(nmfRes = NULL){
 
+  require(gplots, quietly = T)
   conv.mat.nmf.signatures = nmfRes$signatures
 
   plotData = as.data.frame(t(conv.mat.nmf.signatures))

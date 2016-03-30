@@ -23,7 +23,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   #Protein domain source.
   gff = system.file('extdata', 'protein_domains.txt.gz', package = 'maftools')
 
-  if(Sys.info()[['sysname']] == 'windows'){
+  if(Sys.info()[['sysname']] == 'Windows'){
     gff.gz = gzfile(description = gff, open = 'r')
     gff <- suppressWarnings( data.table(read.csv( file = gff.gz, header = T, sep = '\t', stringsAsFactors = F)) )
     close(gff.gz)

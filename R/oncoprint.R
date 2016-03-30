@@ -7,11 +7,12 @@
 #' @param top how many top genes to be drawn. defaults to 5.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization.
 #' @param showTumorSampleBarcodes logical to include sample names.
+#' @param colors named vector of colors for each Variant_Classification.
 #' @return NULL
 #' @export
 
 
-oncoprint = function(maf, genes = NULL, sort = T, annotation = NULL, removeNonMutated = F, top = 5, showTumorSampleBarcodes = FALSE){
+oncoprint = function(maf, genes = NULL, sort = T, annotation = NULL, removeNonMutated = F, top = 5, showTumorSampleBarcodes = FALSE, colors = NULL){
 
   mat_origin = maf@numericMatrix
 
@@ -46,12 +47,14 @@ oncoprint = function(maf, genes = NULL, sort = T, annotation = NULL, removeNonMu
   #final matrix for plotting
   mat = char.mat
 
-  col = c(brewer.pal(12, name = "Paired"), brewer.pal(11, name = "Spectral")[1:3], "maroon")
-  names(col) = names = c("Nonstop_Mutation", "Frame_Shift_Del",
-                         "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
-                         "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",
-                         "Silent", "In_Frame_Ins", "ITD", "3'UTR", "Translation_Start_Site",
-                         "two_hit")
+  if(is.null(colors)){
+    col = c(brewer.pal(12,name = "Paired"),brewer.pal(11,name = "Spectral")[1:3],'black')
+    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','Silent','Missense_Mutation','IGR','Nonsense_Mutation',
+                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Dell','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
+  }else{
+    col = colors
+  }
+
 
   tc = unique(unlist(apply(mat,1,unique)))
   tc = tc[!tc=='']

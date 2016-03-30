@@ -60,7 +60,7 @@ mutExclusive = function(maf, genes = NULL, top = 10){
       mat.collapse = mat.collapse[order(mat.collapse$Var1),]
 
       #run comet exact test for significance
-      pval = comet_exact_test(tbl = as.numeric(x = mat.collapse$Freq), mutmatplot = F)
+      pval = cometExactTest::comet_exact_test(tbl = as.numeric(x = mat.collapse$Freq), mutmatplot = F)
       #pval = format(x = pval, digits = 3) #three decimal points
       #make a table
       ptbl = rbind(mat.collapse, data.frame(Var1 = rep(paste('gene', 1:length(geneSet), sep='')), Freq = geneSet))
