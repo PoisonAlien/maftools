@@ -15,18 +15,18 @@ Complete specififcation of MAF files can be found on [NCI TCGA page](https://wik
 A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](https://github.com/PoisonAlien/maftools/blob/master/inst/doc/maftools.pdf).
 
 #### Stuffs maftools can do.
-*Analysis
+1. Analysis
 ..*Detect cancer driver genes based on positional clustering of variants<sup>2</sup>.
 ..*Detect Mutually exclusive set of genes<sup>5</sup>.
 ..*Extract mutational signatures.
 ..*Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation.
 ..*Add pfam domains and summarize.
-*Visualization
+2. Visualization
 ..*Make oncoplots.
 ..*Make lollipop plots.
 ..*Plot Transitions and Transversions. 
 ..*Plot maf summary.
-*Annotation
+3. Annotation
 ..*Annotate variants locally using Oncotator API.
 ..*Convert Annovar annotations into MAF.
 
