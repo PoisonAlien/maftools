@@ -5,23 +5,32 @@
 #' @param file basename for output file name. If given pdf will be generated.
 #' @param width width of the plot, in inches.
 #' @param height height of the plot, in inches.
+#' @param colors named vector of colors for each coversion class.
+#' @return None.
+#' @examples
+#' plotTiTv(laml.titv)
 #' @export
 
 
-plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5){
+plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5, color = NULL){
 
-  col = brewer.pal(n = 6, name = 'Dark2')
-  names(col) = c('C>T', 'C>G', 'C>A', 'A>T', 'A>G', 'A>C')
+  if(is.null(color)){
+    col = RColorBrewer::brewer.pal(n = 6, name = 'Set3')
+    names(col) = c('C>T', 'C>G', 'C>A', 'A>T', 'A>G', 'A>C')
+  }else{
+    col = color
+  }
+
 
   titv.frac = res$fraction.contribution
-  titv.frac.melt = melt(titv.frac, id.vars = 'Tumor_Sample_Barcode')
+  titv.frac.melt = data.table::melt(data = titv.frac, id = 'Tumor_Sample_Barcode')
   titv.frac.melt$variable = factor(x = titv.frac.melt$variable, levels = c('C-T', 'C-G', 'C-A', 'A-T', 'A-G', 'A-C'),
                                    labels = c('C>T', 'C>G', 'C>A', 'A>T', 'A>G', 'A>C'))
 
   titv.frac.melt$TiTv = suppressWarnings( factor(x = titv.frac.melt$variable, levels = c('C>T', 'C>G', 'C>A', 'A>T', 'A>G', 'A>C'),
                                    labels = c('Ti', 'Tv', 'Tv', 'Tv', 'Ti', 'Tv')) )
 
-  titv.contrib = suppressMessages(melt(res$TiTv.fractions))
+  titv.contrib = suppressMessages(data.table::melt(res$TiTv.fractions, id = 'Tumor_Sample_Barcode'))
 
   p1 = ggplot(data = titv.frac.melt, aes(x = variable, y = value, color = TiTv)) +
     geom_boxplot() + ylim(0, 100) +
@@ -37,7 +46,8 @@ plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5){
 
   p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value, fill = variable))+geom_bar(stat = 'identity')+
     theme(legend.position = 'bottom', legend.title = element_blank(), axis.text.x = element_blank(),
-          axis.line.y = element_blank(), axis.line.x = element_blank())+ylab('Fraction of Mutations')+xlab('Samples')
+          axis.line.y = element_blank(), axis.line.x = element_blank())+ylab('Fraction of Mutations')+xlab('Samples')+
+    scale_fill_manual(values = col)
 
   p = suppressWarnings(plot_grid(top, p3, nrow = 2))
 

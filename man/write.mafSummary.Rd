@@ -11,7 +11,13 @@ write.mafSummary(maf, basename = NULL)
 
 \item{basename}{basename for output file to be written.}
 }
+\value{
+None. Writes output as text files.
+}
 \description{
 Writes maf summaries to an output tab-delimited text file.
+}
+\examples{
+write.mafSummary(maf = laml, basename = 'laml')
 }
 

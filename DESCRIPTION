@@ -1,18 +1,16 @@
 Package: maftools
 Type: Package
 Title: maftools : Summarize, Analyze and Visualize MAF files.
-Version: 0.1
+Version: 0.99.0
 Date: 2015-12-14
-Author: Anand M <<anand_mt@hotmail.com>>
-Maintainer: Anand M <anand_mt@hotmail.com>
+Author: Anand Mayakonda <<anand_mt@hotmail.com>>
+Maintainer: Anand Mayakonda <anand_mt@hotmail.com>
 Description: Process MAF files.
 URL: https://github.com/PoisonAlien/maftools
 License: MIT
 LazyData: TRUE
-Depends: R (>= 3.1.2), data.table, ggplot2
+Depends: R (>= 3.2), data.table, ggplot2
 Imports:
-    plyr,
-    reshape,
     cowplot,
     cometExactTest,
     RColorBrewer,
@@ -20,8 +18,14 @@ Imports:
     gplots,
     NMF,
     ggrepel,
-    methods
+    methods,
+    ComplexHeatmap,
+    mclust,
+    VariantAnnotation,
+    Biostrings
 RoxygenNote: 5.0.1
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
+biocViews: DataRepresentation, DNASeq, Visualization, FeatureExtraction, Classification, SomaticMutation, Sequencing

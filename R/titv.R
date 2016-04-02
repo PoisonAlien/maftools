@@ -5,10 +5,12 @@
 #' @param useSyn Logical. Whether to include synonymous variants in analysis. Defaults to FALSE.
 #' @param plot plots a titv fractions. default TRUE.
 #' @return list of \code{data.frame}s with Transitions and Transversions summary.
+#' @examples
+#' laml.titv = titv(maf = laml, useSyn = T)
 #' @export
 
 
-titv = function(maf, useSyn = F, plot = T)
+titv = function(maf, useSyn = FALSE, plot = TRUE)
 {
 
   #Synonymous variants
@@ -21,7 +23,7 @@ titv = function(maf, useSyn = F, plot = T)
   maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
 
   if(useSyn){
-    maf = rbind(maf, maf.silent, fill = T)
+    maf = rbind(maf, maf.silent, fill = TRUE)
   }
 
   maf = maf[Variant_Type == 'SNP']
@@ -36,55 +38,32 @@ titv = function(maf, useSyn = F, plot = T)
   }
 
   maf = maf[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
-  maf$Tumor_Sample_Barcode = as.factor(as.character(maf$Tumor_Sample_Barcode))
-  class.summary = c()
-  class.summary.df = c()
-  TiTv.fractions = data.frame()
-  mut.raw.counts = data.frame(row.names = c("A-G", "T-C", "C-T", "G-A", "A-T", "T-A", "A-C", "T-G", "C-A", "G-T", "C-G", "G-C"))
+  maf$con = paste(maf[,Reference_Allele], maf[,Tumor_Seq_Allele2], sep = '-')
 
-  tsbs = levels(maf[,Tumor_Sample_Barcode])
+  maf.con.summary = maf[,.N, by = .(Tumor_Sample_Barcode, con)]
+  maf.con.summary$con.class = suppressWarnings(as.character(factor(maf.con.summary$con, levels = c("A-G", "T-C", "C-T", "G-A", "A-T", "T-A", "A-C", "T-G", "C-A", "G-T", "C-G", "G-C"),
+                                                                   labels = c("A-G", "A-G", "C-T", "C-T", "A-T", "A-T", "A-C", "A-C", "C-A", "C-A", "C-G", "C-G"))))
 
-  for (i in 1:length(tsbs)) {
-    mut = data.frame(maf[Tumor_Sample_Barcode == tsbs[i]])
 
-    mut$con = paste(mut[, 4], mut[, 5], sep = "-")
-    mut$con = as.factor(mut$con)
-    mut$con = factor(mut$con, levels = c("A-G", "T-C", "C-T",
-                                         "G-A", "A-T", "T-A", "A-C", "T-G", "C-A", "G-T",
-                                         "C-G", "G-C"))
-    mut.df = data.frame(absolute_counts = summary(mut$con))
-    mut.raw.counts = cbind(mut.raw.counts, mut.df)
-    colnames(mut.raw.counts)[ncol(mut.raw.counts)] = tsbs[i]
-    mut.df$class = rep(rownames(mut.df)[seq(1, 12, by = 2)],each = 2)
-    mut.df$TiTv = c(rep(x = "Ti", 4), rep("Tv", 8))
-    mut.df$percent_contribution = mut.df$absolute_counts/sum(mut.df$absolute_counts) * 100
-    mut.df$conversion = row.names(mut.df)
-    mut.df = mut.df[, c(5, 1:4)]
-    mut.summarized = ddply(.data = mut.df, .variables = ~class, summarise, sum(percent_contribution))
-    colnames(mut.summarized) = c("class", "percent_contribution")
-    mut.summarized2 = ddply(.data = mut.df, .variables = ~TiTv,
-                            summarise, sum(percent_contribution))
-    colnames(mut.summarized2) = c("TiTv", "percent_contribution")
-    TiTv.fractions = rbind(TiTv.fractions, mut.summarized2$percent_contribution)
-    rownames(TiTv.fractions)[i] = tsbs[i]
-    mut.summary = list(mut.df, mut.summarized, mut.summarized2)
-    class.summary.df = rbind(class.summary.df, c(mut.summary[[2]][,2], tsbs[i]))
-    class.summary = rbind(class.summary, cbind(mut.summary[[2]],
-                                               pid = tsbs[i]))
-  }
-  #add titv classification
-  class.summary$TiTv = suppressWarnings( as.character(factor(x = class.summary$class, levels = mut.df$class, labels = mut.df$TiTv)) )
-  colnames(TiTv.fractions) = c("Ti", "Tv")
+  maf.con.class.summary = maf.con.summary[,sum(N), by = .(Tumor_Sample_Barcode, con.class)]
+  colnames(maf.con.class.summary)[ncol(maf.con.class.summary)] = 'nVars'
+  suppressWarnings(maf.con.class.summary[,fract := (nVars/sum(nVars))*100, by = .(Tumor_Sample_Barcode)])
 
-  class.summary.df = as.data.frame(class.summary.df[, c(7, 1:6)])
-  colnames(class.summary.df) = c("Tumor_Sample_Barcode", mut.summary[[2]][,1])
-  class.summary.df[,2:7] = apply(class.summary.df[,2:7], 2, as.numeric)
-  titv.res = list(fraction.contribution = class.summary.df, raw.counts = mut.raw.counts, TiTv.fractions = TiTv.fractions)
+  maf.con.class.summary$con.class = factor(x = maf.con.class.summary$con.class,
+                                           levels = c("A-G", "C-T", "A-T", "A-C", "C-A", "C-G"))
+  maf.con.class.summary$TiTv = suppressWarnings(as.character(factor(x = maf.con.class.summary$con.class,
+                                                                    levels = c("A-G", "C-T", "A-T", "A-C", "C-A", "C-G"), labels = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv'))))
+
+  fract.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'fract', fill = 0)
+  raw.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'nVars', fill = 0)
+  titv.summary = maf.con.class.summary[,sum(fract), by = .(Tumor_Sample_Barcode, TiTv)]
+  titv.summary = data.table::dcast(data = titv.summary, Tumor_Sample_Barcode ~ TiTv, value.var = 'V1', fill = 0)
+
+  titv.res = list(fraction.contribution = fract.classes, raw.counts = raw.classes, TiTv.fractions = titv.summary)
 
   if(plot){
     plotTiTv(res = titv.res)
   }
 
   return(titv.res)
-
 }

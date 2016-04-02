@@ -7,6 +7,9 @@
 #' @param genes A pair of genes between which test should be performed. If its null, test will be performed between all combinations of top ten genes.
 #' @param top  check for exclusiveness among top 'n' number of genes. Defaults to top 10. \code{genes}
 #' @return table with number of events in all possible combinations and p-value. Column header describes mutation status of gene1 and gene2 respectively. \code{n.00} number of samples where both gene1 and gene2 are not mutated \code{c.01} number of samples where gene1 is not mutated but gene2 is mutated and so on..
+#' @examples
+#' mutExclusive(maf = laml, top = 5)
+#' @import cometExactTest
 #' @export
 
 
@@ -60,7 +63,7 @@ mutExclusive = function(maf, genes = NULL, top = 10){
       mat.collapse = mat.collapse[order(mat.collapse$Var1),]
 
       #run comet exact test for significance
-      pval = cometExactTest::comet_exact_test(tbl = as.numeric(x = mat.collapse$Freq), mutmatplot = F)
+      pval = cometExactTest::comet_exact_test(tbl = as.numeric(x = mat.collapse$Freq), mutmatplot = FALSE)
       #pval = format(x = pval, digits = 3) #three decimal points
       #make a table
       ptbl = rbind(mat.collapse, data.frame(Var1 = rep(paste('gene', 1:length(geneSet), sep='')), Freq = geneSet))
@@ -69,7 +72,7 @@ mutExclusive = function(maf, genes = NULL, top = 10){
     }
 
   ptbl.df = data.frame('n.00' = ptbl.df[,1], 'n.01' = ptbl.df[,2], 'n.10' = ptbl.df[,3], 'n.11' = ptbl.df[,4], 'gene1' = ptbl.df[,5], 'gene2' = ptbl.df[,6], 'pval' = ptbl.df[,7], row.names = NULL)
-  ptbl.df = ptbl.df[order(ptbl.df$pval, decreasing = F),]
+  ptbl.df = ptbl.df[order(ptbl.df$pval, decreasing = FALSE),]
   rownames(ptbl.df) = 1:nrow(ptbl.df)
   return(ptbl.df)
 }

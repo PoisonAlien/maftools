@@ -1,22 +1,22 @@
 getCounts=function(var,bam, MapQuality, BaseQuality, ref_genome){
 
 
-  tot.df=read.delim('var_temp.txt', header=F, stringsAsFactors = F, sep='\t', as.is = T, colClasses = c(rep('character',5)))
+  tot.df=read.delim('var_temp.txt', header=FALSE, stringsAsFactors = FALSE, sep='\t', as.is = TRUE, colClasses = c(rep('character',5)))
   rownames(tot.df)=paste(tot.df$V1,tot.df$V2,sep=":")
   #tot.df = tot.df[,1:5]
 
-  system(command = paste("bam-readcount -q",MapQuality," -i -w1 -b",BaseQuality," -l var_temp.txt -f ",ref_genome,bam,"> dx.counts"), ignore.stdout = F, ignore.stderr = F)
-  dx.counts=read.delim(pipe("cut -f 1-10 dx.counts"),header=F)
+  system(command = paste("bam-readcount -q",MapQuality," -i -w1 -b",BaseQuality," -l var_temp.txt -f ",ref_genome,bam,"> dx.counts"), ignore.stdout = FALSE, ignore.stderr = FALSE)
+  dx.counts=read.delim(pipe("cut -f 1-10 dx.counts"),header=FALSE)
   rownames(dx.counts)=paste(dx.counts$V1, dx.counts$V2,sep = ":")
 
   tot.df = tot.df[rownames(dx.counts),]
 
   tot.df$depth=dx.counts$V4
-  tot.df$A=sapply(strsplit(as.character(dx.counts$V6),split = ":",fixed = T),"[",2)
-  tot.df$C=sapply(strsplit(as.character(dx.counts$V7),split = ":",fixed = T),"[",2)
-  tot.df$G=sapply(strsplit(as.character(dx.counts$V8),split = ":",fixed = T),"[",2)
-  tot.df$T=sapply(strsplit(as.character(dx.counts$V9),split = ":",fixed = T),"[",2)
-  tot.df$N=sapply(strsplit(as.character(dx.counts$V10),split = ":",fixed = T),"[",2)
+  tot.df$A=sapply(strsplit(as.character(dx.counts$V6),split = ":",fixed = TRUE),"[",2)
+  tot.df$C=sapply(strsplit(as.character(dx.counts$V7),split = ":",fixed = TRUE),"[",2)
+  tot.df$G=sapply(strsplit(as.character(dx.counts$V8),split = ":",fixed = TRUE),"[",2)
+  tot.df$T=sapply(strsplit(as.character(dx.counts$V9),split = ":",fixed = TRUE),"[",2)
+  tot.df$N=sapply(strsplit(as.character(dx.counts$V10),split = ":",fixed = TRUE),"[",2)
 
   dx.vaf=c()
   dx.count=c()

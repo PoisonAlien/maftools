@@ -10,10 +10,13 @@
 #' @param repel If points are too close to each other, use this option to repel them. Default FALSE.
 #' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'
 #' @return ggplot object of the plot, which can be futher modified.
+#' @import ggrepel
+#' @examples
+#' lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change')
 #' @export
 
 
-lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = F){
+lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = FALSE){
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
@@ -25,10 +28,10 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
   if(Sys.info()[['sysname']] == 'Windows'){
     gff.gz = gzfile(description = gff, open = 'r')
-    gff <- suppressWarnings( data.table(read.csv( file = gff.gz, header = T, sep = '\t', stringsAsFactors = F)) )
+    gff <- suppressWarnings( data.table(read.csv( file = gff.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(gff.gz)
   } else{
-    gff = fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = F)
+    gff = fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = FALSE)
   }
 
 
@@ -93,14 +96,14 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
   prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
   #Remove 'p.'
-  prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = T)
+  prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = TRUE)
   prot.conv = sapply(prot.spl, function(x) x[length(x)])
 
   prot.dat[,conv := prot.conv]
   pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = prot.dat$conv)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
   pos = gsub(pattern = '^\\*', replacement = '', x = pos) #Remove * if nonsense mutation starts with *
-  pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = T), '[[', 1))
+  pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[[', 1))
   prot.dat[,pos := pos]
 
   if(nrow( prot.dat[is.na(prot.dat$pos),]) > 0){
@@ -109,8 +112,10 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     prot.dat = prot.dat[!is.na(prot.dat$pos),]
   }
 
-  prot.snp.sumamry = ddply(prot.dat, .variables = c('Variant_Classification', 'conv', 'pos'), summarise, count =length(AAChange))
-  maxCount = max(prot.snp.sumamry$count)
+  #prot.snp.sumamry = ddply(prot.dat, .variables = c('Variant_Classification', 'conv', 'pos'), summarise, count =length(AAChange))
+  prot.snp.sumamry = prot.dat[,.N, .(Variant_Classification, conv, pos)]
+  colnames(prot.snp.sumamry)[ncol(prot.snp.sumamry)] = 'count'
+  maxCount = max(prot.snp.sumamry$count, na.rm = TRUE)
 
   prot.snp.sumamry = prot.snp.sumamry[order(prot.snp.sumamry$pos),]
   #prot.snp.sumamry$distance = c(0,diff(prot.snp.sumamry$pos))
@@ -126,9 +131,9 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
   if(max(prot.snp.sumamry$count) > 10){
 
-    prot.snp.sumamry1 = filter(prot.snp.sumamry, count <= 10)
+    prot.snp.sumamry1 = dplyr::filter(prot.snp.sumamry, count <= 10)
 
-    prot.snp.sumamry2 = filter(prot.snp.sumamry, count > 10)
+    prot.snp.sumamry2 = dplyr::filter(prot.snp.sumamry, count > 10)
 
     if(nrow(prot.snp.sumamry1) == 0){
       maxCount = 5
@@ -187,11 +192,11 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
         p = p+geom_text_repel(data = prot.snp.sumamry, aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
       }else{
         prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-        p = p+geom_text_repel(data = filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+        p = p+geom_text_repel(data = dplyr::filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
       }
     } else{
       prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-      p = p+geom_text_repel(data = filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+      p = p+geom_text_repel(data = dplyr::filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
     }
   }
   print(p)

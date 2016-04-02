@@ -22,4 +22,8 @@ Takes variants as input and annotates them using Broad's oncotator api (http://w
 Input should be a five column file with chr, start, end, ref_allele, alt_allele (and so on, but only first five will used, rest will be attached to resulting maf file). Note: Time consuming if input is huge.
 Try to include necessary columns such as Tumor_Sample_Barcode along with above 5 fields.
 }
+\examples{
+var.file <- system.file('extdata', 'variants.tsv', package = 'maftools')
+var.maf <- oncotate(maflite = var.file, header = T)
+}
 

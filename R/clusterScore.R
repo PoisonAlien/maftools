@@ -1,5 +1,5 @@
 #--------------------- parse protein positions from protein conversions.
-parse_prot = function(dat, AACol, gl, m, calBg = F, nBg){
+parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
 
   if(is.null(AACol)){
     if(! 'AAChange' %in% colnames(dat)){
@@ -14,14 +14,14 @@ parse_prot = function(dat, AACol, gl, m, calBg = F, nBg){
   all.prot.dat = dat[,.(Hugo_Symbol, Variant_Classification, AAChange)]
   all.prot.dat = all.prot.dat[Variant_Classification != 'Splice_Site']
   #parse AAchanges to get postion
-  prot.spl = strsplit(x = as.character(all.prot.dat$AAChange), split = '.', fixed = T)
+  prot.spl = strsplit(x = as.character(all.prot.dat$AAChange), split = '.', fixed = TRUE)
   prot.conv = sapply(prot.spl, function(x) x[length(x)])
 
   all.prot.dat[,conv := prot.conv]
   all.prot.dat = all.prot.dat[!conv == 'NULL']
   pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = all.prot.dat$conv)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
-  pos = suppressWarnings( as.numeric(sapply(strsplit(x = pos, split = '_', fixed = T), '[', 1)) )
+  pos = suppressWarnings( as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[', 1)) )
   all.prot.dat[,pos := pos]
 
   if(nrow( all.prot.dat[is.na(all.prot.dat$pos),]) > 0){
@@ -31,7 +31,7 @@ parse_prot = function(dat, AACol, gl, m, calBg = F, nBg){
   }
 
   gene.sum = summarizeMaf(maf = dat)$gene.summary
-  gene.sum = merge.data.frame(x = gene.sum, y = gl, by = 'Hugo_Symbol', all.x = T)
+  gene.sum = merge.data.frame(x = gene.sum, y = gl, by = 'Hugo_Symbol', all.x = TRUE)
   gene.sum = gene.sum[!is.na(gene.sum$aa.length),]
 
   num_mut_colIndex = which(colnames(gene.sum) == 'total')
@@ -40,7 +40,7 @@ parse_prot = function(dat, AACol, gl, m, calBg = F, nBg){
   #Get background threshold
   gene.sum$th = apply(gene.sum, 1, function(x) get_threshold(gene_muts = as.numeric(x[num_mut_colIndex]), gene_length = as.numeric(x[aalen_colIndex])))
   #use only genes with atleast 2 (or m ) mutations.
-  gene.sum = filter(gene.sum, total >= m)
+  gene.sum = dplyr::filter(gene.sum, total >= m)
 
   if(calBg){
     if(nrow(gene.sum) < nBg){
@@ -93,8 +93,8 @@ cluster_prot = function(prot.dat, gene, th, protLen){
   pos.counts$cluster = ifelse(test = pos.counts$N >= th, yes = 'meaningful', no = 'nonMeaningful')
 
   #Just choose meaningful positions
-  clust.tbl = filter(pos.counts, cluster == 'meaningful')
-  nonclust.tbl = filter(pos.counts, cluster == 'nonMeaningful')
+  clust.tbl = dplyr::filter(pos.counts, cluster == 'meaningful')
+  nonclust.tbl = dplyr::filter(pos.counts, cluster == 'nonMeaningful')
 
   if(nrow(clust.tbl) == 0){
     #message(paste('No meaningful positions found for', gene, sep=' '))
@@ -140,13 +140,13 @@ cluster_prot = function(prot.dat, gene, th, protLen){
     nonclust.tbl$startDist = nonclust.tbl$pos - tempcdf$start
     nonclust.tbl$endDist = nonclust.tbl$pos - tempcdf$end
 
-    merge.adj.to.start = filter(nonclust.tbl, startDist >= -5 & startDist <= 0)
+    merge.adj.to.start = dplyr::filter(nonclust.tbl, startDist >= -5 & startDist <= 0)
     if(nrow(merge.adj.to.start) > 0){
       tempcdf$start = merge.adj.to.start[which(merge.adj.to.start$startDist == min(merge.adj.to.start$startDist)),pos]
       tempcdf$N = tempcdf$N + sum(merge.adj.to.start$N)
     }
 
-    merge.adj.to.end = filter(nonclust.tbl, endDist <= 5 & endDist >= 0)
+    merge.adj.to.end = dplyr::filter(nonclust.tbl, endDist <= 5 & endDist >= 0)
     if(nrow(merge.adj.to.end) > 0){
       tempcdf$end = merge.adj.to.end[which(merge.adj.to.end$endDist == max(merge.adj.to.end$endDist)),pos]
       tempcdf$N = tempcdf$N + sum(merge.adj.to.end$N)
@@ -161,7 +161,7 @@ cluster_prot = function(prot.dat, gene, th, protLen){
   clusterScores = c()
 
   for(i in 1:nrow(cdf)){
-    temp.prot.dat = filter(prot.dat, pos >= as.numeric(cdf$start[i]) & pos <= as.numeric(cdf$end[i]))
+    temp.prot.dat = dplyr::filter(prot.dat, pos >= as.numeric(cdf$start[i]) & pos <= as.numeric(cdf$end[i]))
     temp.prot.dat.summary = temp.prot.dat[,.N, pos]
     temp.prot.dat.summary[,fraction:= N/total.muts]
 

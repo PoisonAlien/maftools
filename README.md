@@ -159,9 +159,9 @@ mutExclusive(maf = laml, genes = c('NPM1', 'RUNX1'))
 #Output
 ##   n.00 n.01 n.10 n.11 gene1 gene2                pval
 ## 1  124   18   54    0  NPM1 RUNX1 0.00109823009964897
-#We can visualize this pair using oncoprint. `oncoprint` draws a matrix similar to [oncoprint](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do).
+#We can visualize this pair using oncostrip. `oncostrip` draws a matrix similar to [oncoprint](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do).
 
-oncoprint(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNonMutated = T)
+oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNonMutated = T)
 ```
 ![image6](https://github.com/PoisonAlien/maftools/blob/master/images/image6)
 

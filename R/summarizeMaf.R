@@ -25,37 +25,37 @@ summarizeMaf = function(maf){
   #Variants per TSB
   tsb = maf[,.N, Tumor_Sample_Barcode]
   colnames(tsb)[2] = 'Variants'
-  tsb = tsb[order(tsb$Variants, decreasing = T),]
+  tsb = tsb[order(tsb$Variants, decreasing = TRUE),]
 
   #summarise and casting by 'Variant_Classification'
   vc = maf[,.N, .(Tumor_Sample_Barcode, Variant_Classification )]
-  vc.cast = dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N')
-  vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = F])]
-  vc.cast = vc.cast[order(total, decreasing = T)]
+  vc.cast = data.table::dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N')
+  vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
+  vc.cast = vc.cast[order(total, decreasing = TRUE)]
 
-  vc.mean = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = F], 2, mean))))
-  vc.median = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = F], 2, median))))
+  vc.mean = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, mean))))
+  vc.median = as.numeric(as.character(c(NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, median))))
 
 
   #summarise and casting by 'Variant_Type'
   vt = maf[,.N, .(Tumor_Sample_Barcode, Variant_Type )]
   vt.cast = dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0)
-  vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = F])]
-  vt.cast = vt.cast[order(total, decreasing = T)]
+  vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
+  vt.cast = vt.cast[order(total, decreasing = TRUE)]
 
   #summarise and casting by 'Hugo_Symbol'
   hs = maf[,.N, .(Hugo_Symbol, Variant_Classification)]
-  hs.cast = dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N')
-  hs.cast = hs.cast[order(rowSums(hs.cast[,2:ncol(hs.cast), with = F]), decreasing = T)] #ordering according to frequent mutated gene
-  hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = F])]
+  hs.cast = data.table::dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N')
+  hs.cast = hs.cast[order(rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE]), decreasing = TRUE)] #ordering according to frequent mutated gene
+  hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
   #Get in how many samples a gene ismutated
   numMutatedSamples = maf[,.(MutatedSamples = length(unique(Tumor_Sample_Barcode))), by = Hugo_Symbol]
   #Merge and sort
   hs.cast = merge(hs.cast, numMutatedSamples, by = 'Hugo_Symbol')
-  hs.cast = hs.cast[order(total, decreasing = T)]
+  hs.cast = hs.cast[order(total, decreasing = TRUE)]
   #Make a summarized table
   summary = data.table(ID = c('NCBI_Build', 'Center','Samples',colnames(vc.cast)[2:ncol(vc.cast)]),
-                       summary = c(NCBI_Build, Center,nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =F])))
+                       summary = c(NCBI_Build, Center,nrow(vc.cast), colSums(vc.cast[,2:ncol(vc.cast), with =FALSE])))
   summary[,Mean := vc.mean]
   summary[,Median := vc.median]
 
@@ -96,10 +96,10 @@ createOncoMatrix = function(maf){
       xm = data.table(Hugo_Symbol = x.multihit.genes, Variant_Classification = 'Multi_Hit') #data table for multi hit gene but Variant_Classification set to 'multi_hits'
       x.hits.dt = rbind(xs, xm) #bind them togeather
       colnames(x.hits.dt)[2] = tsbs[i] #change colnames to TSB
-      mdf = merge(mdf, x.hits.dt, by = 'Hugo_Symbol', all = T) #merge
+      mdf = merge(mdf, x.hits.dt, by = 'Hugo_Symbol', all = TRUE) #merge
     } else{
       colnames(xs)[2] = tsbs[i]
-      mdf = merge(mdf, xs, by = 'Hugo_Symbol', all = T) #merge
+      mdf = merge(mdf, xs, by = 'Hugo_Symbol', all = TRUE) #merge
     }
     setTxtProgressBar(pb, i)
   }
@@ -107,7 +107,7 @@ createOncoMatrix = function(maf){
   genes = as.character(mdf$Hugo_Symbol)
   mdf = data.frame(mdf)
   mdf = mdf[, -1]
-  mdf = data.frame(lapply(mdf, as.character), stringsAsFactors = F)
+  mdf = data.frame(lapply(mdf, as.character), stringsAsFactors = FALSE)
   mdf.copy = mdf #make a copy of this
   mdf.copy[is.na(mdf.copy)] = ""
   rownames(mdf.copy) = genes
@@ -135,7 +135,7 @@ createOncoMatrix = function(maf){
   }))
 
   #Sort the matrix
-  mdf = mdf[order(mdf[, ncol(mdf)], decreasing = T), ]
+  mdf = mdf[order(mdf[, ncol(mdf)], decreasing = TRUE), ]
   colnames(mdf) = gsub(pattern = "^X", replacement = "", colnames(mdf))
   nMut = mdf[, ncol(mdf)]
   mdf = mdf[, -ncol(mdf)]
@@ -144,7 +144,7 @@ createOncoMatrix = function(maf){
 
   mdf[mdf != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
   tmdf = t(mdf) #transposematrix
-  mdf = t(tmdf[do.call(order, c(as.list(as.data.frame(tmdf)), decreasing = T)), ]) #sort
+  mdf = t(tmdf[do.call(order, c(as.list(as.data.frame(tmdf)), decreasing = TRUE)), ]) #sort
 
   mdf.temp.copy = mdf.temp.copy[rownames(mdf),] #organise original matrix into sorted matrix
   mdf.temp.copy = mdf.temp.copy[,colnames(mdf)]

@@ -8,11 +8,14 @@
 #' @param header logical. Whether input has a header line. Default is FALSE.
 #' @param basename NULL. if basename is given, annotations will be written to <basename>.maf file.
 #' @return returns a dataframe in maf format.
+#' @examples
+#' var.file <- system.file('extdata', 'variants.tsv', package = 'maftools')
+#' var.maf <- oncotate(maflite = var.file, header = T)
 #' @export
 
 oncotate = function(maflite, header = FALSE,basename = NULL){
 
-  require(package = 'rjson', quietly = T)
+  require(package = 'rjson', quietly = TRUE)
 
   #create an empty data frame
   anno.df = c()
@@ -20,11 +23,11 @@ oncotate = function(maflite, header = FALSE,basename = NULL){
   counter = 0
 
   #read the file
-  m = read.delim(maflite,stringsAsFactors = F,header = header, sep='\t')
+  m = read.delim(maflite,stringsAsFactors = FALSE,header = header, sep='\t')
   #m = maflite
 
   if(length(colnames(m)[colnames(m) %in% 'Tumor_Sample_Barcode']) > 0){
-    Tumor_Sample_Barcode = T
+    Tumor_Sample_Barcode = TRUE
   }
 
   #paste first five columns
@@ -70,7 +73,7 @@ oncotate = function(maflite, header = FALSE,basename = NULL){
   anno.df = cbind(anno.df1,anno.df2)
 
   if(!is.null(basename)){
-    write.table(anno.df,paste(basename,'maf',sep = '.'),quote = F,row.names = F,sep= '\t')
+    write.table(anno.df,paste(basename,'maf',sep = '.'),quote = FALSE,row.names = FALSE,sep= '\t')
   }
 
   return(data.table(anno.df))

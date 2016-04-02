@@ -14,17 +14,21 @@
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
 #' @param colors named vector of colors for each Variant_Classification.
+#' @return None.
+#' @examples
+#' oncoplot(maf = laml, top = 10)
+#' @import ComplexHeatmap
 #' @export
 
 
-oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRowBar = T, drawColBar = T,
-                     showTumorSampleBarcodes = FALSE, annotation = NULL, genesToIgnore = NULL, removeNonMutated = F, colors = NULL) {
+oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRowBar = TRUE, drawColBar = TRUE,
+                     showTumorSampleBarcodes = FALSE, annotation = NULL, genesToIgnore = NULL, removeNonMutated = FALSE, colors = NULL) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
 
-  require(package = "ComplexHeatmap", quietly = T, warn.conflicts = F)
-  require(package = "RColorBrewer", quietly = T, warn.conflicts = F)
+  require(package = "ComplexHeatmap", quietly = TRUE, warn.conflicts = FALSE)
+  #require(package = "RColorBrewer", quietly = T, warn.conflicts = F)
 
   numMat = maf@numericMatrix
   mat_origin = maf@oncoMatrix
@@ -70,7 +74,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRow
   }
 
   if (writeMatrix) {
-    write.table(mat_origin, "onco_matrix.txt", sep = "\t", quote = F)
+    write.table(mat_origin, "onco_matrix.txt", sep = "\t", quote = FALSE)
   }
 
   oncoPlot = TRUE #Change later

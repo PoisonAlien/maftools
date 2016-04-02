@@ -7,10 +7,12 @@
 #' @param fdrCutOff fdr cutoff to call a gene as a driver.
 #' @param useFraction if TRUE uses a fraction of total variants as X-axis scale instead of absolute counts.
 #' @return a ggplot object which can be further modified.
+#' @examples
+#' plotOncodrive(res = laml.sig, fdrCutOff = 0.1)
 #' @export
 
 
-plotOncodrive = function(res = NULL, fdrCutOff = 0.05, useFraction = F){
+plotOncodrive = function(res = NULL, fdrCutOff = 0.05, useFraction = FALSE){
 
   if(is.null(res)){
     stop('Please provide results from oncodrive.')
@@ -23,12 +25,12 @@ plotOncodrive = function(res = NULL, fdrCutOff = 0.05, useFraction = F){
   if(useFraction){
     p = ggplot(data = res, aes(x = fract_muts_in_clusters, y = -log10(fdr), size = clusters, color = significant, alpha = 0.7))+
       geom_point()+theme(legend.position = 'NONE')+scale_color_manual(values = c('sig' = 'maroon', 'nonsig' = 'blue'))+
-      geom_text_repel(data = filter(res, fdr < fdrCutOff), aes(x = fract_muts_in_clusters, y = -log10(fdr), label = label, size = 2))+
+      geom_text_repel(data = dplyr::filter(res, fdr < fdrCutOff), aes(x = fract_muts_in_clusters, y = -log10(fdr), label = label, size = 2))+
       xlab('Fraction of mutations in clusters')+background_grid(major = 'xy')
   }else{
     p = ggplot(data = res, aes(x = muts_in_clusters, y = -log10(fdr), size = clusters, color = significant, alpha = 0.7))+
       geom_point()+theme(legend.position = 'NONE')+scale_color_manual(values = c('sig' = 'maroon', 'nonsig' = 'blue'))+
-      geom_text_repel(data = filter(res, fdr < fdrCutOff), aes(x = muts_in_clusters, y = -log10(fdr), label = label, size = 2))+
+      geom_text_repel(data = dplyr::filter(res, fdr < fdrCutOff), aes(x = muts_in_clusters, y = -log10(fdr), label = label, size = 2))+
       xlab('Number of mutations in clusters')+background_grid(major = 'xy')
   }
 

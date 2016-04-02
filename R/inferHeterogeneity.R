@@ -11,6 +11,9 @@
 #' @param sampleName sample name for which MATH score to be calculated. If NULL, calculates for all samples.
 #' @param vafCutOff minimum vaf for a variant to be considered for score calculation. Default 0.075
 #' @return \code{data.table} with MATH score for every Tumor_Sample_Barcode
+#' @examples
+#' laml.math <- math.score(maf = laml, vafCol = 'i_TumorVAF_WU',
+#'                       sampleName = c('TCGA.AB.3009', 'TCGA.AB.2849', 'TCGA.AB.3002', 'TCGA.AB.2972'))
 #' @export
 
 
@@ -39,14 +42,14 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
     maf = maf[Tumor_Sample_Barcode %in% sampleName]
   }
 
-  if(max(maf[,t_vaf], na.rm = T) > 1){
+  if(max(maf[,t_vaf], na.rm = TRUE) > 1){
     maf[,t_vaf:= t_vaf/100]
   }
 
   maf = maf[!t_vaf < vafCutOff]
 
   if(!is.null(plotFile)){
-    pdf(file = paste(plotFile, 'pdf', sep='.'),width = 6,height = 5,bg="white",pointsize = 9,paper = "special",onefile = T)
+    pdf(file = paste(plotFile, 'pdf', sep='.'),width = 6,height = 5,bg="white",pointsize = 9,paper = "special",onefile = TRUE)
   }
 
   par(mfrow = c(2,2))
@@ -87,8 +90,8 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
   }
 
   colnames(math.df) = c('Tumor_Sample_Barcode', 'MATH', 'MedianAbsoluteDeviation')
-  math.df = data.table(math.df[order(math.df$MATH, decreasing = T),])
-  math.df = merge(math.df, sampSum, by = 'Tumor_Sample_Barcode', all.X = T)
+  math.df = data.table(math.df[order(math.df$MATH, decreasing = TRUE),])
+  math.df = merge(math.df, sampSum, by = 'Tumor_Sample_Barcode', all.X = TRUE)
   #return(math.df[,1:2,with = F])
   return(math.df)
 }

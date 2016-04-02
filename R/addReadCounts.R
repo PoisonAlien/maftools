@@ -26,25 +26,25 @@ addReadCounts = function(maf, bam_df, BaseQuality = 10, MapQuality = 10, ref_gen
 
   if(is.null(ref_genome)){
     message("ref_genome required !")
-    stop(call. = T)
+    stop(call. = TRUE)
   }
 
   maf.dat = maf@data
-  
+
   #Some TCGA studies have Start_Position set to as 'position'. Change if so.
   if(length(grep(pattern = 'Start_position', x = colnames(maf.dat))) > 0){
     colnames(maf.dat)[which(colnames(maf.dat) == 'Start_position')] = 'Start_Position'
   }
-  
+
   if(length(grep(pattern = 'End_position', x = colnames(maf.dat))) > 0){
     colnames(maf.dat)[which(colnames(maf.dat) == 'End_position')] = 'End_Position'
   }
-  
+
   if(!is.null(prefix)){
     if(add){
       maf.dat$Chromosome = paste(prefix,maf.dat$Chromosome, sep = '')
     }else{
-      maf.dat$Chromosome = gsub(pattern = prefix, replacement = '', x = maf.dat$Chromosome, fixed = T)
+      maf.dat$Chromosome = gsub(pattern = prefix, replacement = '', x = maf.dat$Chromosome, fixed = TRUE)
     }
   }
 
@@ -91,10 +91,10 @@ addReadCounts = function(maf, bam_df, BaseQuality = 10, MapQuality = 10, ref_gen
       if(nrow(maf.snp) > 0){
 
         var = maf.snp[,c('Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele2')]
-        write.table(var, 'var_temp.txt', sep = '\t',quote = F, row.names = F, col.names = F)
+        write.table(var, 'var_temp.txt', sep = '\t',quote = FALSE, row.names = FALSE, col.names = FALSE)
         cat("Processing ", tsb, " [", nrow(var),  " SNPs] ..\n", sep = '')
         counts = getCounts(var = 'var_temp.txt', bam = bam_path, MapQuality = MapQuality, BaseQuality = BaseQuality, ref_genome = ref_genome)
-        maf.snp = merge(maf.snp, counts[,3:6], by = 'row.names', all.x = T)
+        maf.snp = merge(maf.snp, counts[,3:6], by = 'row.names', all.x = TRUE)
         maf.snp = maf.snp[,-1]
 
         if(nrow(maf.rest) > 0 ){

@@ -4,7 +4,7 @@
 \alias{read.maf}
 \title{Read MAF files.}
 \usage{
-read.maf(maf, removeSilent = T, useAll = F)
+read.maf(maf, removeSilent = TRUE, useAll = FALSE)
 }
 \arguments{
 \item{maf}{tab delimited MAF file. File can also be gz compressed.}
@@ -18,5 +18,9 @@ An object of class MAF.
 }
 \description{
 Takes tab delimited MAF (can be plain text or gz compressed) file as an input and summarizes it in various ways. Also creates oncomatrix - helpful for visualization.
+}
+\examples{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = T, useAll = F)
 }
 

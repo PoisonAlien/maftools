@@ -9,12 +9,16 @@
 #' @param ignoreChr Chromsomes to remove from analysis. e.g. chrM
 #' @param useSyn Logical. Whether to include synonymous variants in analysis. Defaults to FALSE.
 #' @return A matrix of dimension nx96, where n is the number of samples in the MAF.
+#' @examples
+#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa', prefix = 'chr', add = T, useSyn = T)
+#' @importFrom VariantAnnotation getSeq seqlevels
+#' @importFrom Biostrings subseq
 #' @export
 
-trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = F){
+trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = FALSE){
 
-  suppressPackageStartupMessages(require('VariantAnnotation', quietly = T))
-  suppressPackageStartupMessages(require('Biostrings', quietly = T))
+  #suppressPackageStartupMessages(require('VariantAnnotation', quietly = TRUE))
+  #suppressPackageStartupMessages(require('Biostrings', quietly = TRUE))
 
   #Synonymous variants
   maf.silent = maf@maf.silent
@@ -26,20 +30,20 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
 
   if(useSyn){
-    maf = rbind(maf, maf.silent, fill = T)
+    maf = rbind(maf, maf.silent, fill = TRUE)
   }
 
   #one bp up and down.
   up = down = 1
 
   #reate a reference to an indexed fasta file.
-  ref = FaFile(file = ref_genome)
+  ref = Rsamtools::FaFile(file = ref_genome)
 
   if(!is.null(prefix)){
     if(add){
       maf$Chromosome = paste(prefix,maf$Chromosome, sep = '')
     }else{
-      maf$Chromosome = gsub(pattern = prefix, replacement = '', x = maf$Chromosome, fixed = T)
+      maf$Chromosome = gsub(pattern = prefix, replacement = '', x = maf$Chromosome, fixed = TRUE)
     }
   }
 
@@ -66,10 +70,10 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
 
   #read fasta
   message('reading fasta (this might take a while)..')
-  ref = getSeq(x = ref)
+  ref = VariantAnnotation::getSeq(x = ref)
 
   #extract contigs from reference fasta
-  seq.lvl = seqlevels(ref)
+  seq.lvl = VariantAnnotation::seqlevels(ref)
 
   chrs.missing = chrs[!chrs %in% seq.lvl]
 
@@ -89,7 +93,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
                            Reference_Allele = maf.snp$Reference_Allele, Tumor_Seq_Allele2 = maf.snp$Tumor_Seq_Allele2, Tumor_Sample_Barcode = maf.snp$Tumor_Sample_Barcode)
 
   message('Extracting adjacent bases..')
-  ss = subseq(x = ref[extract.tbl[,Chromosome]], start = extract.tbl[,Start] , end = extract.tbl[,End])
+  ss = Biostrings::subseq(x = ref[extract.tbl[,Chromosome]], start = extract.tbl[,Start] , end = extract.tbl[,End])
   extract.tbl[,trinucleotide:= as.character(ss)]
   extract.tbl[,Substitution:=paste(extract.tbl$Reference_Allele, extract.tbl$Tumor_Seq_Allele2, sep='>')]
 
@@ -121,7 +125,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
 
   #colOrderClasses = rep(c('C>A', 'C>G', 'C>T', 'T>A', 'T>C', 'T>G'), each = 16)
 
-  conv.mat = as.data.frame(cast(extract.tbl.summary, formula = Tumor_Sample_Barcode~SomaticMutationType, fill = 0, value = 'N'))
+  conv.mat = as.data.frame(data.table::dcast(extract.tbl.summary, formula = Tumor_Sample_Barcode~SomaticMutationType, fill = 0, value.var = 'N'))
   #head(conv.mat)
   rownames(conv.mat) = conv.mat[,1]
   #head(conv.mat)

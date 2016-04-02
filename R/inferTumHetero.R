@@ -13,9 +13,12 @@
 #' @param plot logical plots density curve and clusters.
 #' @param top if \code{tsb} is NULL, uses top n number of most mutated samples. Defaults to 5.
 #' @return list of clustering tables.
+#' @examples
+#' inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
+#' @import mclust
 #' @export
 
-inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, plot = T){
+inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, plot = TRUE){
 
   suppressMessages(require(mclust))
 
@@ -37,10 +40,14 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, plot = T)
   #empty df to store cluster info
   clust.dat = c()
 
-  dat.tsb = data.frame(dat[dat$Tumor_Sample_Barcode %in% tsb])
-  dat.tsb = dat.tsb[,c('Hugo_Symbol', 'Tumor_Sample_Barcode','t_vaf')]
+  #dat.tsb = data.frame(dat[dat$Tumor_Sample_Barcode %in% tsb])
+  #dat.tsb = dat.tsb[,c('Hugo_Symbol', 'Tumor_Sample_Barcode','t_vaf')]
+  dat.tsb = dat[dat$Tumor_Sample_Barcode %in% tsb]
+  dat.tsb = dat.tsb[,.(Hugo_Symbol, Tumor_Sample_Barcode, t_vaf)]
 
-  max.vaf = max(as.numeric(dat.tsb$t_vaf[complete.cases(dat.tsb$t_vaf)]))
+
+  #max.vaf = max(as.numeric(dat.tsb$t_vaf[complete.cases(dat.tsb$t_vaf)]))
+  max.vaf = max(dat.tsb[,t_vaf], na.rm = TRUE)
 
   if(max.vaf > 1){
     max.vaf = 100
@@ -49,10 +56,11 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, plot = T)
   }
 
   for(i in 1:length(tsb)){
-    tsb.dat = dat.tsb[dat.tsb$Tumor_Sample_Barcode == tsb[i],]
+    #tsb.dat = dat.tsb[dat.tsb$Tumor_Sample_Barcode == tsb[i],]
+    tsb.dat = dat.tsb[Tumor_Sample_Barcode == tsb]
     tsb.dat = tsb.dat[!is.na(tsb.dat$t_vaf),]
     #cluster
-    tsb.cluster = densityMclust(tsb.dat[,"t_vaf"])
+    tsb.cluster = densityMclust(tsb.dat[,t_vaf])
     tsb.dat$cluster = as.character(tsb.cluster$classification)
 
     tsb.dat.dens = ggplot(tsb.dat, aes(t_vaf))+geom_density(size = 1)+geom_point(aes(y = 0, x = t_vaf, color = cluster), size = 3, alpha = 0.6)+
@@ -73,7 +81,8 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, plot = T)
 
   }
 
-  clust.dat.mean = ddply(.data = clust.dat, .variables = c('Tumor_Sample_Barcode', 'cluster'),summarise,  meanVaf = mean(t_vaf))
+  clust.dat.mean = clust.dat[,mean(t_vaf), by = .(Tumor_Sample_Barcode, cluster)]
+  colnames(clust.dat.mean)[ncol(clust.dat.mean)] = 'meanVaf'
 
   return(list(clusterData = clust.dat, clusterMeans = clust.dat.mean))
 }

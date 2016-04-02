@@ -4,12 +4,16 @@
 #' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'
 #' @param summarizeBy Summarize domains by amino acid position or conversions. Can be "AAPos" or "AAChange"
 #' @param top How many top mutated domains to label in the scatter plot. Defaults to 5.
+#' @param varClass which variants to consider for summarization. Can be nonSyn, Syn or all. Default nonSyn.
 #' @param baseName If given writes the results to output file. Default NULL.
 #' @return returns a list two tables summarized by amino acid positions and domains respectively. Also plots top 5 most mutated domains as scatter plot.
+#' @examples
+#' pfamDomains(maf = laml, AACol = 'Protein_Change')
 #' @export
 
 
-pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5, baseName = NULL){
+pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5, baseName = NULL, varClass = 'nonSyn'){
+
 
   summarizeBy.opts = c('AAPos', 'AAChange')
 
@@ -21,17 +25,37 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
     stop('summarizeBy can only be either AAPos or AAChange')
   }
 
+  varClas.opts = c('nonSyn', 'Syn', 'all')
+
+  if(!varClass %in% varClas.opts){
+    stop('varClas can only be either nonSyn, Syn or all')
+  }
+
+  if(length(varClass) > 1){
+    stop('varClas can only be either nonSyn, Syn or all')
+  }
+
   gff = system.file('extdata', 'protein_domains.txt.gz', package = 'maftools')
 
   mut = maf@data
   gs = getGeneSummary(maf)
 
+  #in case user read maf without removing silent variants, remove theme here.
+  silent = c("Silent", "Intron", "RNA", "3'UTR", "3'Flank", "5'UTR", "5'Flank", "IGR")
+  mut = mut[!Variant_Classification %in% silent]
+
+  if(varClass == 'Syn'){
+    mut = maf@maf.silent
+  }else if(varClass == 'all'){
+    mut = rbind(mut, maf@maf.silent, fill = TRUE)
+  }
+
   if(Sys.info()[['sysname']] == 'windows'){
     gff.gz = gzfile(description = gff, open = 'r')
-    gff <- suppressWarnings( data.table(read.csv( file = gff.gz, header = T, sep = '\t', stringsAsFactors = F)) )
+    gff <- suppressWarnings( data.table(read.csv( file = gff.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(gff.gz)
   } else{
-    gff = fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = F)
+    gff = fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = FALSE)
   }
 
   if(is.null(AACol)){
@@ -52,14 +76,14 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
   #Remove 'p.'
-  prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = T)
+  prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = TRUE)
   prot.conv = sapply(prot.spl, function(x) x[length(x)])
 
   prot.dat[,conv := prot.conv]
   pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = prot.dat$conv)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
   pos = gsub(pattern = '^\\*', replacement = '', x = pos)
-  pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = T), '[', 1))
+  pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[', 1))
   prot.dat[,pos := pos]
 
   if(nrow( prot.dat[is.na(prot.dat$pos),]) > 0){
@@ -71,7 +95,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   if(summarizeBy == 'AAPos'){
     prot.sum = prot.dat[,.N, by = .(Hugo_Symbol, Variant_Classification ,pos)]
     prot.sum = merge(prot.sum, gs[,.(Hugo_Symbol ,total)], by = 'Hugo_Symbol')
-    prot.sum = prot.sum[order(N, decreasing = T)]
+    prot.sum = prot.sum[order(N, decreasing = TRUE)]
     prot.sum[,fraction := N/total]
     prot.sum = data.table(HGNC = prot.sum[,Hugo_Symbol], Start = prot.sum[,pos], End = prot.sum[,pos],
                           Variant_Classification = prot.sum[,Variant_Classification],
@@ -79,7 +103,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   }else{
     prot.sum = prot.dat[,.N, by = .(Hugo_Symbol, Variant_Classification ,AAChange, pos)]
     prot.sum = merge(prot.sum, gs[,.(Hugo_Symbol ,total)], by = 'Hugo_Symbol')
-    prot.sum = prot.sum[order(N, decreasing = T)]
+    prot.sum = prot.sum[order(N, decreasing = TRUE)]
     prot.sum[,fraction := N/total]
     prot.sum = data.table(HGNC = prot.sum[,Hugo_Symbol], Start = prot.sum[,pos], End = prot.sum[,pos],
                           Variant_Classification = prot.sum[,Variant_Classification], AAChange = prot.sum[,AAChange],
@@ -117,19 +141,19 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   #domain.sum = prot.sum[,.N, DomainLabel]
   domain.sum = prot.sum[, .(nMut = sum(N)),by= DomainLabel]
-  domain.sum = domain.sum[order(nMut, decreasing = T)]
+  domain.sum = domain.sum[order(nMut, decreasing = TRUE)]
 
   nGeneDomain = prot.sum[,.(nGenes = length(unique(HGNC))), by = DomainLabel]
-  nGeneDomain = nGeneDomain[order(nGenes, decreasing = T)]
+  nGeneDomain = nGeneDomain[order(nGenes, decreasing = TRUE)]
 
   domainSum = merge(domain.sum, nGeneDomain, by = 'DomainLabel')
   colnames(domainSum)[2] = 'nMuts'
   domainSum = domainSum[complete.cases(domainSum)]
 
   ggfd = gff[!duplicated(gff$Label)]
-  domainSum = merge(x = domainSum, y = ggfd[,.(Label, pfam, Description)], by.x = 'DomainLabel', by.y = 'Label', all.x = T)
+  domainSum = merge(x = domainSum, y = ggfd[,.(Label, pfam, Description)], by.x = 'DomainLabel', by.y = 'Label', all.x = TRUE)
 
-  domainSum = domainSum[order(nMuts, decreasing = T)]
+  domainSum = domainSum[order(nMuts, decreasing = TRUE)]
 
   #print(prot.sum)
   p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes, alpha = 0.6))+geom_point()+
@@ -139,8 +163,8 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   print(p)
 
   if(!is.null(baseName)){
-    write.table(x = prot.sum, file = paste(baseName, '_AAPos_summary.txt',sep= ''), quote = F, row.names = F, sep = '\t')
-    write.table(x = domainSum, file = paste(baseName, '_domainSummary.txt',sep= ''), quote = F, row.names = F, sep = '\t')
+    write.table(x = prot.sum, file = paste(baseName, '_AAPos_summary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
+    write.table(x = domainSum, file = paste(baseName, '_domainSummary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
     save_plot(filename = paste(baseName, '_domainSummary.pdf',sep= ''), plot = p, base_height = 6, base_width = 6)
   }
 

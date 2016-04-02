@@ -23,4 +23,7 @@ Decompose a matrix of 96 substitution classes into \code{n} signatures.
 This function decomposes a non-negative matrix into n signatures.
 Extracted signatures are compared against 21 experimentally validated signatures by calculating correlation coefficient. See http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F2.html for details.
 }
+\examples{
+laml.sign <- extractSignatures(mat = laml.tnm)
+}
 

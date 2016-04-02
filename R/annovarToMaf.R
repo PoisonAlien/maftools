@@ -20,19 +20,22 @@
 #' @param MAFobj If TRUE, returns results as an MAF object.
 #' @references Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
 #' @return MAF table.
+#' @examples
+#' var.annovar <- system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
+#' var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19', tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = T)
 #' @export
 
-annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL, header = F, sep = '\t', MAFobj = F){
+annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL, header = FALSE, sep = '\t', MAFobj = FALSE){
 
   if(header){
-    ann = fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = F, skip = 1, header = T)
+    ann = fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip = 1, header = TRUE)
     if(table == 'ensGene'){
       colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.ensGene', 'Gene.ensGene', 'GeneDetail.ensGene', 'ExonicFunc.ensGene', 'AAChange.ensGene')
     }else{
       colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.refGene', 'Gene.refGene', 'GeneDetail.refGene', 'ExonicFunc.refGene', 'AAChange.refGene')
     }
   }else{
-    ann = fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = F, skip =1, header = F)
+    ann = fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip =1, header = FALSE)
     if(table == 'ensGene'){
       colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.ensGene', 'Gene.ensGene', 'GeneDetail.ensGene', 'ExonicFunc.ensGene', 'AAChange.ensGene')
     }else{
@@ -43,7 +46,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
 
   #Check to see if input file contains sample names
   if(is.null(tsbCol)){
-    if(! 'Tumor_Sample_Barcode' %in% colnames(annovar)){
+    if(! 'Tumor_Sample_Barcode' %in% colnames(ann)){
       message('Available fields:')
       print(ann)
       stop('Tumor_Sample_Barcode field not found in input file. Use argument tsbCol to manually specifiy field name containing sample names/Tumor_Sample_Barcodes.')
@@ -83,11 +86,19 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
   #Rest of the optional fields (later they will be attached to the maf file)
   ann.opt = colnames(ann)[!colnames(ann) %in% ann.mand]
   ann.opt = c(ann.opt, 'uid')
-  ann.opt = ann[,ann.opt,with = F]
+  ann.opt = ann[,ann.opt,with = FALSE]
 
-  ann = ann[,ann.mand,with = F]
+  ann = ann[,ann.mand,with = FALSE]
 
   ann$ExonicFunc.refGene = gsub(pattern = ' SNV', replacement = '', x = ann$ExonicFunc.refGene)
+
+  funcSpl = strsplit(x = as.character(ann$ExonicFunc.refGene), split = ';', fixed = TRUE)
+  funcSpl = sapply(funcSpl, function(l){l[length(l)]})
+  ann$ExonicFunc.refGene = funcSpl
+
+  funcRef = strsplit(x = as.character(ann$Func.refGene), split = ';', fixed = TRUE)
+  funcRef = sapply(funcRef, function(l){l[length(l)]})
+  ann$Func.refGene = funcRef
 
   #Change Variant Classification factors.
   ann$ExonicFunc.refGene = ifelse(test = ann$Func.refGene == 'intronic', yes = 'Intron', no = ann$ExonicFunc.refGene)
@@ -127,19 +138,19 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     ann$var.type = 'SNP'
   }
 
-  ann = rbind(ann, ann.del, ann.ins, fill = T)
+  ann = rbind(ann, ann.del, ann.ins, fill = TRUE)
 
   ann.splice = ann[ExonicFunc.refGene == 'Splice_Site']
   if(nrow(ann.splice) > 0){
     ann = ann[ExonicFunc.refGene != 'Splice_Site']
     #ann.splice$AAChange.refGene = gsub(x = sapply(strsplit(x = as.character(ann.splice$Gene.refGene), split = '(', fixed = T), '[[',2), pattern = ')$', replacement = '')
-    ann.splice$Gene.refGene = sapply(strsplit(x = as.character(ann.splice$Gene.refGene), split = '(', fixed = T), '[[',1)
-    ann = rbind(ann, ann.splice, fill = T)
+    ann.splice$Gene.refGene = sapply(strsplit(x = as.character(ann.splice$Gene.refGene), split = '(', fixed = TRUE), '[[',1)
+    ann = rbind(ann, ann.splice, fill = TRUE)
   }
 
   #protein and tx changes
   #NOTE: for now last transcript is considered from the total annotaion.
-  xaa = strsplit(as.character(ann$AAChange.refGene),split = ':',fixed = T)
+  xaa = strsplit(as.character(ann$AAChange.refGene),split = ':',fixed = TRUE)
   proteinChange = sapply(xaa, function(l){l[length(l)]})
   tx = unlist(sapply(xaa, function(l){l[length(l)-3]}))
   txChange = unlist(sapply(xaa, function(l){if(length(l) > 1){l[length(l)-1]} else{NA}}))
@@ -159,13 +170,13 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     message('Converting Ensemble Gene IDs into HGNC gene symbols.')
     if(Sys.info()[['sysname']] == 'Windows'){
       ens.gz = gzfile(description = ens, open = 'r')
-      ens <- suppressWarnings( data.table(read.csv( file = gff.gz, header = T, sep = '\t', stringsAsFactors = F)) )
+      ens <- suppressWarnings( data.table(read.csv( file = gff.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
       close(ens.gz)
     } else{
-      ens = fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = F)
+      ens = fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
     }
 
-    ann.maf = merge(ann.maf, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = T)
+    ann.maf = merge(ann.maf, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)
     ann.maf[,ens_id := Hugo_Symbol] #Backup original ids
     ann.maf[,Hugo_Symbol := hgnc_symbol] #Add GHNC gene names
     ann.maf[,Entrez_Gene_Id := Entrez] #Add entrez identifiers.
@@ -173,7 +184,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
   }
 
   if(!is.null(basename)){
-    write.table(x = ann.maf, file = paste(basename, 'maf', sep='.'), sep='\t', quote = F, row.names = F)
+    write.table(x = ann.maf, file = paste(basename, 'maf', sep='.'), sep='\t', quote = FALSE, row.names = FALSE)
   }
 
   if(MAFobj){
@@ -182,15 +193,20 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       message('Too few samples to create MAF object. Returning MAF table.')
       return(ann.maf)
     }else{
-      ann.maf.onomat = createOncoMatrix(maf = ann.maf)
+      #Convert to factors.
+      ann.maf$Tumor_Sample_Barcode = as.factor(x = ann.maf$Hugo_Symbol)
+      ann.maf$Variant_Classification = as.factor(x = ann.maf$Variant_Classification)
+      ann.maf$Variant_Type = as.factor(x = ann.maf$Variant_Type)
+
+      ann.maf.oncomat = createOncoMatrix(maf = ann.maf)
 
       silent = c("Silent", "Intron", "RNA", "3'UTR", "3'Flank", "5'UTR", "5'Flank", "IGR")
       ann.maf.silent = ann.maf[Variant_Classification %in% silent]
 
       m = MAF(data = ann.maf, variants.per.sample = ann.maf.summary$variants.per.sample, variant.type.summary = ann.maf.summary$variant.type.summary,
               variant.classification.summary = ann.maf.summary$variant.classification.summary, gene.summary = ann.maf.summary$gene.summary,
-              oncoMatrix = ann.maf.onomat$oncomat, numericMatrix = ann.maf.onomat$nummat, summary = ann.maf.summary$summary,
-              classCode = ann.maf.onomat$vc, maf.silent = ann.maf.silent)
+              oncoMatrix = ann.maf.oncomat$oncomat, numericMatrix = ann.maf.oncomat$nummat, summary = ann.maf.summary$summary,
+              classCode = ann.maf.oncomat$vc, maf.silent = ann.maf.silent)
 
       return(m)
     }

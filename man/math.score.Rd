@@ -25,6 +25,10 @@ math.score(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL,
 calcuates MATH scores from variant allele frequencies. Mutant-Allele Tumor Heterogeneity (MATH) score is a measure of  intra-tumor genetic heterogeneity.
 High MATH scores are related to lower survival rates. This function requies vafs.
 }
+\examples{
+laml.math <- math.score(maf = laml, vafCol = 'i_TumorVAF_WU',
+                      sampleName = c('TCGA.AB.3009', 'TCGA.AB.2849', 'TCGA.AB.3002', 'TCGA.AB.2972'))
+}
 \references{
 Mroz, Edmund A. et al. “Intra-Tumor Genetic Heterogeneity and Mortality in Head and Neck Cancer: Analysis of Data from The Cancer Genome Atlas.” Ed. Andrew H. Beck. PLoS Medicine 12.2 (2015): e1001786.
 }

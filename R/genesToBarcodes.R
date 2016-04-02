@@ -6,10 +6,12 @@
 #' @param genes Hogo_Symbol for which sample names to be extracted.
 #' @param justNames if TRUE, just returns samples names instead of summarized tables.
 #' @return list of \code{data.table}s with samples in which given genes are mutated.
+#' @examples
+#' genesToBarcodes(maf = laml, genes = 'DNMT3A')
 #' @export
 
 
-genesToBarcodes = function(maf, genes = NULL, justNames = F){
+genesToBarcodes = function(maf, genes = NULL, justNames = FALSE){
 
   if(is.null(genes)){
     stop('Atleast one gene name is required.')

@@ -5,8 +5,8 @@
 \title{Converts annovar annotations into MAF.}
 \usage{
 annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
-  table = "refGene", basename = NULL, header = F, sep = "\\t",
-  MAFobj = F)
+  table = "refGene", basename = NULL, header = FALSE, sep = "\\t",
+  MAFobj = FALSE)
 }
 \arguments{
 \item{annovar}{input annovar annotation file.}
@@ -42,6 +42,10 @@ e.g,
 table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (\code{refGene}),cytoBand,dbnsfp30a -operation (\code{g}),r,f -nastring NA
 
 This function mainly uses gene based annotations for processing, rest of the annotation columns from input file will be attached to the end of the resulting MAF.
+}
+\examples{
+var.annovar <- system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
+var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19', tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = T)
 }
 \references{
 Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).

@@ -9,6 +9,9 @@ plotSignatures(nmfRes = NULL)
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
 }
+\value{
+None.
+}
 \description{
 Plots decomposed mutational signatures as a barplot.
 }

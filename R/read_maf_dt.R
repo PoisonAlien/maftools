@@ -5,27 +5,31 @@
 #' @param removeSilent logical. Whether to discard silent (with no functional impact) mutations ("Silent","Intron","RNA","3'UTR"). Default is TRUE.
 #' @param useAll logical. Whether to use all variants irrespective of values in Mutation_Status. Defaults to False. Only uses with values Somatic.
 #' @return An object of class MAF.
+#' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = T, useAll = F)
+#' @import data.table
 #' @export
 
 
-read.maf = function(maf, removeSilent = T, useAll = F){
+read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
 
-  pkgs = c('ggrepel', 'dplyr', 'reshape', 'plyr', 'RColorBrewer', 'cowplot')
-  lapply(pkgs, require, character.only = TRUE)
+  pkgs = c('ggrepel', 'dplyr', 'RColorBrewer', 'cowplot')
+  suppressWarnings(suppressPackageStartupMessages(lapply(pkgs, require, character.only = TRUE)))
 
   message('reading maf..')
 
-  if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = F)))){
+  if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = FALSE)))){
     #If system is Linux use fread, else use gz connection to read gz file.
     if(Sys.info()[['sysname']] == 'Windows'){
       maf.gz = gzfile(description = maf, open = 'r')
-      suppressWarnings(maf <- data.table(read.csv(file = maf.gz, header = T, sep = '\t', stringsAsFactors = F)))
+      suppressWarnings(maf <- data.table(read.csv(file = maf.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)))
       close(maf.gz)
     } else{
-      maf = suppressWarnings(fread(input = paste('zcat <', maf), sep = '\t', stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
+      maf = suppressWarnings(fread(input = paste('zcat <', maf), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
     }
   } else{
-    suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = F, verbose = F, data.table = T, showProgress = T, header = T))
+    suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
   }
 
 
@@ -59,9 +63,9 @@ read.maf = function(maf, removeSilent = T, useAll = F){
 
     if(nrow(maf.silent) > 0){
       maf.silent.vc = maf.silent[,.N, .(Tumor_Sample_Barcode, Variant_Classification)]
-      maf.silent.vc.cast = dcast(data = maf.silent.vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N') #why dcast is not returning it as data.table ?
+      maf.silent.vc.cast = data.table::dcast(data = maf.silent.vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N') #why dcast is not returning it as data.table ?
       summary.silent = data.table(ID = c('Samples',colnames(maf.silent.vc.cast)[2:ncol(maf.silent.vc.cast)]),
-                                  N = c(nrow(maf.silent.vc.cast), colSums(maf.silent.vc.cast[,2:ncol(maf.silent.vc.cast), with = F])))
+                                  N = c(nrow(maf.silent.vc.cast), colSums(maf.silent.vc.cast[,2:ncol(maf.silent.vc.cast), with = FALSE])))
 
       maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
       message(paste('removed',nrow(maf.silent), 'silent variants.'))

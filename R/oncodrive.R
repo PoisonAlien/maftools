@@ -11,13 +11,16 @@
 #' @param minMut minimum number of mutations required for a gene to be included in analysis. Default 5.
 #' @param bgEstimate If FALSE skips background estimation from synonymous variants and uses predifined values estimated from COSMIC synonymous variants.
 #' @return data table of genes ordered according to p-values.
+#' @examples
+#' laml.sig <- oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5)
+#' @importFrom dplyr filter
 #' @export
 
 
-oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGenes = 100, bgEstimate = T){
+oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGenes = 100, bgEstimate = TRUE){
 
   gl = system.file('extdata', 'prot_len.txt', package = 'maftools')
-  gl = fread(gl, stringsAsFactors = F, sep='\t')
+  gl = fread(gl, stringsAsFactors = FALSE, sep='\t')
 
   pval.options = c('zscore', 'poisson', 'combined')
 
@@ -42,7 +45,7 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
       bg.sd = 0.13
     }else{
       message('Estimating background scores from synonymous variants..')
-      syn.bg.scores = parse_prot(dat = syn.maf, AACol = AACol, gl, m = minMut, calBg = T, nBg = nBgGenes)
+      syn.bg.scores = parse_prot(dat = syn.maf, AACol = AACol, gl, m = minMut, calBg = TRUE, nBg = nBgGenes)
 
       #If number of genes to calculate background scores is not enough, use predefined scores.
       if(is.null(syn.bg.scores)){
@@ -77,7 +80,7 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
   non.syn.maf = non.syn.maf[!Variant_Classification %in% silent] #Remove silent variants from main table
   #Perform clustering and calculate cluster scores for nonsyn variants.
   message('Estimating cluster scores from non-syn variants..')
-  nonsyn.scores = parse_prot(dat = non.syn.maf, AACol = AACol, gl = gl, m = minMut, calBg = F, nBg = nBgGenes)
+  nonsyn.scores = parse_prot(dat = non.syn.maf, AACol = AACol, gl = gl, m = minMut, calBg = FALSE, nBg = nBgGenes)
 
   if(pvalMethod == 'combined'){
     message('Comapring with background model and estimating p-values..')

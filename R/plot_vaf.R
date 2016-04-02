@@ -8,9 +8,11 @@
 #' @param violin if TRUE plots violin plot
 #' @param top if \code{genes} is NULL plots top n number of genes. Defaults to 5.
 #' @return ggplot object which can be further modified.
+#' @examples
+#' plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU')
 #' @export
 
-plotVaf = function(maf, vafCol = NULL, genes = NULL, density = F, violin = F, top = 5){
+plotVaf = function(maf, vafCol = NULL, genes = NULL, density = FALSE, violin = FALSE, top = 5){
 
   dat = maf@data
 
@@ -24,30 +26,31 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, density = F, violin = F, to
   }
 
   if(is.null(genes)){
-    genes = maf$gene.summary[1:top, Hugo_Symbol]
+    genes = maf@gene.summary[1:top, Hugo_Symbol]
   }
 
-  dat.genes = data.frame(dat[dat$Hugo_Symbol %in% genes])
-  suppressMessages(datm <- melt(dat.genes[,c('Hugo_Symbol', 't_vaf')]))
-
+  #dat.genes = data.frame(dat[dat$Hugo_Symbol %in% genes])
+  #suppressMessages(datm <- melt(dat.genes[,c('Hugo_Symbol', 't_vaf')]))
+  dat.genes = dat[dat$Hugo_Symbol %in% genes]
+  suppressWarnings(datm <- data.table::melt(data = dat.genes[,.(Hugo_Symbol, t_vaf)]))
   #remove NA from vcf
-  datm = datm[!is.na(datm$value),]
+  #datm = datm[!is.na(datm$value),]
   #maximum vaf
-  max.vaf = max(as.numeric(datm$value[complete.cases(datm$value)]))
 
-  if(max.vaf > 1){
-    max.vaf = 100
-  }else{
-    max.vaf = 1
+  if(max(datm$value, na.rm = TRUE) > 1){
+    datm$value = datm$value/100
   }
 
   if(density){
-    gg = ggplot(datm, aes(value, color = Hugo_Symbol))+geom_density(size = 1)+geom_point(aes(y = 0, x = value), size = 3, alpha = 0.6)+xlim(0, max.vaf)+theme(legend.position = 'bottom')
+    gg = ggplot(datm, aes(value, color = Hugo_Symbol))+geom_density(size = 1)+
+      geom_point(aes(y = 0, x = value), size = 3, alpha = 0.6)+xlim(0, 1)+theme(legend.position = 'bottom')+background_grid(major = 'xy')
   } else{
     if(violin){
-      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_violin()+ylim(0, max.vaf)+theme(legend.position = 'none')+ylab('vaf')
+      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_violin()+ylim(0, 1)+theme(legend.position = 'none')+ylab('vaf')+
+        background_grid(major = 'xy')
     }else{
-      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_boxplot()+ylim(0, max.vaf)+theme(legend.position = 'none')+ylab('vaf')
+      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_boxplot()+ylim(0, 1)+theme(legend.position = 'none')+ylab('vaf')+
+        background_grid(major = 'xy')
     }
   }
 

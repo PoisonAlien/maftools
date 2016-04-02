@@ -9,12 +9,15 @@
 #' @param n decompose matrix into n signatures. Default NULL. Tries to predict best value for \code{n} by running NMF on a range of values and chooses the one with highest cophenetic correlation coefficient.
 #' @param nTry tries upto this number of signatures before choosing best \code{n}. Default 6.
 #' @return returns a list with decomposed signatures and correlatoon table against validated signatures.
+#' @examples
+#' laml.sign <- extractSignatures(mat = laml.tnm)
+#' @import NMF
 #' @export
 
 
 extractSignatures = function(mat, n = NULL, nTry = 6){
 
-  require(NMF, quietly = T)
+  suppressPackageStartupMessages(require(NMF, quietly = T))
   #transpose matrix
   mat = t(mat)
 
@@ -35,7 +38,7 @@ extractSignatures = function(mat, n = NULL, nTry = 6){
   if(is.null(n)){
     message('Estimating best rank..')
     nmfTry = NMF::nmfEstimateRank(mat, seq(2,nTry), method='brunet', nrun=10, seed=123456) #try nmf for a range of values
-    print(plot(nmfTry, 'cophenetic' ))
+    #print(plot(nmfTry, 'cophenetic' ))
     nmf.sum = summary(nmfTry) # Get summary of estimates
     print(nmf.sum)
     bestFit = nmf.sum[which(nmf.sum$cophenetic == max(nmf.sum$cophenetic)),'rank'] #Get the best rank based on highest cophenetic correlation coefficient
@@ -52,7 +55,7 @@ extractSignatures = function(mat, n = NULL, nTry = 6){
   #conv.mat.nmf.signatures.melted = melt(conv.mat.nmf.signatures)
   #levels(conv.mat.nmf.signatures.melted$X1) = colOrder
 
-  sigs = fread(input = system.file('extdata', 'signatures.txt', package = 'maftools'), stringsAsFactors = F, data.table = F)
+  sigs = fread(input = system.file('extdata', 'signatures.txt', package = 'maftools'), stringsAsFactors = FALSE, data.table = FALSE)
   colnames(sigs) = gsub(pattern = ' ', replacement = '_', x = colnames(sigs))
   rownames(sigs) = sigs$Somatic_Mutation_Type
   sigs = sigs[,-c(1:3)]
