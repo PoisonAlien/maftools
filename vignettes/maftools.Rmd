@@ -1,26 +1,19 @@
 ---
-title: "maftools : Summarize, Analyze and Visualize MAF files."
+title: "maftools : Summarize, Analyze and Visualize MAF files"
 author: "Anand Mayakonda"
 date: "`r Sys.Date()`"
-output: rmarkdown::pdf_document
-toc: true
-toc_depth: 2
-theme: tufte
-fontsize: 11pt
-number_sections: true
-highlight: haddock
+output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Summarize, Analyze and Visualize MAF files}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-***
-## Introduction.
+# Introduction.
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 
-[The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. [Resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of somatic variants is stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner from either TCGA sources or any in-house studies as long as the data is in MAF format.
+[The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. [Resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of somatic variants are stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner from either TCGA sources or any in-house studies as long as the data is in MAF format.
 
-## Installation
+# Installation
 ```{r results='hide', eval=F}
 #Install Bioconductor dependencies.
 source("http://bioconductor.org/biocLite.R")
@@ -33,7 +26,7 @@ library("devtools")
 install_github(repo = "PoisonAlien/maftools")
 ```
 
-##MAF field requirements.
+#MAF field requirements.
 MAF files contain many fields ranging from chromosome names to cosmic annotations. However most of the analysis in maftools uses following fields.
 
   * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_position, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
@@ -42,9 +35,8 @@ MAF files contain many fields ranging from chromosome names to cosmic annotation
 
 Complete specififcation of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
-This vignette demonstrates the usage and application of maftools on an example MAF file from TCGA LAML cohort\small{$^{1}$}.
+This vignette demonstrates the usage and application of maftools on an example MAF file from TCGA LAML cohort [1](#references).
 
-***
 # Reading and summarizing maf files.
 ##Reading MAF files.
 `read.maf` reads MAF files, summarizes it in various ways and stores it as an MAF object. 
@@ -55,8 +47,9 @@ suppressWarnings(require(maftools))
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 laml = read.maf(maf = laml.maf, removeSilent = T, useAll = F)
 ```
+
 ##MAF object
-Summarized MAF file is stored as an MAF object. MAF object contains main maf file, summarized data and oncomatrix which is useful to plot oncoplots (aka waterfall plots).
+Summarized MAF file is stored as an MAF object. MAF object contains main maf file, summarized data and an oncomatrix which is useful to plot oncoplots (aka waterfall plots).
 There are accessor methods to access the useful slots from MAF object. However, all slots can be accessed using `@`, just like most of S4 objects.
 ```{r}
 #Typing laml shows basic summary of MAF file.
@@ -68,10 +61,10 @@ getGeneSummary(laml)
 #Writes maf summary to an output file with basename laml.
 write.mafSummary(maf = laml, basename = 'laml')
 ```
-***
+
 #Visualization.
 ##Plotting MAF summary.
-We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. We can add either mean or median line to the stacked barplot to displat average/median number of variants across the cohort.
+We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. We can add either mean or median line to the stacked barplot to display average/median number of variants across the cohort.
 ```{r,fig.height=5, fig.width=7}
 plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median')
 ```
@@ -88,7 +81,7 @@ oncoplot(maf = laml, top = 10, removeNonMutated = T)
 NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more than once in the same sample.
 
 ###Changing colors and adding annotations to oncoplots.
-It is often the case that we include meta data to show sample characterstics such as gender, treatment, etc. We can include such meta data by passing them to `annotation` argument of `oncoplot`. We can also change colors for Variant_Classification by providing a named vector of colors to argument `colors`.
+It is often the case that we include meta data to show sample characterstics such as gender, treatment, etc. We can include such meta data by passing them to `annotation` argument of `oncoplot`. We can also change colors for Variant_Classification by providing a named vector of colors.
 
 ```{r, fig.height=7,fig.width=10, eval=T, fig.align='left'}
 #Read FAB classification of TCGA LAML barcodes.
@@ -120,7 +113,7 @@ plotTiTv(res = laml.titv)
 ```
 
 ##Lollipop plots for amino acid changes.
-Lollipop plots are simple and most effective way showing mutation spots on protein structure. Many oncogenes have a preferential sites which are mutated more often than any other locus, which are considered to be mutational hotspots. We can draw such figures using the function `lollipopPlot`. This fuction requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with many different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all availble fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argumnet `AACol`. This function also returns the plot as ggplot object, which user can later modify if needed.
+Lollipop plots are simple and most effective way showing mutation spots on protein structure. Many oncogenes have a preferential sites which are mutated more often than any other locus. These spots are considered to be mutational hotspots and lollipop plots can be used to display them along with rest of the mutations. We can draw such plots using the function `lollipopPlot`. This fuction requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all availble fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argumnet `AACol`. This function also returns the plot as a ggplot object, which user can later modify if needed.
 
 ```{r,fig.height=4,fig.width=7,fig.align='center'}
 #Lets plot lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
@@ -130,7 +123,7 @@ dnmt3a.lpop = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change'
 Note that `lollipopPlot` warns user on availability of diferent transcripts for the given gene. If we know the transcript id before hand, we can specify it as `refSeqID` or `proteinID`. By default lollipopPlot uses the longer isoform.
 
 ###Labelling and repelling points.
-We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted, but it will make plot cluttery. Sometimes, many mutations are clustered within a range of few amino acid positons. In that case we can use `repel` option which tries to repel points. 
+We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. Sometimes, many mutations are clustered within a range of few amino acid positons. In that case we can use `repel` option which tries to repel points for clear representation. 
 
 ```{r,fig.height=4,fig.width=7,fig.align='center'}
 #Lets mutations on KIT gene, without repel option.
@@ -138,11 +131,10 @@ kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labe
 #Same plot with repel=T
 kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = T)
 ```
-***
+
 #Analysis.
 ##Mutual exclusivity.
-Many disease causing genes in cancer show strong exlcusiveness in their mutation pattern. Such mutually exlcuive set of genes can be detected using `mutExclusive` function which performs an exact test to detect such significant pair of genes. `mutExclusive` uses `comet_exact_test` on a given set of genes to calculate significance value. Please cite [CoMET](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4531541/) article if you use this function\small{$^{2}$}.
-
+Many disease causing genes in cancer show strong exlcusiveness in their mutation pattern. Such mutually exlcuive set of genes can be detected using `mutExclusive` function, which performs an exact test to detect such significant pair of genes. `mutExclusive` uses `comet_exact_test` on a given set of genes to calculate significance value. Please cite [CoMET](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4531541/) article if you use this function [2](#references).
 
 ```{r}
 #We will run mutExclusive on top 10 mutated genes. 
@@ -155,23 +147,24 @@ We can visualize the above results using `oncostrip`. For example in above `mutE
 ```{r, fig.height=1.5,fig.width=8,fig.align='center'}
 oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, removeNonMutated = T)
 ```
+
 ##Detecting cancer driver genes based on positional clustering.
-maftools has a function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hotspots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full)\small{$^{3}$}.
+maftools has a function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hotspots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full) [3](#references).
 
 ```{r, fig.align='default', fig.width=7,fig.height=5, message=F,results='hide', eval=T}
 laml.sig = oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5, pvalMethod = 'zscore')
+head(laml.sig)
 ```
 
 We can plot the results using `plotOncodrive`.
 ```{r, fig.align='default', fig.width=7,fig.height=5, eval= T}
-head(laml.sig)
 plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = T)
 ```
 
-`plotOncodrive` plots the results as scatter plot with size of the points proportional to the number of clusters found in the gene. X-axis shows number of mutations (or fraction of mutations) observed in these clusters. In the above example, IDH1 has a single cluster and all of the 18 mutations are accumulated within that cluster, giving it a cluster score of one. For details on oncodrive algorithm, please refer to [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full)\small{$^{3}$}.
+`plotOncodrive` plots the results as scatter plot with size of the points proportional to the number of clusters found in the gene. X-axis shows number of mutations (or fraction of mutations) observed in these clusters. In the above example, IDH1 has a single cluster and all of the 18 mutations are accumulated within that cluster, giving it a cluster score of one. For details on oncodrive algorithm, please refer to [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full) [3](#references).
 
 ##Adding and summarizing pfam domains.
-maftools comes with the function `pfamDomains`, which adds pfam domain information to the amino acid changes. `pfamDomain` also summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce from MuSic tool\small{$^{4}$}. 
+maftools comes with the function `pfamDomains`, which adds pfam domain information to the amino acid changes. `pfamDomain` also summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce from MuSic tool [4](#references).
 
 ```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
 laml.pfam = pfamDomains(maf = laml, AACol = 'Protein_Change', top = 10)
@@ -181,11 +174,11 @@ laml.pfam$proteinSummary[,1:7, with = F]
 laml.pfam$domainSummary[,1:3, with = F]
 ```
 
-Above plot and results shows AdoMet_MTases domain is frequently mutated, but number genes with this domain is just one (DNMT3A) compared to other domains such as 7tm_1 domain, which is mutated across 24 different genes. This shows the importance of mutations in methyl transfer domains Leukemia.
+Above plot and results shows AdoMet_MTases domain is frequently mutated, but number genes with this domain is just one (DNMT3A) compared to other domains such as 7tm_1 domain, which is mutated across 24 different genes. This shows the importance of mutations in methyl transfer domains in Leukemia.
 
 ##Tumor heterogeneity and MATH scores.
 ###Heterogeneity in tumor samples.
-Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. `inferHeterogeneity` function uses vaf information to cluster variants (using `mclust`), to infer clonality. By default, `inferHeterogeneity` function looks for column *t_vaf* containing vaf information. However, if the field name is different from *t_vaf*, we can manually specify it using argument `vafCol`. For example, in this case study vaf is stored under the field name *i_TumorVAF_WU*. Although mlcust performs fairly well, it is recommended to try [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation\small{$^{5}$}. 
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. `inferHeterogeneity` function uses vaf information to cluster variants (using `mclust`), to infer clonality. By default, `inferHeterogeneity` function looks for column *t_vaf* containing vaf information. However, if the field name is different from *t_vaf*, we can manually specify it using argument `vafCol`. For example, in this case study vaf is stored under the field name *i_TumorVAF_WU*. Although mlcust performs fairly well, it is recommended to try [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation [5](#references).
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7, eval=T}
 #We will run this for sample TCGA.AB.2972
@@ -195,7 +188,7 @@ inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
 Above figure shows clear seperation of two clones clustered at mean variant allele frequencies of ~45% (major clone) and another minor clone at variant allele frequency of ~25%.
 
 ###MATH (Mutant-Allele Tumor Heterogeneity) scores to infer extent of heterogeneity.
-Although clustering of variant allele frequencies gives us a fair idea on heterogeneity, it is also possible to measure the extent of heterogeneity in terms of a numerical value. MATH score is a simple quantitative measure of intra-tumor heterogeneity, which calculates the width of the vaf distribution. Higher MATH scores are found to be associated with poor outcome. MATH score can also be used a proxy variable for survival analysis\small{$^{6}$}.
+Although clustering of variant allele frequencies gives us a fair idea on heterogeneity, it is also possible to measure the extent of heterogeneity in terms of a numerical value. MATH score is a simple quantitative measure of intra-tumor heterogeneity, which calculates the width of the vaf distribution. Higher MATH scores are found to be associated with poor outcome. MATH score can also be used a proxy variable for survival analysis [6](#references).
 
 ```{r, results='hide', message=F, fig.align='center',fig.width=7, fig.height=6, eval = T}
 #we will specify for random 4 patients.
@@ -212,34 +205,33 @@ From the above results, sample TCGA.AB.2849 has highest of MATH score (20.58) co
 ##Mutational Signatures.
 Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such mutational signatures, derived from over 7000 cancer samples. Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [21 validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures). 
 
-`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures\small{$^{7}$}. By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known 21 signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and correlation coeeficient is calculated to identify best match\small{$^{8}$}.
+`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures [7](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known 21 signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and correlation coeeficient is calculated to identify best match [8](#references).
 
 NOTE: Eventhough reading fasta and extracting bases is fairly fast, it is a memory consuming process as it occupies ~3gb of memory while running.
 
-```{r, eval=T}
+```{r, eval=F}
 #First we extract adjacent bases to the mutated locus and clssify them into 96 substitution classes.
 laml.tnm = trinucleotideMatrix(maf = laml, ref_genome = '~/NGS/gatk_ref/hg19.fa', 
                                prefix = 'chr', add = T, ignoreChr = 'chr23', useSyn = T)
 ```
 
-```{r, fig.height=5, fig.width=5, eval=T}
+```{r, fig.height=5, fig.width=5, eval=F}
 #Run main function with maximum 6 signatures. 
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6)
 ```
 
-```{r, fig.width=7, fig.height=5, fig.align='center', eval = T}
+```{r, fig.width=7, fig.height=5, fig.align='center', eval = F}
 plotSignatures(laml.sign)
 ```
 
 
-`extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). The above stats should give an estimate of range best possible r values and in case the chosen r is overestimating, it is also possible to be re-run `extractSignatures` by manually specifying r using argument `n`. 
+`extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overestimating, it is also possible to be re-run `extractSignatures` by manually specifying r.
 
-Once decomposed, signatures are compared against known and validated signatures from Sanger\small{$^{8}$}. In the above exaple, 2 signatures are derived. One of the signatures is most similar to validated signature_1A with a high correlation coefficient. Signature_1A is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, which results in C>T transitions and which predominantly occurs at NpCpG trinucleotide which is a most common process in AML\small{$^{8,9}$}. 
+Once decomposed, signatures are compared against known and validated signatures from Sanger [8](#references). In the above exaple, 2 signatures are derived. One of the signatures is most similar to validated signature_1A with a high correlation coefficient. Signature_1A is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, which results in C>T transitions and which predominantly occurs at NpCpG trinucleotide which is a most common process in AML [8,9](#references).
 
-***
 #Variant Annotations
 ##Annotating variants using Oncotator.
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API\small{$^{10}$}. `oncotate` function quires oncotator web api to annotate given set of variants and converts them into MAF format. Input should be a five column file with chr, start, end, ref_allele, alt_allele. However, it can conatain other information such as sample names (Tumor_Sample_Barcode), read counts, vaf information and so on, but only first five columns will be used, rest of the columns will be attached at the end of the table.
+We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API [10](#references). `oncotate` function quires oncotator web api to annotate given set of variants and converts them into MAF format. Input should be a five column file with chr, start, end, ref_allele, alt_allele. However, it can conatain other information such as sample names (Tumor_Sample_Barcode), read counts, vaf information and so on, but only first five columns will be used, rest of the columns will be attached at the end of the table.
 
 ```{r}
 var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
@@ -261,7 +253,7 @@ var.maf[1:10, 1:20, with =F]
 NOTE: This is quite time consuming if input is big.
 
 ##Coverting annovar output to MAF.
-Annovar is one of the most widely used Variant Annotation tools in Genomics. Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
+Annovar is one of the most widely used Variant Annotation tool in Genomics [11](#references). Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
 
 e.g, 
 `table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (refGene),cytoBand,dbnsfp30a -operation (g),r,f -nastring NA`
@@ -275,7 +267,7 @@ $perl table_annovar.pl variants.tsv ~/path/to/humandb/ -buildver hg19
 -out variants --otherinfo -remove -protocol ensGene -operation g -nastring NA
 ```
 
-Output generated is stored as a part of this package. We will convert this annovar output into MAF using `annovarToMaf`. 
+Output generated is stored as a part of this package. We can convert this annovar output into MAF using `annovarToMaf`. 
 
 ```{r, eval=T}
 var.annovar = system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
@@ -285,16 +277,14 @@ var.annovar.maf = annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBui
 print(var.annovar.maf)
 ```
 
-Annovar when used with Ensemble as a gene annotation source, uses ensemble gene IDs as Gene names. In that case, use `annovarToMaf` with argument `table` set to `ensGene` which converts ensemble gene IDs into HGNC symbols.
+Annovar, when used with Ensemble as a gene annotation source, uses ensemble gene IDs as Gene names. In that case, use `annovarToMaf` with argument `table` set to `ensGene` which converts ensemble gene IDs into HGNC symbols.
 
-***
 #Other useful functions.
 
-`addReadCounts` is wrapper script for bam-readcount programme, which takes MAF file as an input and adds read counts from the corresponding bam file\small{$^{11}$}. `addReadCounts` assumes bam-readcount is installed and is under path. 
+`addReadCounts` is wrapper script for bam-readcount programme, which takes MAF file as an input and adds read counts from the corresponding bam file [11](#references). `addReadCounts` assumes bam-readcount is installed and is under path. 
 
 maftools has few other functions such as `plotVaf` and `genesToBarcodes` which helps to plot vaf distributions and maps samples where a given genes are mutated respectively.
 
-***
 #References
 1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.
 2.	Leiserson, M.D., et al., CoMEt: a statistical approach to identify combinations of mutually exclusive alterations in cancer. Genome Biol, 2015. 16: p. 160.
@@ -306,4 +296,5 @@ maftools has few other functions such as `plotVaf` and `genesToBarcodes` which h
 8.	Alexandrov, L.B., et al., Signatures of mutational processes in human cancer. Nature, 2013. 500(7463): p. 415-21.
 9.	Welch, J.S., et al., The origin and evolution of mutations in acute myeloid leukemia. Cell, 2012. 150(2): p. 264-78.
 10.	Ramos, A.H., et al., Oncotator: cancer variant annotation tool. Hum Mutat, 2015. 36(4): p. E2423-9.
-11. bam-readcount: https://github.com/genome/bam-readcount
+11. Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
+12. bam-readcount: https://github.com/genome/bam-readcount

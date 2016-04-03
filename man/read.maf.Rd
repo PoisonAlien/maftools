@@ -21,6 +21,6 @@ Takes tab delimited MAF (can be plain text or gz compressed) file as an input an
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf, removeSilent = T, useAll = F)
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 }
 

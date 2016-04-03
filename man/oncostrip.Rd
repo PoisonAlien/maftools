@@ -32,6 +32,10 @@ None.
 draw an oncostrip similar to cBioportal oncoprinter output.
 }
 \examples{
-oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), removeNonMutated = T)
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+dev.new()
+oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), removeNonMutated = TRUE)
+
 }
 

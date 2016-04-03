@@ -12,7 +12,10 @@
 #' @return ggplot object of the plot, which can be futher modified.
 #' @import ggrepel
 #' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change')
+#'
 #' @export
 
 

@@ -6,7 +6,10 @@
 #' @param plot plots a titv fractions. default TRUE.
 #' @return list of \code{data.frame}s with Transitions and Transversions summary.
 #' @examples
-#' laml.titv = titv(maf = laml, useSyn = T)
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml.titv = titv(maf = laml, useSyn = TRUE)
+#'
 #' @export
 
 

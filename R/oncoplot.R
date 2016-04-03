@@ -16,12 +16,15 @@
 #' @param colors named vector of colors for each Variant_Classification.
 #' @return None.
 #' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' oncoplot(maf = laml, top = 10)
+#'
 #' @import ComplexHeatmap
 #' @export
 
 
-oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRowBar = TRUE, drawColBar = TRUE,
+oncoplot = function (maf, writeMatrix = FALSE, top = 20, drawRowBar = TRUE, drawColBar = TRUE,
                      showTumorSampleBarcodes = FALSE, annotation = NULL, genesToIgnore = NULL, removeNonMutated = FALSE, colors = NULL) {
 
   #set seed for consistancy.
@@ -78,6 +81,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, bg = "#CCCCCC", drawRow
   }
 
   oncoPlot = TRUE #Change later
+  bg = "#CCCCCC" #Default gray background
 
   if (oncoPlot) {
   #This is from oncoPrint source code form ComplexHeatmap

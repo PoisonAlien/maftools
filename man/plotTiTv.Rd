@@ -15,7 +15,7 @@ plotTiTv(res = NULL, file = NULL, width = 6, height = 5, color = NULL)
 
 \item{height}{height of the plot, in inches.}
 
-\item{colors}{named vector of colors for each coversion class.}
+\item{color}{named vector of colors for each coversion class.}
 }
 \value{
 None.
@@ -24,6 +24,10 @@ None.
 Takes results generated from \code{titv} and plots the Ti/Tv ratios and contributions of 6 mutational conversion classes in each sample.
 }
 \examples{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+laml.titv = titv(maf = laml, useSyn = TRUE)
 plotTiTv(laml.titv)
+
 }
 

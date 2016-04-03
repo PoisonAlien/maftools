@@ -20,6 +20,8 @@ list of \code{data.table}s with samples in which given genes are mutated.
 Extracts Tumor Sample Barcodes where the given genes are mutated.
 }
 \examples{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 genesToBarcodes(maf = laml, genes = 'DNMT3A')
 }
 

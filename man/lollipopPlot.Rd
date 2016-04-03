@@ -32,6 +32,9 @@ Draws lollipop plot of amino acid changes.
 This function by default looks for field "AAChange" in maf file. One can also manually specify field name containing amino acid changes.
 }
 \examples{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change')
+
 }
 

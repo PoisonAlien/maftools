@@ -45,7 +45,7 @@ This function mainly uses gene based annotations for processing, rest of the ann
 }
 \examples{
 var.annovar <- system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
-var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19', tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = T)
+var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19', tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = TRUE)
 }
 \references{
 Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).

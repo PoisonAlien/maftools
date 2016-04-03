@@ -10,9 +10,13 @@
 #' @param useSyn Logical. Whether to include synonymous variants in analysis. Defaults to FALSE.
 #' @return A matrix of dimension nx96, where n is the number of samples in the MAF.
 #' @examples
+#' \dontrun{
 #' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa', prefix = 'chr', add = T, useSyn = T)
+#' }
+#'
 #' @importFrom VariantAnnotation getSeq seqlevels
 #' @importFrom Biostrings subseq
+#' @importFrom Rsamtools FaFile
 #' @export
 
 trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = FALSE){

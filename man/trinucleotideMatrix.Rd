@@ -31,6 +31,9 @@ Extracts immediate 5' and 3' bases flanking the mutated site and classifies them
 This function loads reference genome into memeory. Typical human geneome occupies a peak memory of ~3 gb while extracting bases.
 }
 \examples{
+\dontrun{
 laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa', prefix = 'chr', add = T, useSyn = T)
+}
+
 }
 

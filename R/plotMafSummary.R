@@ -9,9 +9,13 @@
 #' @param addStat Can be either mean or median. Default NULL.
 #' @param rmSilent remove silent variants from the plot.
 #' @param showBarcodes include sample names in the top bar plot.
-#' @param named vector of colors for each Variant_Classification.
+#' @param color named vector of colors for each Variant_Classification.
+#' @param textSize font size if showBarcodes is TRUE. Default 2.
 #' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' plotmafSummary(maf = laml, rmSilent = T, addStat = 'median')
+#' @return Prints plot.
 #' @import cowplot RColorBrewer
 #' @export
 

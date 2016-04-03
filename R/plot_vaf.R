@@ -9,7 +9,10 @@
 #' @param top if \code{genes} is NULL plots top n number of genes. Defaults to 5.
 #' @return ggplot object which can be further modified.
 #' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU')
+#'
 #' @export
 
 plotVaf = function(maf, vafCol = NULL, genes = NULL, density = FALSE, violin = FALSE, top = 5){

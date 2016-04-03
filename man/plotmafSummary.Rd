@@ -25,12 +25,19 @@ plotmafSummary(maf, file = NULL, width = 6, height = 5,
 
 \item{showBarcodes}{include sample names in the top bar plot.}
 
-\item{named}{vector of colors for each Variant_Classification.}
+\item{textSize}{font size if showBarcodes is TRUE. Default 2.}
+
+\item{color}{named vector of colors for each Variant_Classification.}
+}
+\value{
+Prints plot.
 }
 \description{
 Plots maf summary.
 }
 \examples{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 plotmafSummary(maf = laml, rmSilent = T, addStat = 'median')
 }
 

@@ -16,6 +16,10 @@ addReadCounts(maf, bam_df, BaseQuality = 10, MapQuality = 10,
 
 \item{bam_df}{two column dataframe. First column must contain Tumor_Sample_Barcode and second column with path to corresponding bam file.}
 
+\item{BaseQuality}{minimum base quality.}
+
+\item{MapQuality}{minimum mapping quality.}
+
 \item{ref_genome}{path to reference genome. required.}
 
 \item{skipSamples}{Tumor_Sample_Barcodes to skip from bam_df.}
@@ -33,7 +37,7 @@ maf file with "t_depth", "t_ref_count", "t_alt_count" and "t_vaf" columns added.
 add read counts to MAF file from bam files.
 }
 \details{
-This is a wrapper script which runs bam-readcount programme via R \code{\link[base]{system()}} command to get readcounts.
+This is a wrapper script which runs bam-readcount programme via R \code{system()} command to get readcounts.
 Assumes bam-readcount is installed and under path.
 Make sure chromosome names in 'Chromosome' field of maf matches to chromosome names in reference fasta file.
 Currently only supports for SNPs. Indels will be populated with NA.

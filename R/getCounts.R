@@ -1,3 +1,4 @@
+
 getCounts=function(var,bam, MapQuality, BaseQuality, ref_genome){
 
 

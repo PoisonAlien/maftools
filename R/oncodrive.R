@@ -12,7 +12,12 @@
 #' @param bgEstimate If FALSE skips background estimation from synonymous variants and uses predifined values estimated from COSMIC synonymous variants.
 #' @return data table of genes ordered according to p-values.
 #' @examples
+#'
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' laml.sig <- oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5)
+#'
+#'
 #' @importFrom dplyr filter
 #' @export
 

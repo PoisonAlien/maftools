@@ -10,7 +10,11 @@
 #' @param colors named vector of colors for each Variant_Classification.
 #' @return None.
 #' @examples
-#' oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), removeNonMutated = T)
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' dev.new()
+#' oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), removeNonMutated = TRUE)
+#'
 #' @export
 
 

@@ -5,10 +5,14 @@
 #' @param file basename for output file name. If given pdf will be generated.
 #' @param width width of the plot, in inches.
 #' @param height height of the plot, in inches.
-#' @param colors named vector of colors for each coversion class.
+#' @param color named vector of colors for each coversion class.
 #' @return None.
 #' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml.titv = titv(maf = laml, useSyn = TRUE)
 #' plotTiTv(laml.titv)
+#'
 #' @export
 
 

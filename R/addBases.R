@@ -10,14 +10,17 @@
 #' @param nTry tries upto this number of signatures before choosing best \code{n}. Default 6.
 #' @return returns a list with decomposed signatures and correlatoon table against validated signatures.
 #' @examples
+#' \dontrun{
+#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa', prefix = 'chr', add = T, useSyn = T)
 #' laml.sign <- extractSignatures(mat = laml.tnm)
+#' }
 #' @import NMF
 #' @export
 
 
 extractSignatures = function(mat, n = NULL, nTry = 6){
 
-  suppressPackageStartupMessages(require(NMF, quietly = T))
+  suppressPackageStartupMessages(require(NMF, quietly = TRUE))
   #transpose matrix
   mat = t(mat)
 

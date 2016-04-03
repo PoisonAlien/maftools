@@ -14,15 +14,18 @@ mutExclusive(maf, genes = NULL, top = 10)
 \item{top}{check for exclusiveness among top 'n' number of genes. Defaults to top 10. \code{genes}}
 }
 \value{
-table with number of events in all possible combinations and p-value. Column header describes mutation status of gene1 and gene2 respectively. \code{n.00} number of samples where both gene1 and gene2 are not mutated \code{c.01} number of samples where gene1 is not mutated but gene2 is mutated and so on..
+table with number of events in all possible combinations and p-value. Column header describes mutation status of gene1 and gene2 respectively. n.00 number of samples where both gene1 and gene2 are not mutated c.01 number of samples where gene1 is not mutated but gene2 is mutated and so on.
 }
 \description{
 Performs statistical test between given set of genes for mutual excluisiveness.
 }
 \examples{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 mutExclusive(maf = laml, top = 5)
+
 }
 \references{
-Leiserson, Mark DM et al. “CoMEt: A Statistical Approach to Identify Combinations of Mutually Exclusive Alterations in Cancer.” Genome Biology 16.1 (2015): 160.
+Leiserson, Mark DM et al. CoMEt: A Statistical Approach to Identify Combinations of Mutually Exclusive Alterations in Cancer. Genome Biology 16.1 (2015): 160.
 }
 

@@ -23,7 +23,9 @@ Input should be a five column file with chr, start, end, ref_allele, alt_allele 
 Try to include necessary columns such as Tumor_Sample_Barcode along with above 5 fields.
 }
 \examples{
-var.file <- system.file('extdata', 'variants.tsv', package = 'maftools')
-var.maf <- oncotate(maflite = var.file, header = T)
+sample.var = data.frame(chromsome = c('chr4', 'chr15'), Start = c(55589774, 41961117), end = c(55589774, 41961117),
+ref = c('A', 'TGGCTAA'), alt = c('G', '-'), Tumor_Sample_Barcode = c('fake_1', 'fake2'))
+write.table(sample.var, 'sampleVars.txt', sep='\\t',quote = FALSE, row.names = FALSE)
+var.maf <- oncotate(maflite = 'sampleVars.txt', header = TRUE)
 }
 

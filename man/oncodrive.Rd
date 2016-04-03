@@ -31,7 +31,12 @@ This is the re-implimentation of algorithm defined in OncodriveCLUST paper. Conc
 This method takes advantage of such positions to identify cancer genes. Cluster score of 1 means, a single hotspot hosts all observed variants. If you use this function, please cite OncodriveCLUST article.
 }
 \examples{
+
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 laml.sig <- oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5)
+
+
 }
 \references{
 Tamborero D, Gonzalez-Perez A and Lopez-Bigas N. OncodriveCLUST: exploiting the positional clustering of somatic mutations to identify cancer genes. Bioinformatics. 2013; doi: 10.1093/bioinformatics/btt395s

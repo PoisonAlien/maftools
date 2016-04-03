@@ -14,7 +14,10 @@
 #' @param top if \code{tsb} is NULL, uses top n number of most mutated samples. Defaults to 5.
 #' @return list of clustering tables.
 #' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
+#'
 #' @import mclust
 #' @export
 

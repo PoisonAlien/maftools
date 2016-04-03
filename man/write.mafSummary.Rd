@@ -18,6 +18,9 @@ None. Writes output as text files.
 Writes maf summaries to an output tab-delimited text file.
 }
 \examples{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 write.mafSummary(maf = laml, basename = 'laml')
+
 }
 

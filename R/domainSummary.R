@@ -8,7 +8,10 @@
 #' @param baseName If given writes the results to output file. Default NULL.
 #' @return returns a list two tables summarized by amino acid positions and domains respectively. Also plots top 5 most mutated domains as scatter plot.
 #' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' pfamDomains(maf = laml, AACol = 'Protein_Change')
+#'
 #' @export
 
 
