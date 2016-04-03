@@ -21,4 +21,4 @@ VignetteBuilder: knitr
 biocViews: DataRepresentation, DNASeq, Visualization,
         FeatureExtraction, Classification, SomaticMutation, Sequencing
 NeedsCompilation: no
-Packaged: 2016-04-03 09:38:02 UTC; anand
+Packaged: 2016-04-03 11:52:53 UTC; anand

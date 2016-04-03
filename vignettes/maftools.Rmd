@@ -14,6 +14,7 @@ With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. [Resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of somatic variants are stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner from either TCGA sources or any in-house studies as long as the data is in MAF format.
 
 # Installation
+Install from GitHub.
 ```{r results='hide', eval=F}
 #Install Bioconductor dependencies.
 source("http://bioconductor.org/biocLite.R")
@@ -209,18 +210,18 @@ Every cancer, as it progresses leaves a signature characterised by specific patt
 
 NOTE: Eventhough reading fasta and extracting bases is fairly fast, it is a memory consuming process as it occupies ~3gb of memory while running.
 
-```{r, eval=F}
+```{r, eval=T}
 #First we extract adjacent bases to the mutated locus and clssify them into 96 substitution classes.
-laml.tnm = trinucleotideMatrix(maf = laml, ref_genome = '~/NGS/gatk_ref/hg19.fa', 
+laml.tnm = trinucleotideMatrix(maf = laml, ref_genome = '~/Documents/hg19/hg19.fa', 
                                prefix = 'chr', add = T, ignoreChr = 'chr23', useSyn = T)
 ```
 
-```{r, fig.height=5, fig.width=5, eval=F}
+```{r, fig.height=5, fig.width=5, eval=T}
 #Run main function with maximum 6 signatures. 
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6)
 ```
 
-```{r, fig.width=7, fig.height=5, fig.align='center', eval = F}
+```{r, fig.width=7, fig.height=5, fig.align='center', eval = T}
 plotSignatures(laml.sign)
 ```
 
