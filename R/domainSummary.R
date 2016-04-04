@@ -38,8 +38,6 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
     stop('varClas can only be either nonSyn, Syn or all')
   }
 
-  gff = system.file('extdata', 'protein_domains.txt.gz', package = 'maftools')
-
   mut = maf@data
   gs = getGeneSummary(maf)
 
@@ -53,7 +51,10 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
     mut = rbind(mut, maf@maf.silent, fill = TRUE)
   }
 
-  if(Sys.info()[['sysname']] == 'windows'){
+  #Protein domain source.
+  gff = system.file('extdata', 'protein_domains.txt.gz', package = 'maftools')
+
+  if(Sys.info()[['sysname']] == 'Windows'){
     gff.gz = gzfile(description = gff, open = 'r')
     gff <- suppressWarnings( data.table(read.csv( file = gff.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(gff.gz)
