@@ -170,7 +170,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     message('Converting Ensemble Gene IDs into HGNC gene symbols.')
     if(Sys.info()[['sysname']] == 'Windows'){
       ens.gz = gzfile(description = ens, open = 'r')
-      ens <- suppressWarnings( data.table(read.csv( file = gff.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
+      ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
       close(ens.gz)
     } else{
       ens = fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
