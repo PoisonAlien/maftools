@@ -1,3 +1,11 @@
+#--------------------- based on binaomial distribution, estimate threshhold.
+get_threshold = function(gene_muts, gene_length){
+  th = which(unlist(lapply(X = 2:gene_muts, FUN = function(x) dbinom(x = x, size = gene_muts, prob = 1/gene_length) )) < 0.01)[1]
+  return(th+1)
+}
+#-------------------- end of function.
+
+
 #--------------------- parse protein positions from protein conversions.
 parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
 
@@ -31,8 +39,10 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
   }
 
   gene.sum = summarizeMaf(maf = dat)$gene.summary
-  gene.sum = merge.data.frame(x = gene.sum, y = gl, by = 'Hugo_Symbol', all.x = TRUE)
-  gene.sum = gene.sum[!is.na(gene.sum$aa.length),]
+  #gene.sum = merge.data.frame(x = gene.sum, y = gl, by = 'Hugo_Symbol', all.x = TRUE)
+  gene.sum = merge(x = gene.sum, y = gl, by = 'Hugo_Symbol', all.x = TRUE)
+  #gene.sum = gene.sum[!is.na(gene.sum$aa.length),]
+  gene.sum = gene.sum[!is.na(gene.sum$aa.length)]
 
   num_mut_colIndex = which(colnames(gene.sum) == 'total')
   aalen_colIndex = which(colnames(gene.sum) == 'aa.length')
@@ -62,8 +72,8 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
     pb <- txtProgressBar(min = 0, max = nrow(gene.sum), style = 3) #progress bar
 
     for(i in 1:nrow(gene.sum)){
-      prot.dat = all.prot.dat[Hugo_Symbol == gene.sum[i, "Hugo_Symbol"]]
-      nonsyn.res = rbind(nonsyn.res, cluster_prot(prot.dat = prot.dat, gene = gene.sum[i, "Hugo_Symbol"], th = gene.sum[i,"th"], protLen = gene.sum[i,"aa.length"]))
+      prot.dat = all.prot.dat[Hugo_Symbol == gene.sum[i, Hugo_Symbol]]
+      nonsyn.res = rbind(nonsyn.res, cluster_prot(prot.dat = prot.dat, gene = gene.sum[i, Hugo_Symbol], th = gene.sum[i,th], protLen = gene.sum[i,aa.length]))
       setTxtProgressBar(pb, i)
     }
     return(nonsyn.res)
@@ -72,12 +82,6 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
 
 #--------------------- End of Function
 
-#--------------------- based on binaomial distribution, estimate threshhold.
-get_threshold = function(gene_muts, gene_length){
-  th = which(unlist(lapply(X = 2:gene_muts, FUN = function(x) dbinom(x = x, size = gene_muts, prob = 1/gene_length) )) < 0.01)[1]
-  return(th+1)
-}
-#-------------------- end of function.
 
 # -------------------Clustering function-------------------
 cluster_prot = function(prot.dat, gene, th, protLen){
@@ -169,7 +173,7 @@ cluster_prot = function(prot.dat, gene, th, protLen){
 
     posVector = as.numeric(temp.prot.dat.summary[,pos])
     fractionMutVector = unlist(lapply(posVector, FUN = function(x) temp.prot.dat.summary[pos == x, fraction]))
-    distanceVector = abs(posVector - peak)
+    distanceVector = suppressWarnings(abs(posVector - peak))
 
     clusterScores = c(clusterScores,  sum( fractionMutVector / (sqrt(2)^ distanceVector)))
 
