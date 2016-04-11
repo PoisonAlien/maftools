@@ -14,9 +14,10 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-#' plotmafSummary(maf = laml, rmSilent = T, addStat = 'median')
+#' plotmafSummary(maf = laml, rmSilent = TRUE, addStat = 'median')
 #' @return Prints plot.
-#' @import cowplot RColorBrewer
+#' @import RColorBrewer
+#' @importFrom cowplot background_grid plot_grid save_plot theme_cowplot
 #' @export
 
 plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = TRUE, addStat = NULL, rmSilent = TRUE, showBarcodes = FALSE, textSize = 2, color = NULL){
@@ -30,7 +31,7 @@ plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T
 
   if(is.null(color)){
     #hard coded color scheme if uoser doesnt provide any
-    col = c('#CCCCCC', RColorBrewer::brewer.pal(12, name = "Paired"), brewer.pal(11, name = "Spectral")[1:3], "maroon")
+    col = c('#CCCCCC', RColorBrewer::brewer.pal(12, name = "Paired"), RColorBrewer::brewer.pal(11, name = "Spectral")[1:3], "maroon")
     names(col) = names = c('',"Nonstop_Mutation", "Frame_Shift_Del",
                            "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
                            "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",
@@ -71,27 +72,27 @@ plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T
       mean.line = round(max(maf@summary[,Mean], na.rm = TRUE), 2)
       df = data.frame(y = c(mean.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Mean: ', mean.line, sep='')))
 
-      vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+
+      vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+cowplot::theme_cowplot()+
         theme(axis.ticks = element_blank(), axis.text.x = element_text(angle = textAngle, vjust = 0.5, hjust=1, size = textSize), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
-        background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = mean.line, linetype = 2)+
-        geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
+        cowplot::background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = mean.line, linetype = 2)+
+        ggrepel::geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
                          point.padding = unit(1, "lines"), force = 20, size = 3, nudge_y = 2)
     }else{
       med.line = round(max(maf@summary[,Median], na.rm = TRUE), 2)
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
 
-      vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+
+      vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+cowplot::theme_cowplot()+
         theme(axis.ticks = element_blank(), axis.text.x = element_text(angle = textAngle, vjust = 0.5, hjust=1, size = textSize), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
-        background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = med.line, linetype = 3)+
-        geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
+        cowplot::background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = med.line, linetype = 3)+
+        ggrepel::geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
                          point.padding = unit(1, "lines"), force = 20, size = 3, nudge_y = 2)
     }
 
 
   }else{
-    vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+
+    vcs.gg = ggplot(data = vcs.m, aes(x = Tumor_Sample_Barcode, y = N, fill = Variant_Classification))+geom_bar(stat = 'identity')+scale_fill_manual(values = col)+cowplot::theme_cowplot()+
       theme(axis.ticks = element_blank(), axis.text.x = element_text(angle = textAngle, vjust = 0.5, hjust=1, size = textSize), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
-      background_grid(major = 'xy', minor = 'none')
+      cowplot::background_grid(major = 'xy', minor = 'none')
   }
 
   if(!showBarcodes){
@@ -104,20 +105,20 @@ plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = T
     boxH = vcs.m[,boxplot.stats(N)$stat[5], by = .(Variant_Classification)]
     colnames(boxH)[ncol(boxH)] = 'boxStat'
     vcs.gg2 = ggplot(data = vcs.m, aes(x = Variant_Classification, y = N, fill = Variant_Classification))+geom_boxplot(outlier.shape = NA)+scale_fill_manual(values = col)+
-      theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'bottom')+
-      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 7))+ylim(0, max(boxH$boxStat)+5)+background_grid(major = 'xy', minor = 'none')
+      cowplot::theme_cowplot()+theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'bottom')+
+      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 7))+ylim(0, max(boxH$boxStat)+5)+cowplot::background_grid(major = 'xy', minor = 'none')
   } else{
-    vcs.gg2 = ggplot(data = vcs.m, aes(x = Variant_Classification, y = N, fill = Variant_Classification))+geom_boxplot()+scale_fill_manual(values = col)+
+    vcs.gg2 = ggplot(data = vcs.m, aes(x = Variant_Classification, y = N, fill = Variant_Classification))+geom_boxplot()+scale_fill_manual(values = col)+cowplot::theme_cowplot()+
       theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'bottom')+
-      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 7))+background_grid(major = 'xy', minor = 'none')
+      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 7))+cowplot::background_grid(major = 'xy', minor = 'none')
   }
 
   #organize plots
-  gg.summary = plot_grid(vcs.gg, vcs.gg2, nrow = 2, ncol = 1)
+  gg.summary = cowplot::plot_grid(vcs.gg, vcs.gg2, nrow = 2, ncol = 1)
 
   #print to file if specified.
   if(!is.null(file)){
-    save_plot(filename = paste(file, 'pdf', sep = '.'), plot = gg.summary, base_width = width, base_height = height, base_aspect_ratio = 1.5)
+    cowplot::save_plot(filename = paste(file, 'pdf', sep = '.'), plot = gg.summary, base_width = width, base_height = height, base_aspect_ratio = 1.5)
   }
 
   print(gg.summary)

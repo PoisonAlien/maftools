@@ -32,7 +32,8 @@ This function loads reference genome into memeory. Typical human geneome occupie
 }
 \examples{
 \dontrun{
-laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa', prefix = 'chr', add = T, useSyn = T)
+laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa',
+prefix = 'chr', add = TRUE, useSyn = TRUE)
 }
 
 }

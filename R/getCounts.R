@@ -16,7 +16,7 @@ getCounts=function(var,bam, MapQuality, BaseQuality, ref_genome){
   tot.df$A=sapply(strsplit(as.character(dx.counts$V6),split = ":",fixed = TRUE),"[",2)
   tot.df$C=sapply(strsplit(as.character(dx.counts$V7),split = ":",fixed = TRUE),"[",2)
   tot.df$G=sapply(strsplit(as.character(dx.counts$V8),split = ":",fixed = TRUE),"[",2)
-  tot.df$T=sapply(strsplit(as.character(dx.counts$V9),split = ":",fixed = TRUE),"[",2)
+  tot.df$`T`=sapply(strsplit(as.character(dx.counts$V9),split = ":",fixed = TRUE),"[",2)
   tot.df$N=sapply(strsplit(as.character(dx.counts$V10),split = ":",fixed = TRUE),"[",2)
 
   dx.vaf=c()

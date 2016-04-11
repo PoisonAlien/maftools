@@ -30,6 +30,5 @@ Summarizes amino acid positions and annotates them with pfam domain information.
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 pfamDomains(maf = laml, AACol = 'Protein_Change')
-
 }
 

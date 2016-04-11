@@ -11,7 +11,6 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' pfamDomains(maf = laml, AACol = 'Protein_Change')
-#'
 #' @export
 
 
@@ -160,16 +159,16 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   domainSum = domainSum[order(nMuts, decreasing = TRUE)]
 
   #print(prot.sum)
-  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes, alpha = 0.6))+geom_point()+
+  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes, alpha = 0.6))+geom_point()+cowplot::theme_cowplot()+
     geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel, color = 'maroon'), size = 3, fontface = 'bold', force = 30)+
-    background_grid(major = 'xy', minor = 'none')+theme(legend.position = 'none')+background_grid(major = 'xy')
+    theme(legend.position = 'none')+cowplot::background_grid(major = 'xy')
 
   print(p)
 
   if(!is.null(baseName)){
     write.table(x = prot.sum, file = paste(baseName, '_AAPos_summary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
     write.table(x = domainSum, file = paste(baseName, '_domainSummary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
-    save_plot(filename = paste(baseName, '_domainSummary.pdf',sep= ''), plot = p, base_height = 6, base_width = 6)
+    cowplot::save_plot(filename = paste(baseName, '_domainSummary.pdf',sep= ''), plot = p, base_height = 6, base_width = 6)
   }
 
   return(list(proteinSummary = prot.sum, domainSummary = domainSum))

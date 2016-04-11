@@ -148,7 +148,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
     if(nrow(prot.snp.sumamry1) > 0){
 
-      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+
+      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
         theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
         scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
         geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')
@@ -156,7 +156,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
       p = p+geom_point(data = prot.snp.sumamry1, aes(x = pos2, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+
         theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
     }else{
-      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+
+      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
         theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
         scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
         geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')+
@@ -168,7 +168,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     maxCount = maxCount+1
     prot.snp.sumamry$count2 = prot.snp.sumamry$count
     #Plot points
-    p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos2, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+scale_color_manual(values = col)+
+    p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos2, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
       theme(legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
       scale_y_continuous(breaks = c(0:maxCount), labels = c(0:maxCount), limit = c(0, maxCount))+xlab('')+ylab('Number of Variants')
 

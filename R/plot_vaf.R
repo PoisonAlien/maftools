@@ -45,15 +45,15 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, density = FALSE, violin = F
   }
 
   if(density){
-    gg = ggplot(datm, aes(value, color = Hugo_Symbol))+geom_density(size = 1)+
-      geom_point(aes(y = 0, x = value), size = 3, alpha = 0.6)+xlim(0, 1)+theme(legend.position = 'bottom')+background_grid(major = 'xy')
+    gg = ggplot(datm, aes(value, color = Hugo_Symbol))+geom_density(size = 1)+ cowplot::theme_cowplot() +
+      geom_point(aes(y = 0, x = value), size = 3, alpha = 0.6)+xlim(0, 1)+theme(legend.position = 'bottom')+cowplot::background_grid(major = 'xy')
   } else{
     if(violin){
-      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_violin()+ylim(0, 1)+theme(legend.position = 'none')+ylab('vaf')+
-        background_grid(major = 'xy')
+      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_violin()+ylim(0, 1)+ cowplot::theme_cowplot()+
+        theme(legend.position = 'none')+ylab('vaf')+ cowplot::background_grid(major = 'xy')
     }else{
-      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_boxplot()+ylim(0, 1)+theme(legend.position = 'none')+ylab('vaf')+
-        background_grid(major = 'xy')
+      gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value, color = Hugo_Symbol))+geom_boxplot()+ylim(0, 1)+cowplot::theme_cowplot()+
+        theme(legend.position = 'none')+ylab('vaf')+cowplot::background_grid(major = 'xy')
     }
   }
 

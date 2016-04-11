@@ -4,13 +4,17 @@
 \alias{plotSignatures}
 \title{Plots decomposed mutational signatures.}
 \usage{
-plotSignatures(nmfRes = NULL)
+plotSignatures(nmfRes = NULL, contributions = FALSE, ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
+
+\item{contributions}{If TRUE plots contribution of signatures in each sample.}
+
+\item{...}{further plot options passed to \code{\link{barplot2}}}
 }
 \value{
-None.
+ggplot object if contributions is TRUE
 }
 \description{
 Plots decomposed mutational signatures as a barplot.

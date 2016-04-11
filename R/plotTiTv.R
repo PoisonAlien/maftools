@@ -37,27 +37,27 @@ plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5, color = NULL
   titv.contrib = suppressMessages(data.table::melt(res$TiTv.fractions, id = 'Tumor_Sample_Barcode'))
 
   p1 = ggplot(data = titv.frac.melt, aes(x = variable, y = value, color = TiTv)) +
-    geom_boxplot() + ylim(0, 100) +
+    geom_boxplot() + ylim(0, 100) + cowplot::theme_cowplot() +
     xlab("") + theme(axis.line = element_line(colour = "black"), legend.position = 'none') +
-    ylab("Fraction of Mutations")+scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))+background_grid(major = 'xy', minor = 'none')
+    ylab("Fraction of Mutations")+scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))+cowplot::background_grid(major = 'xy', minor = 'none')
 
   p2 = ggplot(data = titv.contrib, aes(x = variable, y = value, color = variable)) +
-    geom_boxplot() + ylim(0, 100) +
+    geom_boxplot() + ylim(0, 100) + cowplot::theme_cowplot() +
     xlab('')+theme(axis.line = element_line(colour = "black"), legend.title = element_blank(), axis.title.y = element_blank()) +
-    scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))+background_grid(major = 'xy', minor = 'none')
+    scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))+cowplot::background_grid(major = 'xy', minor = 'none')
 
   top = suppressWarnings(plot_grid(p1, p2, rel_widths = c(2,1)))
 
-  p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value, fill = variable))+geom_bar(stat = 'identity')+
+  p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value, fill = variable))+geom_bar(stat = 'identity')+ cowplot::theme_cowplot() +
     theme(legend.position = 'bottom', legend.title = element_blank(), axis.text.x = element_blank(),
           axis.line.y = element_blank(), axis.line.x = element_blank())+ylab('Fraction of Mutations')+xlab('Samples')+
     scale_fill_manual(values = col)
 
-  p = suppressWarnings(plot_grid(top, p3, nrow = 2))
+  p = suppressWarnings(cowplot::plot_grid(top, p3, nrow = 2))
 
   print(p)
 
   if(!is.null(file)){
-    save_plot(filename = paste(file, 'pdf', sep='.'), plot = p, base_height = height, base_width = width)
+    cowplot::save_plot(filename = paste(file, 'pdf', sep='.'), plot = p, base_height = height, base_width = width)
   }
 }

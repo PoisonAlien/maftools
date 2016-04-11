@@ -22,8 +22,13 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, annotation = NULL, removeNo
 
   mat_origin = maf@numericMatrix
 
-  require(package = "ComplexHeatmap", quietly = TRUE, warn.conflicts = FALSE)
-  #require(package = "RColorBrewer", quietly = T, warn.conflicts = F)
+  if(ncol(mat_origin) < 2){
+    stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
+  }
+
+  if(nrow(mat_origin) <2){
+    stop('Minimum two genes required !')
+  }
 
   #if user doesnt provide a gene vector, use top 5.
   if(is.null(genes)){
@@ -91,30 +96,30 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, annotation = NULL, removeNo
 
     for(i in 1:length(type_name)){
       if(any(type %in% type_name[i])) {
-        grid.rect(x, y, width - unit(0.5, "mm"), height - unit(1, "mm"), gp = gpar(col = NA, fill = type_col[type_name[i]]))
+        grid::grid.rect(x, y, width - grid::unit(0.5, "mm"), height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[type_name[i]]))
       }
     }
     if(any(type %in% "")) {
-      grid.rect(x, y, width - unit(0.5, "mm"), height - unit(1, "mm"), gp = gpar(col = NA, fill = "#CCCCCC"))
+      grid::grid.rect(x, y, width - grid::unit(0.5, "mm"), height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = "#CCCCCC"))
     }
   }
 
   if(is.null(annotation)){
-    ht = Heatmap(mat, rect_gp = gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
+    ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
       type = mat[i,j]
       add_oncoprint(type, x, y, width, height)
-    }, row_names_gp = gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-    top_annotation_height = unit(2, "cm"))
+    }, row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
+    top_annotation_height = grid::unit(2, "cm"))
   }else{
-    ht = Heatmap(mat, rect_gp = gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
+    ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
       type = mat[i,j]
       add_oncoprint(type, x, y, width, height)
-    }, row_names_gp = gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-    top_annotation_height = unit(2, "cm"), bottom_annotation = bot.anno)
+    }, row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
+    top_annotation_height = grid::unit(2, "cm"), bottom_annotation = bot.anno)
 
   }
 
-  legend = legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = gpar(col = type_col), nrow = 2)
+  legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col), nrow = 2)
 
   draw(ht, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
 }

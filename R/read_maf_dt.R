@@ -15,8 +15,8 @@
 
 read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
 
-  pkgs = c('ggrepel', 'dplyr', 'RColorBrewer', 'cowplot')
-  suppressWarnings(suppressPackageStartupMessages(lapply(pkgs, require, character.only = TRUE)))
+  #pkgs = c('ggrepel', 'dplyr', 'RColorBrewer', 'cowplot')
+  #suppressWarnings(suppressPackageStartupMessages(lapply(pkgs, require, character.only = TRUE)))
 
   message('reading maf..')
 
@@ -72,7 +72,7 @@ read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
       message(paste('removed',nrow(maf.silent), 'silent variants.'))
       print(summary.silent)
     } else{
-      message(message(paste('removed',nrow(maf.silent), 'silent variants.')))
+      message(message(paste('Excluding',nrow(maf.silent), 'silent variants.')))
     }
   }else{
     message('Silent variants are being kept!')
@@ -92,13 +92,19 @@ read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
 
   #Create oncomatrix
   oncomat = createOncoMatrix(maf)
+
+  if(is.null(oncomat)){
+    m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+            variant.classification.summary = mafSummary$variant.classification.summary,gene.summary = mafSummary$gene.summary,
+            oncoMatrix = NULL, numericMatrix = NULL, summary = mafSummary$summary,
+            classCode = NULL, maf.silent = maf.silent)
+  }else{
+    m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+            variant.classification.summary = mafSummary$variant.classification.summary,gene.summary = mafSummary$gene.summary,
+            oncoMatrix = oncomat$oncomat, numericMatrix = oncomat$nummat, summary = mafSummary$summary,
+            classCode = oncomat$vc, maf.silent = maf.silent)
+  }
+
   message('Done !')
-
-  m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
-              variant.classification.summary = mafSummary$variant.classification.summary,gene.summary = mafSummary$gene.summary,
-              oncoMatrix = oncomat$oncomat, numericMatrix = oncomat$nummat, summary = mafSummary$summary,
-              classCode = oncomat$vc, maf.silent = maf.silent)
-
   return(m)
-
 }

@@ -38,6 +38,6 @@ Plots maf summary.
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-plotmafSummary(maf = laml, rmSilent = T, addStat = 'median')
+plotmafSummary(maf = laml, rmSilent = TRUE, addStat = 'median')
 }
 

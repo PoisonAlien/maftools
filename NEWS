@@ -1,0 +1,42 @@
+maftools v0.99.25
+==============
+
+Changes:
+
+* inferHeterogeneity: Clustering using nonparametric dirichlet process; more plotting options.
+* New subsetMaf function to subset MAF
+* Upto 5X faster oncomatrix creation and sorting
+* Examples won't take >5 seconds
+* Fixed a warning in oncodrive function
+* Updated vignette
+
+
+maftools v0.99.20
+==============
+
+Changes:
+
+* Resubmission to bioconductor using r-devel 3.3
+
+
+maftools v0.99.15
+==============
+
+Changes:
+
+* Resubmission to bioconductor using r-devel 3.4
+* added plotBestFitRes argument to extractSignatures
+* added DriverMutation to biocviews
+
+maftools v0.99.1
+==============
+
+Changes:
+
+* Modified vignettes to fix build vignettes error
+
+maftools v0.99.0
+==============
+
+Changes:
+* First submission

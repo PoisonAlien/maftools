@@ -9,16 +9,17 @@
 #' @param basename NULL. if basename is given, annotations will be written to <basename>.maf file.
 #' @return returns a dataframe in maf format.
 #' @examples
-#' sample.var = data.frame(chromsome = c('chr4', 'chr15'), Start = c(55589774, 41961117), end = c(55589774, 41961117),
-#' ref = c('A', 'TGGCTAA'), alt = c('G', '-'), Tumor_Sample_Barcode = c('fake_1', 'fake2'))
+#' sample.var = data.frame(chromsome = c('chr4', 'chr15'), Start = c(55589774, 41961117),
+#' end = c(55589774, 41961117), ref = c('A', 'TGGCTAA'), alt = c('G', '-'),
+#' Tumor_Sample_Barcode = c('fake_1', 'fake2'))
 #' write.table(sample.var, 'sampleVars.txt', sep='\t',quote = FALSE, row.names = FALSE)
-#' var.maf <- oncotate(maflite = 'sampleVars.txt', header = TRUE)
+#' ##var.maf <- oncotate(maflite = 'sampleVars.txt', header = TRUE)
 #' @importFrom rjson fromJSON
 #' @export
 
 oncotate = function(maflite, header = FALSE,basename = NULL){
 
-  require(package = 'rjson', quietly = TRUE)
+  #require(package = 'rjson', quietly = TRUE)
 
   #create an empty data frame
   anno.df = c()

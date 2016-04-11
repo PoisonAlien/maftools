@@ -41,7 +41,6 @@ Takes maf file as input and plots it as a matrix. Any desired annotations can be
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-oncoplot(maf = laml, top = 10)
-
+oncoplot(maf = laml, top = 3)
 }
 

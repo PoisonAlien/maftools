@@ -22,7 +22,8 @@
 #' @return MAF table.
 #' @examples
 #' var.annovar <- system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
-#' var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19', tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = TRUE)
+#' var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19',
+#' tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = TRUE)
 #' @export
 
 annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL, header = FALSE, sep = '\t', MAFobj = FALSE){
