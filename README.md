@@ -12,7 +12,7 @@ MAF files contains many fields ranging from chromosome names to cosmic annotatio
 Complete specififcation of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
 #### Vignette and a case study.
-A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](https://github.com/PoisonAlien/maftools/blob/master/inst/doc/maftools.pdf).
+A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://poisonalien.github.io).
 
 #### Stuffs maftools can do.
 1. Analysis
@@ -207,7 +207,7 @@ Signature_2 which corelates will validated Signature_12 was observed in Liver sa
 `addReadCounts()` adds read depths for reference and alternate allele from corresponding bam file. This internally runs [bam-readcount](https://github.com/genome/bam-readcount) to get the counts and adds them to maf file. 
 
 #### Other functions
-For full documentation please refer to [vignette](https://github.com/PoisonAlien/maftools/blob/master/inst/doc/maftools.pdf).
+For full documentation please refer to [vignette](http://poisonalien.github.io).
 
 ####References.
 1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.
