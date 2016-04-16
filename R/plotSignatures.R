@@ -14,9 +14,9 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, ...){
   contrib = nmfRes$contributions
 
   if(contributions){
-    if(nrow(contrib) == 1){
-      stop('Cannot plot contriubutions for single signature')
-    }
+#     if(nrow(contrib) == 1){
+#       stop('Cannot plot contriubutions for single signature')
+#     }
     contribt = t(contrib)
     #calculate sd
     contribt = cbind(contribt, sd = apply(contribt, 1, sd))

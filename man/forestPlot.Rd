@@ -8,19 +8,19 @@ forestPlot(mafCompareRes, pVal = 0.05, show = NULL, color = NULL,
   file = NULL, width = 5, height = 6)
 }
 \arguments{
+\item{mafCompareRes}{results from \code{\link{mafCompare}}}
+
 \item{pVal}{p-value threshold. Default 0.05.}
 
 \item{show}{can be either \code{stat} or \code{pval}}
 
-\item{color}{vector of colors for plot. Default NULL.}
+\item{color}{vector of colors for cohorts. Default NULL.}
 
-\item{file}{basename for output file. Plot will sabe to output pdf.}
+\item{file}{basename for output file. Plot will saved to an output pdf.}
 
 \item{width}{width of plot to be generated}
 
 \item{height}{height of plot to be generated}
-
-\item{mafComareRes}{results from \code{\link{mafCompare}}}
 }
 \value{
 ggplot object of the plot.
@@ -29,7 +29,7 @@ ggplot object of the plot.
 Draw forest plot for differences betweeen cohorts.
 }
 \details{
-Plots results from mafCompare as a forest plot with x-axis log10 converted odds ratio and differentially mutated genes on y-axis.
+Plots results from \code{link{mafCompare}} as a forest plot with x-axis as log10 converted odds ratio and differentially mutated genes on y-axis.
 }
 \seealso{
 \code{\link{mafCompare}}

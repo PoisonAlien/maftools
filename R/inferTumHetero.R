@@ -20,24 +20,20 @@
 #' @param minVaf filter low frequency variants. Low vaf variants maybe due to sequencing error. Default 0. (on the scale of 0 to 1)
 #' @param maxVaf filter high frequency variants. High vaf variants maybe due to copy number alterations or impure tumor. Default 1. (on the scale of 0 to 1)
 #' @param ignChr ignore these chromosomes from analysis. e.g, sex chromsomes chrX, chrY. Default NULL.
-#' @param plot logical plots density curve and clusters.
 #' @param top if \code{tsb} is NULL, uses top n number of most mutated samples. Defaults to 5.
-#' @param genes genes to highlight on the plot. Default NULL.
 #' @param segFile path to CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).
-#' @param savePlot If TRUE saves plot to output pdf
-#' @param width plot width. Default 6.
-#' @param height plot height. Default 5.
 #' @return list of clustering tables.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-#' inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
+#' TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
 #'
 #' @importFrom mclust densityMclust
 #' @importFrom DPpackage DPdensity
 #' @export
+#' @seealso \code{\link{plotClusters}}
 
-inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet = FALSE, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, plot = TRUE, genes = NULL, savePlot = FALSE, width = 6, height = 5){
+inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet = FALSE, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1){
 
   #Main data
   dat = maf@data
@@ -164,7 +160,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
 
     if(dirichlet){
 
-      #Awesome blog post on infinite mixture models
+      #Awesome blog post on non-finite mixture models
       #http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/
 
       #Initiate mcmc parameters
@@ -186,43 +182,11 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
       tsb.dat$cluster = as.character(tsb.cluster$classification)
     }
 
-    #Top density plot
-    tsb.dat.dens = ggplot(tsb.dat, aes(t_vaf))+geom_density(size = 1, alpha = 0.3)+geom_point(aes(y = 0, x = t_vaf, color = cluster), size = 3, alpha = 0.6)+
-      cowplot::theme_cowplot()+theme(legend.position = 'bottom', plot.title = element_text(size = 12))+xlab('VAF')+xlim(0,1)+ylab('')+ggtitle(tsb[i])+cowplot::background_grid('xy')
+    #Refine cluster assignment (z score > 2; mark it as an outlier)
+    tsb.dat = refineClusters(clusters = tsb.dat)
 
-    #If any copy number altered variants, mark them with dark dots.
-    if(tempCheck > 0){
-      tsb.dat.dens = tsb.dat.dens+geom_point(data = tsb.dat.cn.vars, aes(y = 0, x = t_vaf), size = 3,alpha = 0.6)
-    }else{
-      tsb.dat.cn.vars = c()
-    }
-
-    #Are there genes to highlight?
-    if(!is.null(genes)){
-      genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars, fill = T), filter = Hugo_Symbol %in% genes)
-      if(nrow(genesDat) > 0){
-        tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = genesDat,
-                        aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
-      }
-    }
-
-    #Top boxplot
-    tsb.dat.bar = ggplot(tsb.dat, aes(x = cluster, t_vaf, color = cluster))+geom_boxplot()+coord_flip()+xlab('')+ylab('')+cowplot::theme_cowplot()+
-      theme(legend.position = 'none', axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())+ylim(0,1)
-
-    #Organize grid
-    tsb.dat.gg = cowplot::plot_grid(tsb.dat.bar, tsb.dat.dens, nrow = 2, ncol =  1, rel_heights = c(0.25, 1))
-
-    if(tempCheck > 0){
+    if(tempCheck == 1){
       tsb.dat = rbind(tsb.dat, tsb.dat.cn.vars)
-    }
-
-    if(plot){
-      print(tsb.dat.gg)
-    }
-
-    if(savePlot){
-      cowplot::save_plot(filename = paste(tsb[i], '_het.pdf', sep=''), plot = tsb.dat.gg, base_height = height, base_width = width)
     }
 
     #Update result table

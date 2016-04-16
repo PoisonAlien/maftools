@@ -79,8 +79,15 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
 
   #Contribution
   h = NMF::coef(conv.mat.nmf)
-  h = apply(h, 2, function(x) x/sum(x)) #Scale contributions (coefs)
-  rownames(h) = paste('Signature', 1:nrow(h),sep='_')
+  #For single signature, contribution will be 100% per sample
+  if(n == 1){
+    h = h/h
+    rownames(h) = paste('Signature', '1', sep = '_')
+  }else{
+    h = apply(h, 2, function(x) x/sum(x)) #Scale contributions (coefs)
+    rownames(h) = paste('Signature', 1:nrow(h),sep='_')
+  }
+
 
   #conv.mat.nmf.signatures.melted = melt(conv.mat.nmf.signatures)
   #levels(conv.mat.nmf.signatures.melted$X1) = colOrder

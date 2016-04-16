@@ -4,6 +4,8 @@ maftools v0.99.30
 Changes:
 
 * Plotting and mapping variants on copy number data
+* Compare two maf files for differentially mutated genes
+* Forestplots
 * Fixed bug in nmf signatures
 * Fixed bug in tumor heterogenity
 * minor modification in titv plot

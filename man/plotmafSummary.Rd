@@ -4,8 +4,7 @@
 \alias{plotmafSummary}
 \title{Plots maf summary.}
 \usage{
-plotmafSummary(maf, file = NULL, width = 6, height = 5,
-  rmOutlier = TRUE, addStat = NULL, rmSilent = TRUE,
+plotmafSummary(maf, file = NULL, width = 6, height = 5, addStat = NULL,
   showBarcodes = FALSE, textSize = 2, color = NULL)
 }
 \arguments{
@@ -17,17 +16,15 @@ plotmafSummary(maf, file = NULL, width = 6, height = 5,
 
 \item{height}{plot parameter for output file.}
 
-\item{rmOutlier}{If TRUE removes outlier from boxplot.}
-
 \item{addStat}{Can be either mean or median. Default NULL.}
-
-\item{rmSilent}{remove silent variants from the plot.}
 
 \item{showBarcodes}{include sample names in the top bar plot.}
 
 \item{textSize}{font size if showBarcodes is TRUE. Default 2.}
 
 \item{color}{named vector of colors for each Variant_Classification.}
+
+\item{rmOutlier}{If TRUE removes outlier from boxplot.}
 }
 \value{
 Prints plot.
@@ -38,6 +35,9 @@ Plots maf summary.
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-plotmafSummary(maf = laml, rmSilent = TRUE, addStat = 'median')
+plotmafSummary(maf = laml, addStat = 'median')
+}
+\seealso{
+\code{\link{read.maf}} \code{\link{MAF}}
 }
 
