@@ -88,7 +88,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, drawRowBar = TRUE, draw
   bg = "#CCCCCC" #Default gray background
 
   if (oncoPlot) {
-  #This is from oncoPrint source code form ComplexHeatmap
+  #Many thanks to Zuguang Gu (ComplexHeatmap) for letting me use and modify the code !
     add_oncoprint = function(type, x, y, width, height) {
       for (i in 1:length(variant.classes)) {
         if (any(type %in% variant.classes[i])) {

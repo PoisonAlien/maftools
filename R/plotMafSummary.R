@@ -7,20 +7,20 @@
 #' @param height plot parameter for output file.
 #' @param rmOutlier If TRUE removes outlier from boxplot.
 #' @param addStat Can be either mean or median. Default NULL.
-#' @param rmSilent remove silent variants from the plot.
 #' @param showBarcodes include sample names in the top bar plot.
 #' @param color named vector of colors for each Variant_Classification.
 #' @param textSize font size if showBarcodes is TRUE. Default 2.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-#' plotmafSummary(maf = laml, rmSilent = TRUE, addStat = 'median')
+#' plotmafSummary(maf = laml, addStat = 'median')
 #' @return Prints plot.
 #' @import RColorBrewer
 #' @importFrom cowplot background_grid plot_grid save_plot theme_cowplot
+#' @seealso \code{\link{read.maf}} \code{\link{MAF}}
 #' @export
 
-plotmafSummary = function(maf, file = NULL, width = 6, height = 5, rmOutlier = TRUE, addStat = NULL, rmSilent = TRUE, showBarcodes = FALSE, textSize = 2, color = NULL){
+plotmafSummary = function(maf, file = NULL, width = 6, height = 5, addStat = NULL, showBarcodes = FALSE, textSize = 2, color = NULL){
 
   #require(cowplot, quietly = TRUE)
   #require(RColorBrewer, quietly = TRUE)
