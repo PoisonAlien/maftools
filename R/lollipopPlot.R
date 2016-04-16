@@ -9,6 +9,7 @@
 #' @param labelPos Amino acid positions to label. If 'all', labels all variants.
 #' @param repel If points are too close to each other, use this option to repel them. Default FALSE.
 #' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'
+#' @param colors named vector of colors for each Variant_Classification. Default NULL.
 #' @return ggplot object of the plot, which can be futher modified.
 #' @import ggrepel
 #' @examples
@@ -19,7 +20,7 @@
 #' @export
 
 
-lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = FALSE){
+lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = FALSE, colors = NULL){
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
@@ -87,13 +88,14 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   #Remove NA's
   prot = prot[!is.na(prot$Label),]
 
-  #Color code for variant classification
-  col = c(brewer.pal(12, name = "Paired"), brewer.pal(11, name = "Spectral")[1:3], "maroon")
-  names(col) = names = c("Nonstop_Mutation", "Frame_Shift_Del",
-                         "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
-                         "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",
-                         "Silent", "In_Frame_Ins", "ITD", "3'UTR", "Translation_Start_Site",
-                         "two_hit")
+  #hard coded colors for variant classification if user doesnt provide any
+  if(is.null(colors)){
+    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black')
+    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','Silent','Missense_Mutation','IGR','Nonsense_Mutation',
+                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Dell','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
+  }else{
+    col = colors
+  }
 
 
 
@@ -150,7 +152,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
       p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
         theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
-        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
+        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of variants')+scale_x_continuous(limits = c(0, len))+
         geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')
 
       p = p+geom_point(data = prot.snp.sumamry1, aes(x = pos2, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+
@@ -158,7 +160,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     }else{
       p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
         theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
-        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of Variants')+scale_x_continuous(limits = c(0, len))+
+        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limit = c(0, maxCount+3))+xlab('')+ylab('Number of variants')+scale_x_continuous(limits = c(0, len))+
         geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')+
         theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
     }

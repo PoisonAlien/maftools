@@ -16,7 +16,7 @@
 #' @export
 
 
-plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5, color = NULL){
+plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5, color = NULL, showBarcodes = FALSE, textSize = 2){
 
   if(is.null(color)){
     col = RColorBrewer::brewer.pal(n = 6, name = 'Set3')
@@ -46,12 +46,16 @@ plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5, color = NULL
     xlab('')+theme(axis.line = element_line(colour = "black"), legend.title = element_blank(), axis.title.y = element_blank()) +
     scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))+cowplot::background_grid(major = 'xy', minor = 'none')
 
-  top = suppressWarnings(plot_grid(p1, p2, rel_widths = c(2,1)))
+  top = suppressWarnings(cowplot::plot_grid(p1, p2, rel_widths = c(2,1)))
 
   p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value, fill = variable))+geom_bar(stat = 'identity')+ cowplot::theme_cowplot() +
-    theme(legend.position = 'bottom', legend.title = element_blank(), axis.text.x = element_blank(),
-          axis.line.y = element_blank(), axis.line.x = element_blank())+ylab('Fraction of Mutations')+xlab('Samples')+
-    scale_fill_manual(values = col)
+    theme(legend.position = 'bottom', legend.title = element_blank(),  axis.ticks.x = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = textSize),
+          axis.line.y = element_blank(), axis.line.x = element_blank())+
+            ylab('Fraction of Mutations')+xlab('Samples')+scale_fill_manual(values = col)
+
+  if(!showBarcodes){
+    p3 = p3+theme(axis.text.x = element_blank())
+  }
 
   p = suppressWarnings(cowplot::plot_grid(top, p3, nrow = 2))
 

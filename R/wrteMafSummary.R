@@ -27,5 +27,5 @@ write.mafSummary = function(maf, basename = NULL){
   #write oncomatrix numeric
   write.table(x = maf@numericMatrix, file = paste(basename,'_oncomatrixNumeric.txt', sep=''), sep='\t', quote = FALSE, row.names = TRUE)
   #write main maf
-  write.table(x = maf@data, file = paste(basename,'_maftools.maf', sep=''), sep='\t', quote = FALSE, row.names = TRUE)
+  write.table(x = maf@data, file = paste(basename,'_maftools.maf', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
 }

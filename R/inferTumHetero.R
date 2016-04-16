@@ -23,7 +23,7 @@
 #' @param plot logical plots density curve and clusters.
 #' @param top if \code{tsb} is NULL, uses top n number of most mutated samples. Defaults to 5.
 #' @param genes genes to highlight on the plot. Default NULL.
-#' @param segFile path to CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean.
+#' @param segFile path to CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).
 #' @param savePlot If TRUE saves plot to output pdf
 #' @param width plot width. Default 6.
 #' @param height plot height. Default 5.
@@ -39,10 +39,13 @@
 
 inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet = FALSE, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, plot = TRUE, genes = NULL, savePlot = FALSE, width = 6, height = 5){
 
-  #suppressMessages(require(mclust))
-
+  #Main data
   dat = maf@data
 
+  #chromosme 1 to 22
+  onlyContigs = as.character(seq(1:22))
+
+  #Check if t_vaf exists
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
       print(colnames(dat))
@@ -52,6 +55,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     }
   }
 
+  #If tsb is not specified, choose top n samples.
   if(is.null(tsb)){
     tsb = as.character(maf@variants.per.sample[1:top,Tumor_Sample_Barcode])
   }
@@ -59,7 +63,12 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
   #empty df to store cluster info
   clust.dat = c()
 
+  #select only tsbs from main data
   dat.tsb = dat[Tumor_Sample_Barcode %in% tsb]
+
+  if(nrow(dat.tsb) < 1){
+    stop(paste(tsb, 'not found in MAF'))
+  }
 
   #Some TCGA studies have Start_Position and End_Position set to as 'position'. Change if so.
   if(length(grep(pattern = 'Start_position', x = colnames(dat.tsb))) > 0){
@@ -90,12 +99,25 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
   dat.tsb = dat.tsb[t_vaf > minVaf]
   dat.tsb = dat.tsb[t_vaf < maxVaf]
 
-  #Copynumber data
+  #Copynumber data : Read and Sort
   if(!is.null(segFile)){
     seg.dat = readSegs(segFile)
+    seg.dat$Chromosome = gsub(pattern = 'chr', replacement = '', x = seg.dat$Chromosome, fixed = TRUE)
+    seg.dat = seg.dat[!Chromosome %in% c('X', 'Y')]
+    seg.dat = seg.dat[Chromosome %in% onlyContigs]
+    seg.dat = seg.dat[order(as.numeric(Chromosome))]
+    setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
   }
 
+  #Change contig names 'chr' to numeric in maf (so it can match to copynumber data)
+  dat.tsb$Chromosome = gsub(pattern = 'chr', replacement = '', x = dat.tsb$Chromosome, fixed = TRUE)
+  dat.tsb = suppressWarnings(dat.tsb[order(as.numeric(Chromosome))]) #Generates warning for X and Y sorting, as numeric
+
+
+  ################# Map variants to segments and start clustering #######################
+
   for(i in 1:length(tsb)){
+
     #tsb.dat = dat.tsb[dat.tsb$Tumor_Sample_Barcode == tsb[i],]
     tsb.dat = dat.tsb[Tumor_Sample_Barcode == tsb[i]]
     tsb.dat = tsb.dat[!is.na(tsb.dat$t_vaf),]
@@ -108,13 +130,15 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
       seg = seg.dat[Sample %in% tsb[i]]
 
       if(nrow(seg) < 1){
-        message(paste('No copynumber data found for sample', tsb[i], sep = ' '))
-      } else{
+        stop(paste('No copynumber data found for sample', tsb[i], sep = ' '))
+      }else{
+
         #Overlap variants with segment data
         tsb.dat = foverlaps(x = tsb.dat, y = seg, by.x = c('Chromosome', 'Start_Position', 'End_Position'))
         tsb.dat = tsb.dat[,.(Hugo_Symbol, Chromosome, i.Start_Position, i.End_Position,
                              Tumor_Sample_Barcode, t_vaf, Start_Position, End_Position, Segment_Mean)]
         colnames(tsb.dat)[c(3:4, 7:8)] = c('Start_Position', 'End_Position', 'Segment_Start', 'Segment_End')
+
         #Convert log scale to absolute copynumber data
         suppressWarnings(tsb.dat[,CN := 2^(Segment_Mean)*2])
 
@@ -123,6 +147,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
           print(tsb.dat[is.na(tsb.dat$CN)])
           tsb.dat = tsb.dat[!is.na(tsb.dat$CN)]
         }
+
         #Remove copy number altered variants.
         tsb.dat.cn.vars = tsb.dat[!CN >1.5 & CN < 2.5]
         if(nrow(tsb.dat.cn.vars) > 0){
@@ -165,21 +190,27 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     tsb.dat.dens = ggplot(tsb.dat, aes(t_vaf))+geom_density(size = 1, alpha = 0.3)+geom_point(aes(y = 0, x = t_vaf, color = cluster), size = 3, alpha = 0.6)+
       cowplot::theme_cowplot()+theme(legend.position = 'bottom', plot.title = element_text(size = 12))+xlab('VAF')+xlim(0,1)+ylab('')+ggtitle(tsb[i])+cowplot::background_grid('xy')
 
+    #If any copy number altered variants, mark them with dark dots.
     if(tempCheck > 0){
       tsb.dat.dens = tsb.dat.dens+geom_point(data = tsb.dat.cn.vars, aes(y = 0, x = t_vaf), size = 3,alpha = 0.6)
+    }else{
+      tsb.dat.cn.vars = c()
     }
 
+    #Are there genes to highlight?
     if(!is.null(genes)){
-      genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars), filter = Hugo_Symbol %in% genes)
+      genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars, fill = T), filter = Hugo_Symbol %in% genes)
       if(nrow(genesDat) > 0){
         tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = genesDat,
                         aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
       }
     }
 
+    #Top boxplot
     tsb.dat.bar = ggplot(tsb.dat, aes(x = cluster, t_vaf, color = cluster))+geom_boxplot()+coord_flip()+xlab('')+ylab('')+cowplot::theme_cowplot()+
       theme(legend.position = 'none', axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())+ylim(0,1)
 
+    #Organize grid
     tsb.dat.gg = cowplot::plot_grid(tsb.dat.bar, tsb.dat.dens, nrow = 2, ncol =  1, rel_heights = c(0.25, 1))
 
     if(tempCheck > 0){
@@ -199,6 +230,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
 
   }
 
+  #Caluclate cluster means
   clust.dat.mean = clust.dat[,mean(t_vaf), by = .(Tumor_Sample_Barcode, cluster)]
   colnames(clust.dat.mean)[ncol(clust.dat.mean)] = 'meanVaf'
 

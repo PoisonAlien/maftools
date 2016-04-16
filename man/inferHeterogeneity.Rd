@@ -20,7 +20,7 @@ inferHeterogeneity(maf, tsb = NULL, top = 5, vafCol = NULL,
 
 \item{dirichlet}{If TRUE uses nonparametric dirichlet process for clustering. Default FALSE, uses finite mixture models.}
 
-\item{segFile}{path to CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean.}
+\item{segFile}{path to CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).}
 
 \item{ignChr}{ignore these chromosomes from analysis. e.g, sex chromsomes chrX, chrY. Default NULL.}
 
