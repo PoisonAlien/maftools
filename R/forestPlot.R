@@ -11,6 +11,17 @@
 #' @export
 #' @return ggplot object of the plot.
 #' @seealso \code{\link{mafCompare}}
+#' @examples
+#' ##Primary and Relapse APL
+#' primary.apl <- system.file("extdata", "APL_primary.maf.gz", package = "maftools")
+#' relapse.apl <- system.file("extdata", "APL_relapse.maf.gz", package = "maftools")
+#' ##Read mafs
+#' primary.apl <- read.maf(maf = primary.apl)
+#' relapse.apl <- read.maf(maf = relapse.apl)
+#' ##Perform analysis and draw forest plot.
+#' pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary',
+#' m2Name = 'Relapse', minMut = 5)
+#' forestPlot(mafCompareRes = pt.vs.rt, show = 'stat')
 
 forestPlot = function(mafCompareRes, pVal = 0.05, show = NULL, color = NULL, file = NULL, width = 5, height = 6){
 
@@ -33,8 +44,8 @@ forestPlot = function(mafCompareRes, pVal = 0.05, show = NULL, color = NULL, fil
   m.sigs[,log10OR := log10(or)]
   m.sigs$label = paste('pval: ',round(m.sigs$pval, digits = 5), sep = '')
   m.sigs$flow = ifelse(test = m.sigs$log10OR < 0, yes = m2Name, no = m1Name)
-  m.sigs$statRight = paste(m2Name,':' , m.sigs[,3,with =F][[1]], sep = '')
-  m.sigs$statLeft = paste(m1Name,':' , m.sigs[,2,with =F][[1]], sep = '')
+  m.sigs$statRight = paste(m2Name,':' , m.sigs[,3,with =FALSE][[1]], sep = '')
+  m.sigs$statLeft = paste(m1Name,':' , m.sigs[,2,with =FALSE][[1]], sep = '')
 
 
   if(!is.null(show)){

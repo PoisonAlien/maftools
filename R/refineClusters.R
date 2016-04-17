@@ -22,5 +22,12 @@ refineClusters = function(clusters){
     refinedClusters = rbind(refinedClusters, clust.dat)
   }
 
+  temp.dat = refinedClusters[cluster %in% c('CN_altered', 'outlier')]
+  refinedClusters = refinedClusters[!cluster %in% c('CN_altered', 'outlier')]
+
+  clust.lvls = levels(factor(refinedClusters$cluster))
+  refinedClusters$cluster = as.character(factor(refinedClusters$cluster, levels = clust.lvls, labels = 1:length(clust.lvls)))
+  refinedClusters = rbind(refinedClusters, temp.dat)
+
   return(refinedClusters)
 }

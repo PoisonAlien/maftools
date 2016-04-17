@@ -26,6 +26,14 @@ compare two cohorts (MAF).
 \details{
 Performs fisher test on 2x2 contigency table generated from two cohorts to find differentially mutated genes.
 }
+\examples{
+primary.apl <- system.file("extdata", "APL_primary.maf.gz", package = "maftools")
+relapse.apl <- system.file("extdata", "APL_relapse.maf.gz", package = "maftools")
+primary.apl <- read.maf(maf = primary.apl)
+relapse.apl <- read.maf(maf = relapse.apl)
+pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary',
+m2Name = 'Relapse', minMut = 5)
+}
 \seealso{
 \code{\link{forestPlot}}
 }

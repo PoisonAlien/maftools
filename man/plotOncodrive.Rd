@@ -28,4 +28,7 @@ laml.sig <- oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5)
 plotOncodrive(res = laml.sig, fdrCutOff = 0.1)
 
 }
+\seealso{
+\code{\link{oncodrive}}
+}
 

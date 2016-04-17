@@ -2,7 +2,8 @@
 #' @details this function takes segmented copy number data and plots it. If MAF object is specified, all mutations are highlighted on the plot.
 #' @param cbsFile CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).
 #' @param maf optional \code{\link{MAF}}
-#' @param tsb If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples.
+#' @param tsb If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. Make sure sample names in
+#' Sample column matches to those in Tumor_Sample_Barcodes of MAF.
 #' @param chr Just plot this chromosome.
 #' @param savePlot If true plot is saved as pdf.
 #' @param width width of plot
@@ -12,7 +13,7 @@
 #' @return ggplot object
 #' @export
 #' @examples
-#' tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.009.hg19.seg.txt", package = "maftools")
+#' tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package = "maftools")
 #' plotCBSsegments(cbsFile = tcga.ab.009.seg)
 #'
 

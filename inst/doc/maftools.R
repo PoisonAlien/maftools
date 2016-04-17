@@ -90,13 +90,34 @@ laml.pfam$proteinSummary[,1:7, with = FALSE]
 #Domain summary (Printing first 3 columns for display convenience)
 laml.pfam$domainSummary[,1:3, with = FALSE]
 
+## ----results='hide', message=FALSE---------------------------------------
+#Primary APL MAF
+primary.apl = system.file("extdata", "APL_primary.maf.gz", package = "maftools")
+primary.apl = read.maf(maf = primary.apl)
+#Relapse APL MAF
+relapse.apl = system.file("extdata", "APL_relapse.maf.gz", package = "maftools")
+relapse.apl = read.maf(maf = relapse.apl)
+
+## ------------------------------------------------------------------------
+#We will consider only genes which are mutated in at-least in 5 samples in one of the cohort, to avoid single mutated genes.
+pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'PrimaryAPL', m2Name = 'RelapseAPL', minMut = 5)
+print(pt.vs.rt)
+
+## ---- fig.width=6, fig.height=6, fig.align='center'----------------------
+apl.pt.vs.rt.fp = forestPlot(mafCompareRes = pt.vs.rt, pVal = 0.05, show = 'stat', color = c('royalblue', 'maroon'))
+
 ## ---- echo = TRUE, fig.align='center', fig.height=5, fig.width=7, eval=T----
 #We will run this for sample TCGA.AB.2972
-inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
+tcga.ab.2972.het = inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
+print(tcga.ab.2972.het$clusterMeans)
+#Visualizing results
+plotClusters(clusters = tcga.ab.2972.het)
 
 ## ---- fig.align='center', fig.height=5, fig.width=7, eval=T--------------
 seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
-tcga.ab.3009.het = inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.3009', vafCol = 'i_TumorVAF_WU', segFile = seg, genes = c('NF1', 'SUZ12'), savePlot = FALSE)
+tcga.ab.3009.het = inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.3009', segFile = seg)
+#Visualizing results. Highlighting those variants on copynumber altered variants.
+plotClusters(clusters = tcga.ab.3009.het, genes = 'CN_altered', showCNvars = TRUE)
 
 ## ---- results='hide', message=F, fig.align='center',fig.width=7, fig.height=6, eval = T----
 #we will specify for random 4 patients.

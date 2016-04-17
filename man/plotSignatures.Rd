@@ -19,4 +19,7 @@ ggplot object if contributions is TRUE
 \description{
 Plots decomposed mutational signatures as a barplot.
 }
+\seealso{
+\code{\link{trinucleotideMatrix}}
+}
 

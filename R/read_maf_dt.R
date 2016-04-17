@@ -10,6 +10,7 @@
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' @import data.table
 #' @import ggplot2
+#' @seealso \code{\link{plotmafSummary}} \code{\link{write.mafSummary}}
 #' @export
 
 

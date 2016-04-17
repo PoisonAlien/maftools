@@ -6,7 +6,10 @@
 #' @param width width of the plot, in inches.
 #' @param height height of the plot, in inches.
 #' @param color named vector of colors for each coversion class.
+#' @param showBarcodes Whether to include sample names for barplot
+#' @param textSize fontsize if showBarcodes is TRUE. Deafult 2.
 #' @return None.
+#' @seealso \code{\link{titv}}
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)

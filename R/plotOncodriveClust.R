@@ -7,6 +7,7 @@
 #' @param fdrCutOff fdr cutoff to call a gene as a driver.
 #' @param useFraction if TRUE uses a fraction of total variants as X-axis scale instead of absolute counts.
 #' @return a ggplot object which can be further modified.
+#' @seealso \code{\link{oncodrive}}
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)

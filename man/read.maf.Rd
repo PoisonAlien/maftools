@@ -23,4 +23,7 @@ Takes tab delimited MAF (can be plain text or gz compressed) file as an input an
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 }
+\seealso{
+\code{\link{plotmafSummary}} \code{\link{write.mafSummary}}
+}
 

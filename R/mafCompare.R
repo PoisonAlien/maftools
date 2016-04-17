@@ -7,6 +7,13 @@
 #' @param m2Name optional name for second cohort
 #' @param minMut Consider only genes with minimum this number of samples mutated in atleast one of the cohort for analysis. Helful to ignore single mutated genes. Default 5.
 #' @return result list
+#' @examples
+#' primary.apl <- system.file("extdata", "APL_primary.maf.gz", package = "maftools")
+#' relapse.apl <- system.file("extdata", "APL_relapse.maf.gz", package = "maftools")
+#' primary.apl <- read.maf(maf = primary.apl)
+#' relapse.apl <- read.maf(maf = relapse.apl)
+#' pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary',
+#' m2Name = 'Relapse', minMut = 5)
 #' @export
 #' @seealso \code{\link{forestPlot}}
 

@@ -17,6 +17,10 @@ plotTiTv(res = NULL, file = NULL, width = 6, height = 5, color = NULL,
 \item{height}{height of the plot, in inches.}
 
 \item{color}{named vector of colors for each coversion class.}
+
+\item{showBarcodes}{Whether to include sample names for barplot}
+
+\item{textSize}{fontsize if showBarcodes is TRUE. Deafult 2.}
 }
 \value{
 None.
@@ -30,5 +34,8 @@ laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 laml.titv = titv(maf = laml, useSyn = TRUE)
 plotTiTv(laml.titv)
 
+}
+\seealso{
+\code{\link{titv}}
 }
 

@@ -12,7 +12,8 @@ plotClusters(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE,
 
 \item{tsb}{sample to plot from clustering results. Default plots all samples from results.}
 
-\item{genes}{genes to highlight on the plot. Default NULL.}
+\item{genes}{genes to highlight on the plot. Can be a vector of gene names, \code{CN_altered} to label copy number altered varinats.
+or \code{all} to label all genes. Default NULL.}
 
 \item{showCNvars}{show copy numbered altered variants on the plot. Default FALSE.}
 
@@ -23,8 +24,9 @@ plotClusters(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE,
 \item{height}{plot height. Default 5.}
 
 \item{colors}{manual colors for clusters. Default NULL.}
-
-\item{return}{returns nothing.}
+}
+\value{
+returns nothing.
 }
 \description{
 Plots results from inferHeterogeneity.
@@ -32,8 +34,9 @@ Plots results from inferHeterogeneity.
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-seg = system.file('extdata', 'TCGA.AB.009.hg19.seg.txt', package = 'maftools')
-TCGA.AB.3009.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.3009', segFile = seg, vafCol = 'i_TumorVAF_WU')
+seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
+TCGA.AB.3009.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.3009',
+segFile = seg, vafCol = 'i_TumorVAF_WU')
 plotClusters(TCGA.AB.3009.clust, genes = c('NF1', 'SUZ12'), showCNvars = TRUE)
 }
 \seealso{

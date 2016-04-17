@@ -31,4 +31,7 @@ S4 class for storing summarized MAF.
 
 \item{\code{maf.silent}}{subset of main MAF containing only silent variants}
 }}
+\seealso{
+\code{\link{getGeneSummary}} \code{\link{getSampleSummary}} \code{\link{getFields}}
+}
 

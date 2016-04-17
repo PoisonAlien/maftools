@@ -7,6 +7,7 @@
 #' @param ... further plot options passed to \code{\link{barplot2}}
 #' @return ggplot object if contributions is TRUE
 #' @importFrom gplots barplot2
+#' @seealso \code{\link{trinucleotideMatrix}}
 #' @export
 plotSignatures = function(nmfRes = NULL, contributions = FALSE, ...){
 

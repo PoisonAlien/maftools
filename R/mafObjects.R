@@ -12,6 +12,7 @@
 #' @slot maf.silent subset of main MAF containing only silent variants
 #' @exportClass MAF
 #' @import methods
+#' @seealso \code{\link{getGeneSummary}} \code{\link{getSampleSummary}} \code{\link{getFields}}
 
 ## MAF object
 MAF <- setClass(Class = 'MAF', slots =  c(data = 'data.table', variants.per.sample = 'data.table', variant.type.summary = 'data.table',
