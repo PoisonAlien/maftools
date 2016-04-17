@@ -56,6 +56,36 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     tsb = as.character(maf@variants.per.sample[1:top,Tumor_Sample_Barcode])
   }
 
+  #Copynumber data : Read and Sort
+  if(!is.null(segFile)){
+    seg.dat = readSegs(segFile)
+    seg.dat$Chromosome = gsub(pattern = 'chr', replacement = '', x = seg.dat$Chromosome, fixed = TRUE)
+    seg.dat = seg.dat[!Chromosome %in% c('X', 'Y')]
+    seg.dat = seg.dat[Chromosome %in% onlyContigs]
+    seg.dat = seg.dat[order(as.numeric(Chromosome))]
+    setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
+
+    seg.tsbs = unique(seg.dat[,Sample])
+
+    #Match sample names from segmentation files to maf file
+    tsb = seg.tsbs[seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
+    tsb.mismatch = seg.tsbs[!seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
+    if(length(tsb) > 0){
+      message('Copy number data found for samples:')
+      print(tsb)
+      if(length(tsb.mismatch) > 0){
+        message('Removed mismatch samples:')
+        print(tsb.mismatch)
+      }
+    }else{
+      message('Sample names from Segmentation file:')
+      print(seg.tsbs)
+      message('Sample names from MAF:')
+      print(as.character(maf@variants.per.sample[,Tumor_Sample_Barcode]))
+      stop('Sample names from segmentation file do not match to maf file.')
+    }
+  }
+
   #empty df to store cluster info
   clust.dat = c()
 
@@ -94,36 +124,6 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
   #Filter low and high vaf variants
   dat.tsb = dat.tsb[t_vaf > minVaf]
   dat.tsb = dat.tsb[t_vaf < maxVaf]
-
-  #Copynumber data : Read and Sort
-  if(!is.null(segFile)){
-    seg.dat = readSegs(segFile)
-    seg.dat$Chromosome = gsub(pattern = 'chr', replacement = '', x = seg.dat$Chromosome, fixed = TRUE)
-    seg.dat = seg.dat[!Chromosome %in% c('X', 'Y')]
-    seg.dat = seg.dat[Chromosome %in% onlyContigs]
-    seg.dat = seg.dat[order(as.numeric(Chromosome))]
-    setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
-
-    seg.tsbs = unique(seg.dat[,Sample])
-
-    #Match sample names from segmentation files to maf file
-    tsb = seg.tsbs[seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
-    tsb.mismatch = seg.tsbs[!seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
-    if(length(tsb) > 0){
-      message('Copy number data found for samples:')
-      print(tsb)
-      if(length(tsb.mismatch) > 0){
-        message('Removed mismatch samples:')
-        print(tsb.mismatch)
-      }
-    }else{
-      message('Sample names from Segmentation file:')
-      print(seg.tsbs)
-      message('Sample names from MAF:')
-      print(as.character(maf@variants.per.sample[,Tumor_Sample_Barcode]))
-      stop('Sample names from segmentation file do not match to maf file.')
-    }
-  }
 
   #Change contig names 'chr' to numeric in maf (so it can match to copynumber data)
   dat.tsb$Chromosome = gsub(pattern = 'chr', replacement = '', x = dat.tsb$Chromosome, fixed = TRUE)
