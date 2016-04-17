@@ -129,9 +129,9 @@ Note that `lollipopPlot` warns user on availability of diferent transcripts for 
 We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. Sometimes, many mutations are clustered within a range of few amino acid positons. In that case we can use `repel` option which tries to repel points for clear representation. 
 
 ```{r,fig.height=3,fig.width=8,fig.align='center'}
-#Lets mutations on KIT gene, without repel option.
+#Lets plot mutations on KIT gene, without repel option.
 kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222')
-#Same plot with repel=T
+#Same plot with repel=TRUE
 kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE)
 ```
 
