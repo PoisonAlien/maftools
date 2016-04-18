@@ -59,9 +59,9 @@ plotTiTv(res = laml.titv)
 dnmt3a.lpop = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change')
 
 ## ----fig.height=3,fig.width=8,fig.align='center'-------------------------
-#Lets mutations on KIT gene, without repel option.
+#Lets plot mutations on KIT gene, without repel option.
 kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222')
-#Same plot with repel=T
+#Same plot with repel=TRUE
 kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE)
 
 ## ---- fig.height=4,fig.width=8,fig.align='center'------------------------
@@ -99,7 +99,7 @@ relapse.apl = system.file("extdata", "APL_relapse.maf.gz", package = "maftools")
 relapse.apl = read.maf(maf = relapse.apl)
 
 ## ------------------------------------------------------------------------
-#We will consider only genes which are mutated in at-least in 5 samples in one of the cohort, to avoid single mutated genes.
+#We will consider only genes which are mutated in at-least in 5 samples in one of the cohort, to avoid bias due to single mutated genes.
 pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'PrimaryAPL', m2Name = 'RelapseAPL', minMut = 5)
 print(pt.vs.rt)
 

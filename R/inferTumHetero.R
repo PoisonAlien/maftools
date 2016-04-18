@@ -51,12 +51,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     }
   }
 
-  #If tsb is not specified, choose top n samples.
-  if(is.null(tsb)){
-    tsb = as.character(maf@variants.per.sample[1:top,Tumor_Sample_Barcode])
-  }
-
-  #Copynumber data : Read and Sort
+  #If given Copynumber data : Read, Sort and match it to samples in maf
   if(!is.null(segFile)){
     seg.dat = readSegs(segFile)
     seg.dat$Chromosome = gsub(pattern = 'chr', replacement = '', x = seg.dat$Chromosome, fixed = TRUE)
@@ -68,11 +63,11 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     seg.tsbs = unique(seg.dat[,Sample])
 
     #Match sample names from segmentation files to maf file
-    tsb = seg.tsbs[seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
+    seg.tsb = seg.tsbs[seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
     tsb.mismatch = seg.tsbs[!seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
-    if(length(tsb) > 0){
+    if(length(seg.tsb) > 0){
       message('Copy number data found for samples:')
-      print(tsb)
+      print(seg.tsb)
       if(length(tsb.mismatch) > 0){
         message('Removed mismatch samples:')
         print(tsb.mismatch)
@@ -83,6 +78,15 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
       message('Sample names from MAF:')
       print(as.character(maf@variants.per.sample[,Tumor_Sample_Barcode]))
       stop('Sample names from segmentation file do not match to maf file.')
+    }
+  }
+
+  #If tsb is not specified, choose top n samples or all samples in segmentation file.
+  if(is.null(tsb)){
+    if(!is.null(segFile)){
+      tsb = seg.tsb
+    }else{
+      tsb = as.character(maf@variants.per.sample[1:top,Tumor_Sample_Barcode])
     }
   }
 
@@ -134,84 +138,51 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
 
   for(i in 1:length(tsb)){
 
-    #tsb.dat = dat.tsb[dat.tsb$Tumor_Sample_Barcode == tsb[i],]
+    message(paste('Processing ', tsb[i],'..', sep=''))
+
     tsb.dat = dat.tsb[Tumor_Sample_Barcode == tsb[i]]
     tsb.dat = tsb.dat[!is.na(tsb.dat$t_vaf),]
 
-    #nvm this. Variable for later use
-    tempCheck = 0
-
-    if(!is.null(segFile)){
-
-      seg = seg.dat[Sample %in% tsb[i]]
-
-      if(nrow(seg) < 1){
-        stop(paste('No copynumber data found for sample', tsb[i], sep = ' '))
-      }else{
-
-        #Overlap variants with segment data
-        tsb.dat = foverlaps(x = tsb.dat, y = seg, by.x = c('Chromosome', 'Start_Position', 'End_Position'))
-        tsb.dat = tsb.dat[,.(Hugo_Symbol, Chromosome, i.Start_Position, i.End_Position,
-                             Tumor_Sample_Barcode, t_vaf, Start_Position, End_Position, Segment_Mean)]
-        colnames(tsb.dat)[c(3:4, 7:8)] = c('Start_Position', 'End_Position', 'Segment_Start', 'Segment_End')
-
-        #Convert log scale to absolute copynumber data
-        suppressWarnings(tsb.dat[,CN := 2^(Segment_Mean)*2])
-
-        if(nrow(tsb.dat[is.na(tsb.dat$CN)]) > 0){
-          message(paste('Removed ', nrow(tsb.dat[is.na(tsb.dat$CN)]), ' variants with no copy number data.', sep = ''))
-          print(tsb.dat[is.na(tsb.dat$CN)])
-          tsb.dat = tsb.dat[!is.na(tsb.dat$CN)]
-        }
-
-        #Remove copy number altered variants.
-        tsb.dat.cn.vars = tsb.dat[!CN >1.5 & CN < 2.5]
-        if(nrow(tsb.dat.cn.vars) > 0){
-          message('Copy number altered variants:')
-          tsb.dat.cn.vars$cluster = 'CN_altered'
-          print(tsb.dat.cn.vars)
-          tempCheck = 1
-        }
-        tsb.dat = tsb.dat[CN >1.5 & CN < 2.5] #Copy number neutral variants
-      }
-    }
-
-    #cluster
-
-    if(dirichlet){
-
-      #Awesome blog post on non-finite mixture models
-      #http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/
-
-      #Initiate mcmc parameters
-      nburn = 1000
-      nsave = 10000
-      nskip = 20
-      ndisplay = 1000
-      mcmc = list(nburn=nburn,nsave=nsave,nskip=nskip,ndisplay=ndisplay)
-      #Hyper parameters
-      prior1 = list(alpha=0.05,m1=rep(0,1),psiinv1=diag(0.5,1),nu1=6,tau1=0.2,tau2=1000)
-      #Run main function
-      dp = DPpackage::DPdensity(y = tsb.dat[,t_vaf]*100, prior = prior1, mcmc = mcmc, status = TRUE)
-      #Assign clusters
-      tsb.dat$cluster = as.character(dp$state$ss)
+    if(nrow(tsb.dat) < 3){
+      #Less than 3 variants might not be useful.
+      message('Too few mutations for clustering. Skipping..')
     }else{
-      #More than 7 clusters possible ? May not be biologically meaningful.
-      #Use finite mixture model
-      tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7)
-      tsb.dat$cluster = as.character(tsb.cluster$classification)
+      #nvm this. Variable for later use
+      tempCheck = 0
+
+      if(!is.null(segFile)){
+        if(tsb[i] %in% seg.tsb){
+          seg = seg.dat[Sample %in% tsb[i]]
+          #Map copynumber and variants; filter variants on CN altered regions.
+          seg.res = filterCopyNumber(seg, tsb.dat, tempCheck, tsb[i])
+          tsb.dat = seg.res[[1]]
+          tsb.dat.cn.vars = seg.res[[2]]
+          tempCheck = seg.res[[3]]
+        }
+      }
+
+      #cluster
+      if(dirichlet){
+        #Awesome blog post on non-finite mixture models
+        #http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/
+        tsb.dat = dirichletClusters(tsb.dat)
+      }else{
+        #More than 7 clusters possible ? May not be biologically meaningful.
+        #Use finite mixture model
+        tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7)
+        tsb.dat$cluster = as.character(tsb.cluster$classification)
+      }
+
+      #Refine cluster assignment (z score > 2; mark it as an outlier)
+      tsb.dat = refineClusters(clusters = tsb.dat)
+
+      if(tempCheck == 1){
+        tsb.dat = rbind(tsb.dat, tsb.dat.cn.vars)
+      }
+
+      #Update result table
+      clust.dat = rbind(clust.dat, tsb.dat)
     }
-
-    #Refine cluster assignment (z score > 2; mark it as an outlier)
-    tsb.dat = refineClusters(clusters = tsb.dat)
-
-    if(tempCheck == 1){
-      tsb.dat = rbind(tsb.dat, tsb.dat.cn.vars)
-    }
-
-    #Update result table
-    clust.dat = rbind(clust.dat, tsb.dat)
-
   }
 
   #Caluclate cluster means

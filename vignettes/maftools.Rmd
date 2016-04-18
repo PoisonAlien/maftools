@@ -135,8 +135,8 @@ kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labe
 kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE)
 ```
 
-##Plotting copy number data
-Many cancer genomic studies involve copy number data generated either from sequencing or SNP chip arrays. Copy number analysis provides us a lot of information from genome wide copy number aberations to tumor purity. Most of the time copy number data is stored as segments, with each segment represented by a log ratio of copy number changes compared to matched normals. There are many segmentation algorithms, with the most popular being Circular Binary Segmentation implemented in [DNACopy bioconductor](https://www.bioconductor.org/packages/3.3/bioc/html/DNAcopy.html) package. We can plot such segmented copy number data and map all mutations on to it. It provides a quick way of knowing which variants (in a way which genes) are located on copy number altered genomic regions.
+##Integrating somatic variants and copy number alterations
+Many cancer genomic studies involve copy number data generated either from sequencing or SNP chip arrays. Copy number analysis provides us a lot of information from genome wide copy number aberations to tumor purity. Most of the time copy number data is stored as segments, with each segment represented by a log ratio of copy number changes compared to matched normals. There are many segmentation algorithms, with the most popular being Circular Binary Segmentation implemented in [DNACopy bioconductor](https://www.bioconductor.org/packages/3.3/bioc/html/DNAcopy.html). We can plot such segmented copy number data and map all mutations on to it. It provides a quick way of knowing which variants (in a way which genes) are located on copy number altered genomic regions.
 
 ```{r, fig.height=4,fig.width=8,fig.align='center'}
 tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package = "maftools")
@@ -190,7 +190,7 @@ laml.pfam$domainSummary[,1:3, with = FALSE]
 Above plot and results shows AdoMet_MTases domain is frequently mutated, but number genes with this domain is just one (DNMT3A) compared to other domains such as 7tm_1 domain, which is mutated across 24 different genes. This shows the importance of mutations in methyl transfer domains in Leukemia.
 
 ##Comparing two cohorts (MAFs)
-Every cancer is driven by a speicifc set of driver genes. We can compare two different cohorts to detect such differentally mutated (driver) genes. For example, recent article by [Madan et. al](http://www.ncbi.nlm.nih.gov/pubmed/27063598) [5](references), have shown relapse specific mutations in PML and RARA genes which were absent during primary stage of the Acute Promyelocytic Leukemia. This difference can be detected using function `mafComapre` which performs fisher test on all genes between two cohorts to detect differentally mutated genes.
+Cancers differ from each other in terms of their mutation pattern. We can compare two different cohorts to detect such differentally mutated genes. For example, recent article by [Madan et. al](http://www.ncbi.nlm.nih.gov/pubmed/27063598) [5](references), have shown that patients with relapsed APL (Acute Promyelocytic Leukemia) tends to have mutations in PML and RARA genes, which were absent during primary stage of the disease. This difference between two cohorts (in this case primary and relapse APL) can be detected using function `mafComapre`, which performs fisher test on all genes between two cohorts to detect differentally mutated genes.
 
 ```{r results='hide', message=FALSE}
 #Primary APL MAF
@@ -202,7 +202,7 @@ relapse.apl = read.maf(maf = relapse.apl)
 ```
 
 ```{r}
-#We will consider only genes which are mutated in at-least in 5 samples in one of the cohort, to avoid single mutated genes.
+#We will consider only genes which are mutated in at-least in 5 samples in one of the cohort, to avoid bias due to single mutated genes.
 pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'PrimaryAPL', m2Name = 'RelapseAPL', minMut = 5)
 print(pt.vs.rt)
 ```
