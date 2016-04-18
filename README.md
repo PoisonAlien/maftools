@@ -83,21 +83,9 @@ plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median')
 #We will plot top ten mutated genes
 oncoplot(maf = laml, top = 10)
 ```
-![image2](http://github.com/PoisonAlien/maftoolsDump/tree/master/images/image2)
+![image2](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image3)
 
 Use arguments drawRowBar, drawColBar to control side and upper barplots.
-
-#### Adding annotations to oncoplot
-We can add annotations to the bottom of the plot.
-```{r, echo=TRUE, fig.height=9,fig.width=12}
-#Read FAB classification of TCGA LAML barodes.
-laml.fab.anno = system.file('extdata', 'tcga_laml_fab_annotation.txt', package = 'maftools')
-laml.fab.anno = read.delim(laml.fab.anno, sep = '\t')
-head(laml.fab.anno)
-#We will plot same top ten mutated genes with FAB classification as annotation.
-oncoplot(maf = laml, top = 10, annotation = laml.fab.anno)
-```
-![image3](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image3)
 
 #### Classify SNVs into Trasitions and Transversions
 Each Single Nucleotide Variant can be classified into [Trasition or Transversion]((http://www.mun.ca/biology/scarr/Transitions_vs_Transversions.html)). Variants can also be divided into six different classes, which helps to know us which kind of conversions are more frequent in a given type of cancer.  
@@ -105,7 +93,7 @@ Each Single Nucleotide Variant can be classified into [Trasition or Transversion
 ```{r, echo=TRUE,fig.height=4,fig.width=6, warning=FALSE,fig.align='center'}
 laml.titv = titv(maf = laml, useSyn = T)
 ```
-![image5](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image5.png)
+![image5](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image5.png)
 
 It also returns a list of dataframes with raw counts for each conversion, fraction of each conversion and Ti to Tv ratios.
 
@@ -114,7 +102,10 @@ We can map protein changes on to the Protein structure similar to those draw by 
 ```{r, echo = TRUE, fig.height=4,fig.width=7,fig.align='center'}
 lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = 'all')
 ```
-![image8](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image8)
+![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image8)
+
+##Integrating somatic variants and copy number alterations
+![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image12)
 
 ####Detcting cancer causing genes.
 maftools comes with the function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hotspots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full)<sup>2</sup>.
@@ -123,7 +114,7 @@ maftools comes with the function `oncodrive` which identifies cancer genes (driv
 laml.sig = oncodrive(maf = aml, AACol = 'Protein_Change', minMut = 5, pvalMethod = 'zscore')
 plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = T)
 ```
-![image10](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image10)
+![image10](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image10)
 
 ####Summarizing by pfam domains.
 `pfamDomain` adds domain information and summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce of MuSic tool<sup>3</sup>.
@@ -135,7 +126,10 @@ laml.pfam$proteinSummary[,1:7, with = F]
 #Domain summary (Printing first 3 columns for display convenience)
 laml.pfam$domainSummary[,1:3, with = F]
 ```
-![image11](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image11.png)
+![image11](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image11.png)
+
+####Comparing two cohorts for differentially mutated genes
+![image11](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image13.png)
 
 #### Annotating variants with Oncotator
 We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.
@@ -166,7 +160,7 @@ mutExclusive(maf = laml, genes = c('NPM1', 'RUNX1'))
 
 oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNonMutated = T)
 ```
-![image6](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image6)
+![image6](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image6)
 
 ####Tumor Heterogenity
 Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Although mlcust performs fairly well, there are other tools like [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation<sup>5</sup>.
@@ -175,7 +169,7 @@ Tumors are generally heterogenous i.e, consist of multiple clones. This heteroge
 #We will run this for sample TCGA.AB.2972
 inferHetrogentiy(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'TumorVAF_WU')
 ```
-![image7](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image7)
+![image7](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image7)
 
 #### Extract Mutation Signatures
 Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such signatures, derived from over 7000 cancer samples. Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [21 validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures)<sup>6</sup>. 
@@ -204,7 +198,7 @@ lihc.signatures = extractSignatures(mat = lihc.tnm)
 ```
 Signature_2 which corelates will validated Signature_12 was observed in Liver samples characterised by T>C mutations showing transcriptional strand bias<sup>8</sup>.
 
-![image9](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image9)
+![image9](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image9)
 
 #### Add read count and allele frequencies to maf.
 `addReadCounts()` adds read depths for reference and alternate allele from corresponding bam file. This internally runs [bam-readcount](https://github.com/genome/bam-readcount) to get the counts and adds them to maf file. 
