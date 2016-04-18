@@ -18,12 +18,15 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 1. Analysis
   * Detect cancer driver genes based on positional clustering of variants<sup>2</sup>.
   * Detect Mutually exclusive set of genes<sup>5</sup>.
+  * Compare two MAF files (cohorts) to detect differentially mutated genes.
+  * Add pfam domains and summarize.
   * Extract mutational signatures and compare them to validated signatures.
   * Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation.
-  * Add pfam domains and summarize.
 2. Visualization
   * Make oncoplots.
   * Make lollipop plots.
+  * Map variants on copy number (CBS) segments 
+  * Forest plots
   * Plot Transitions and Transversions. 
   * Plot maf summary.
 3. Annotation
@@ -71,7 +74,7 @@ write.mafSummary(maf = laml, basename = 'laml')
 ```{r, echo=TRUE}
 plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median')
 ```
-![image1](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image1.png)
+![image1](https://github.com/PoisonAlien/PoisonAlien.github.io/tree/master/images/image1.png)
 
 #### oncoplot to summarize maf file
 `oncoplot` This function uses modified oncoprint script from [ComplexHeatmap](https://github.com/jokergoo/ComplexHeatmap) package by [Zuguang Gu](https://github.com/jokergoo) with added functionalities, while taking care of format conversions.
