@@ -83,7 +83,7 @@ plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median')
 #We will plot top ten mutated genes
 oncoplot(maf = laml, top = 10)
 ```
-![image2](https://github.com/PoisonAlien/maftoolsDump/tree/master/images/image2)
+![image2](http://github.com/PoisonAlien/maftoolsDump/tree/master/images/image2)
 
 Use arguments drawRowBar, drawColBar to control side and upper barplots.
 
