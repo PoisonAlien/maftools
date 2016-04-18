@@ -97,15 +97,15 @@ laml.titv = titv(maf = laml, useSyn = T)
 
 It also returns a list of dataframes with raw counts for each conversion, fraction of each conversion and Ti to Tv ratios.
 
-##Lollipop plots for amino acid changes.
+###Lollipop plots for amino acid changes.
 We can map protein changes on to the Protein structure similar to those draw by [ProteinPaint](https://pecan.stjude.org/proteinpaint/TP53/) or [MutationMapper](http://www.cbioportal.org/mutation_mapper.jsp). Labelling requires [ggrepel](https://cran.r-project.org/web/packages/ggrepel/index.html) package.
 ```{r, echo = TRUE, fig.height=4,fig.width=7,fig.align='center'}
 lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = 'all')
 ```
 ![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image8)
 
-##Integrating somatic variants and copy number alterations
-![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image12)
+###Integrating somatic variants and copy number alterations
+![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image12.png)
 
 ####Detcting cancer causing genes.
 maftools comes with the function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hotspots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full)<sup>2</sup>.
@@ -163,7 +163,7 @@ oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNo
 ![image6](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image6)
 
 ####Tumor Heterogenity
-Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Although mlcust performs fairly well, there are other tools like [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation<sup>5</sup>.
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Although this tool performs fairly well, there are other tools like [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation<sup>5</sup>.
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7}
 #We will run this for sample TCGA.AB.2972
@@ -215,3 +215,7 @@ For full documentation please refer to [vignette](http://poisonalien.github.io).
 6.	Miller, C.A., et al., SciClone: inferring clonal architecture and tracking the spatial and temporal patterns of tumor evolution. PLoS Comput Biol, 2014. 10(8): p. e1003665.
 7.	Alexandrov, L.B., et al., Signatures of mutational processes in human cancer. Nature, 2013. 500(7463): p. 415-21.
 8.	Gaujoux, R. and C. Seoighe, A flexible R package for nonnegative matrix factorization. BMC Bioinformatics, 2010. 11: p. 367.
+
+#### Powered By:
+[data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.6
+[ggplot2](https://github.com/hadley/ggplot2)
