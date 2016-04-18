@@ -217,5 +217,5 @@ For full documentation please refer to [vignette](http://poisonalien.github.io).
 8.	Gaujoux, R. and C. Seoighe, A flexible R package for nonnegative matrix factorization. BMC Bioinformatics, 2010. 11: p. 367.
 
 #### Powered By:
-[data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.6
-[ggplot2](https://github.com/hadley/ggplot2)
+* [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.6
+* [ggplot2](https://github.com/hadley/ggplot2)
