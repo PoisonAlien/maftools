@@ -74,7 +74,7 @@ write.mafSummary(maf = laml, basename = 'laml')
 ```{r, echo=TRUE}
 plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median')
 ```
-![image1](https://github.com/PoisonAlien/PoisonAlien.github.io/tree/master/images/image1.png)
+![image1](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image1.png)
 
 #### oncoplot to summarize maf file
 `oncoplot` This function uses modified oncoprint script from [ComplexHeatmap](https://github.com/jokergoo/ComplexHeatmap) package by [Zuguang Gu](https://github.com/jokergoo) with added functionalities, while taking care of format conversions.
