@@ -62,18 +62,18 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
 
     #Are there genes to highlight?
     if(!is.null(genes)){
-      if(genes == 'all'){
+      if(length(genes > 1)){
+        genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE), filter = Hugo_Symbol %in% genes)
+        if(nrow(genesDat) > 0){
+          tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = genesDat,
+                                                               aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
+        }
+      }else if(genes == 'all'){
         tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE),
                                                              aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
       }else if(genes == 'CN_altered'){
         if(nrow(tsb.dat.cn.vars) > 0){
           tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = tsb.dat.cn.vars,
-                                                               aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
-        }
-      }else{
-        genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE), filter = Hugo_Symbol %in% genes)
-        if(nrow(genesDat) > 0){
-          tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = genesDat,
                                                                aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
         }
       }
