@@ -2,14 +2,15 @@
 #' @details this function takes segmented copy number data and plots it. If MAF object is specified, all mutations are highlighted on the plot.
 #' @param cbsFile CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).
 #' @param maf optional \code{\link{MAF}}
-#' @param tsb If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. Make sure sample names in
-#' Sample column matches to those in Tumor_Sample_Barcodes of MAF.
+#' @param tsb If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. If you are maping maf, make sure sample names in
+#' Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF.
 #' @param chr Just plot this chromosome.
 #' @param savePlot If true plot is saved as pdf.
 #' @param width width of plot
 #' @param height height of plot
 #' @param labelAll If true and if maf object is specified, maps all mutataions from maf onto segments. Default FALSE, maps only variants on copy number altered regions.
 #' @param genes highlight only these variants
+#' @param writeTable If true and if maf object is specified, writes plot data with each variant and its corresponding copynumber to an output file.
 #' @return ggplot object
 #' @export
 #' @examples
@@ -17,7 +18,7 @@
 #' plotCBSsegments(cbsFile = tcga.ab.009.seg)
 #'
 
-plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, savePlot = FALSE, width = 6, height = 3, labelAll = FALSE, genes = NULL){
+plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, savePlot = FALSE, width = 6, height = 3, labelAll = FALSE, genes = NULL, writeTable = FALSE){
 
   if(is.null(cbsFile)){
     stop('Required segmentation file !')
@@ -99,6 +100,10 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
         cowplot::save_plot(filename = paste(tsb[i], '_segPlot.pdf', sep = ''), plot = p, base_height = height, base_width = width)
       }
 
+      if(writeTable){
+        tsb.mapped.dat = tsb.mapped[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, Segment_Start, Segment_End, Segment_Mean, CN)]
+        write.table(x = tsb.mapped.dat, file = paste(tsb[i], '_segData.tsv', sep = ''), sep='\t', quote = F, row.names = F)
+      }
     }
 
   }else{

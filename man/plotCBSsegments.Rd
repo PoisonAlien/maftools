@@ -6,15 +6,15 @@
 \usage{
 plotCBSsegments(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL,
   savePlot = FALSE, width = 6, height = 3, labelAll = FALSE,
-  genes = NULL)
+  genes = NULL, writeTable = FALSE)
 }
 \arguments{
 \item{cbsFile}{CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).}
 
 \item{maf}{optional \code{\link{MAF}}}
 
-\item{tsb}{If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. Make sure sample names in
-Sample column matches to those in Tumor_Sample_Barcodes of MAF.}
+\item{tsb}{If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. If you are maping maf, make sure sample names in
+Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF.}
 
 \item{chr}{Just plot this chromosome.}
 
@@ -27,6 +27,8 @@ Sample column matches to those in Tumor_Sample_Barcodes of MAF.}
 \item{labelAll}{If true and if maf object is specified, maps all mutataions from maf onto segments. Default FALSE, maps only variants on copy number altered regions.}
 
 \item{genes}{highlight only these variants}
+
+\item{writeTable}{If true and if maf object is specified, writes plot data with each variant and its corresponding copynumber to an output file.}
 }
 \value{
 ggplot object
