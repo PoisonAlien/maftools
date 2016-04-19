@@ -102,7 +102,7 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
 
       if(writeTable){
         tsb.mapped.dat = tsb.mapped[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, Segment_Start, Segment_End, Segment_Mean, CN)]
-        write.table(x = tsb.mapped.dat, file = paste(tsb[i], '_segData.tsv', sep = ''), sep='\t', quote = F, row.names = F)
+        write.table(x = tsb.mapped.dat, file = paste(tsb[i], '_segData.tsv', sep = ''), sep='\t', quote = FALSE, row.names = FALSE)
       }
     }
 
