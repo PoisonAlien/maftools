@@ -26,8 +26,16 @@
 
 oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGenes = 100, bgEstimate = TRUE, ignoreGenes = NULL){
 
-  gl = system.file('extdata', 'prot_len.txt', package = 'maftools')
-  gl = fread(gl, stringsAsFactors = FALSE, sep='\t')
+  #Proetin Length source
+  gl = system.file('extdata', 'prot_len.txt.gz', package = 'maftools')
+
+  if(Sys.info()[['sysname']] == 'Windows'){
+    gl.gz = gzfile(description = gl, open = 'r')
+    gl <- suppressWarnings( data.table(read.csv( file = gl.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
+    close(gff.gz)
+  } else{
+    gl = fread(input = paste('zcat <', gl), sep = '\t', stringsAsFactors = FALSE)
+  }
 
   pval.options = c('zscore', 'poisson', 'combined')
 
