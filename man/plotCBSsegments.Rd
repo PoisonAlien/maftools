@@ -6,7 +6,7 @@
 \usage{
 plotCBSsegments(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL,
   savePlot = FALSE, width = 6, height = 3, labelAll = FALSE,
-  genes = NULL, writeTable = FALSE)
+  genes = NULL, writeTable = FALSE, removeXY = FALSE, color = NULL)
 }
 \arguments{
 \item{cbsFile}{CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).}
@@ -29,6 +29,10 @@ Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF
 \item{genes}{highlight only these variants}
 
 \item{writeTable}{If true and if maf object is specified, writes plot data with each variant and its corresponding copynumber to an output file.}
+
+\item{removeXY}{don not plot sex chromosomes.}
+
+\item{color}{Manually specify color scheme for chromosomes. Default NULL.}
 }
 \value{
 ggplot object

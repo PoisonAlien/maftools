@@ -11,6 +11,8 @@
 #' @param labelAll If true and if maf object is specified, maps all mutataions from maf onto segments. Default FALSE, maps only variants on copy number altered regions.
 #' @param genes highlight only these variants
 #' @param writeTable If true and if maf object is specified, writes plot data with each variant and its corresponding copynumber to an output file.
+#' @param removeXY don not plot sex chromosomes.
+#' @param color Manually specify color scheme for chromosomes. Default NULL.
 #' @return ggplot object
 #' @export
 #' @examples
@@ -18,7 +20,7 @@
 #' plotCBSsegments(cbsFile = tcga.ab.009.seg)
 #'
 
-plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, savePlot = FALSE, width = 6, height = 3, labelAll = FALSE, genes = NULL, writeTable = FALSE){
+plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, savePlot = FALSE, width = 6, height = 3, labelAll = FALSE, genes = NULL, writeTable = FALSE, removeXY = FALSE, color = NULL){
 
   if(is.null(cbsFile)){
     stop('Required segmentation file !')
@@ -26,10 +28,18 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
 
   #Read segmentation file and change chromosome names
   seg = readSegs(seg = cbsFile)
-  onlyContigs = as.character(seq(1:22))
+  #onlyContigs = as.character(seq(1:22))
   seg$Chromosome = gsub(pattern = 'chr', replacement = '', x = seg$Chromosome, fixed = TRUE)
-  seg = seg[!Chromosome %in% c('X', 'Y')]
-  seg = seg[Chromosome %in% onlyContigs]
+  #Replace chr x and y with numeric value (23 and 24) for better sorting
+  seg$Chromosome = gsub(pattern = 'X', replacement = '23', x = seg$Chromosome, fixed = TRUE)
+  seg$Chromosome = gsub(pattern = 'Y', replacement = '24', x = seg$Chromosome, fixed = TRUE)
+  #seg = seg[!Chromosome %in% c('X', 'Y')]
+  #seg = seg[Chromosome %in% onlyContigs]
+
+  if(removeXY){
+    seg = seg[!Chromosome %in% c('23', '24')]
+  }
+
   seg = seg[order(as.numeric(Chromosome))]
   setkey(x = seg, Chromosome, Start_Position, End_Position)
 
