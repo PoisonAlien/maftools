@@ -145,6 +145,18 @@ plotCBSsegments(cbsFile = tcga.ab.009.seg, maf = laml, labelAll = TRUE)
 
 Above plot shows two genes NF1 and SUZ12 are located on a region which has a shallow deletion. Later we will also see how these variants on copy number altered regions affect variant allele frequencies and tumor heterogeneity estimation.
 
+##Rainfall plots
+Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations[9](references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. 
+
+```{r, results='hide', message=FALSE}
+brca <- system.file("extdata", "brca.maf.gz", package = "maftools")
+brca = read.maf(maf = brca)
+```
+
+```{r, fig.height=5,fig.width=12,fig.align='center'}
+brca.rf = rainfallPlot(maf = brca)
+```
+
 #Analysis.
 ##Mutual exclusivity.
 Many disease causing genes in cancer show strong exlcusiveness in their mutation pattern. Such mutually exlcuive set of genes can be detected using `mutExclusive` function, which performs an exact test to detect such significant pair of genes. `mutExclusive` uses `comet_exact_test` on a given set of genes to calculate significance value. Please cite [CoMET](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4531541/) article if you use this function [2](#references).
@@ -209,9 +221,17 @@ print(pt.vs.rt)
 
 Above resutls show two genes PML and RARA which are highly mutated in Relapse APL compared to Primary APL. We can visulaize these results as a [forestplot](https://en.wikipedia.org/wiki/Forest_plot).
 
-```{r, fig.width=6, fig.height=6, fig.align='center'}
+```{r, fig.width=6, fig.height=5, fig.align='center'}
 apl.pt.vs.rt.fp = forestPlot(mafCompareRes = pt.vs.rt, pVal = 0.05, show = 'stat', color = c('royalblue', 'maroon'))
 ```
+
+Another alternative way of displaying above rsults is by plotiing two oncoplots side by side. `coOncoplot` function takes two maf objects and plots them side by side for better comparision.
+
+```{r, fig.height=3,fig.width=11, eval=T, fig.align='left'}
+genes = c("PML", "RARA", "RUNX1", "ARID1B", "FLT3")
+coOncoplot(m1 = primary.apl, m2 = relapse.apl, m1Name = 'PrimaryAPL', m2Name = 'RelapseAPL', genes = genes, removeNonMutated = TRUE)
+```
+
 
 ##Tumor heterogeneity and MATH scores.
 ###Heterogeneity in tumor samples.

@@ -130,6 +130,11 @@ laml.pfam$domainSummary[,1:3, with = F]
 
 ####Comparing two cohorts for differentially mutated genes
 ![image11](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image13.png)
+![image14](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image14.png)
+
+####Rainfall plots
+
+![image15](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image15.png)
 
 #### Annotating variants with Oncotator
 We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.

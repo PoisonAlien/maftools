@@ -2,6 +2,7 @@
 
 export(addReadCounts)
 export(annovarToMaf)
+export(coOncoplot)
 export(extractSignatures)
 export(forestPlot)
 export(genesToBarcodes)

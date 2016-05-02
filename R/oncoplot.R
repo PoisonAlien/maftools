@@ -166,7 +166,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, drawRowBar = TRUE, draw
 
     ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar, which = "column")
 
-    #To remove samples with no mutations in top n genes, if user says switches removeNonMutated
+    #To remove samples with no mutations in top n genes, if user says removeNonMutated
     if(removeNonMutated){
       numMat = numMat[rownames(mat),]
       numMat = numMat[,colnames(mat)]

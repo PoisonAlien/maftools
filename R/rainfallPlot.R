@@ -50,12 +50,18 @@ rainfallPlot = function(maf, tsb = NULL, color = NULL, savePlot = FALSE, width =
   chr.lens.sumsum = cumsum(chr.lens)
 
   gg.rf = ggplot(data = maf.snp, aes(x= Start_Position_updated, y = diff, col = con.class))+
-    geom_point(size = 0.5, alpha = 0.6)+cowplot::theme_cowplot(font_size = 6)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
+    geom_point(size = 2, alpha = 0.6)+cowplot::theme_cowplot(font_size = 12)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
     theme(axis.line.x = element_blank())+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
     geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+theme(legend.position = 'bottom', legend.title = element_blank())+
     scale_color_manual(values = col)+ggtitle(tsb)
 
   if(savePlot){
+    gg.rf = ggplot(data = maf.snp, aes(x= Start_Position_updated, y = diff, col = con.class))+
+      geom_point(size = 0.5, alpha = 0.6)+cowplot::theme_cowplot(font_size = 6)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
+      theme(axis.line.x = element_blank())+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
+      geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+theme(legend.position = 'bottom', legend.title = element_blank())+
+      scale_color_manual(values = col)+ggtitle(tsb)
+
     cowplot::save_plot(filename = paste(tsb, 'rainfallPlot.pdf', sep = '_'), plot = gg.rf, base_height = height, base_width = width)
   }
 
