@@ -1,3 +1,11 @@
+maftools v0.99.40
+==============
+
+Changes:
+* NEW: CoOncoplot - Plot two oncoplots side by side
+* NEW: rainfallPlot
+* Minor changes to plotCBSsegments.
+
 maftools v0.99.30
 ==============
 
