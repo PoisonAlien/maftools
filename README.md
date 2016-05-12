@@ -5,7 +5,7 @@ With advances in Cancer Genomics, maf format is being widley accepted and used t
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. The [resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of genetic variants is stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). 
 This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner either from TCGA sources or any in-house studies as long as the data is in MAF format.
 
-maftools is on :point_right: [bioRxiv](http://biorxiv.org/content/early/2016/05/11/052662) :point_left:
+maftools is on :point_right: [bioRxiv](http://biorxiv.org/content/early/2016/05/11/052662) :bowtie:
 
 #### MAF field requirements.
 MAF files contains many fields ranging from chromosome names to cosmic annotations. However, most of the analysis in maftools uses following fields.
