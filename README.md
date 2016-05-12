@@ -13,6 +13,8 @@ MAF files contains many fields ranging from chromosome names to cosmic annotatio
   * Recommended optional fields: non MAF specific fields containing vaf and amino acid change information. 
 Complete specififcation of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
+NOTE: If you have variants stored as VCFs, convert them to MAF using [vcf2maf](https://github.com/mskcc/vcf2maf). Merge MAFs from all samples into a single MAF before processing with maftools.
+
 #### Vignette and a case study.
 A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://poisonalien.github.io).
 
