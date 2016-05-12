@@ -61,8 +61,8 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, annotation = NULL, removeNo
 
   if(is.null(colors)){
     col = c(brewer.pal(12,name = "Paired"),brewer.pal(11,name = "Spectral")[1:3],'black')
-    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','Silent','Missense_Mutation','IGR','Nonsense_Mutation',
-                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Dell','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
+    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
+                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
   }else{
     col = colors
   }

@@ -7,11 +7,13 @@
 #' @param savePlot If TRUE plot is saved to output pdf. Default FALSE.
 #' @param width width of plot to be saved.
 #' @param height height of plot to be saved.
+#' @param fontSize Default 12.
+#' @param pointSize Default 2.
 #' @return returns ggplot object of the plot which can be further modified.
 #' @export
 
 
-rainfallPlot = function(maf, tsb = NULL, color = NULL, savePlot = FALSE, width = 6, height = 3){
+rainfallPlot = function(maf, tsb = NULL, color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 2){
 
   if(is.null(tsb)){
     tsb = as.character(getSampleSummary(maf)[1,Tumor_Sample_Barcode])
@@ -50,14 +52,14 @@ rainfallPlot = function(maf, tsb = NULL, color = NULL, savePlot = FALSE, width =
   chr.lens.sumsum = cumsum(chr.lens)
 
   gg.rf = ggplot(data = maf.snp, aes(x= Start_Position_updated, y = diff, col = con.class))+
-    geom_point(size = 2, alpha = 0.6)+cowplot::theme_cowplot(font_size = 12)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
+    geom_point(size = pointSize, alpha = 0.6)+cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
     theme(axis.line.x = element_blank())+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
     geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+theme(legend.position = 'bottom', legend.title = element_blank())+
     scale_color_manual(values = col)+ggtitle(tsb)
 
   if(savePlot){
     gg.rf = ggplot(data = maf.snp, aes(x= Start_Position_updated, y = diff, col = con.class))+
-      geom_point(size = 0.5, alpha = 0.6)+cowplot::theme_cowplot(font_size = 6)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
+      geom_point(size = pointSize, alpha = 0.6)+cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
       theme(axis.line.x = element_blank())+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
       geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+theme(legend.position = 'bottom', legend.title = element_blank())+
       scale_color_manual(values = col)+ggtitle(tsb)

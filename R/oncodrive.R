@@ -91,7 +91,8 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
   #non-syn variants
   non.syn.maf = maf@data
   #in case user read maf without removing silent variants, remove theme here.
-  silent = c("Silent", "Intron", "RNA", "3'UTR", "3'Flank", "5'UTR", "5'Flank", "IGR")
+  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
+             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
   non.syn.maf = non.syn.maf[!Variant_Classification %in% silent] #Remove silent variants from main table
 
   #Remove genes to ignore

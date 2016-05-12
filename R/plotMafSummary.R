@@ -22,21 +22,13 @@
 
 plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height = 5, addStat = NULL, showBarcodes = FALSE, textSize = 2, color = NULL){
 
-  #require(cowplot, quietly = TRUE)
-  #require(RColorBrewer, quietly = TRUE)
-  #require(ggrepel, quietly = TRUE)
-
   addStat.opts = c('mean', 'median')
 
-
   if(is.null(color)){
-    #hard coded color scheme if uoser doesnt provide any
-    col = c('#CCCCCC', RColorBrewer::brewer.pal(12, name = "Paired"), RColorBrewer::brewer.pal(11, name = "Spectral")[1:3], "maroon")
-    names(col) = names = c('',"Nonstop_Mutation", "Frame_Shift_Del",
-                           "Intron", "Missense_Mutation", "IGR", "Nonsense_Mutation",
-                           "RNA", "Splice_Site", "In_Frame_Del", "Frame_Shift_Ins",
-                           "Silent", "In_Frame_Ins", "ITD", "In_Frame_Ins", "Translation_Start_Site",
-                           "Multi_Hit")
+    #hard coded color scheme if user doesnt provide any
+    col = c(brewer.pal(12,name = "Paired"),brewer.pal(11,name = "Spectral")[1:3],'black')
+    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
+                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
   }else{
     col = color
   }
@@ -76,7 +68,7 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height 
         theme(axis.ticks = element_blank(), axis.text.x = element_text(angle = textAngle, vjust = 0.5, hjust=1, size = textSize), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
         cowplot::background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = mean.line, linetype = 2)+
         ggrepel::geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
-                         point.padding = unit(1, "lines"), force = 20, size = 3, nudge_y = 2)
+                         point.padding = unit(1, "lines"), force = 20, size = 5, nudge_y = 2)
     }else{
       med.line = round(max(maf@summary[,Median], na.rm = TRUE), 2)
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
@@ -85,7 +77,7 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height 
         theme(axis.ticks = element_blank(), axis.text.x = element_text(angle = textAngle, vjust = 0.5, hjust=1, size = textSize), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
         cowplot::background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = med.line, linetype = 3)+
         ggrepel::geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
-                         point.padding = unit(1, "lines"), force = 20, size = 3, nudge_y = 2)
+                         point.padding = unit(1, "lines"), force = 20, size = 5, nudge_y = 2)
     }
 
 
@@ -106,11 +98,11 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height 
     colnames(boxH)[ncol(boxH)] = 'boxStat'
     vcs.gg2 = ggplot(data = vcs.m, aes(x = Variant_Classification, y = N, fill = Variant_Classification))+geom_boxplot(outlier.shape = NA)+scale_fill_manual(values = col)+
       cowplot::theme_cowplot()+theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'bottom')+
-      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 7))+ylim(0, max(boxH$boxStat)+5)+cowplot::background_grid(major = 'xy', minor = 'none')
+      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 8))+ylim(0, max(boxH$boxStat)+5)+cowplot::background_grid(major = 'xy', minor = 'none')
   } else{
     vcs.gg2 = ggplot(data = vcs.m, aes(x = Variant_Classification, y = N, fill = Variant_Classification))+geom_boxplot()+scale_fill_manual(values = col)+cowplot::theme_cowplot()+
       theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position = 'bottom')+
-      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 7))+cowplot::background_grid(major = 'xy', minor = 'none')
+      theme(legend.key.size = unit(0.5, "cm"), legend.title = element_blank(), legend.text = element_text(size = 8))+cowplot::background_grid(major = 'xy', minor = 'none')
   }
 
   #organize plots

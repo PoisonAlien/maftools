@@ -2,7 +2,7 @@
 #' @description Takes tab delimited MAF (can be plain text or gz compressed) file as an input and summarizes it in various ways. Also creates oncomatrix - helpful for visualization.
 #'
 #' @param maf tab delimited MAF file. File can also be gz compressed.
-#' @param removeSilent logical. Whether to discard silent (with no functional impact) mutations ("Silent","Intron","RNA","3'UTR"). Default is TRUE.
+#' @param removeSilent logical. Whether to discard silent (variants with Low/Modifier consequences) mutations ("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron","RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA"). Default is TRUE.
 #' @param useAll logical. Whether to use all variants irrespective of values in Mutation_Status. Defaults to False. Only uses with values Somatic.
 #' @return An object of class MAF.
 #' @examples
@@ -15,9 +15,6 @@
 
 
 read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
-
-  #pkgs = c('ggrepel', 'dplyr', 'RColorBrewer', 'cowplot')
-  #suppressWarnings(suppressPackageStartupMessages(lapply(pkgs, require, character.only = TRUE)))
 
   message('reading maf..')
 
@@ -34,13 +31,8 @@ read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
     suppressWarnings(maf <- fread(input = maf, sep = "\t", stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
   }
 
-
-  required.fields = c('Hugo_Symbol', 'Variant_Classification', 'Variant_Type', 'Tumor_Sample_Barcode') #necessary fields.
-  missing.fileds = required.fields[!required.fields %in% colnames(maf)] #check if any of them is missing
-
-  if(length(missing.fileds) > 0){
-    stop(paste('missing', missing.fileds, 'from MAF\n')) #stop if any of required.fields are missing
-  }
+  #validate MAF file
+  maf = validateMaf(maf = maf)
 
   #validation check for variants classified as Somatic in Mutation_Status field.
   if(length(colnames(maf)[colnames(x = maf) %in% 'Mutation_Status']) > 0){
@@ -54,11 +46,14 @@ read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
     message('Mutation_Status not found. Assuming all variants are Somatic and validated.')
   }
 
-  #convert "-" to "." in "Tumor_Sample_Barcode" to avoid complexity in naming
-  maf$Tumor_Sample_Barcode = gsub(pattern = '-', replacement = '.', x = as.character(maf$Tumor_Sample_Barcode))
+  #Variant Classification with Low/Modifier variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
+  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
+             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
+  #Variant Classification with High/Moderate variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
+  vc.nonSilent = c("Frame_Shift_Del", "Frame_Shift_Ins", "Splice_Site", "Translation_Start_Site",
+                   "Nonsense_Mutation", "Nonstop_Mutation", "In_Frame_Del",
+                   "In_Frame_Ins", "Missense_Mutation")
 
-  #remove silent mutations with no/lesser functional impact
-  silent = c("Silent", "Intron", "RNA", "3'UTR", "3'Flank", "5'UTR", "5'Flank", "IGR")
   maf.silent = maf[Variant_Classification %in% silent]
 
   if(removeSilent){
@@ -70,7 +65,7 @@ read.maf = function(maf, removeSilent = TRUE, useAll = FALSE){
                                   N = c(nrow(maf.silent.vc.cast), colSums(maf.silent.vc.cast[,2:ncol(maf.silent.vc.cast), with = FALSE])))
 
       maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
-      message(paste('removed',nrow(maf.silent), 'silent variants.'))
+      message(paste('Excluding',nrow(maf.silent), 'silent variants.'))
       print(summary.silent)
     } else{
       message(message(paste('Excluding',nrow(maf.silent), 'silent variants.')))

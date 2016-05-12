@@ -201,7 +201,8 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
 
       ann.maf.oncomat = createOncoMatrix(maf = ann.maf)
 
-      silent = c("Silent", "Intron", "RNA", "3'UTR", "3'Flank", "5'UTR", "5'Flank", "IGR")
+      silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
+                 "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
       ann.maf.silent = ann.maf[Variant_Classification %in% silent]
 
       m = MAF(data = ann.maf, variants.per.sample = ann.maf.summary$variants.per.sample, variant.type.summary = ann.maf.summary$variant.type.summary,
