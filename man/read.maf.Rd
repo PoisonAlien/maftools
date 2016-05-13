@@ -9,7 +9,7 @@ read.maf(maf, removeSilent = TRUE, useAll = FALSE)
 \arguments{
 \item{maf}{tab delimited MAF file. File can also be gz compressed.}
 
-\item{removeSilent}{logical. Whether to discard silent (with no functional impact) mutations ("Silent","Intron","RNA","3'UTR"). Default is TRUE.}
+\item{removeSilent}{logical. Whether to discard silent (variants with Low/Modifier consequences) mutations ("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron","RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA"). Default is TRUE.}
 
 \item{useAll}{logical. Whether to use all variants irrespective of values in Mutation_Status. Defaults to False. Only uses with values Somatic.}
 }

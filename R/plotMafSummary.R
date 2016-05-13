@@ -10,6 +10,7 @@
 #' @param showBarcodes include sample names in the top bar plot.
 #' @param color named vector of colors for each Variant_Classification.
 #' @param textSize font size if showBarcodes is TRUE. Default 2.
+#' @param statFontSize font size if addStat is used. Default 3.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, useAll = FALSE)
@@ -20,7 +21,7 @@
 #' @seealso \code{\link{read.maf}} \code{\link{MAF}}
 #' @export
 
-plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height = 5, addStat = NULL, showBarcodes = FALSE, textSize = 2, color = NULL){
+plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height = 5, addStat = NULL, showBarcodes = FALSE, textSize = 2, color = NULL, statFontSize = 3){
 
   addStat.opts = c('mean', 'median')
 
@@ -68,7 +69,7 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height 
         theme(axis.ticks = element_blank(), axis.text.x = element_text(angle = textAngle, vjust = 0.5, hjust=1, size = textSize), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
         cowplot::background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = mean.line, linetype = 2)+
         ggrepel::geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
-                         point.padding = unit(1, "lines"), force = 20, size = 5, nudge_y = 2)
+                         point.padding = unit(1, "lines"), force = 20, size = statFontSize, nudge_y = 2)
     }else{
       med.line = round(max(maf@summary[,Median], na.rm = TRUE), 2)
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
@@ -77,7 +78,7 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, width = 6, height 
         theme(axis.ticks = element_blank(), axis.text.x = element_text(angle = textAngle, vjust = 0.5, hjust=1, size = textSize), legend.position = 'none')+ylab('# of Variants')+xlab('Samples')+
         cowplot::background_grid(major = 'xy', minor = 'none')+geom_hline(yintercept = med.line, linetype = 3)+
         ggrepel::geom_label_repel(inherit.aes = FALSE, data = df, aes(x = x, y = y, label = label), fill = 'gray', fontface = 'bold', color = 'black', box.padding = unit(1, "lines"),
-                         point.padding = unit(1, "lines"), force = 20, size = 5, nudge_y = 2)
+                         point.padding = unit(1, "lines"), force = 20, size = statFontSize, nudge_y = 2)
     }
 
 

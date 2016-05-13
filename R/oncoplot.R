@@ -14,6 +14,7 @@
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
 #' @param colors named vector of colors for each Variant_Classification.
+#' @param fontSize font size for gene names. Default 10.
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -26,7 +27,8 @@
 
 
 oncoplot = function (maf, writeMatrix = FALSE, top = 20, drawRowBar = TRUE, drawColBar = TRUE,
-                     showTumorSampleBarcodes = FALSE, annotation = NULL, genesToIgnore = NULL, removeNonMutated = FALSE, colors = NULL) {
+                     showTumorSampleBarcodes = FALSE, annotation = NULL, genesToIgnore = NULL,
+                     removeNonMutated = FALSE, colors = NULL, fontSize = 10) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -109,7 +111,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, drawRowBar = TRUE, draw
       pct = paste0(round(pct), "%")
       grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
       grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
-                just = "right", gp = grid::gpar(fontsize = 10))
+                just = "right", gp = grid::gpar(fontsize = fontSize))
       grid::upViewport()
     }
 
@@ -182,14 +184,14 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, drawRowBar = TRUE, draw
         ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
           type = mat[i, j]
           add_oncoprint(type, x, y, width, height)},
-          row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
+          row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
           show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
           top_annotation_height = grid::unit(2, "cm"))
       } else{
         ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
           type = mat[i, j]
           add_oncoprint(type, x, y, width, height)},
-          row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
+          row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
           show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
           top_annotation_height = grid::unit(2, "cm"), bottom_annotation = bot.anno)
       }
@@ -199,12 +201,12 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, drawRowBar = TRUE, draw
         ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
           type = mat[i, j]
           add_oncoprint(type, x, y, width, height)},
-          row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE)
+          row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE)
       }else{
         ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
           type = mat[i, j]
           add_oncoprint(type, x, y, width, height)},
-          row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE, bottom_annotation = bot.anno)
+          row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE, bottom_annotation = bot.anno)
       }
     }
 
