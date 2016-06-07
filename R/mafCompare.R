@@ -59,7 +59,7 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5){
    m1Mut = m.gs.meged[i,2]
    m2Mut = m.gs.meged[i,3]
 
-   xf = fisher.test(matrix(c(m1Mut, m1.sampleSize, m2Mut, m2.sampleSize),
+   xf = fisher.test(matrix(c(m1Mut, m1.sampleSize-m1Mut, m2Mut, m2.sampleSize-m2Mut),
                            byrow = TRUE, nrow = 2), conf.int = TRUE, conf.level = 0.95)
 
    pval = xf$p.value
