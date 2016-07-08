@@ -34,7 +34,7 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
     if(is.null(vafCol)){
       message('Available fields..')
       print(colnames(maf))
-      stop('t_vaf field is missing. Use addReadCounts to add read-depth and vaf info, Or use argument vafCol to manually specify vaf column name.')
+      stop('t_vaf field is missing. Use argument vafCol to manually specify vaf column name.')
     }else{
       colnames(maf)[which(colnames(maf) == vafCol)] = 't_vaf'
     }

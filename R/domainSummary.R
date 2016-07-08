@@ -51,6 +51,8 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
     mut = rbind(mut, maf@maf.silent, fill = TRUE)
   }
 
+  mut = mut[!Variant_Type %in% 'CNV']
+
   #Protein domain source.
   gff = system.file('extdata', 'protein_domains.txt.gz', package = 'maftools')
 

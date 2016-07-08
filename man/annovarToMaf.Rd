@@ -21,7 +21,7 @@ annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
 
 \item{basename}{If provided writes resulting MAF file to an output file.}
 
-\item{header}{was annovar run on a file contiaining variants with an header line. Default FALSE.}
+\item{header}{was annovar run on a file contiaining variants with a header line. Default FALSE.}
 
 \item{sep}{field seperator for input file. Default tab seperated.}
 

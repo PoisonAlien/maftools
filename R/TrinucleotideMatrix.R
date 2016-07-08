@@ -46,17 +46,17 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   #reate a reference to an indexed fasta file.
   ref = Rsamtools::FaFile(file = ref_genome)
 
+  #Remove unwanted contigs
+  if(!is.null(ignoreChr)){
+    maf = maf[!maf$Chromosome %in% ignoreChr]
+  }
+
   if(!is.null(prefix)){
     if(add){
       maf$Chromosome = paste(prefix,maf$Chromosome, sep = '')
     }else{
       maf$Chromosome = gsub(pattern = prefix, replacement = '', x = maf$Chromosome, fixed = TRUE)
     }
-  }
-
-  #Remove unwanted contigs
-  if(!is.null(ignoreChr)){
-    maf = maf[!maf$Chromosome %in% ignoreChr]
   }
 
   #Some TCGA studies have Start_Position set to as 'position'. Change if so.
@@ -76,7 +76,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   chrs = unique(maf.snp$Chromosome)
 
   #read fasta
-  message('reading fasta (this might few seconds)..')
+  message('reading fasta (this might take few minutes)..')
   ref = VariantAnnotation::getSeq(x = ref)
 
   #extract contigs from reference fasta
@@ -105,7 +105,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   extract.tbl[,Substitution:=paste(extract.tbl$Reference_Allele, extract.tbl$Tumor_Seq_Allele2, sep='>')]
 
   suppressWarnings( extract.tbl[,SubstitutionType:= as.character(factor(x = extract.tbl$Substitution, levels = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C'),
-                                                                        labels = c('T>C', 'T>C', 'C>T', 'C>T', 'T>A', 'T>A', 'T>G', 'T>G', 'C>A', 'C>A', 'C>G', 'C>G')))])
+                                                                        labels = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")))])
 
   type = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
   extract.tbl[,SomaticMutationType:= type]

@@ -50,7 +50,7 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
   #Get background threshold
   gene.sum$th = apply(gene.sum, 1, function(x) get_threshold(gene_muts = as.numeric(x[num_mut_colIndex]), gene_length = as.numeric(x[aalen_colIndex])))
   #use only genes with atleast 2 (or m ) mutations.
-  gene.sum = dplyr::filter(gene.sum, total >= m)
+  gene.sum = gene.sum[total >= m]
 
   if(calBg){
     if(nrow(gene.sum) < nBg){
@@ -72,8 +72,10 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
     pb <- txtProgressBar(min = 0, max = nrow(gene.sum), style = 3) #progress bar
 
     for(i in 1:nrow(gene.sum)){
-      prot.dat = all.prot.dat[Hugo_Symbol == gene.sum[i, Hugo_Symbol]]
-      nonsyn.res = rbind(nonsyn.res, cluster_prot(prot.dat = prot.dat, gene = gene.sum[i, Hugo_Symbol], th = gene.sum[i,th], protLen = gene.sum[i,aa.length]))
+      hs = gene.sum[i, Hugo_Symbol]
+      #print(hs)
+      prot.dat = all.prot.dat[Hugo_Symbol %in% hs]
+      nonsyn.res = rbind(nonsyn.res, cluster_prot(prot.dat = prot.dat, gene = hs, th = gene.sum[Hugo_Symbol %in% hs, th], protLen = gene.sum[Hugo_Symbol %in% hs, aa.length]))
       setTxtProgressBar(pb, i)
     }
     return(nonsyn.res)
@@ -97,8 +99,8 @@ cluster_prot = function(prot.dat, gene, th, protLen){
   pos.counts$cluster = ifelse(test = pos.counts$N >= th, yes = 'meaningful', no = 'nonMeaningful')
 
   #Just choose meaningful positions
-  clust.tbl = dplyr::filter(pos.counts, cluster == 'meaningful')
-  nonclust.tbl = dplyr::filter(pos.counts, cluster == 'nonMeaningful')
+  clust.tbl = pos.counts[cluster %in% 'meaningful']
+  nonclust.tbl = pos.counts[cluster %in% 'nonMeaningful']
 
   if(nrow(clust.tbl) == 0){
     #message(paste('No meaningful positions found for', gene, sep=' '))
@@ -144,13 +146,13 @@ cluster_prot = function(prot.dat, gene, th, protLen){
     nonclust.tbl$startDist = nonclust.tbl$pos - tempcdf$start
     nonclust.tbl$endDist = nonclust.tbl$pos - tempcdf$end
 
-    merge.adj.to.start = dplyr::filter(nonclust.tbl, startDist >= -5 & startDist <= 0)
+    merge.adj.to.start = nonclust.tbl[startDist >= -5 & startDist <= 0]
     if(nrow(merge.adj.to.start) > 0){
       tempcdf$start = merge.adj.to.start[which(merge.adj.to.start$startDist == min(merge.adj.to.start$startDist)),pos]
       tempcdf$N = tempcdf$N + sum(merge.adj.to.start$N)
     }
 
-    merge.adj.to.end = dplyr::filter(nonclust.tbl, endDist <= 5 & endDist >= 0)
+    merge.adj.to.end = nonclust.tbl[endDist <= 5 & endDist >= 0]
     if(nrow(merge.adj.to.end) > 0){
       tempcdf$end = merge.adj.to.end[which(merge.adj.to.end$endDist == max(merge.adj.to.end$endDist)),pos]
       tempcdf$N = tempcdf$N + sum(merge.adj.to.end$N)
@@ -165,11 +167,11 @@ cluster_prot = function(prot.dat, gene, th, protLen){
   clusterScores = c()
 
   for(i in 1:nrow(cdf)){
-    temp.prot.dat = dplyr::filter(prot.dat, pos >= as.numeric(cdf$start[i]) & pos <= as.numeric(cdf$end[i]))
+    temp.prot.dat = prot.dat[pos >= as.numeric(cdf$start[i]) & pos <= as.numeric(cdf$end[i])]
     temp.prot.dat.summary = temp.prot.dat[,.N, pos]
     temp.prot.dat.summary[,fraction:= N/total.muts]
 
-    peak = temp.prot.dat.summary[which(temp.prot.dat.summary$N == max(temp.prot.dat.summary$N)),pos ]
+    peak = temp.prot.dat.summary[N == max(N), pos]
 
     posVector = as.numeric(temp.prot.dat.summary[,pos])
     fractionMutVector = unlist(lapply(posVector, FUN = function(x) temp.prot.dat.summary[pos == x, fraction]))

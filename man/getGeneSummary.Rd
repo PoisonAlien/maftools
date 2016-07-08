@@ -3,21 +3,24 @@
 \docType{methods}
 \name{getGeneSummary}
 \alias{getGeneSummary}
+\alias{getGeneSummary,GISTIC-method}
 \alias{getGeneSummary,MAF-method}
-\title{extract gene summary from MAF object}
+\title{extract gene summary from MAF or GISTIC object}
 \usage{
 getGeneSummary(x)
 
 \S4method{getGeneSummary}{MAF}(x)
+
+\S4method{getGeneSummary}{GISTIC}(x)
 }
 \arguments{
-\item{x}{An object of class MAF}
+\item{x}{An object of class MAF or GISTIC}
 }
 \value{
 gene summary table
 }
 \description{
-extract gene summary from MAF object
+extract gene summary from MAF or GISTIC object
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

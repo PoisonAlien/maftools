@@ -22,7 +22,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, density = FALSE, violin = F
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
       print(colnames(dat))
-      stop('t_vaf field is missing. Use addReadCounts to add read-depth and vaf info, Or use vafCol to manually specify vaf column name.')
+      stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
     }else{
       colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
     }

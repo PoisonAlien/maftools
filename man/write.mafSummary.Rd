@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrteMafSummary.R
 \name{write.mafSummary}
 \alias{write.mafSummary}
-\title{Writes maf summaries to an output tab-delimited text file.}
+\title{Writes maf summaries to output tab-delimited text files.}
 \usage{
 write.mafSummary(maf, basename = NULL)
 }
@@ -15,7 +15,7 @@ write.mafSummary(maf, basename = NULL)
 None. Writes output as text files.
 }
 \description{
-Writes maf summaries to an output tab-delimited text file.
+Writes maf summaries to output tab-delimited text files.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

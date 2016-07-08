@@ -45,7 +45,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
       print(colnames(dat))
-      stop('t_vaf field is missing. Use addReadCounts to add read-depth and vaf info, Or use argument vafCol to manually specify vaf column name.')
+      stop('t_vaf field is missing. Use argument vafCol to manually specify vaf column name.')
     }else{
       colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
     }

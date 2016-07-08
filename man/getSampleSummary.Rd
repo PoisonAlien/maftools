@@ -3,21 +3,24 @@
 \docType{methods}
 \name{getSampleSummary}
 \alias{getSampleSummary}
+\alias{getSampleSummary,GISTIC-method}
 \alias{getSampleSummary,MAF-method}
-\title{extract sample summary from MAF object}
+\title{extract sample summary from MAF or GISTIC object}
 \usage{
 getSampleSummary(x)
 
 \S4method{getSampleSummary}{MAF}(x)
+
+\S4method{getSampleSummary}{GISTIC}(x)
 }
 \arguments{
-\item{x}{An object of class MAF}
+\item{x}{An object of class MAF or GISTIC}
 }
 \value{
 sample summary table
 }
 \description{
-extract sample summary from MAF object
+extract sample summary from MAF or GISTIC object
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

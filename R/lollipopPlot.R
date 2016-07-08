@@ -41,6 +41,8 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
 
   mut = maf@data
+  #Remove CNV's
+  mut = mut[!Variant_Type %in% 'CNV']
 
   if(is.null(AACol)){
     if(! 'AAChange' %in% colnames(mut)){
@@ -136,9 +138,10 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
   if(max(prot.snp.sumamry$count) > 10){
 
-    prot.snp.sumamry1 = dplyr::filter(prot.snp.sumamry, count <= 10)
-
-    prot.snp.sumamry2 = dplyr::filter(prot.snp.sumamry, count > 10)
+    #prot.snp.sumamry1 = dplyr::filter(prot.snp.sumamry, count <= 10)
+    prot.snp.sumamry1 = prot.snp.sumamry[count <= 10]
+    #prot.snp.sumamry2 = dplyr::filter(prot.snp.sumamry, count > 10)
+    prot.snp.sumamry2 = prot.snp.sumamry[count > 10]
 
     if(nrow(prot.snp.sumamry1) == 0){
       maxCount = 5
@@ -198,10 +201,12 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
       }else{
         prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
         p = p+geom_text_repel(data = dplyr::filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+        #p = p+geom_text_repel(data = prot.snp.summary[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
       }
     } else{
       prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
       p = p+geom_text_repel(data = dplyr::filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+      #p = p+geom_text_repel(data = prot.snp.summary[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
     }
   }
   print(p)

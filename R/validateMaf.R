@@ -1,4 +1,4 @@
-validateMaf = function(maf){
+validateMaf = function(maf, isTCGA = isTCGA){
 
   #necessary fields.
   required.fields = c('Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele2',
@@ -21,6 +21,10 @@ validateMaf = function(maf){
 
   #convert "-" to "." in "Tumor_Sample_Barcode" to avoid complexity in naming
   maf$Tumor_Sample_Barcode = gsub(pattern = '-', replacement = '.', x = as.character(maf$Tumor_Sample_Barcode))
+
+  if(isTCGA){
+    maf$Tumor_Sample_Barcode = substr(x = maf$Tumor_Sample_Barcode, start = 1, stop = 12)
+  }
 
   return(maf)
 }

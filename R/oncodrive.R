@@ -34,7 +34,7 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
     gl <- suppressWarnings( data.table(read.csv( file = gl.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(gl.gz)
   } else{
-    gl = fread(input = paste('zcat <', gl), sep = '\t', stringsAsFactors = FALSE)
+    gl = data.table::fread(input = paste('zcat <', gl), sep = '\t', stringsAsFactors = FALSE)
   }
 
   pval.options = c('zscore', 'poisson', 'combined')
@@ -90,9 +90,9 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
 
   #non-syn variants
   non.syn.maf = maf@data
-  #in case user read maf without removing silent variants, remove theme here.
+  #Variant Classification with Low/Modifier variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
   silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
+             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "Amp", "Del")
   non.syn.maf = non.syn.maf[!Variant_Classification %in% silent] #Remove silent variants from main table
 
   #Remove genes to ignore

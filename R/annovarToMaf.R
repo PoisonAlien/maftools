@@ -15,7 +15,7 @@
 #' @param tsbCol column name containing Tumor_Sample_Barcode or sample names in input file.
 #' @param table reference table used for gene-based annotations. Can be 'ensGene' or 'refGene'. Default 'refGene'
 #' @param basename If provided writes resulting MAF file to an output file.
-#' @param header was annovar run on a file contiaining variants with an header line. Default FALSE.
+#' @param header was annovar run on a file contiaining variants with a header line. Default FALSE.
 #' @param sep field seperator for input file. Default tab seperated.
 #' @param MAFobj If TRUE, returns results as an MAF object.
 #' @references Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
@@ -29,14 +29,14 @@
 annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL, header = FALSE, sep = '\t', MAFobj = FALSE){
 
   if(header){
-    ann = fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip = 1, header = TRUE)
+    ann = data.table::fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip = 1, header = TRUE)
     if(table == 'ensGene'){
       colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.ensGene', 'Gene.ensGene', 'GeneDetail.ensGene', 'ExonicFunc.ensGene', 'AAChange.ensGene')
     }else{
       colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.refGene', 'Gene.refGene', 'GeneDetail.refGene', 'ExonicFunc.refGene', 'AAChange.refGene')
     }
   }else{
-    ann = fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip =1, header = FALSE)
+    ann = data.table::fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip =1, header = FALSE)
     if(table == 'ensGene'){
       colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.ensGene', 'Gene.ensGene', 'GeneDetail.ensGene', 'ExonicFunc.ensGene', 'AAChange.ensGene')
     }else{
@@ -157,7 +157,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
   txChange = unlist(sapply(xaa, function(l){if(length(l) > 1){l[length(l)-1]} else{NA}}))
 
   #Make final maf table
-  ann.maf = data.table(Hugo_Symbol = ann$Gene.refGene, Entrez_Gene_Id = NA, Center = Center, NCBI_Build = refBuild, Chromosome = ann$Chr, Start_Position = ann$Start, End_Position = ann$End, Strand = '+',
+  ann.maf = data.table::data.table(Hugo_Symbol = ann$Gene.refGene, Entrez_Gene_Id = NA, Center = Center, NCBI_Build = refBuild, Chromosome = ann$Chr, Start_Position = ann$Start, End_Position = ann$End, Strand = '+',
                        Variant_Classification = ann$ExonicFunc.refGene, Variant_Type = ann$var.type, Reference_Allele = ann$Ref, Tumor_Seq_Allele1 = ann$Ref, Tumor_Seq_Allele2 = ann$Alt,
                        dbSNP_RS = NA, Tumor_Sample_Barcode = ann$Tumor_Sample_Barcode, Mutation_Status = 'Somatic',
                        AAChange = proteinChange, Transcript_Id = tx, TxChange = txChange, uid = ann$uid)
@@ -174,7 +174,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
       close(ens.gz)
     } else{
-      ens = fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
+      ens = data.table::fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
     }
 
     ann.maf = merge(ann.maf, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)
@@ -214,6 +214,10 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     }
 
   }else{
+    # For reasons returned data.table doesn't print in first attempt.
+    # Discussion here: https://github.com/Rdatatable/data.table/issues/939
+    # As a solution try to print before returning.
+    print(ann.maf)
     return(ann.maf)
   }
 

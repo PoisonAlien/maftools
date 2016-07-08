@@ -63,7 +63,9 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
     #Are there genes to highlight?
     if(!is.null(genes)){
       if(length(genes) > 1){
-        genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE), filter = Hugo_Symbol %in% genes)
+        genesDat = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE)
+        genesDat = genesDat[Hugo_Symbol %in% genes]
+        #genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE), filter = Hugo_Symbol %in% genes)
         if(nrow(genesDat) > 0){
           tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = genesDat,
                                                                aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)

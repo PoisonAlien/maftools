@@ -61,6 +61,7 @@ coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = FA
   #ComplexHeatmap::draw(oc.list)
 
   tn = unique(c(m1.oc[[2]], m2.oc[[2]]))
+  tn = unique(unlist(strsplit(x = tn, split = ';', fixed = TRUE)))
   tc = c(m1.oc[[3]], m2.oc[[3]])
 
   legend = grid::legendGrob(labels = tn,  pch = 15, gp = grid::gpar(col = tc[tn]), nrow = 2)

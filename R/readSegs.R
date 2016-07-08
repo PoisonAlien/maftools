@@ -29,6 +29,8 @@ mapMutsToSegs = function(seg, maf, tsb){
     stop(paste('Sample',tsb, 'not found in MAF'))
   }
 
+  tsb.dat = tsb.dat[!Variant_Type %in% 'CNV']
+
   tsb.dat = tsb.dat[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode)]
   tsb.dat$Chromosome = gsub(pattern = 'X', replacement = '23', x = tsb.dat$Chromosome, fixed = TRUE)
   tsb.dat$Chromosome = gsub(pattern = 'Y', replacement = '24', x = tsb.dat$Chromosome, fixed = TRUE)

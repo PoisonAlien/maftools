@@ -1,68 +1,69 @@
-maftools v0.99.50
-==============
+CHANGES IN VERSION 0.99.31
+-------------------------
 
-Changes:
-* Minor changes and plot options.
+NEW FEATURES
 
-maftools v0.99.40
-==============
+    o CoOncoplot - Plot two oncoplots side by side
+    o rainfallPlot
+    o oncoplot now supports copy number data
+    o New function readGistic to read summarize output files from GISTIC.
+    o dashboard style plot for mafsummary
+    o Plotting functions for GISTIC results: plotGisticResults, gisticPlot
+    o geneCloud to plot wordcloud of frequently mutated genes and copy number alteartions.
 
-Changes:
-* NEW: CoOncoplot - Plot two oncoplots side by side
-* NEW: rainfallPlot
-* Minor changes to plotCBSsegments.
+SIGNIFICANT USER-LEVEL CHANGES
 
-maftools v0.99.30
-==============
+    o More plotting parameters to plotCBSsegments.
 
-Changes:
+BUG FIXES
 
-* NEW: Plotting and mapping variants on copy number data (require cbs segments)
-* NEW: Compare two maf files for differentially mutated genes
-* NEW: Forestplots
-* Better clustering with copynumber and outlier detection for heterogeneity.
-* Fixed bug in nmf signatures
-* minor modification to titv plot
+    o Bug fix while performing fisher exact for differences between cohorts.
 
-maftools v0.99.25
-==============
+DEPRECATED AND DEFUNCT
 
-Changes:
+    o Remove AddReadcounts function, which relied on extrenal patform specific parogram bam-readcount
 
-* inferHeterogeneity: Clustering using nonparametric dirichlet process; more plotting options.
-* New subsetMaf function to subset MAF
-* Upto 5X faster oncomatrix creation and sorting
-* Examples won't take >5 seconds
-* Fixed a warning in oncodrive function
-* Updated vignette
+CHANGES IN VERSION 0.99.30
+-------------------------
+
+NEW FEATURES
+
+    o Plotting and mapping variants on copy number data (require cbs segments)
+    o Compare two maf files for differentially mutated genes
+    o Forestplots
+    o Better clustering with copynumber and outlier detection for heterogeneity.
 
 
-maftools v0.99.20
-==============
+CHANGES IN VERSION 0.99.25
+-------------------------
 
-Changes:
+NEW FEATURES
+    o inferHeterogeneity: Clustering using nonparametric dirichlet process; more plotting options.
+    o New subsetMaf function to subset MAF
 
-* Resubmission to bioconductor using r-devel 3.3
+SIGNIFICANT USER-LEVEL CHANGES
+    o Fixed a warning in oncodrive function
+    o Upto 5X faster oncomatrix creation and sorting using data.table
+    o Examples won't take >5 seconds
+    o Updated vignette
+
+CHANGES IN VERSION 0.99.20
+-------------------------
+
+CHANGES:
+    o Resubmission to bioconductor using r-devel 3.3
 
 
-maftools v0.99.15
-==============
+CHANGES IN VERSION 0.99.15
+-------------------------
 
-Changes:
+CHANGES
+    o Resubmission to bioconductor using r-devel 3.4
+    o added plotBestFitRes argument to extractSignatures
+    o added DriverMutation to biocviews
 
-* Resubmission to bioconductor using r-devel 3.4
-* added plotBestFitRes argument to extractSignatures
-* added DriverMutation to biocviews
+CHANGES IN VERSION 0.99.1
+-------------------------
 
-maftools v0.99.1
-==============
-
-Changes:
-
-* Modified vignettes to fix build vignettes error
-
-maftools v0.99.0
-==============
-
-Changes:
-* First submission
+CHANGES:
+    o Modified vignettes to fix build vignettes error

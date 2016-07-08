@@ -48,7 +48,7 @@ titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL)
 
   maf.con.summary = maf[,.N, by = .(Tumor_Sample_Barcode, con)]
   maf.con.summary$con.class = suppressWarnings(as.character(factor(maf.con.summary$con, levels = c("A-G", "T-C", "C-T", "G-A", "A-T", "T-A", "A-C", "T-G", "C-A", "G-T", "C-G", "G-C"),
-                                                                   labels = c("A-G", "A-G", "C-T", "C-T", "A-T", "A-T", "A-C", "A-C", "C-A", "C-A", "C-G", "C-G"))))
+                                                                   labels = c("T-C", "T-C", "C-T", "C-T", "T-A", "T-A", "T-G", "T-G", "C-A", "C-A", "C-G", "C-G"))))
 
 
   maf.con.class.summary = maf.con.summary[,sum(N), by = .(Tumor_Sample_Barcode, con.class)]
@@ -56,9 +56,9 @@ titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL)
   suppressWarnings(maf.con.class.summary[,fract := (nVars/sum(nVars))*100, by = .(Tumor_Sample_Barcode)])
 
   maf.con.class.summary$con.class = factor(x = maf.con.class.summary$con.class,
-                                           levels = c("A-G", "C-T", "A-T", "A-C", "C-A", "C-G"))
+                                           levels = c("T-C", "C-T", "T-A", "T-G", "C-A", "C-G"))
   maf.con.class.summary$TiTv = suppressWarnings(as.character(factor(x = maf.con.class.summary$con.class,
-                                                                    levels = c("A-G", "C-T", "A-T", "A-C", "C-A", "C-G"), labels = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv'))))
+                                                                    levels = c("T-C", "C-T", "T-A", "T-G", "C-A", "C-G"), labels = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv'))))
 
   fract.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'fract', fill = 0)
   raw.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'nVars', fill = 0)

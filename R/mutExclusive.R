@@ -19,6 +19,14 @@
 mutExclusive = function(maf, genes = NULL, top = 10){
 
   mat = maf@numericMatrix
+  ampdel = as.numeric(names(maf@classCode[maf@classCode %in% c('Amp', 'Del')]))
+
+  if(length(ampdel) > 0){
+    for(i in 1:length(ampdel)){
+      mat[mat == ampdel[i]] = 0
+    }
+    mat = sortByMutation(numMat = mat, maf = maf)
+  }
 
   k = 2 #for now do test for a pair of genes
   #create a grid of binary matrix for k genes

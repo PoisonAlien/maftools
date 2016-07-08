@@ -78,7 +78,7 @@ write.mafSummary(maf = laml, basename = 'laml')
 #### Quicky plot maf stats
 
 ```{r, echo=TRUE}
-plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median')
+plotmafSummary(maf = laml, rmOutlier = T, addStat = 'median', dashboard = TRUE)
 ```
 ![image1](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image1.png)
 
@@ -109,6 +109,9 @@ We can map protein changes on to the Protein structure similar to those draw by 
 lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = 'all')
 ```
 ![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image8)
+
+###Genecloud
+![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image16)
 
 ###Integrating somatic variants and copy number alterations
 ![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image12.png)

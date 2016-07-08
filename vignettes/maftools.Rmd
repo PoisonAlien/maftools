@@ -2,7 +2,7 @@
 title: "maftools : Summarize, Analyze and Visualize MAF files"
 author: "Anand Mayakonda"
 date: "`r Sys.Date()`"
-output: BiocStyle::html_document
+output: BiocStyle::html_document2
 vignette: >
   %\VignetteIndexEntry{Summarize, Analyze and Visualize MAF files}
   %\VignetteEngine{knitr::rmarkdown}
@@ -13,24 +13,10 @@ vignette: >
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. [Resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of somatic variants are stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner from either TCGA sources or any in-house studies as long as the data is in MAF format.
 
-# Installation
-Install from GitHub.
-```{r results='hide', eval=F}
-#Install Bioconductor dependencies.
-source("http://bioconductor.org/biocLite.R")
-biocLite("ComplexHeatmap")
-biocLite("VariantAnnotation")
-biocLite("Biostrings")
-
-#Install maftools from github repository.
-library("devtools")
-install_github(repo = "PoisonAlien/maftools")
-```
-
 #MAF field requirements.
 MAF files contain many fields ranging from chromosome names to cosmic annotations. However most of the analysis in maftools uses following fields.
 
-  * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_position, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
+  * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_Position, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
   
   * Recommended optional fields: non MAF specific fields containing vaf and amino acid change information. 
 
@@ -43,7 +29,7 @@ This vignette demonstrates the usage and application of maftools on an example M
 `read.maf` reads MAF files, summarizes it in various ways and stores it as an MAF object. 
 
 ```{r results='hide', message=FALSE}
-suppressWarnings(require(maftools))
+suppressPackageStartupMessages(require(maftools))
 #read TCGA maf file for LAML
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 laml = read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
@@ -68,8 +54,8 @@ write.mafSummary(maf = laml, basename = 'laml')
 #Visualization.
 ##Plotting MAF summary.
 We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. We can add either mean or median line to the stacked barplot to display average/median number of variants across the cohort.
-```{r,fig.height=5, fig.width=7}
-plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median')
+```{r,fig.height=6, fig.width=8}
+plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE)
 ```
 
 ## Oncoplots (aka waterfall plots)
@@ -82,6 +68,26 @@ oncoplot(maf = laml, top = 10, removeNonMutated = TRUE)
 ```
 
 NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more than once in the same sample.
+
+###Including copy number data into oncoplots.
+If we have copy number data along with MAF file, we can include them in oncoplot as to show if any genes are amplified or deleted. One most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF. GISTIC generates numerous files but we need mainly three files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt` and `del_genes.conf_XX.txt`, where XX is confidence level. These files contain significantly altered genomic regions along with amplified and delted genes respectively.
+
+```{r results='hide', message=FALSE}
+suppressWarnings(require(maftools))
+#read TCGA maf file for LAML
+laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
+all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
+amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
+del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
+laml.plus.gistic = read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE, gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
+```
+
+```{r, fig.align='left',fig.height=6,fig.width=10, eval=T, fig.align='left'}
+#We will draw oncoplots for top ten mutated genes. (Removing non-mutated samples from the plot for better visualization)
+oncoplot(maf = laml.plus.gistic, top = 10, removeNonMutated = TRUE, sortByMutation = TRUE)
+```
+
+This plot shows frequent deletions in TP53 gene which is located on one of the significanlty deleted locus 17p13.2.
 
 ###Changing colors and adding annotations to oncoplots.
 It is often the case that we include meta data to show sample characterstics such as gender, treatment, etc. We can include such meta data by passing them to `annotation` argument of `oncoplot`. We can also change colors for Variant_Classification by providing a named vector of colors.
@@ -149,12 +155,46 @@ Above plot shows two genes NF1 and SUZ12 are located on a region which has a sha
 Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations[9](references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. 
 
 ```{r, results='hide', message=FALSE}
-brca <- system.file("extdata", "brca.maf.gz", package = "maftools")
-brca = read.maf(maf = brca)
+coad <- system.file("extdata", "coad.maf.gz", package = "maftools")
+coad = read.maf(maf = coad)
 ```
 
 ```{r, fig.height=5,fig.width=12,fig.align='center'}
-brca.rf = rainfallPlot(maf = brca)
+coad.rf = rainfallPlot(maf = coad)
+```
+
+##Genecloud
+We can plot word cloud plot for mutated genes with the function `geneCloud`. Size of each gene is proportional to the total number of samples in which it is mutated/altered.
+
+```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
+geneCloud(input = laml, minMut = 3)
+```
+
+#GISTIC files.
+##Reading and summarizing gistic output files.
+We can summarize output files generated by GISTIC programme. As mentioned earlier, we need three files that were generated by GISTIC, i.e, all_lesions.conf_XX.txt, amp_genes.conf_XX.txt and del_genes.conf_XX.txt, where XX is the confidence level. See [GISTIC documentation](ftp://ftp.broadinstitute.org/pub/GISTIC2.0/GISTICDocumentation_standalone.htm) for details.
+
+```{r}
+all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
+amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
+del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
+laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
+```
+
+Similar to MAF objects, there are methods available to access slots of GISTIC object - `getSampleSummary`, `getGeneSummary` and `getCytoBandSummary`. Summarized results can be written to output files using function `write.GisticSummary`.
+
+##Visualizing gistic results.
+###Gistic plots.
+Similar to oncoplots we can draw copy number data.
+
+```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
+gisticPlot(gistic = laml.gistic)
+```
+
+###Plot gistic results.
+A bubble plot to display summarized gistic results. 
+```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
+plotGisticResults(gistic = laml.gistic)
 ```
 
 #Analysis.
@@ -455,7 +495,6 @@ var.annovar = system.file("extdata", "variants.hg19_multianno.txt", package = "m
 var.annovar.maf = annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19', 
                                tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = TRUE)
 
-print(var.annovar.maf)
 ```
 
 Annovar, when used with Ensemble as a gene annotation source, uses ensemble gene IDs as Gene names. In that case, use `annovarToMaf` with argument `table` set to `ensGene` which converts ensemble gene IDs into HGNC symbols.
@@ -476,11 +515,8 @@ subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classificati
 ##Select all variants with VAF above 30%
 subsetMaf(maf = laml, query = "t_vaf > 30")
 ##Same as above but include only 'Protein_Change' column in the output
-subsetMaf(maf = laml, query = "t_vaf > 30", fields = 'AAChange')
+subsetMaf(maf = laml, query = "t_vaf > 30", fields = 'Protein_Change')
 ```
-
-##Adding readcounts to MAF file from bam files
-`addReadCounts` is wrapper script for bam-readcount programme, which takes MAF file as an input and adds read counts from the corresponding bam file [13](#references). `addReadCounts` assumes bam-readcount is installed and is under path. 
 
 ##Plotting VAF
 maftools has few other functions such as `plotVaf` and `genesToBarcodes` which helps to plot vaf distributions and maps samples where a given genes are mutated respectively.
@@ -498,4 +534,3 @@ maftools has few other functions such as `plotVaf` and `genesToBarcodes` which h
 10.	Welch, J.S., et al., The origin and evolution of mutations in acute myeloid leukemia. Cell, 2012. 150(2): p. 264-78.
 11.	Ramos, A.H., et al., Oncotator: cancer variant annotation tool. Hum Mutat, 2015. 36(4): p. E2423-9.
 12. Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
-13. bam-readcount: https://github.com/genome/bam-readcount
