@@ -26,6 +26,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Add pfam domains and summarize.
   * Extract mutational signatures and compare them to validated signatures.
   * Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation.
+  * Read and summarize GISTIC results.
 2. Visualization
   * Make oncoplots.
   * Make lollipop plots.
@@ -34,6 +35,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Plot Transitions and Transversions. 
   * Plot maf summary.
   * CoOncoplots
+  * Genecloud
   * Rainfall plots
 3. Annotation
   * Annotate variants locally using Oncotator API.
@@ -111,7 +113,11 @@ lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = 'all
 ![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image8)
 
 ###Genecloud
-![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image16)
+
+```{r}
+geneCloud(input = laml, minMut = 3)
+```
+![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image16.png)
 
 ###Integrating somatic variants and copy number alterations
 ![image8](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image12.png)
