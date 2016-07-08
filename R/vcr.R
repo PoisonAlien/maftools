@@ -1,6 +1,7 @@
 #' Samll internal function to make complex events. Ignore this.
 #' @param x charcter to split
 #' @param gis Is input from gistic. Logical.
+#' @return split string
 #' @export
 
 vcr = function(x, gis = FALSE) {

@@ -18,6 +18,7 @@
 #' laml.sign <- extractSignatures(mat = laml.tnm, plotBestFitRes = FALSE)
 #' }
 #' @importFrom NMF nmfEstimateRank nmf basis plot consensusmap coef
+#' @importFrom grDevices pdf boxplot.stats dev.off
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 

@@ -11,6 +11,9 @@ vcr(x, gis = FALSE)
 
 \item{gis}{Is input from gistic. Logical.}
 }
+\value{
+split string
+}
 \description{
 Samll internal function to make complex events. Ignore this.
 }

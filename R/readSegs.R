@@ -20,7 +20,7 @@ mapMutsToSegs = function(seg, maf, tsb){
     stop(paste('Sample',tsb, 'not found in segmentation file'))
   }
 
-  seg.dat = transformSegments(segDat = seg.dat)
+  seg.dat = transformSegments(segmentedData = seg.dat)
   setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
 
   tsb.dat = subsetMaf(maf = maf, tsb = tsb, fields = 'Hugo_Symbol')
@@ -49,16 +49,16 @@ mapMutsToSegs = function(seg, maf, tsb){
 }
 
 #--- Change segment sizes into linear scale
-transformSegments = function(segData){
+transformSegments = function(segmentedData){
 
   #Replace chr x and y with numeric value (23 and 24) for better sorting
-  segData$Chromosome = gsub(pattern = 'X', replacement = '23', x = segData$Chromosome, fixed = TRUE)
-  segData$Chromosome = gsub(pattern = 'Y', replacement = '24', x = segData$Chromosome, fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'X', replacement = '23', x = segmentedData$Chromosome, fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'Y', replacement = '24', x = segmentedData$Chromosome, fixed = TRUE)
 
-  segData = segData[order(Chromosome, Start_Position)]
+  segmentedData = segmentedData[order(Chromosome, Start_Position)]
 
 
-  seg.spl = split(segData, as.factor(as.numeric(segData$Chromosome)))
+  seg.spl = split(segmentedData, as.factor(as.numeric(segmentedData$Chromosome)))
   #hg19 chromosome sizes
   chr.lens = c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
                146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540,
@@ -120,7 +120,7 @@ plotCBS = function(segData, tsb){
                102531392, 90354753, 81195210, 78077248, 59128983, 63025520, 48129895, 51304566,
                155270560, 59373566)
 
-  seg.spl.transformed = transformSegments(segData = segData)
+  seg.spl.transformed = transformSegments(segmentedData = segData)
   chr.lens.sumsum = cumsum(chr.lens)
   nchrs = length(unique(seg.spl.transformed$Chromosome))
 
