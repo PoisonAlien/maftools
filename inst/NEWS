@@ -1,0 +1,76 @@
+CHANGES IN VERSION 0.99.32
+-------------------------
+
+NON SIGNIFICANT CHANGES
+
+    o Fixed warnings for bioc-check.
+
+CHANGES IN VERSION 0.99.31
+-------------------------
+
+NEW FEATURES
+
+    o CoOncoplot - Plot two oncoplots side by side
+    o rainfallPlot
+    o oncoplot now supports copy number data
+    o New function readGistic to read summarize output files from GISTIC.
+    o dashboard style plot for mafsummary
+    o Plotting functions for GISTIC results: plotGisticResults, gisticPlot
+    o geneCloud to plot wordcloud of frequently mutated genes and copy number alteartions.
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o More plotting parameters to plotCBSsegments.
+
+BUG FIXES
+
+    o Bug fix while performing fisher exact for differences between cohorts.
+
+DEPRECATED AND DEFUNCT
+
+    o Remove AddReadcounts function, which relied on extrenal patform specific parogram bam-readcount
+
+CHANGES IN VERSION 0.99.30
+-------------------------
+
+NEW FEATURES
+
+    o Plotting and mapping variants on copy number data (require cbs segments)
+    o Compare two maf files for differentially mutated genes
+    o Forestplots
+    o Better clustering with copynumber and outlier detection for heterogeneity.
+
+
+CHANGES IN VERSION 0.99.25
+-------------------------
+
+NEW FEATURES
+    o inferHeterogeneity: Clustering using nonparametric dirichlet process; more plotting options.
+    o New subsetMaf function to subset MAF
+
+SIGNIFICANT USER-LEVEL CHANGES
+    o Fixed a warning in oncodrive function
+    o Upto 5X faster oncomatrix creation and sorting using data.table
+    o Examples won't take >5 seconds
+    o Updated vignette
+
+CHANGES IN VERSION 0.99.20
+-------------------------
+
+CHANGES:
+    o Resubmission to bioconductor using r-devel 3.3
+
+
+CHANGES IN VERSION 0.99.15
+-------------------------
+
+CHANGES
+    o Resubmission to bioconductor using r-devel 3.4
+    o added plotBestFitRes argument to extractSignatures
+    o added DriverMutation to biocviews
+
+CHANGES IN VERSION 0.99.1
+-------------------------
+
+CHANGES:
+    o Modified vignettes to fix build vignettes error
