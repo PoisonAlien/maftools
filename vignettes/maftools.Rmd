@@ -2,7 +2,7 @@
 title: "maftools : Summarize, Analyze and Visualize MAF files"
 author: "Anand Mayakonda"
 date: "`r Sys.Date()`"
-output: BiocStyle::html_document2
+output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Summarize, Analyze and Visualize MAF files}
   %\VignetteEngine{knitr::rmarkdown}
@@ -498,6 +498,17 @@ var.annovar.maf = annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBui
 ```
 
 Annovar, when used with Ensemble as a gene annotation source, uses ensemble gene IDs as Gene names. In that case, use `annovarToMaf` with argument `table` set to `ensGene` which converts ensemble gene IDs into HGNC symbols.
+
+##Coverting ICGC Simpale Somatic Mutation Format to MAF.
+Just like TCGA, International Cancer Genome Consortium [ICGC](http://icgc.org) also makes its data publically available. But the data are stored in [Simpale Somatic Mutation Format](http://docs.icgc.org/submission/guide/icgc-simple-somatic-mutation-format/), which is similar to MFA format in its structure. Howevere field names and classification of variants is different from that of MAF. `icgcSimpleMutationToMAF` is a function which reads ICGC data and converts them to MAF.
+
+```{r}
+#Read sample ICGC data for ESCA
+esca.icgc <- system.file("extdata", "simple_somatic_mutation.open.ESCA-CN.sample.tsv.gz", package = "maftools")
+esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc)
+#Printing first 16 columns for display convenience.
+print(esca.maf[1:5,1:16, with = FALSE])
+```
 
 #Other useful functions.
 ##Subsetting MAF
