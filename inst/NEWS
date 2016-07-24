@@ -1,3 +1,18 @@
+CHANGES IN VERSION 0.99.33
+-------------------------
+
+NEW FEATURES
+
+    o icgcSimpleMutationToMAF - convert ICGC Simpale Somatic Mutation Format to MAF
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o Now read.maf validates MAF for repeated variants mapping to multiple transcripts of same gene.
+
+NON SIGNIFICANT CHANGES
+
+    o Fixed vignette TOC
+
 CHANGES IN VERSION 0.99.32
 -------------------------
 

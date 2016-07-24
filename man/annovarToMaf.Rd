@@ -25,7 +25,7 @@ annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
 
 \item{sep}{field seperator for input file. Default tab seperated.}
 
-\item{MAFobj}{If TRUE, returns results as an MAF object.}
+\item{MAFobj}{If TRUE, returns results as an \code{\link{MAF}} object.}
 }
 \value{
 MAF table.

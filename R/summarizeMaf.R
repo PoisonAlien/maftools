@@ -21,7 +21,7 @@ summarizeMaf = function(maf){
 
   if('Center' %in% colnames(maf)){
     Center = unique(maf[,Center])
-    Center = Center[!is.na(Center)]
+    #Center = Center[is.na(Center)]
     if(length(Center) > 1){
       message('Mutiple centers found.')
       Center = do.call(paste, c(as.list(Center), sep=";"))
@@ -64,7 +64,7 @@ summarizeMaf = function(maf){
   numMutatedSamples = maf[,.(MutatedSamples = length(unique(Tumor_Sample_Barcode))), by = Hugo_Symbol]
   #Merge and sort
   hs.cast = merge(hs.cast, numMutatedSamples, by = 'Hugo_Symbol')
-  hs.cast = hs.cast[order(MutatedSamples, decreasing = TRUE)]
+  hs.cast = hs.cast[order(MutatedSamples, total, decreasing = TRUE)]
   #Make a summarized table
   summary = data.table::data.table(ID = c('NCBI_Build', 'Center','Samples', 'nGenes',colnames(vc.cast)[2:ncol(vc.cast)]),
                        summary = c(NCBI_Build, Center, nrow(vc.cast), nGenes, colSums(vc.cast[,2:ncol(vc.cast), with =FALSE])))

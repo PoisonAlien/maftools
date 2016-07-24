@@ -6,7 +6,8 @@
 \usage{
 read.maf(maf, removeSilent = TRUE, useAll = FALSE,
   gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL,
-  gisticDelGenesFile = NULL, cnTable = NULL, isTCGA = FALSE)
+  gisticDelGenesFile = NULL, cnTable = NULL,
+  removeDuplicatedVariants = TRUE, isTCGA = FALSE)
 }
 \arguments{
 \item{maf}{tab delimited MAF file. File can also be gz compressed. Required.}
@@ -23,6 +24,8 @@ read.maf(maf, removeSilent = TRUE, useAll = FALSE,
 
 \item{cnTable}{Custom copynumber data if gistic results are not available. Input file should a tab seperated three column table containing gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL.}
 
+\item{removeDuplicatedVariants}{removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
+
 \item{isTCGA}{Is input MAF file from TCGA source.}
 }
 \value{
@@ -34,6 +37,9 @@ Takes tab delimited MAF (can be plain text or gz compressed) file as an input an
 \details{
 This function takes MAF file as input and summarizes them. If copy number data is available, e.g from GISTIC, it can be provided too via arguments gisticAllLesionsFile, gisticAmpGenesFile,
 and gisticDelGenesFile. Copy number data can also be provided as a custom table containing Gene name, Sample name and Copy Number status.
+
+Note that if input MAF file contains multiple affected transcripts of a variant, this program removes repeated entries as duplicates, while keeping single unique entry per variant per sample.
+If you wish to keep all of them, set removeDuplicatedVariants to FALSE.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

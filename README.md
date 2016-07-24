@@ -3,7 +3,7 @@
 ####Introduction.
 With advances in Cancer Genomics, maf format is being widley accepted and used to store variants detected. 
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. The [resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of genetic variants is stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). 
-This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner either from TCGA sources or any in-house studies as long as the data is in MAF format.
+This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner either from TCGA sources or any in-house studies as long as the data is in MAF format. Maftools can also handle ICGC Simple Somatic Mutation format.
 
 maftools is on :point_right: [bioRxiv](http://biorxiv.org/content/early/2016/05/11/052662) :bowtie:
 
@@ -16,7 +16,7 @@ Complete specififcation of MAF files can be found on [NCI TCGA page](https://wik
 NOTE: If you have variants stored as VCFs, convert them to MAF using [vcf2maf](https://github.com/mskcc/vcf2maf). Merge MAFs from all samples into a single MAF before processing with maftools.
 
 #### Vignette and a case study.
-A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://poisonalien.github.io).
+A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 #### Stuffs maftools can do.
 1. Analysis
@@ -40,6 +40,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 3. Annotation
   * Annotate variants locally using Oncotator API.
   * Convert Annovar annotations into MAF.
+  * Convert ICGC simple somatic mutation format into MAF.
 
 #### Installation:
 
@@ -224,7 +225,7 @@ Signature_2 which corelates will validated Signature_12 was observed in Liver sa
 `addReadCounts()` adds read depths for reference and alternate allele from corresponding bam file. This internally runs [bam-readcount](https://github.com/genome/bam-readcount) to get the counts and adds them to maf file. 
 
 #### Other functions
-For full documentation please refer to [vignette](http://poisonalien.github.io).
+For full documentation please refer to [vignette](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 ####References.
 1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.

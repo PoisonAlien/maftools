@@ -17,7 +17,7 @@
 #' @param basename If provided writes resulting MAF file to an output file.
 #' @param header was annovar run on a file contiaining variants with a header line. Default FALSE.
 #' @param sep field seperator for input file. Default tab seperated.
-#' @param MAFobj If TRUE, returns results as an MAF object.
+#' @param MAFobj If TRUE, returns results as an \code{\link{MAF}} object.
 #' @references Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
 #' @return MAF table.
 #' @examples
@@ -189,15 +189,16 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
   }
 
   if(MAFobj){
+    ann.maf = validateMaf(maf = ann.maf, isTCGA = FALSE, rdup = TRUE)
     ann.maf.summary = summarizeMaf(maf = ann.maf)
-    if(length(unique(x[,Tumor_Sample_Barcode])) < 2){
+    if(length(unique(ann.maf[,Tumor_Sample_Barcode])) < 2){
       message('Too few samples to create MAF object. Returning MAF table.')
       return(ann.maf)
     }else{
       #Convert to factors.
-      ann.maf$Tumor_Sample_Barcode = as.factor(x = ann.maf$Hugo_Symbol)
-      ann.maf$Variant_Classification = as.factor(x = ann.maf$Variant_Classification)
-      ann.maf$Variant_Type = as.factor(x = ann.maf$Variant_Type)
+      ann.maf$Tumor_Sample_Barcode = as.factor(x = as.character(ann.maf$Hugo_Symbol))
+      ann.maf$Variant_Classification = as.factor(x = as.character(ann.maf$Variant_Classification))
+      ann.maf$Variant_Type = as.factor(x = as.character(ann.maf$Variant_Type))
 
       ann.maf.oncomat = createOncoMatrix(maf = ann.maf)
 
