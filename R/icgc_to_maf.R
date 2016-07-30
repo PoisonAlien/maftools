@@ -101,6 +101,7 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDu
   #Change ensemble gene IDs into Hugo_Symbol
   ens = system.file('extdata', 'ensGenes.txt.gz', package = 'maftools')
   message('Converting Ensemble Gene IDs into HGNC gene symbols.')
+
   if(Sys.info()[['sysname']] == 'Windows'){
     ens.gz = gzfile(description = ens, open = 'r')
     ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )

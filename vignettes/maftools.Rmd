@@ -152,7 +152,7 @@ plotCBSsegments(cbsFile = tcga.ab.009.seg, maf = laml, labelAll = TRUE)
 Above plot shows two genes NF1 and SUZ12 are located on a region which has a shallow deletion. Later we will also see how these variants on copy number altered regions affect variant allele frequencies and tumor heterogeneity estimation.
 
 ##Rainfall plots
-Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations[9](references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. 
+Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations[9](references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. If `detectChangePoints` is set to TRUE, `rainfall` plot also highlights regions where potential kataegis are located.
 
 ```{r, results='hide', message=FALSE}
 coad <- system.file("extdata", "coad.maf.gz", package = "maftools")
@@ -160,7 +160,7 @@ coad = read.maf(maf = coad)
 ```
 
 ```{r, fig.height=5,fig.width=12,fig.align='center'}
-coad.rf = rainfallPlot(maf = coad)
+coad.rf = rainfallPlot(maf = coad, detectChangePoints = TRUE, fontSize = 12, pointSize = 0.6)
 ```
 
 ##Genecloud

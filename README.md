@@ -36,7 +36,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Plot maf summary.
   * CoOncoplots
   * Genecloud
-  * Rainfall plots
+  * Rainfall plots and change point detection
 3. Annotation
   * Annotate variants locally using Oncotator API.
   * Convert Annovar annotations into MAF.
