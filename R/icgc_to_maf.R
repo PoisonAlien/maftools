@@ -24,7 +24,7 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDu
     if(Sys.info()[['sysname']] == 'Windows'){
       icgc.gz = gzfile(description = icgc, open = 'r')
       icgc <- suppressWarnings( data.table(read.csv( file = icgc.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-      close(ens.gz)
+      close(icgc.gz)
     }else{
       icgc = suppressWarnings(data.table::fread(input = paste('zcat <', icgc), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
     }

@@ -505,7 +505,7 @@ Just like TCGA, International Cancer Genome Consortium [ICGC](http://icgc.org) a
 ```{r}
 #Read sample ICGC data for ESCA
 esca.icgc <- system.file("extdata", "simple_somatic_mutation.open.ESCA-CN.sample.tsv.gz", package = "maftools")
-esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc)
+esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc, addHugoSymbol = TRUE)
 #Printing first 16 columns for display convenience.
 print(esca.maf[1:5,1:16, with = FALSE])
 ```
