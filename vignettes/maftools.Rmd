@@ -152,7 +152,7 @@ plotCBSsegments(cbsFile = tcga.ab.009.seg, maf = laml, labelAll = TRUE)
 Above plot shows two genes NF1 and SUZ12 are located on a region which has a shallow deletion. Later we will also see how these variants on copy number altered regions affect variant allele frequencies and tumor heterogeneity estimation.
 
 ##Rainfall plots
-Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations[9](references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. 
+Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations[9](references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. If `detectChangePoints` is set to TRUE, `rainfall` plot also highlights regions where potential kataegis are located.
 
 ```{r, results='hide', message=FALSE}
 coad <- system.file("extdata", "coad.maf.gz", package = "maftools")
@@ -160,7 +160,7 @@ coad = read.maf(maf = coad)
 ```
 
 ```{r, fig.height=5,fig.width=12,fig.align='center'}
-coad.rf = rainfallPlot(maf = coad)
+coad.rf = rainfallPlot(maf = coad, detectChangePoints = TRUE, fontSize = 12, pointSize = 0.6)
 ```
 
 ##Genecloud
@@ -500,15 +500,17 @@ var.annovar.maf = annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBui
 Annovar, when used with Ensemble as a gene annotation source, uses ensemble gene IDs as Gene names. In that case, use `annovarToMaf` with argument `table` set to `ensGene` which converts ensemble gene IDs into HGNC symbols.
 
 ##Coverting ICGC Simpale Somatic Mutation Format to MAF.
-Just like TCGA, International Cancer Genome Consortium [ICGC](http://icgc.org) also makes its data publically available. But the data are stored in [Simpale Somatic Mutation Format](http://docs.icgc.org/submission/guide/icgc-simple-somatic-mutation-format/), which is similar to MFA format in its structure. Howevere field names and classification of variants is different from that of MAF. `icgcSimpleMutationToMAF` is a function which reads ICGC data and converts them to MAF.
+Just like TCGA, International Cancer Genome Consortium [ICGC](http://icgc.org) also makes its data publically available. But the data are stored in [Simpale Somatic Mutation Format](http://docs.icgc.org/submission/guide/icgc-simple-somatic-mutation-format/), which is similar to MAF format in its structure. However field names and classification of variants is different from that of MAF. `icgcSimpleMutationToMAF` is a function which reads ICGC data and converts them to MAF.
 
 ```{r}
 #Read sample ICGC data for ESCA
 esca.icgc <- system.file("extdata", "simple_somatic_mutation.open.ESCA-CN.sample.tsv.gz", package = "maftools")
-esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc)
+esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc, addHugoSymbol = TRUE)
 #Printing first 16 columns for display convenience.
 print(esca.maf[1:5,1:16, with = FALSE])
 ```
+
+Note that by default Simple Somatic Mutation format contains all affected transcripts of a variant resuting in multiple entries of the same variant in same sample. It is hard to choose a single affected transcript based on annotations alone and by default this program removes repeated variants as duplicated entries. If you wish to keep all of them, set `removeDuplicatedVariants` to FALSE. Another option is to convert input file to MAF without removing anything and then use scripts like [vcf2maf](https://github.com/mskcc/vcf2maf) to prioritize affected transcripts.
 
 #Other useful functions.
 ##Subsetting MAF
@@ -545,3 +547,8 @@ maftools has few other functions such as `plotVaf` and `genesToBarcodes` which h
 10.	Welch, J.S., et al., The origin and evolution of mutations in acute myeloid leukemia. Cell, 2012. 150(2): p. 264-78.
 11.	Ramos, A.H., et al., Oncotator: cancer variant annotation tool. Hum Mutat, 2015. 36(4): p. E2423-9.
 12. Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
+
+#Session Info
+```{r}
+sessionInfo()
+```

@@ -1,3 +1,14 @@
+CHANGES IN VERSION 0.99.34
+-------------------------
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o rainfall plot can detect katageis when detectChangePoints is TRUE.
+
+NON SIGNIFICANT CHANGES
+
+    o Bux fixes.
+
 CHANGES IN VERSION 0.99.33
 -------------------------
 

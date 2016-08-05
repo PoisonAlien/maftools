@@ -5,7 +5,7 @@
 \title{Converts ICGC Simple Somatic Mutation format file to MAF}
 \usage{
 icgcSimpleMutationToMAF(icgc, basename = NA, MAFobj = FALSE,
-  removeDuplicatedVariants = TRUE)
+  removeDuplicatedVariants = TRUE, addHugoSymbol = FALSE)
 }
 \arguments{
 \item{icgc}{Input data in ICGC Simple Somatic Mutation format. Can be gz compressed.}
@@ -15,6 +15,8 @@ icgcSimpleMutationToMAF(icgc, basename = NA, MAFobj = FALSE,
 \item{MAFobj}{If TRUE returns results as an \code{\link{MAF}} object.}
 
 \item{removeDuplicatedVariants}{removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
+
+\item{addHugoSymbol}{If TRUE replaces ensemble gene IDs with Hugo_Symbols. Default FALSE.}
 }
 \value{
 tab delimited MAF file.

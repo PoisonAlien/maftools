@@ -36,7 +36,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Plot maf summary.
   * CoOncoplots
   * Genecloud
-  * Rainfall plots
+  * Rainfall plots and change point detection
 3. Annotation
   * Annotate variants locally using Oncotator API.
   * Convert Annovar annotations into MAF.
@@ -184,7 +184,7 @@ oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), sort = T, legend = T, removeNo
 ![image6](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image6)
 
 ####Tumor Heterogenity
-Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. Although this tool performs fairly well, there are other tools like [SciClone](https://github.com/genome/sciclone) which does better job at clustering and density estimation<sup>5</sup>.
+Tumors are generally heterogenous i.e, consist of multiple clones. This heterogenity can be inferred by clustering variant allele frequencies. We will manually mention vaf column. Requires [mclust](https://cran.r-project.org/web/packages/mclust/index.html) package. 
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7}
 #We will run this for sample TCGA.AB.2972
@@ -221,8 +221,6 @@ Signature_2 which corelates will validated Signature_12 was observed in Liver sa
 
 ![image9](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image9)
 
-#### Add read count and allele frequencies to maf.
-`addReadCounts()` adds read depths for reference and alternate allele from corresponding bam file. This internally runs [bam-readcount](https://github.com/genome/bam-readcount) to get the counts and adds them to maf file. 
 
 #### Other functions
 For full documentation please refer to [vignette](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
@@ -233,9 +231,8 @@ For full documentation please refer to [vignette](http://bioconductor.org/packag
 3.	Dees, N.D., et al., MuSiC: identifying mutational significance in cancer genomes. Genome Res, 2012. 22(8): p. 1589-98.
 4.	Ramos, A.H., et al., Oncotator: cancer variant annotation tool. Hum Mutat, 2015. 36(4): p. E2423-9.
 5.	Leiserson, M.D., et al., CoMEt: a statistical approach to identify combinations of mutually exclusive alterations in cancer. Genome Biol, 2015. 16: p. 160.
-6.	Miller, C.A., et al., SciClone: inferring clonal architecture and tracking the spatial and temporal patterns of tumor evolution. PLoS Comput Biol, 2014. 10(8): p. e1003665.
-7.	Alexandrov, L.B., et al., Signatures of mutational processes in human cancer. Nature, 2013. 500(7463): p. 415-21.
-8.	Gaujoux, R. and C. Seoighe, A flexible R package for nonnegative matrix factorization. BMC Bioinformatics, 2010. 11: p. 367.
+6.	Alexandrov, L.B., et al., Signatures of mutational processes in human cancer. Nature, 2013. 500(7463): p. 415-21.
+7.	Gaujoux, R. and C. Seoighe, A flexible R package for nonnegative matrix factorization. BMC Bioinformatics, 2010. 11: p. 367.
 
 #### Powered By:
 * [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.6

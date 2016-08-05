@@ -10,20 +10,21 @@
 #' @param basename If given writes to output file with basename.
 #' @param MAFobj If TRUE returns results as an \code{\link{MAF}} object.
 #' @param removeDuplicatedVariants removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.
+#' @param addHugoSymbol If TRUE replaces ensemble gene IDs with Hugo_Symbols. Default FALSE.
 #' @return tab delimited MAF file.
 #' @examples
 #' esca.icgc <- system.file("extdata", "simple_somatic_mutation.open.ESCA-CN.sample.tsv.gz", package = "maftools")
 #' esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc)
 #' @export
 
-icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDuplicatedVariants = TRUE){
+icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDuplicatedVariants = TRUE, addHugoSymbol = FALSE){
 
   if(as.logical(length(grep(pattern = 'gz$', x = icgc, fixed = FALSE)))){
 
     if(Sys.info()[['sysname']] == 'Windows'){
       icgc.gz = gzfile(description = icgc, open = 'r')
       icgc <- suppressWarnings( data.table(read.csv( file = icgc.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-      close(ens.gz)
+      close(icgc.gz)
     }else{
       icgc = suppressWarnings(data.table::fread(input = paste('zcat <', icgc), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
     }
@@ -98,26 +99,31 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDu
   #Attach rest of fields
   icgc.maf = cbind(icgc.maf, icgc.rest)
 
-  #Change ensemble gene IDs into Hugo_Symbol
-  ens = system.file('extdata', 'ensGenes.txt.gz', package = 'maftools')
-  message('Converting Ensemble Gene IDs into HGNC gene symbols.')
-  if(Sys.info()[['sysname']] == 'Windows'){
-    ens.gz = gzfile(description = ens, open = 'r')
-    ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-    close(ens.gz)
-  } else{
-    ens = data.table::fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
+  if(addHugoSymbol){
+
+    #Change ensemble gene IDs into Hugo_Symbol
+    ens = system.file('extdata', 'ensGenes.txt.gz', package = 'maftools')
+    message('Converting Ensemble Gene IDs into HGNC gene symbols.')
+
+    if(Sys.info()[['sysname']] == 'Windows'){
+      ens.gz = gzfile(description = ens, open = 'r')
+      ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
+      close(ens.gz)
+    } else{
+      ens = data.table::fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
+    }
+
+    icgc.maf[,ens_id := Hugo_Symbol]
+    icgc.maf = merge(icgc.maf, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)
+
+    icgc.maf[,Hugo_Symbol := hgnc_symbol]
+    icgc.maf[,Entrez_Gene_Id := Entrez]
+    icgc.maf[,hgnc_symbol := NULL]
+    icgc.maf[,Entrez := NULL]
+
+    message('Done! Original ensemble gene IDs are preserved under field name ens_id')
   }
 
-  icgc.maf[,ens_id := Hugo_Symbol]
-  icgc.maf = merge(icgc.maf, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)
-
-  icgc.maf[,Hugo_Symbol := hgnc_symbol]
-  icgc.maf[,Entrez_Gene_Id := Entrez]
-  icgc.maf[,hgnc_symbol := NULL]
-  icgc.maf[,Entrez := NULL]
-
-  message('Done! Original ensemble gene IDs are preserved under field name ens_id')
 
   #Order according to Hugo_Symbol
   icgc.maf = icgc.maf[order(Hugo_Symbol)]
