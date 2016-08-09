@@ -44,6 +44,16 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 
 #### Installation:
 
+Easy way: Install from Bioconductor
+
+```{r}
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("maftools")
+```
+
+Install from Github
+
 ```{r results='hide'}
 #Install Bioconductor dependencies.
 source("http://bioconductor.org/biocLite.R")
