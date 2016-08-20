@@ -1,6 +1,7 @@
 
 getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE, left = FALSE, showTumorSampleBarcodes = FALSE, hmName = hmName){
 
+  #-----preprocess matrix
   mat_origin = maf@numericMatrix
 
   if(ncol(mat_origin) < 2){
@@ -32,7 +33,6 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   char.mat = maf@oncoMatrix
   char.mat = char.mat[rownames(mat),]
   char.mat = char.mat[,colnames(mat)]
-  #final matrix for plotting
   mat = char.mat
 
   if(length(genes.missing) > 0){
@@ -46,8 +46,14 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     mat_origin = rbind(mat_origin, t(genes.missing.mat2))
   }
 
+  #final matrix for plotting
   mat = mat[genes,]
   mat_origin = mat_origin[genes,]
+
+  #New version of complexheatmap complains about '' , replacing them with random strinf xxx
+  mat[mat == ''] = 'xxx'
+
+  #---------------------------------------Colors and vcs-------------------------------------------------
 
   if(is.null(colors)){
     col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'red', 'green')
@@ -58,8 +64,16 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     col = colors
   }
 
+  #Default background gray color.
+  bg = "#CCCCCC"
+  #New version of complexheatmap complains about '', will replace them with random tesx, xxx
+  col = c(col, 'xxx' = bg)
+
 
   variant.classes = unique(unlist(as.list(apply(mat, 2, unique))))
+  variant.classes = unique(unlist(strsplit(x = variant.classes, split = ';', fixed = TRUE)))
+
+  variant.classes = variant.classes[!variant.classes %in% c('xxx')]
 
   type_col = structure(col[variant.classes], names = names(col[variant.classes]))
   type_col = type_col[!is.na(type_col)]
@@ -68,63 +82,9 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
 
   variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
 
-  bg = "#CCCCCC"
 
-  #from oncoprint source ComplexHeatmap
-#   add_oncoprint = function(type, x, y, width, height) {
-#
-#     for(i in 1:length(type_name)){
-#       if(any(type %in% type_name[i])) {
-#         grid::grid.rect(x, y, width - grid::unit(0.5, "mm"), height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[type_name[i]]))
-#       }
-#     }
-#     if(any(type %in% "")) {
-#       grid::grid.rect(x, y, width - grid::unit(0.5, "mm"), height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = "#CCCCCC"))
-#     }
-#   }
-
-  add_oncoprint = function(type, x, y, width, height) {
-    for (i in 1:length(variant.classes)) {
-
-      if (any(type %in% variant.classes[i])) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
-      } else if (any(type %in% 'Amp')) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          unit(15, 'mm'), gp = grid::gpar(col = NA, fill = type_col['Amp']))
-      } else if (any(type %in% 'Del')) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height - grid::unit(15, "mm")
-                        , gp = grid::gpar(col = NA, fill = type_col['Del']))
-      }
-    }
-
-    if (any(type %in% "")) {
-      grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                        grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
-    }
-  }
-
-
-  add_oncoprint2 = function(type, x, y, width, height) {
-    for (i in 1:length(variant.classes)) {
-
-      if (any(type %in% variant.classes[i])) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
-      } else if (any(type %in% 'Amp')) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          unit(15, 'mm'), gp = grid::gpar(col = NA, fill = type_col['Amp']))
-      } else if (any(type %in% 'Del')) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height - grid::unit(15, "mm")
-                        , gp = grid::gpar(col = NA, fill = type_col['Del']))
-      }
-    }
-  }
-
+  #------------------------------------Helper functions to add %, rowbar and colbar----------------------------------------------------
+  ##This function adds percent rate
   anno_pct = function(index) {
     n = length(index)
     pct = apply(mat_origin[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
@@ -135,59 +95,93 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     grid::upViewport()
   }
 
-  ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct, width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10))), which = "row")
+  ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct,
+                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10))), which = "row")
 
+  ##Following two funcs add grids
+  add_oncoprint = function(type, x, y, width, height) {
+    grid::grid.rect(x, y, width - unit(0.5, "mm"),
+                    height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
 
-  if(showGenes){
-    ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
-      type = mat[i,j]
-      if(type != ''){
-        typeList = unlist(strsplit(x = as.character(type), split = ';'))
-        if(length(typeList) > 1){
-          for(i in 1:length(typeList)){
-            add_oncoprint2(typeList[i], x, y, width, height)
-          }
-        }else{
-          for(i in 1:length(typeList)){
-            add_oncoprint(typeList[i], x, y, width, height)
-          }
-        }
-
-      }else{
-        add_oncoprint(type, x, y, width, height)
+    for (i in 1:length(variant.classes)) {
+      if (any(type %in% variant.classes[i])) {
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
+                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
+      } else if (any(type %in% 'Amp')) {
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
+                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
+                          unit(15, 'mm'), gp = grid::gpar(col = NA, fill = type_col['Amp']))
+      } else if (any(type %in% 'Del')) {
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
+                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height - grid::unit(15, "mm")
+                        , gp = grid::gpar(col = NA, fill = type_col['Del']))
       }
-    }, row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-    top_annotation_height = grid::unit(2, "cm"), column_title = hmName)
-  }else{
-    ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = function(j, i, x, y, width, height, fill) {
-      type = mat[i,j]
-      if(type != ''){
-        typeList = unlist(strsplit(x = as.character(type), split = ';'))
-        if(length(typeList) > 1){
-          for(i in 1:length(typeList)){
-            add_oncoprint2(typeList[i], x, y, width, height)
-          }
-        }else{
-          for(i in 1:length(typeList)){
-            add_oncoprint(typeList[i], x, y, width, height)
-          }
-        }
-
-      }else{
-        add_oncoprint(type, x, y, width, height)
-      }
-    }, show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-    top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE, column_title =  hmName)
+    }
   }
 
+  add_oncoprint2 = function(type, x, y, width, height) {
+    for (i in 1:length(variant.classes)) {
+      if (any(type %in% variant.classes[i])) {
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
+                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
+      } else if (any(type %in% 'Amp')) {
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
+                          unit(15, 'mm'), gp = grid::gpar(col = NA, fill = type_col['Amp']))
+      } else if (any(type %in% 'Del')) {
+
+        grid::grid.rect(x, y, width - unit(0.5, "mm"), height - grid::unit(15, "mm")
+                        , gp = grid::gpar(col = NA, fill = type_col['Del']))
+      }
+    }
+  }
+
+  #This is the main cel function which is passed to ComplexHeatmap::Hetamap()
+  celFun = function(j, i, x, y, width, height, fill) {
+    type = mat[i, j]
+    if(type != 'xxx'){
+      typeList = unlist(strsplit(x = as.character(type), split = ';'))
+      if(length(typeList) > 1){
+        for(i in 1:length(typeList)){
+          add_oncoprint2(typeList[i], x, y, width, height)
+        }
+      }else{
+        for(i in 1:length(typeList)){
+          add_oncoprint(typeList[i], x, y, width, height)
+        }
+      }
+
+    }else{
+      add_oncoprint(type, x, y, width, height)
+    }
+  }
+
+  #----------------------------------------------------------------------------------------
+
+
+  #------Main Heatmap function
+
+  if(showGenes){
+    ht = ComplexHeatmap::Heatmap(matrix = mat,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
+                                 row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
+                                 show_heatmap_legend = FALSE,
+                                 column_title = hmName)
+  }else{
+    ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
+                                 show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
+                                 top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
+                                 column_title =  hmName)
+  }
+
+
+  #Adding % to left or right
   if(left){
     ht_list = ha_pct + ht
   }else{
     ht_list = ht + ha_pct
   }
 
-
-  #legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col), nrow = 2)
 
   return(list(hm = ht_list, tn = type_name, tc = type_col))
 

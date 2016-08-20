@@ -6,6 +6,7 @@
 
 vcr = function(x, gis = FALSE) {
   x = as.character(x)
+  x = strsplit(x = x, split = ';', fixed = TRUE)[[1]]
   x = unique(x)
   xad = x[x %in% c('Amp', 'Del')]
   xvc = x[!x %in% c('Amp', 'Del')]

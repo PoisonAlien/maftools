@@ -80,7 +80,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
   #--------------------------- variant type plot -----------------
   vt.plot.dat = maf@variant.type.summary
-  vt.plot.dat = suppressWarnings( data.table::melt(vt.plot.dat[,c(2:4), with = FALSE], id = NULL))
+  vt.plot.dat = suppressWarnings( data.table::melt(vt.plot.dat[,c(2:(ncol(vt.plot.dat))-1), with = FALSE], id = NULL))
 
   vt.gg = ggplot(data = vt.plot.dat, aes(x = variable, y = value, fill = variable))+
     geom_bar(stat = 'identity')+coord_flip()+cowplot::theme_cowplot(font_size = fontSize)+
