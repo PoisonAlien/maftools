@@ -18,7 +18,7 @@
 #' @param fontSize font size for gene names. Default 10.
 #' @param sortByMutation Helpful in case of MAF was read along with copy number data. Default FALSE.
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file. This can be used as an input
-#' for ComplexHeatmap \code{\link{OncoPrint}} function if you wish to generate more customized plot.
+#' for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to customize the plot.
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
