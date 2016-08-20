@@ -15,7 +15,7 @@
 #' @export
 
 
-rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 2){
+rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 1){
 
   if(is.null(tsb)){
     tsb = as.character(getSampleSummary(maf)[1,Tumor_Sample_Barcode])
