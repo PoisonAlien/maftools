@@ -1,6 +1,14 @@
 CHANGES IN VERSION 0.99.34
 -------------------------
 
+NON SIGNIFICANT CHANGES
+
+    o Bux fixes in plotMAFsummary.
+    o Support new version of ComplexHeatmap.
+
+CHANGES IN VERSION 0.99.34
+-------------------------
+
 SIGNIFICANT USER-LEVEL CHANGES
 
     o rainfall plot can detect katageis when detectChangePoints is TRUE.
