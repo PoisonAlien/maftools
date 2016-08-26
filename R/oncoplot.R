@@ -61,6 +61,14 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
       stop('Provide at least 2 genes.')
     }
 
+    #Check for any missing genes and ignore them if necessary
+    if(length(genes[!genes %in% rownames(numMat)]) > 0){
+      message('Following genes are not available in MAF:')
+      print(genes[!genes %in% rownames(numMat)])
+      message('Ignoring them.')
+      genes = genes[genes %in% rownames(numMat)]
+    }
+
     numMat = numMat[genes,]
     numMat = sortByMutation(numMat = numMat, maf = maf)
     mat_origin = mat_origin[rownames(numMat),]
@@ -100,7 +108,62 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
   #New version of complexheatmap complains about '' , replacing them with random strinf xxx
   mat[mat == ''] = 'xxx'
 
-  #------------------------------------Helper functions to add %, rowbar and colbar----------------------------------------------------
+
+  #---------------------------------------Colors and vcs-------------------------------------------------
+
+  #hard coded colors for variant classification if user doesnt provide any
+  if(is.null(colors)){
+    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue')
+    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
+                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins',
+                           'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del')
+  }else{
+    col = colors
+  }
+
+  bg = "#CCCCCC" #Default gray background
+  col = c(col, 'xxx' = bg)
+
+  #Variant classes available in matrix
+  variant.classes = unique(unlist(as.list(apply(mat_origin, 2, unique))))
+  variant.classes = unique(unlist(strsplit(x = variant.classes, split = ';', fixed = TRUE)))
+  variant.classes = variant.classes[!variant.classes %in% c('xxx')]
+
+  type_col = structure(col[variant.classes], names = names(col[variant.classes]))
+  type_col = type_col[!is.na(type_col)]
+
+  type_name = structure(variant.classes, names = variant.classes)
+
+  variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
+
+  #Variant classes available in plot matrix (We want to color code all vc's in colbar but only use those
+  #in plot matrix for legend)
+  vc.mat = unique(unlist(as.list(apply(mat, 2, unique))))
+  vc.mat = unique(unlist(strsplit(x = vc.mat, split = ';', fixed = TRUE)))
+  vc.mat = vc.mat[!vc.mat %in% c('xxx', 'Amp', 'Del')]
+  vc.type_name = structure(vc.mat, names = vc.mat)
+
+  vc.type_col = structure(col[vc.mat], names = names(col[vc.mat]))
+  vc.type_col = vc.type_col[!is.na(vc.type_col)]
+
+  #annotation if given
+  if(!is.null(annotation)){
+    annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
+    rownames(annotation) = annotation[,1]
+    annotation = annotation[colnames(mat_origin),]
+    annotation = annotation[complete.cases(annotation),]
+    anno.df = data.frame(row.names = annotation[,1])
+    anno.df = cbind(anno.df, annotation[,2:ncol(annotation)])
+    colnames(anno.df) = colnames(annotation)[2:ncol(annotation)]
+
+    if(!is.null(annotationColor)){
+      bot.anno = HeatmapAnnotation(df = anno.df, col = annotationColor)
+    }else{
+      bot.anno = HeatmapAnnotation(anno.df)
+    }
+  }
+
+  #------------------------------------functions to add %, rowbar and colbar----------------------------------------------------
 
   #------------------------------------------------------------------------------------------------------
   #Many thanks to Zuguang Gu (ComplexHeatmap) for letting me use the below code !
@@ -124,18 +187,33 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
   ##This function adds rowbar
   anno_row_bar = function(index) {
     n = length(index)
-    tb = apply(mat_origin[rev(index), ], 1, function(x) {
-      x = unlist(strsplit(x, ";"))
-      x = x[!grepl("^\\s*$", x)]
+
+    tb = list()
+    for(i in nrow(mat):1){
+      x = mat[i,]
+      x = x[x != '']
+      x = x[x != 'xxx']
       x = sort(x)
-      table(x)
-    })
+      tb[[i]] = table(x)
+    }
+    tb = rev(tb)
+
+#     tb = apply(mat[rev(index), ], 1, function(x) {
+#       x = unlist(strsplit(x, ";"))
+#       #x = x[!grepl("^\\s*$", x)]
+#       x = x[!x == '']
+#       x = x[!x == 'xxx']
+#       x = sort(x)
+#       table(x)
+#     })
+#     print(tb)
+
     max_count = max(sapply(tb, sum))
     grid::pushViewport(grid::viewport(xscale = c(0, max_count * 1.1), yscale = c(0.5, n + 0.5)))
     for (i in seq_along(tb)) {
       if (length(tb[[i]])) {
         x = cumsum(tb[[i]])
-        grid::grid.rect(x, i, width = tb[[i]], height = 0.8,
+        grid::grid.rect(x = x, i, width = tb[[i]], height = 0.8,
                         default.units = "native", just = "right",
                         gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
       }
@@ -165,7 +243,8 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
       if (length(tb[[i]])) {
         y = cumsum(tb[[i]])
         grid::grid.rect(i, y, height = tb[[i]], width = 0.8,
-                        default.units = "native", just = "top", gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
+                        default.units = "native", just = "top",
+                        gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
       }
     }
     breaks = grid::grid.pretty(c(0, max_count))
@@ -234,50 +313,9 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
     }
   }
 
-  #---------------------------------------Colors and vcs-------------------------------------------------
-
-  #hard coded colors for variant classification if user doesnt provide any
-  if(is.null(colors)){
-    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue')
-    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
-                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins',
-                           'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del')
-  }else{
-    col = colors
-  }
-
-  bg = "#CCCCCC" #Default gray background
-  col = c(col, 'xxx' = bg)
-
-  variant.classes = unique(unlist(as.list(apply(mat, 2, unique))))
-  variant.classes = unique(unlist(strsplit(x = variant.classes, split = ';', fixed = TRUE)))
-  variant.classes = variant.classes[!variant.classes %in% c('xxx')]
-
-  type_col = structure(col[variant.classes], names = names(col[variant.classes]))
-  type_col = type_col[!is.na(type_col)]
-
-  type_name = structure(variant.classes, names = variant.classes)
-
-  variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
-
-  #annotation if given
-  if(!is.null(annotation)){
-    annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
-    rownames(annotation) = annotation[,1]
-    annotation = annotation[colnames(mat_origin),]
-    annotation = annotation[complete.cases(annotation),]
-    anno.df = data.frame(row.names = annotation[,1])
-    anno.df = cbind(anno.df, annotation[,2:ncol(annotation)])
-    colnames(anno.df) = colnames(annotation)[2:ncol(annotation)]
-
-    if(!is.null(annotationColor)){
-      bot.anno = HeatmapAnnotation(df = anno.df, col = annotationColor)
-    }else{
-      bot.anno = HeatmapAnnotation(anno.df)
-    }
-  }
 
   #----------------------------------------------------------------------------------------
+
 
   if(drawColBar){
     if(is.null(annotation)){
@@ -316,7 +354,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
     ht_list =  ht_list + ha_row_bar
   }
 
-  legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col), nrow = 2)
+  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col), nrow = 2)
 
   ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
 }

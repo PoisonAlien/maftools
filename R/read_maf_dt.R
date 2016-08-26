@@ -51,6 +51,11 @@ read.maf = function(maf, removeSilent = TRUE, useAll = FALSE, gisticAllLesionsFi
     if(!useAll){
       message('Using only Somatic variants from Mutation_Status. Switch on useAll to include everything.')
       maf = maf[Mutation_Status %in% "Somatic"]
+
+      if(nrow(maf) == 0){
+        stop('No more Somatic mutations left after filtering for Mutation_Status! Maybe set useAll to TRUE ?')
+      }
+
       #maf = subset(maf, Mutation_Status == 'Somatic')
     }else {
       message('Using all variants.')
