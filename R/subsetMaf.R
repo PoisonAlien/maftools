@@ -27,37 +27,26 @@ subsetMaf = function(maf, includeSyn = FALSE, tsb = NULL, genes = NULL, fields =
   #Synonymous variants
   maf.silent = maf@maf.silent
   #Main data
-  maf = maf@data
+  maf.dat = maf@data
 
   #in case user read maf without removing silent variants, remove theme here.
   silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
              "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
-  maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
+  maf.dat = maf.dat[!Variant_Classification %in% silent] #Remove silent variants from main table
 
-  if(includeSyn){
-    maf = rbind(maf, maf.silent, fill = TRUE)
-  }
-
-  #Some TCGA studies have Start_Position set to as 'position'. Change if so.
-  if(length(grep(pattern = 'Start_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'Start_Position'
-  }
-
-  if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'End_position')] = 'End_Position'
-  }
+  maf.dat = rbind(maf.dat, maf.silent, fill = TRUE)
 
   #Select
   if(!is.null(tsb)){
-    maf = maf[Tumor_Sample_Barcode %in% tsb,]
+    maf.dat = maf.dat[Tumor_Sample_Barcode %in% tsb,]
   }
 
   if(!is.null(genes)){
-    maf = maf[Hugo_Symbol %in% genes, ]
+    maf.dat = maf.dat[Hugo_Symbol %in% genes, ]
   }
 
   if(!is.null(query)){
-    maf = maf[eval(parse(text=query))]
+    maf.dat = maf.dat[eval(parse(text=query))]
   }
 
   default.fields = c('Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele1','Tumor_Seq_Allele2','Variant_Classification', 'Variant_Type', 'Tumor_Sample_Barcode') #necessary fields.
@@ -65,21 +54,30 @@ subsetMaf = function(maf, includeSyn = FALSE, tsb = NULL, genes = NULL, fields =
   if(!is.null(fields)){
     default.fields = c(default.fields, fields)
     default.fields = unique(default.fields)
-    maf = maf[,default.fields, with = FALSE]
+
+    maf.dat = maf.dat[,default.fields, with = FALSE]
   }
+
+
+  maf.silent = maf.dat[Variant_Classification %in% silent]
+
+  if(!includeSyn){
+    maf.dat = maf.dat[!Variant_Classification %in% silent]
+  }
+
 
   if(mafObj){
 
-      mafSummary = summarizeMaf(maf)
-      oncomat = createOncoMatrix(maf)
+      mafSummary = summarizeMaf(maf.dat)
+      oncomat = createOncoMatrix(maf.dat)
 
-      m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+      m = MAF(data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
               variant.classification.summary = mafSummary$variant.classification.summary,gene.summary = mafSummary$gene.summary,
               oncoMatrix = oncomat$oncomat, numericMatrix = oncomat$nummat, summary = mafSummary$summary,
               classCode = oncomat$vc, maf.silent = maf.silent)
 
     return(m)
   }else{
-    return(maf)
+    return(maf.dat)
   }
 }

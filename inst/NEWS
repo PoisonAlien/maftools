@@ -1,4 +1,12 @@
-CHANGES IN VERSION 0.99.34
+CHANGES IN VERSION 0.99.45
+-------------------------
+NON SIGNIFICANT CHANGES
+
+    o Bux fixes in oncoplot while drawing rowbar.
+    o Bux fixes in subsetMaf.
+    o Better error messages in read.maf.
+
+CHANGES IN VERSION 0.99.40
 -------------------------
 
 NON SIGNIFICANT CHANGES
