@@ -140,7 +140,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
   #in plot matrix for legend)
   vc.mat = unique(unlist(as.list(apply(mat, 2, unique))))
   vc.mat = unique(unlist(strsplit(x = vc.mat, split = ';', fixed = TRUE)))
-  vc.mat = vc.mat[!vc.mat %in% c('xxx', 'Amp', 'Del')]
+  vc.mat = vc.mat[!vc.mat %in% c('xxx')]
   vc.type_name = structure(vc.mat, names = vc.mat)
 
   vc.type_col = structure(col[vc.mat], names = names(col[vc.mat]))
