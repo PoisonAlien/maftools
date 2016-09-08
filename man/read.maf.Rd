@@ -38,12 +38,18 @@ Takes tab delimited MAF (can be plain text or gz compressed) file as an input an
 This function takes MAF file as input and summarizes them. If copy number data is available, e.g from GISTIC, it can be provided too via arguments gisticAllLesionsFile, gisticAmpGenesFile,
 and gisticDelGenesFile. Copy number data can also be provided as a custom table containing Gene name, Sample name and Copy Number status.
 
-Note that if input MAF file contains multiple affected transcripts of a variant, this program removes repeated entries as duplicates, while keeping single unique entry per variant per sample.
+Note that if input MAF file contains multiple affected transcripts of a variant, this function by default removes them as duplicates, while keeping single unique entry per variant per sample.
 If you wish to keep all of them, set removeDuplicatedVariants to FALSE.
+
+FLAGS - If you get a note on possible FLAGS while reading MAF, it means some of the top mutated genes are fishy. These genes are often non-pathogenic and passengers, but are frequently mutated in most of the public exome studies. Examples of such genes include TTN, MUC16, etc.
+This note can be ignored without any harm, it's only generated as to make user aware of such genes. See references for details on FLAGS.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+}
+\references{
+Shyr C, Tarailo-Graovac M, Gottlieb M, Lee JJ, van Karnebeek C, Wasserman WW. FLAGS, frequently mutated genes in public exomes. BMC Med Genomics 2014; 7: 64.
 }
 \seealso{
 \code{\link{plotmafSummary}} \code{\link{write.mafSummary}}

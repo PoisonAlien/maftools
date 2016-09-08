@@ -34,6 +34,11 @@ summarizeMaf = function(maf){
   #nGenes
   nGenes = length(unique(maf[,Hugo_Symbol]))
 
+  #Top 20 FLAGS - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267152/
+  flags = c("TTN", "MUC16", "OBSCN", "AHNAK2", "SYNE1", "FLG", "MUC5B",
+            "DNAH17", "PLEC", "DST", "SYNE2", "NEB", "HSPG2", "LAMA5", "AHNAK",
+            "HMCN1", "USH2A", "DNAH11", "MACF1", "MUC17")
+
   #Variants per TSB
   tsb = maf[,.N, Tumor_Sample_Barcode]
   colnames(tsb)[2] = 'Variants'
@@ -70,6 +75,21 @@ summarizeMaf = function(maf){
                        summary = c(NCBI_Build, Center, nrow(vc.cast), nGenes, colSums(vc.cast[,2:ncol(vc.cast), with =FALSE])))
   summary[,Mean := vc.mean]
   summary[,Median := vc.median]
+
+  print(summary)
+
+  message("Frequently mutated genes..")
+  print(hs.cast)
+
+  #Check for flags.
+  if(nrow(hs.cast) > 10){
+    topten = hs.cast[1:10, Hugo_Symbol]
+    topten = topten[topten %in% flags]
+    if(length(topten) > 0){
+      message('NOTE: Possible FLAGS among top ten genes:')
+      print(topten)
+    }
+  }
 
   return(list(variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
               gene.summary = hs.cast, summary = summary))

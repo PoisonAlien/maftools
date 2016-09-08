@@ -3,8 +3,13 @@
 #' @details This function takes MAF file as input and summarizes them. If copy number data is available, e.g from GISTIC, it can be provided too via arguments gisticAllLesionsFile, gisticAmpGenesFile,
 #' and gisticDelGenesFile. Copy number data can also be provided as a custom table containing Gene name, Sample name and Copy Number status.
 #'
-#' Note that if input MAF file contains multiple affected transcripts of a variant, this program removes repeated entries as duplicates, while keeping single unique entry per variant per sample.
+#' Note that if input MAF file contains multiple affected transcripts of a variant, this function by default removes them as duplicates, while keeping single unique entry per variant per sample.
 #' If you wish to keep all of them, set removeDuplicatedVariants to FALSE.
+#'
+#'FLAGS - If you get a note on possible FLAGS while reading MAF, it means some of the top mutated genes are fishy. These genes are often non-pathogenic and passengers, but are frequently mutated in most of the public exome studies. Examples of such genes include TTN, MUC16, etc.
+#'This note can be ignored without any harm, it's only generated as to make user aware of such genes. See references for details on FLAGS.
+#'
+#'@references Shyr C, Tarailo-Graovac M, Gottlieb M, Lee JJ, van Karnebeek C, Wasserman WW. FLAGS, frequently mutated genes in public exomes. BMC Med Genomics 2014; 7: 64.
 #'
 #' @param maf tab delimited MAF file. File can also be gz compressed. Required.
 #' @param removeSilent logical. Whether to discard silent (variants with Low/Modifier consequences) mutations ("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron","RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA"). Default is TRUE.
@@ -124,10 +129,6 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
 
   message('Summarizing..')
   mafSummary = summarizeMaf(maf = maf)
-  print(mafSummary$summary)
-
-  message("Frequently mutated genes..")
-  print(mafSummary$gene.summary)
 
   #Create MAF object
     m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
