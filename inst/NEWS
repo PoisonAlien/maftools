@@ -1,3 +1,13 @@
+CHANGES IN VERSION 0.99.46
+-------------------------
+NON SIGNIFICANT CHANGES
+
+    o Bux fix in annovartomaf.
+    o Rainfall plot improvement - Better handling empty contigs.
+    o Better parsing of HGVSp annotations.
+    o Default value for useAll in read.maf changed from FALSE to TRUE.
+    o Added CITATION file.
+
 CHANGES IN VERSION 0.99.45
 -------------------------
 NON SIGNIFICANT CHANGES

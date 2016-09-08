@@ -18,9 +18,9 @@ lollipopPlot(maf, gene = NULL, refSeqID = NULL, proteinID = NULL,
 
 \item{labelPos}{Amino acid positions to label. If 'all', labels all variants.}
 
-\item{AACol}{manually specify column name for amino acid changes. Default looks for field 'AAChange'}
+\item{AACol}{manually specify column name for amino acid changes. Default looks for field 'AAChange'. Changes can be of any format i.e, can be a numeric value or HGVSp annotations (e.g; p.P459L, p.L2195Pfs*30 or p.Leu2195ProfsTer30)}
 
-\item{repel}{If points are too close to each other, use this option to repel them. Default FALSE.}
+\item{repel}{If points are too close to each other, use this option to repel them. Default FALSE. Warning: naive method, might make plot ugly in case of too many variants!}
 
 \item{colors}{named vector of colors for each Variant_Classification. Default NULL.}
 }
