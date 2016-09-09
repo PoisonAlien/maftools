@@ -35,6 +35,10 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, color = NUL
   maf.snp$con.class = suppressWarnings(as.character(factor(maf.snp$con, levels = c("A>G", "T>C", "C>T", "G>A", "A>T", "T>A", "A>C", "T>G", "C>A", "G>T", "C>G", "G>C"),
                                                                    labels = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G"))))
 
+  if(nrow(maf.snp) == 0){
+    stop(paste0('No SNVs found in sample ', tsb))
+  }
+
   maf.snp = transformSegments(maf.snp)
   maf.snp$diff = suppressWarnings( log10(c(0, diff(maf.snp$Start_Position_updated))+1) )
   #Remove any NA's if generated

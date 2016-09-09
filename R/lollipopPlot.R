@@ -7,8 +7,8 @@
 #' @param refSeqID RefSeq transcript identifier for \code{gene} if known.
 #' @param proteinID RefSeq protein identifier for \code{gene} if known.
 #' @param labelPos Amino acid positions to label. If 'all', labels all variants.
-#' @param repel If points are too close to each other, use this option to repel them. Default FALSE.
-#' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'
+#' @param repel If points are too close to each other, use this option to repel them. Default FALSE. Warning: naive method, might make plot ugly in case of too many variants!
+#' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'. Changes can be of any format i.e, can be a numeric value or HGVSp annotations (e.g; p.P459L, p.L2195Pfs*30 or p.Leu2195ProfsTer30)
 #' @param colors named vector of colors for each Variant_Classification. Default NULL.
 #' @return ggplot object of the plot, which can be futher modified.
 #' @import ggrepel
@@ -107,9 +107,16 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   prot.conv = sapply(prot.spl, function(x) x[length(x)])
 
   prot.dat[,conv := prot.conv]
-  pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = prot.dat$conv)
+  #If conversions are in HGVSp_long (default HGVSp) format, we will remove strings Ter followed by anything (e.g; p.Asn1986GlnfsTer13)
+  pos = gsub(pattern = 'Ter.*', replacement = '',x = prot.dat$conv)
+
+  #Following parsing takes care of most of HGVSp_short and HGVSp_long format
+  pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = pos)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
   pos = gsub(pattern = '^\\*', replacement = '', x = pos) #Remove * if nonsense mutation starts with *
+  pos = gsub(pattern = '\\*.*', replacement = '', x = pos) #Remove * followed by position e.g, p.C229Lfs*18
+
+
   pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[[', 1))
   prot.dat[,pos := pos]
 

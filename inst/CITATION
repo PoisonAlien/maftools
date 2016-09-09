@@ -1,0 +1,13 @@
+citHeader("maftools can be cited as:")
+
+citEntry(
+   entry="article",
+   title = "Maftools: Efficient analysis, visualization and summarization of MAF files from large-scale cohort based cancer studies.",
+   author = personList(as.person("Anand Mayakonda"),
+                       as.person("Phillip H Koeffler")
+                       ),
+   journal = "BioRxiv",
+   year = 2016,
+   doi = "http://dx.doi.org/10.1101/052662",
+   textVersion = "Mayakonda, A. and H.P. Koeffler, Maftools: Efficient analysis, visualization and summarization of MAF files from large-scale cohort based cancer studies. bioRxiv, 2016. doi: http://dx.doi.org/10.1101/052662"
+)

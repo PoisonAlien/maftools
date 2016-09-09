@@ -27,8 +27,16 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
 
   all.prot.dat[,conv := prot.conv]
   all.prot.dat = all.prot.dat[!conv == 'NULL']
-  pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = all.prot.dat$conv)
+
+  #If conversions are in HGVSp_long (default HGVSp) format, we will remove strings Ter followed by anything (e.g; p.Asn1986GlnfsTer13)
+  pos = gsub(pattern = 'Ter.*', replacement = '',x = all.prot.dat$conv)
+
+  #Following parsing takes care of most of HGVSp_short and HGVSp_long format
+  pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = pos)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
+  pos = gsub(pattern = '^\\*', replacement = '', x = pos) #Remove * if nonsense mutation starts with *
+  pos = gsub(pattern = '\\*.*', replacement = '', x = pos) #Remove * followed by position e.g, p.C229Lfs*18
+
   pos = suppressWarnings( as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[', 1)) )
   all.prot.dat[,pos := pos]
 
