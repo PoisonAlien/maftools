@@ -196,7 +196,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       return(ann.maf)
     }else{
       #Convert to factors.
-      ann.maf$Tumor_Sample_Barcode = as.factor(x = as.character(ann.maf$Hugo_Symbol))
+      ann.maf$Tumor_Sample_Barcode = as.factor(x = as.character(ann.maf$Tumor_Sample_Barcode))
       ann.maf$Variant_Classification = as.factor(x = as.character(ann.maf$Variant_Classification))
       ann.maf$Variant_Type = as.factor(x = as.character(ann.maf$Variant_Type))
 

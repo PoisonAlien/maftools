@@ -52,13 +52,18 @@ mapMutsToSegs = function(seg, maf, tsb){
 transformSegments = function(segmentedData){
 
   #Replace chr x and y with numeric value (23 and 24) for better sorting
-  segmentedData$Chromosome = gsub(pattern = 'X', replacement = '23', x = segmentedData$Chromosome, fixed = TRUE)
-  segmentedData$Chromosome = gsub(pattern = 'Y', replacement = '24', x = segmentedData$Chromosome, fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'chr', replacement = '', x = as.character(segmentedData$Chromosome), fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'X', replacement = '23', x = as.character(segmentedData$Chromosome), fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'Y', replacement = '24', x = as.character(segmentedData$Chromosome), fixed = TRUE)
 
-  segmentedData = segmentedData[order(Chromosome, Start_Position)]
+  segmentedData$Chromosome = factor(x = segmentedData$Chromosome, levels = 1:24, labels = 1:24)
 
+  segmentedData[,Start_Position := as.numeric(as.character(Start_Position))]
+  segmentedData[,End_Position := as.numeric(as.character(End_Position))]
 
-  seg.spl = split(segmentedData, as.factor(as.numeric(segmentedData$Chromosome)))
+  segmentedData = segmentedData[order(Chromosome, Start_Position, decreasing = FALSE)]
+
+  seg.spl = split(segmentedData, segmentedData$Chromosome)
   #hg19 chromosome sizes
   chr.lens = c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
                146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540,
@@ -66,17 +71,21 @@ transformSegments = function(segmentedData){
                155270560, 59373566)
 
   seg.spl.transformed = seg.spl[[1]]
-  seg.spl.transformed$Start_Position_updated = seg.spl.transformed$Start_Position
-  seg.spl.transformed$End_Position_updated = seg.spl.transformed$End_Position
+  if(nrow(seg.spl.transformed) > 0){
+    seg.spl.transformed$Start_Position_updated = seg.spl.transformed$Start_Position
+    seg.spl.transformed$End_Position_updated = seg.spl.transformed$End_Position
+  }
 
   chr.lens.sumsum = cumsum(chr.lens)
 
   for(i in 2:length(seg.spl)){
 
     x.seg = seg.spl[[i]]
-    x.seg$Start_Position_updated = x.seg$Start_Position + chr.lens.sumsum[i-1]
-    x.seg$End_Position_updated = x.seg$End_Position + chr.lens.sumsum[i-1]
-    seg.spl.transformed = rbind(seg.spl.transformed, x.seg)
+    if(nrow(x.seg) > 0){
+      x.seg$Start_Position_updated = x.seg$Start_Position + chr.lens.sumsum[i-1]
+      x.seg$End_Position_updated = x.seg$End_Position + chr.lens.sumsum[i-1]
+    }
+    seg.spl.transformed = rbind(seg.spl.transformed, x.seg, fill = TRUE)
   }
 
   return(seg.spl.transformed)
