@@ -373,5 +373,5 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
 
   legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col), nrow = 2)
 
-  ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
+  suppressWarnings( ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
 }

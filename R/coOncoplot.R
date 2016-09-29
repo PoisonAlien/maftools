@@ -66,6 +66,6 @@ coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = FA
 
   legend = grid::legendGrob(labels = tn,  pch = 15, gp = grid::gpar(col = tc[tn]), nrow = 2)
 
-  ComplexHeatmap::draw(oc.list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
+  suppressWarnings( ComplexHeatmap::draw(oc.list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
 
 }

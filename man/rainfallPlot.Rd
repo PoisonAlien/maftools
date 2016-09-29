@@ -33,4 +33,7 @@ returns ggplot object of the plot which can be further modified.
 \description{
 Plots inter variant distance as a function of genomic locus.
 }
+\details{
+Note that detected change points are only loci where the distribution of inter-event distance changes. Segments may have to be manually inferred by adjacent change-points.
+}
 
