@@ -7,6 +7,8 @@ This package attempts to summarize, analyze, annotate and visualize MAF files in
 
 maftools is on :point_right: [bioRxiv](http://biorxiv.org/content/early/2016/05/11/052662) :bowtie:
 
+Please cite the below if you find this tool useful for you.
+
 Mayakonda, A. and H.P. Koeffler, Maftools: Efficient analysis, visualization and summarization of MAF files from large-scale cohort based cancer studies. bioRxiv, 2016. doi: http://dx.doi.org/10.1101/052662
 
 #### MAF field requirements.
