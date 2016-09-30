@@ -59,17 +59,11 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
     }
   }
 
-  #Some TCGA studies have Start_Position set to as 'position'. Change if so.
-  if(length(grep(pattern = 'Start_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'Start_Position'
-  }
-
-  if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'End_position')] = 'End_Position'
-  }
-
   #seperate snps and indels
   maf.snp = maf[Variant_Type == 'SNP']
+  if(nrow(maf) == 0){
+    stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
+  }
   #maf.rest = maf[!maf$Variant_Type %in% 'SNP']
 
   #get unique Chromosome names from maf

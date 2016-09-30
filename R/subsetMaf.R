@@ -6,6 +6,7 @@
 #' @param tsb subset by these samples (Tumor Sample Barcodes)
 #' @param genes subset by these genes
 #' @param fields include only these fields along with necessary fields in the output
+#' @param isTCGA Is input MAF file from TCGA source.
 #' @param query query string. e.g, "Variant_Classification == 'Missense_Mutation'" returns only Missense variants.
 #' @param mafObj returns output as MAF class \code{\link{MAF-class}}. Default FALSE
 #' @return subset table or an object of class \code{\link{MAF-class}}
@@ -22,7 +23,7 @@
 #' subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), fields = 'i_TumorVAF_WU')
 #' @export
 
-subsetMaf = function(maf, includeSyn = FALSE, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE){
+subsetMaf = function(maf, includeSyn = FALSE, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE, isTCGA = FALSE){
 
   #Synonymous variants
   maf.silent = maf@maf.silent
@@ -38,6 +39,12 @@ subsetMaf = function(maf, includeSyn = FALSE, tsb = NULL, genes = NULL, fields =
 
   #Select
   if(!is.null(tsb)){
+
+    tsb = gsub(pattern = '-', replacement = '.', x = tsb)
+
+    if(isTCGA){
+      tsb = substr(x = tsb, start = 1, stop = 12)
+    }
     maf.dat = maf.dat[Tumor_Sample_Barcode %in% tsb,]
   }
 

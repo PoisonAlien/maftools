@@ -34,13 +34,8 @@ titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL)
 
   maf = maf[Variant_Type == 'SNP']
 
-  #Some TCGA studies have Start_Position set to as 'position'. Change if so.
-  if(length(grep(pattern = 'Start_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'Start_position')] = 'Start_Position'
-  }
-
-  if(length(grep(pattern = 'End_position', x = colnames(maf))) > 0){
-    colnames(maf)[which(colnames(maf) == 'End_position')] = 'End_Position'
+  if(nrow(maf) == 0){
+    stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
   }
 
   maf = maf[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
