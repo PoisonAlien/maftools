@@ -30,6 +30,9 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, color = NUL
   maf = maf.dat[,.(Chromosome, Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode, Variant_Type)]
 
   maf.snp = maf[Variant_Type == 'SNP']
+  if(nrow(maf) == 0){
+    stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
+  }
 
   maf.snp$con = paste(maf.snp[,Reference_Allele], maf.snp[,Tumor_Seq_Allele2], sep = '>')
 
