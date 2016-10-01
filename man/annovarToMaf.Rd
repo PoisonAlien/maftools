@@ -5,8 +5,7 @@
 \title{Converts annovar annotations into MAF.}
 \usage{
 annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
-  table = "refGene", basename = NULL, header = FALSE, sep = "\\t",
-  MAFobj = FALSE)
+  table = "refGene", basename = NULL, sep = "\\t", MAFobj = FALSE)
 }
 \arguments{
 \item{annovar}{input annovar annotation file.}
@@ -21,8 +20,6 @@ annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
 
 \item{basename}{If provided writes resulting MAF file to an output file.}
 
-\item{header}{was annovar run on a file contiaining variants with a header line. Default FALSE.}
-
 \item{sep}{field seperator for input file. Default tab seperated.}
 
 \item{MAFobj}{If TRUE, returns results as an \code{\link{MAF}} object.}
@@ -36,7 +33,7 @@ Converts variant annotations from Annovar into a basic MAF.
 \details{
 Annovar is one of the most widely used Variant Annotation tools in Genomics. Annovar output is generally in a tabular format with various annotation columns.
 This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including
-any filter or region based annotations.
+any filter or region based annotations. Please be aware that this function performs no transcript prioritization.
 
 e.g,
 table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (\code{refGene}),cytoBand,dbnsfp30a -operation (\code{g}),r,f -nastring NA
@@ -46,7 +43,7 @@ This function mainly uses gene based annotations for processing, rest of the ann
 \examples{
 var.annovar <- system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
 var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19',
-tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = TRUE)
+tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene')
 }
 \references{
 Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).

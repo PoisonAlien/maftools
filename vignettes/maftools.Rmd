@@ -493,7 +493,7 @@ Output generated is stored as a part of this package. We can convert this annova
 ```{r, eval=T}
 var.annovar = system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
 var.annovar.maf = annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19', 
-                               tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = TRUE)
+                               tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene')
 
 ```
 
@@ -510,7 +510,7 @@ esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc, addHugoSymbol = TRUE)
 print(esca.maf[1:5,1:16, with = FALSE])
 ```
 
-Note that by default Simple Somatic Mutation format contains all affected transcripts of a variant resuting in multiple entries of the same variant in same sample. It is hard to choose a single affected transcript based on annotations alone and by default this program removes repeated variants as duplicated entries. If you wish to keep all of them, set `removeDuplicatedVariants` to FALSE. Another option is to convert input file to MAF without removing anything and then use scripts like [vcf2maf](https://github.com/mskcc/vcf2maf) to prioritize affected transcripts.
+Note that by default Simple Somatic Mutation format contains all affected transcripts of a variant resuting in multiple entries of the same variant in same sample. It is hard to choose a single affected transcript based on annotations alone and by default this program removes repeated variants as duplicated entries. If you wish to keep all of them, set `removeDuplicatedVariants` to FALSE. Another option is to convert input file to MAF by removing duplicates and then use scripts like [vcf2maf](https://github.com/mskcc/vcf2maf) to re-annotate and prioritize affected transcripts.
 
 #Other useful functions.
 ##Subsetting MAF
