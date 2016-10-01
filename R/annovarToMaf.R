@@ -3,7 +3,7 @@
 #' @description Converts variant annotations from Annovar into a basic MAF.
 #' @details Annovar is one of the most widely used Variant Annotation tools in Genomics. Annovar output is generally in a tabular format with various annotation columns.
 #' This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including
-#' any filter or region based annotations.
+#' any filter or region based annotations. Please be aware that this function performs no transcript prioritization.
 #'
 #' e.g,
 #' table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (\code{refGene}),cytoBand,dbnsfp30a -operation (\code{g}),r,f -nastring NA
@@ -15,7 +15,6 @@
 #' @param tsbCol column name containing Tumor_Sample_Barcode or sample names in input file.
 #' @param table reference table used for gene-based annotations. Can be 'ensGene' or 'refGene'. Default 'refGene'
 #' @param basename If provided writes resulting MAF file to an output file.
-#' @param header was annovar run on a file contiaining variants with a header line. Default FALSE.
 #' @param sep field seperator for input file. Default tab seperated.
 #' @param MAFobj If TRUE, returns results as an \code{\link{MAF}} object.
 #' @references Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
@@ -23,33 +22,18 @@
 #' @examples
 #' var.annovar <- system.file("extdata", "variants.hg19_multianno.txt", package = "maftools")
 #' var.annovar.maf <- annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBuild = 'hg19',
-#' tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene', header = TRUE)
+#' tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene')
 #' @export
 
-annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL, header = FALSE, sep = '\t', MAFobj = FALSE){
+annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL , sep = '\t', MAFobj = FALSE){
 
-  if(header){
-    ann = data.table::fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip = 1, header = TRUE)
-    if(table == 'ensGene'){
-      colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.ensGene', 'Gene.ensGene', 'GeneDetail.ensGene', 'ExonicFunc.ensGene', 'AAChange.ensGene')
-    }else{
-      colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.refGene', 'Gene.refGene', 'GeneDetail.refGene', 'ExonicFunc.refGene', 'AAChange.refGene')
-    }
-  }else{
-    ann = data.table::fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, skip =1, header = FALSE)
-    if(table == 'ensGene'){
-      colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.ensGene', 'Gene.ensGene', 'GeneDetail.ensGene', 'ExonicFunc.ensGene', 'AAChange.ensGene')
-    }else{
-      colnames(ann)[1:10] = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.refGene', 'Gene.refGene', 'GeneDetail.refGene', 'ExonicFunc.refGene', 'AAChange.refGene')
-    }
-  }
-
+  ann = data.table::fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, header = TRUE)
 
   #Check to see if input file contains sample names
   if(is.null(tsbCol)){
     if(! 'Tumor_Sample_Barcode' %in% colnames(ann)){
       message('Available fields:')
-      print(ann)
+      print(colnames(ann))
       stop('Tumor_Sample_Barcode field not found in input file. Use argument tsbCol to manually specifiy field name containing sample names/Tumor_Sample_Barcodes.')
     }
   }else{
@@ -72,7 +56,28 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     colnames(ann)[which(colnames(ann) == 'Gene.ensGene')] = 'Gene.refGene'
     colnames(ann)[which(colnames(ann) == 'ExonicFunc.ensGene')] = 'ExonicFunc.refGene'
     colnames(ann)[which(colnames(ann) == 'AAChange.ensGene')] = 'AAChange.refGene'
+    colnames(ann)[which(colnames(ann) == 'GeneDetail.ensGene')] = 'GeneDetail.refGene'
   }
+
+    essential.col = c('Chr', 'Start', 'End', 'Ref', 'Alt', 'Func.refGene', 'Gene.refGene', 'GeneDetail.refGene',
+                      'ExonicFunc.refGene', 'AAChange.refGene')
+
+#     #Change column names to standard names;
+    for(i in 1:length(essential.col)){
+      colId = suppressWarnings(grep(pattern = paste0('^', essential.col[i], '$'), x = colnames(ann), ignore.case = TRUE))
+      if(length(colId) == 1){
+        colnames(ann)[colId] = essential.col[i]
+      }
+     }
+
+    if(length(essential.col[!essential.col %in% colnames(ann)]) > 0) {
+      message('Available fields:')
+      print(colnames(ann))
+      message(paste0('Missing required field in input file: '))
+      print(essential.col[!essential.col %in% colnames(ann)])
+      stop()
+    }
+
 
   #Center
   if(is.null(Center)){
