@@ -14,41 +14,53 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
 
   genes.missing = genes[!genes %in% rownames(mat_origin)]
   genes.present = genes[genes %in% rownames(mat_origin)]
-  mat = mat_origin[genes.present,]
+  mat = mat_origin[genes.present,,drop = FALSE]
 
-  #remove nonmutated samples to improve visualization
-  if(removeNonMutated){
-    tsb = colnames(mat)
-    tsb.exclude = colnames(mat[,colSums(mat) == 0])
-    tsb.include = tsb[!tsb %in% tsb.exclude]
-    mat = mat[,tsb.include]
+  if(nrow(mat) == 0){
+    message(paste0('NOTE: Zero samples are mutated in ', hmName))
   }
+    #remove nonmutated samples to improve visualization
+    if(removeNonMutated){
+      tsb = colnames(mat)
+      tsb.exclude = colnames(mat[,colSums(mat) == 0, drop = FALSE])
+      tsb.include = tsb[!tsb %in% tsb.exclude]
+      mat = mat[,tsb.include, drop = FALSE]
+    }
 
-  #Sort
-  mat[mat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
-  tmat = t(mat)
-  mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = TRUE)), ])
+    #Sort
+    mat[mat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
+    tmat = t(mat)
 
-  mat_origin = maf@oncoMatrix
-  char.mat = maf@oncoMatrix
-  char.mat = char.mat[rownames(mat),]
-  char.mat = char.mat[,colnames(mat)]
-  mat = char.mat
+    if(nrow(mat) == 1){
+      g = rownames(mat)
+      mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = TRUE)), ])
+      rownames(mat) = g
+    }else{
+      mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = TRUE)), ])
+    }
 
-  if(length(genes.missing) > 0){
-    genes.missing.mat = t(matrix(data = '', ncol = ncol(mat), nrow = length(genes.missing)))
-    colnames(genes.missing.mat) = genes.missing
-    mat = rbind(mat, t(genes.missing.mat))
-    #mat = mat[genes,]
 
-    genes.missing.mat2 = t(matrix(data = '', ncol = ncol(mat_origin), nrow = length(genes.missing)))
-    colnames(genes.missing.mat2) = genes.missing
-    mat_origin = rbind(mat_origin, t(genes.missing.mat2))
-  }
+    mat_origin = maf@oncoMatrix
+    char.mat = maf@oncoMatrix
+    char.mat = char.mat[rownames(mat),, drop = FALSE]
+    char.mat = char.mat[,colnames(mat), drop = FALSE]
+    mat = char.mat
 
-  #final matrix for plotting
-  mat = mat[genes,]
-  mat_origin = mat_origin[genes,]
+    if(length(genes.missing) > 0){
+      genes.missing.mat = t(matrix(data = '', ncol = ncol(mat), nrow = length(genes.missing)))
+      colnames(genes.missing.mat) = genes.missing
+      mat = rbind(mat, t(genes.missing.mat))
+      #mat = mat[genes,]
+
+      genes.missing.mat2 = t(matrix(data = '', ncol = ncol(mat_origin), nrow = length(genes.missing)))
+      colnames(genes.missing.mat2) = genes.missing
+      mat_origin = rbind(mat_origin, t(genes.missing.mat2))
+    }
+
+    #final matrix for plotting
+    mat = mat[genes , , drop = FALSE]
+    mat_origin = mat_origin[genes , , drop = FALSE]
+
 
   #New version of complexheatmap complains about '' , replacing them with random strinf xxx
   mat[mat == ''] = 'xxx'
@@ -70,7 +82,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   col = c(col, 'xxx' = bg)
 
 
-  variant.classes = unique(unlist(as.list(apply(mat, 2, unique))))
+  variant.classes = as.character(unique(unlist(as.list(apply(mat, 2, unique)))))
   variant.classes = unique(unlist(strsplit(x = variant.classes, split = ';', fixed = TRUE)))
 
   variant.classes = variant.classes[!variant.classes %in% c('xxx')]
@@ -182,7 +194,5 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     ht_list = ht + ha_pct
   }
 
-
   return(list(hm = ht_list, tn = type_name, tc = type_col))
-
 }
