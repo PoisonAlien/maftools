@@ -46,11 +46,11 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, 
       col = color
     }
 
-
     vcs = getSampleSummary(maf)
+    vcs = vcs[,colnames(vcs)[!colnames(x = vcs) %in% c('total', 'Amp', 'Del', 'CNV_total')], with = FALSE]
     #vcs = vcs[,2:(ncol(vcs)-1), with = F]
     #vcs = vcs[order(rowSums(vcs[,2:ncol(vcs), with = F]), decreasing = T)] #order tsbs based on number of mutations
-    vcs = vcs[,c(1,order(colSums(x = vcs[,2:(ncol(vcs)-1), with =FALSE]), decreasing = TRUE)+1), with =FALSE] #order based on most event
+    vcs = vcs[,c(1,order(colSums(x = vcs[,2:(ncol(vcs)), with =FALSE]), decreasing = TRUE)+1), with =FALSE] #order based on most event
 
     #melt data frame
     vcs.m = data.table::melt(data = vcs, id = 'Tumor_Sample_Barcode')

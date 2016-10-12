@@ -73,7 +73,6 @@ NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more t
 If we have copy number data along with MAF file, we can include them in oncoplot as to show if any genes are amplified or deleted. One most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF[3](#references). GISTIC generates numerous files but we need mainly three files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt` and `del_genes.conf_XX.txt`, where XX is confidence level. These files contain significantly altered genomic regions along with amplified and delted genes respectively.
 
 ```{r results='hide', message=FALSE}
-suppressWarnings(require(maftools))
 #read TCGA maf file for LAML
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")

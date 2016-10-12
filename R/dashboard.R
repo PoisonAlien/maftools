@@ -15,9 +15,11 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   #--------------------------- variant per sample plot -----------------
 
   vcs = getSampleSummary(maf)
+  vcs = vcs[,colnames(vcs)[!colnames(x = vcs) %in% c('total', 'Amp', 'Del', 'CNV_total')], with = FALSE]
+
   #vcs = vcs[,2:(ncol(vcs)-1), with = F]
   #vcs = vcs[order(rowSums(vcs[,2:ncol(vcs), with = F]), decreasing = T)] #order tsbs based on number of mutations
-  vcs = vcs[,c(1,order(colSums(x = vcs[,2:(ncol(vcs)-1), with =FALSE]), decreasing = TRUE)+1), with =FALSE] #order based on most event
+  vcs = vcs[,c(1,order(colSums(x = vcs[,2:(ncol(vcs)), with =FALSE]), decreasing = TRUE)+1), with =FALSE] #order based on most event
 
   #melt data frame
   vcs.m = data.table::melt(data = vcs, id = 'Tumor_Sample_Barcode')
@@ -80,7 +82,8 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
   #--------------------------- variant type plot -----------------
   vt.plot.dat = maf@variant.type.summary
-  vt.plot.dat = suppressWarnings( data.table::melt(vt.plot.dat[,c(2:(ncol(vt.plot.dat))-1), with = FALSE], id = NULL))
+  vt.plot.dat = vt.plot.dat[,colnames(vt.plot.dat)[!colnames(x = vt.plot.dat) %in% c('total', 'CNV')], with = FALSE]
+  vt.plot.dat = suppressWarnings( data.table::melt(vt.plot.dat[,c(2:(ncol(vt.plot.dat))), with = FALSE], id = NULL))
 
   vt.gg = ggplot(data = vt.plot.dat, aes(x = variable, y = value, fill = variable))+
     geom_bar(stat = 'identity')+coord_flip()+cowplot::theme_cowplot(font_size = fontSize)+
@@ -88,8 +91,9 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
     theme(legend.position = 'none')+xlab('')+ylab('N')+ggtitle('Variant Type')
 
   #--------------------------- variant classification plot -----------------
-  vc.plot.dat = maf@variant.classification.summary
-  vc.plot.dat = vc.plot.dat[,c(2:(ncol(vc.plot.dat)-1)), with =FALSE]
+#   vc.plot.dat = vcs
+#   vc.plot.dat = vc.plot.dat[,c(2:(ncol(vc.plot.dat))), with =FALSE]
+  vc.plot.dat = vcs[,2:ncol(vcs), with =FALSE]
   vc.lvl = sort(colSums(vc.plot.dat))
   vc.plot.dat = suppressWarnings( data.table::melt(vc.plot.dat))
   vc.plot.dat$variable = factor(x = vc.plot.dat$variable, levels = names(vc.lvl))
@@ -104,9 +108,8 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
 #--------------------------- hugo-symbol plot -----------------
   gs = getGeneSummary(maf)
+  gs = gs[,colnames(gs)[!colnames(x = gs) %in% c('total', 'Amp', 'Del', 'CNV_total', 'MutatedSamples')], with = FALSE]
   gs.dat = gs[1:n]
-  gs.dat[,total := NULL]
-  gs.dat[,MutatedSamples := NULL]
   gs.lvl = gs.dat[,Hugo_Symbol]
   gs.dat = suppressWarnings(data.table::melt(gs.dat))
   gs.dat$Hugo_Symbol = factor(x = gs.dat$Hugo_Symbol, levels = rev(gs.lvl))
@@ -123,9 +126,6 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   return(dash.gg)
 
 }
-
-
-
 
 #   #--------------------------- oncoplot via ggplot -----------------
 #

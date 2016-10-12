@@ -80,7 +80,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
       stop('Provide at least 2 genes.')
     }
 
-    numMat = numMat[genes,]
+    numMat = numMat[genes,, drop = FALSE]
     numMat = sortByMutation(numMat = numMat, maf = maf)
     mat_origin = mat_origin[rownames(numMat), , drop = FALSE]
     mat_origin = mat_origin[,colnames(numMat), drop = FALSE]
