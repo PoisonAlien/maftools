@@ -10,7 +10,7 @@ read.maf(maf, removeSilent = TRUE, useAll = TRUE,
   removeDuplicatedVariants = TRUE, isTCGA = FALSE)
 }
 \arguments{
-\item{maf}{tab delimited MAF file. File can also be gz compressed. Required.}
+\item{maf}{tab delimited MAF file. File can also be gz compressed. Required. Alternatively, you can also provide already read MAF file as a dataframe.}
 
 \item{removeSilent}{logical. Whether to discard silent (variants with Low/Modifier consequences) mutations ("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron","RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA"). Default is TRUE.}
 
