@@ -48,7 +48,7 @@ readGistic = function(gisticAllLesionsFile, gisticAmpGenesFile = NULL, gisticDel
   all.lesions[,Unique_Name := NULL]
 
   all.lesions.melt = suppressWarnings(data.table::melt(all.lesions, id.vars = 'cytoband'))
-  all.lesions.melt = all.lesions.melt[value %in% 1]
+  all.lesions.melt = all.lesions.melt[value %in% c(1, 2)]
 
   if(!is.null(gisticAmpGenesFile)){
     ampGenes = data.table::fread(input = gisticAmpGenesFile, stringsAsFactors = FALSE, header = TRUE)

@@ -81,6 +81,12 @@ transformSegments = function(segmentedData, build = 'hg19'){
 
   segmentedData[,Start_Position := as.numeric(as.character(Start_Position))]
   segmentedData[,End_Position := as.numeric(as.character(End_Position))]
+
+  #Replace chr x and y with numeric value (23 and 24) for better ordering
+  segmentedData$Chromosome = gsub(pattern = 'chr', replacement = '', x = segmentedData$Chromosome, fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'X', replacement = '23', x = segmentedData$Chromosome, fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'Y', replacement = '24', x = segmentedData$Chromosome, fixed = TRUE)
+
   segmentedData$Chromosome = factor(x = segmentedData$Chromosome, levels = 1:24, labels = 1:24)
 
   segmentedData = segmentedData[order(Chromosome, Start_Position, decreasing = FALSE)]
