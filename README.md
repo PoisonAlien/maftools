@@ -31,6 +31,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Extract mutational signatures and compare them to validated signatures.
   * Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation.
   * Read and summarize GISTIC results.
+  * Pan-cancer analysis/comparisison
 2. Visualization
   * Make oncoplots.
   * Make lollipop plots.
@@ -48,7 +49,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 
 #### Installation:
 
-Easy way: Install from Bioconductor.
+Easy way: Install from [Bioconductor](http://bioconductor.org/packages/release/bioc/html/maftools.html).
 
 ```{r}
 ## try http:// if https:// URLs are not supported
@@ -56,7 +57,7 @@ source("https://bioconductor.org/biocLite.R")
 biocLite("maftools")
 ```
 
-Install from Github
+Install from Github for updated features (some of functions from here may not be available on Bioconductor release).
 
 ```{r results='hide'}
 #Install Bioconductor dependencies.
@@ -166,22 +167,8 @@ laml.pfam$domainSummary[,1:3, with = F]
 
 ![image15](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image15.png)
 
-#### Annotating variants with Oncotator
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.
-
-```{r}
-var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
-#This is what input looks like
-var = read.delim(var.file, sep = '\t')
-head(var)
-```
-
-```{r, results='hide'}
-#Annotate 
-var.maf = oncotate(maflite = var.file, header = T)
-```
-
-This is quite time consuming if input is big.
+####Pan-cancer comparision
+![image17](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image17.png)
 
 #### Mutual Exclusivity and Oncoprint.
 Many genes in cancer show strong exclusiveness in mutation pattern. We can detect such pair of genes using `mutExclusive` which runs `comet_exact_test` from `cometExactTest` package for significance<sup>5</sup>. 

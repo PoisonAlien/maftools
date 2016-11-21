@@ -6,6 +6,7 @@
 #' @param tsb specify sample names (Tumor_Sample_Barcodes) for which plotting has to be done. If NULL, draws plot for most mutated sample.
 #' @param detectChangePoints If TRUE, detectes genomic change points where potential kataegis are formed. Results are written to an output tab delimted file.
 #' @param color named vector of colors for each coversion class.
+#' @param ref.build Reference build for chromosome sizes. Can be hg18, hg19 or hg38. Default hg19.
 #' @param savePlot If TRUE plot is saved to output pdf. Default FALSE.
 #' @param width width of plot to be saved.
 #' @param height height of plot to be saved.
@@ -16,7 +17,7 @@
 #' @export
 
 
-rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 1){
+rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 1){
 
   if(is.null(tsb)){
     tsb = as.character(getSampleSummary(maf)[1,Tumor_Sample_Barcode])
@@ -43,7 +44,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, color = NUL
     stop(paste0('No SNVs found in sample ', tsb))
   }
 
-  maf.snp = transformSegments(maf.snp)
+  maf.snp = transformSegments(maf.snp, build = ref.build)
   maf.snp$diff = suppressWarnings( log10(c(0, diff(maf.snp$Start_Position_updated))+1) )
   #Remove any NA's if generated
   maf.snp = maf.snp[complete.cases(diff)]

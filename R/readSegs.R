@@ -72,15 +72,23 @@ transformSegments = function(segmentedData, build = 'hg19'){
                  158821424, 146274826, 140273252, 135374737, 134452384, 132349534,
                  114142980, 106368585, 100338915, 88827254, 78774742, 76117153,
                  63811651, 62435964, 46944323, 49691432, 154913754, 57772954)
-  } else { #hg38
+  } else if(build == 'hg38'){ #hg38
     chr.lens = c(248956422, 242193529, 198295559, 190214555, 181538259, 170805979,
                  159345973, 145138636, 138394717, 133797422, 135086622, 133275309,
                  114364328, 107043718, 101991189, 90338345, 83257441, 80373285,
                  58617616, 64444167, 46709983, 50818468, 156040895, 57227415)
+  } else{
+    stop('Available reference builds: hg18, hg19, hg38')
   }
 
   segmentedData[,Start_Position := as.numeric(as.character(Start_Position))]
   segmentedData[,End_Position := as.numeric(as.character(End_Position))]
+
+  #Replace chr x and y with numeric value (23 and 24) for better ordering
+  segmentedData$Chromosome = gsub(pattern = 'chr', replacement = '', x = segmentedData$Chromosome, fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'X', replacement = '23', x = segmentedData$Chromosome, fixed = TRUE)
+  segmentedData$Chromosome = gsub(pattern = 'Y', replacement = '24', x = segmentedData$Chromosome, fixed = TRUE)
+
   segmentedData$Chromosome = factor(x = segmentedData$Chromosome, levels = 1:24, labels = 1:24)
 
   segmentedData = segmentedData[order(Chromosome, Start_Position, decreasing = FALSE)]
@@ -130,11 +138,13 @@ plotCBS = function(segData, tsb, build = 'hg19'){
 
   segData = segData[Sample %in% tsb]
 
-  build.opts = c('hg19', 'hg18', 'hg38')
-
-  if(!build %in% build.opts){
-    stop('Available reference builds: hg18, hg19, hg38')
+  if(nrow(segData) < 1){
+    stop(paste('Sample',tsb, 'not found in segmentation file'))
   }
+
+  segData = segData[order(Chromosome, Start_Position)]
+
+  seg.spl.transformed = transformSegments(segmentedData = segData, build = build)
 
   if(build == 'hg19'){
     chr.lens = c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
@@ -153,13 +163,6 @@ plotCBS = function(segData, tsb, build = 'hg19'){
                  58617616, 64444167, 46709983, 50818468, 156040895, 57227415)
   }
 
-  if(nrow(segData) < 1){
-    stop(paste('Sample',tsb, 'not found in segmentation file'))
-  }
-
-  segData = segData[order(Chromosome, Start_Position)]
-
-  seg.spl.transformed = transformSegments(segmentedData = segData, build = build)
   chr.lens.sumsum = cumsum(chr.lens)
   nchrs = length(unique(seg.spl.transformed$Chromosome))
 
