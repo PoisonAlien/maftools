@@ -106,7 +106,7 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
                         gisticDelGenesFile = gisticDelGenesFile, isTCGA = isTCGA)
     gisticIp = gisticIp@data
 
-    gisticIp[, id := paste(Hugo_Symbol, Tumor_Sample_Barcode, sep=':')]
+    suppressWarnings(gisticIp[, id := paste(Hugo_Symbol, Tumor_Sample_Barcode, sep=':')])
     gisticIp = gisticIp[!duplicated(id)]
     gisticIp[,id := NULL]
 
