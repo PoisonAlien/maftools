@@ -31,6 +31,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Extract mutational signatures and compare them to validated signatures.
   * Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation.
   * Read and summarize GISTIC results.
+  * Pan-cancer analysis/comparisison
 2. Visualization
   * Make oncoplots.
   * Make lollipop plots.
@@ -48,16 +49,15 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 
 #### Installation:
 
-Easy way: Install from Bioconductor. If you dont want to use devel bioc, install from Github.
+Easy way: Install from [Bioconductor](http://bioconductor.org/packages/release/bioc/html/maftools.html).
 
 ```{r}
 ## try http:// if https:// URLs are not supported
 source("https://bioconductor.org/biocLite.R")
-useDevel()
 biocLite("maftools")
 ```
 
-Install from Github
+Install from Github for updated features (some of functions from here may not be available on Bioconductor release).
 
 ```{r results='hide'}
 #Install Bioconductor dependencies.
@@ -166,6 +166,10 @@ laml.pfam$domainSummary[,1:3, with = F]
 ####Rainfall plots
 
 ![image15](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image15.png)
+
+####Pan-cancer comparision
+![image17](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image17.png)
+
 
 #### Annotating variants with Oncotator
 We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.
