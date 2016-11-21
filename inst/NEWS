@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.0.10
+-------------------------
+NON SIGNIFICANT CHANGES
+
+    o Major bug fix to readGistic which earlier caused to drop deep CNVs
+    o Replaced for-loop with vectorized code for gistic sample processing
+    o bug fix in coOncoplot
+    o bug fix in oncostrip which made annotations out of order
+    o bug fix in rainfallPlot
+    o Added reference build option to plotCBSsegments and rainfallPlot
+    o read.maf can accept data-frame as input
+    o Minor plot improvements.
+
 CHANGES IN VERSION 0.99.50
 -------------------------
 NON SIGNIFICANT CHANGES
