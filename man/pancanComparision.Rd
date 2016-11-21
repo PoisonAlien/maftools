@@ -6,7 +6,7 @@
 \usage{
 pancanComparision(mutsigResults, qval = 0.1, cohortName = "input",
   inputSampleSize = NULL, label = 1, normSampleSize = FALSE,
-  file = NULL, width = 6, height = 6)
+  file = NULL, width = 6, height = 6, pointSize = 3, labelSize = 3)
 }
 \arguments{
 \item{mutsigResults}{MutSig results (usually sig_genes.txt). Can be gz compressed.}
@@ -26,6 +26,10 @@ pancanComparision(mutsigResults, qval = 0.1, cohortName = "input",
 \item{width}{width of the file to be saved.}
 
 \item{height}{height of the file to be saved.}
+
+\item{pointSize}{size for scatter plot. Default 1.}
+
+\item{labelSize}{label text size. Default 3}
 }
 \description{
 Takes MutSig results and compares them against PanCancer results.

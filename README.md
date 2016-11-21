@@ -170,24 +170,6 @@ laml.pfam$domainSummary[,1:3, with = F]
 ####Pan-cancer comparision
 ![image17](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image17.png)
 
-
-#### Annotating variants with Oncotator
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.
-
-```{r}
-var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
-#This is what input looks like
-var = read.delim(var.file, sep = '\t')
-head(var)
-```
-
-```{r, results='hide'}
-#Annotate 
-var.maf = oncotate(maflite = var.file, header = T)
-```
-
-This is quite time consuming if input is big.
-
 #### Mutual Exclusivity and Oncoprint.
 Many genes in cancer show strong exclusiveness in mutation pattern. We can detect such pair of genes using `mutExclusive` which runs `comet_exact_test` from `cometExactTest` package for significance<sup>5</sup>. 
 
