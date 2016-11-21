@@ -22,11 +22,13 @@ plotGisticResults = function(gistic, color = NULL, file = NULL, width = 6, heigh
     color = c('Amp' = 'red', 'Del' = 'blue')
   }
 
+  g$lab = sapply(strsplit(x = g$Unique_Name, split = ':'), '[', 2)
+
   g$pos = ifelse(test = g$Variant_Classification %in% 'Amp', yes = g$nGenes, no = -1 * g$nGenes)
 
   gist.gg = ggplot(data = g, aes(x = nSamples, y = pos, size = -log10(qvalues), color = Variant_Classification,
-                       label = Cytoband))+geom_point(alpha = 0.6)+xlab('nSamples')+ylab('nGenes')+
-    ggrepel::geom_text_repel(size = txtSize)+cowplot::theme_cowplot()+cowplot::background_grid(major = 'xy')+
+                       label = lab))+geom_point(alpha = 0.6)+xlab('nSamples')+ylab('nGenes')+
+    ggrepel::geom_text_repel(size = txtSize)+cowplot::theme_cowplot(font_size = 10)+cowplot::background_grid(major = 'xy')+
     theme(legend.position = 'bottom')+scale_colour_manual(values = color, name = c('CNV', ''))
 
   if(!is.null(file)){

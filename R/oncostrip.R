@@ -99,7 +99,7 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, annotation = NULL, annotati
     }
 
     rownames(annotation) = annotation[,1]
-    annotation = annotation[colnames(mat_origin),]
+    annotation = annotation[colnames(mat),]
     annotation = annotation[complete.cases(annotation),]
     anno.df = data.frame(row.names = annotation[,1])
     anno.df = cbind(anno.df, annotation[,2:ncol(annotation)])

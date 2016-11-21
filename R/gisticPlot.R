@@ -39,7 +39,9 @@ gisticPlot = function (gistic, top = NULL,
 
 
   numMat = gistic@numericMatrix
+  rownames(numMat) = sapply(strsplit(x = rownames(numMat), split = ':'), '[', 2)
   mat_origin = gistic@cnMatrix
+  rownames(mat_origin) = sapply(strsplit(x = rownames(mat_origin), split = ':'), '[', 2)
 
   if(ncol(numMat) < 2){
     stop('Cannot create plot for single sample. Minimum two sample required ! ')

@@ -68,10 +68,6 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
   #If user provides a gene list
   if(!is.null(genes)){
 
-    if(length(genes) < 2){
-      stop('Provide at least 2 genes.')
-    }
-
     #Check for any missing genes and ignore them if necessary
     if(length(genes[!genes %in% rownames(numMat)]) > 0){
       message('Following genes are not available in MAF:')
@@ -80,10 +76,14 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
       genes = genes[genes %in% rownames(numMat)]
     }
 
-    numMat = numMat[genes,]
+    if(length(genes) < 2){
+      stop('Provide at least 2 genes.')
+    }
+
+    numMat = numMat[genes,, drop = FALSE]
     numMat = sortByMutation(numMat = numMat, maf = maf)
-    mat_origin = mat_origin[rownames(numMat),]
-    mat_origin = mat_origin[,colnames(numMat)]
+    mat_origin = mat_origin[rownames(numMat), , drop = FALSE]
+    mat_origin = mat_origin[,colnames(numMat), drop = FALSE]
     mat = mat_origin
   } else{
     #If user does not provide gene list draw TOP (default 20) genes
@@ -91,25 +91,25 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
     if(sortByMutation){
       #This is in case input maf was read with copynumber data but still wants to maintain mutation order (ignoring copynumber variants).
       numMat = sortByMutation(numMat = numMat, maf = maf)
-      mat_origin = mat_origin[rownames(numMat),]
-      mat_origin = mat_origin[,colnames(numMat)]
+      mat_origin = mat_origin[rownames(numMat),, drop = FALSE]
+      mat_origin = mat_origin[,colnames(numMat), drop = FALSE]
     }
 
     if(nrow(mat_origin) < top){
       mat = mat_origin
     }else{
-      mat = mat_origin[1:top, ]
+      mat = mat_origin[1:top, , drop = FALSE]
     }
   }
 
   #To remove samples with no mutations in top n genes, if user says removeNonMutated
   if(removeNonMutated){
-    numMat = numMat[rownames(mat),]
-    numMat = numMat[,colnames(mat)]
+    numMat = numMat[rownames(mat), , drop = FALSE]
+    numMat = numMat[,colnames(mat), drop = FALSE]
     tsb = colnames(numMat)
-    tsb.exclude = colnames(numMat[,colSums(numMat) == 0])
+    tsb.exclude = colnames(numMat[,colSums(numMat) == 0, drop = FALSE])
     tsb.include = tsb[!tsb %in% tsb.exclude]
-    mat = mat[,tsb.include]
+    mat = mat[,tsb.include, drop = FALSE]
   }
 
   if (writeMatrix) {
@@ -373,5 +373,5 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
 
   legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col), nrow = 2)
 
-  ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
+  suppressWarnings( ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
 }

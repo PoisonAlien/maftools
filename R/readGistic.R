@@ -16,102 +16,124 @@
 
 readGistic = function(gisticAllLesionsFile, gisticAmpGenesFile = NULL, gisticDelGenesFile = NULL, isTCGA = FALSE){
 
-  message('Processing Gistic files..')
-
   if(is.null(gisticAmpGenesFile) & is.null(gisticDelGenesFile)){
     stop('Missing gistic genes files ! Provide atleast one of amp_genes.conf_xx.txt or del_genes.conf_xx.txt file.')
   }
+
+  message('Processing Gistic files..')
 
   all.lesions = data.table::fread(input = gisticAllLesionsFile,stringsAsFactors = FALSE, header = TRUE)
 
   if(colnames(all.lesions)[ncol(all.lesions)] == paste('V', ncol(all.lesions), sep='')){
     all.lesions = all.lesions[,1:c(ncol(all.lesions)-1), with = FALSE]
   }
-
-  all.lesions = all.lesions[!grep(pattern = 'CN values', x = all.lesions$`Unique Name`),]
-
-  qval = all.lesions[,c(2, 6), with =FALSE]
-  colnames(x = qval) = c('Cytoband', 'qvalues')
-
-  all.lesions = all.lesions[,c(1,2,10:ncol(all.lesions)), with =FALSE]
-  colnames(all.lesions) = gsub(pattern = '-', replacement = '.', x = colnames(all.lesions))
-
-  #Only fot TCGA
-  #colnames(all.lesions) = substr(x = colnames(all.lesions), start = 1, stop = 12)
-  colnames(all.lesions)[c(1,2)] = c('Unique_Name', 'cytoband')
+  colnames(all.lesions)[c(1,2,3)] = c('Unique_Name', 'cytoband', 'Wide_Peak_Limits')
   all.lesions$Unique_Name = gsub(pattern = ' ', replacement = '_', x = all.lesions$Unique_Name)
   all.lesions$Unique_Name = gsub(pattern = '__', replacement = '_', x = all.lesions$Unique_Name)
 
-  temp.map = all.lesions[,.(Unique_Name, cytoband)]
-  temp.map$CN = substr(x = temp.map$Unique_Name, start = 1, stop = 3)
+  all.lesions = all.lesions[!grep(pattern = 'CN_values', x = all.lesions[,Unique_Name]),]
+  all.lesions[, Wide_Peak_Limits := sapply(strsplit(x = as.character(all.lesions[,Wide_Peak_Limits]), split = '(', fixed = TRUE), '[', 1)]
+
+  qval = all.lesions[,c(1, 2, 3, 6), with =FALSE]
+  colnames(x = qval) = c('Unique_Name', 'Cytoband', 'Wide_Peak_Limits', 'qvalues')
+
+  all.lesions = all.lesions[,c(1,2,3,10:ncol(all.lesions)), with =FALSE]
+  colnames(all.lesions) = gsub(pattern = '-', replacement = '.', x = colnames(all.lesions))
+
+  all.lesions$cytoband = paste(substr(x = all.lesions$Unique_Name, start = 1, stop = 3), all.lesions$cytoband, sep = '_')
+  all.lesions$cytoband = paste(all.lesions$cytoband, all.lesions$Wide_Peak_Limits, sep = '_')
+  qval$peakID = all.lesions[,cytoband]
 
   all.lesions[,Unique_Name := NULL]
+  all.lesions[,Wide_Peak_Limits := NULL]
 
   all.lesions.melt = suppressWarnings(data.table::melt(all.lesions, id.vars = 'cytoband'))
-  all.lesions.melt = all.lesions.melt[value %in% 1]
+  all.lesions.melt = all.lesions.melt[value %in% c(1, 2)]
+
+  cnGenes = data.table::data.table()
 
   if(!is.null(gisticAmpGenesFile)){
+    message('Processing Amplified Genes..')
     ampGenes = data.table::fread(input = gisticAmpGenesFile, stringsAsFactors = FALSE, header = TRUE)
-    ampGenes = ampGenes[c(4:nrow(ampGenes)),]
-    ampGenes$cytoband = gsub(pattern = ' ', replacement = '_', x = ampGenes$cytoband)
-
     if(colnames(ampGenes)[ncol(ampGenes)] == paste('V', ncol(ampGenes), sep='')){
       ampGenes = ampGenes[,1:c(ncol(ampGenes)-1), with = FALSE]
     }
+    wpb = as.character(ampGenes[3])
+    wpb = wpb[2:length(wpb)]
 
-    ampGenes = data.table::melt(ampGenes, id.vars = 'cytoband')
+    ampGenes = ampGenes[c(4:nrow(ampGenes)),]
+    ampGenes$cytoband = gsub(pattern = ' ', replacement = '_', x = ampGenes$cytoband)
+    colnames(ampGenes) = c( 'cytoband',paste0( 'Amp_', colnames(ampGenes)[2:length(colnames(ampGenes))], '_',wpb))
+
+    data.table::setDF(x = ampGenes)
+    ampGenes = suppressWarnings(data.table::melt(ampGenes, id.vars = 'cytoband'))
+    data.table::setDT(ampGenes)
+
     ampGenes = ampGenes[!value %in% '']
     #ampGenes$value = sapply(strsplit(x = ampGenes$value, split = '|', fixed = TRUE), '[', 1)
     ampGenes = ampGenes[!grep(pattern = '|', x = ampGenes$value, fixed = TRUE)]
     ampGenes = ampGenes[,.(variable, value)]
+    cnGenes = rbind(cnGenes, ampGenes)
   }
 
   if(!is.null(gisticDelGenesFile)){
+    message('Processing Deleted Genes..')
     delGenes = data.table::fread(input = gisticDelGenesFile, stringsAsFactors = FALSE, header = TRUE)
-    delGenes = delGenes[c(4:nrow(delGenes)),]
-    delGenes$cytoband = gsub(pattern = ' ', replacement = '_', x = delGenes$cytoband)
-
     if(colnames(delGenes)[ncol(delGenes)] == paste('V', ncol(delGenes), sep='')){
       delGenes = delGenes[,1:c(ncol(delGenes)-1), with = FALSE]
     }
 
+    wpb = as.character(delGenes[3])
+    wpb = wpb[2:length(wpb)]
+
+    delGenes = delGenes[c(4:nrow(delGenes)),]
+    delGenes$cytoband = gsub(pattern = ' ', replacement = '_', x = delGenes$cytoband)
+    colnames(delGenes) = c( 'cytoband',paste0( 'Del_', colnames(delGenes)[2:length(colnames(delGenes))], '_',wpb))
+
+    data.table::setDF(x = delGenes)
     delGenes = suppressWarnings(data.table::melt(delGenes, id.vars = 'cytoband'))
+    data.table::setDT(delGenes)
+
     delGenes = delGenes[!value %in% '']
     #delGenes$value = sapply(strsplit(x = delGenes$value, split = '|', fixed = TRUE), '[', 1)
     delGenes = delGenes[!grep(pattern = '|', x = delGenes$value, fixed = TRUE)]
     delGenes = delGenes[,.(variable, value)]
-  }
-
-  if(exists('ampGenes') & exists('delGenes')){
-    cnGenes = rbind(ampGenes, delGenes)
-  } else if(exists('ampGenes')){
-    cnGenes = ampGenes
-  } else if(exists('delGenes')){
-    cnGenes = delGenes
+    cnGenes = rbind(cnGenes, delGenes)
   }
 
   cnSamples = unique(x = as.character(all.lesions.melt$variable))
-  cnDT = c()
 
-  for(i in 1:length(cnSamples)){
-    cytBands = all.lesions.melt[variable %in% cnSamples[i], cytoband]
+  message('Summarizing samples..')
+  cnDT = data.table::rbindlist( lapply(X = cnSamples, FUN = function(x){
+    cytBands = all.lesions.melt[variable %in% x, cytoband]
     cytBandsGenes = cnGenes[variable %in% cytBands]
-    cytBandsGenes[,TumorSampleBarcode := cnSamples[i]]
-    cnDT = rbind(cnDT, cytBandsGenes)
-  }
+    cytBandsGenes[,TumorSampleBarcode := x]
+  }))
 
-  cnDT$CN = suppressWarnings(as.character(factor(x = cnDT$variable, levels = temp.map$cytoband, labels = temp.map$CN)))
+  cnDT[, CN := substr(x = cnDT[,variable], start = 1, stop = 3)]
+  cnDT = cnDT[,.(variable, value, TumorSampleBarcode, CN)]
   colnames(cnDT) = c('Cytoband', 'Hugo_Symbol', 'Tumor_Sample_Barcode', 'Variant_Classification')
+  cnDT = suppressWarnings(cnDT[,Variant_Type := 'CNV'])
 
   if(isTCGA){
     cnDT$Tumor_Sample_Barcode = substr(x = cnDT$Tumor_Sample_Barcode, start = 1, stop = 12)
   }
 
-  cnDT = suppressWarnings(cnDT[,Variant_Type := 'CNV'])
+  qval$Unique_Name = gsub(pattern = 'Amplification_Peak', replacement = 'AP', x = qval$Unique_Name)
+  qval$Unique_Name = gsub(pattern = 'Deletion_Peak', replacement = 'DP', x = qval$Unique_Name)
+  qval[, Unique_Name := paste(Unique_Name, Cytoband, sep = ':')]
+  cnDT$peakID = as.character(factor(x = cnDT[,Cytoband], levels = qval[,peakID], labels = qval[,Unique_Name]))
+  qval[,peakID := NULL]
+  cnDT[,Cytoband := NULL]
+  colnames(cnDT)[5] = 'Cytoband'
+
+
   cnDt.summary = summarizeGistic(gistic = cnDT)
   cnDt.mat = gisticMap(gistic = cnDT)
 
-  cnDt.summary$cytoband.summary = merge(cnDt.summary$cytoband.summary, qval, by = 'Cytoband', all.x = TRUE)
+  cnDt.summary$cytoband.summary = merge(cnDt.summary$cytoband.summary, qval, by.x = 'Cytoband', by.y = 'Unique_Name', all.x = TRUE)
+  colnames(cnDt.summary$cytoband.summary)[1] = 'Unique_Name'
+  cnDt.summary$cytoband.summary = cnDt.summary$cytoband.summary[order(qvalues)]
 
   g = GISTIC(data = cnDT, cnv.summary = cnDt.summary$cnv.summary,
              cytoband.summary = cnDt.summary$cytoband.summary,
