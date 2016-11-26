@@ -20,6 +20,7 @@
 #' @param cnTable Custom copynumber data if gistic results are not available. Input file should a tab seperated three column table containing gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL.
 #' @param isTCGA Is input MAF file from TCGA source.
 #' @param removeDuplicatedVariants removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.
+#' @param verbose TRUE logical. Default to be talkative and prints summary.
 #' @return An object of class MAF.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -31,7 +32,7 @@
 
 
 read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL,
-                    gisticDelGenesFile = NULL, cnTable = NULL, removeDuplicatedVariants = TRUE, isTCGA = FALSE){
+                    gisticDelGenesFile = NULL, cnTable = NULL, removeDuplicatedVariants = TRUE, isTCGA = FALSE, verbose = TRUE){
 
   if(is.data.frame(x = maf)){
     maf  = maf
@@ -53,12 +54,14 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
   }
 
   #validate MAF file
-  maf = validateMaf(maf = maf, isTCGA = isTCGA, rdup = removeDuplicatedVariants)
+  maf = validateMaf(maf = maf, isTCGA = isTCGA, rdup = removeDuplicatedVariants, chatty = verbose)
 
   #validation check for variants classified as Somatic in Mutation_Status field.
   if(length(colnames(maf)[colnames(x = maf) %in% 'Mutation_Status']) > 0){
     if(!useAll){
+
       message('Using only Somatic variants from Mutation_Status. Switch on useAll to include everything.')
+
       maf = maf[Mutation_Status %in% "Somatic"]
 
       if(nrow(maf) == 0){
@@ -67,7 +70,9 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
 
       #maf = subset(maf, Mutation_Status == 'Somatic')
     }else {
-      message('Using all variants.')
+      if(verbose){
+        message('Using all variants.')
+      }
     }
   }else{
     message('Mutation_Status not found. Assuming all variants are Somatic and validated.')
@@ -92,13 +97,20 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
                                   N = c(nrow(maf.silent.vc.cast), colSums(maf.silent.vc.cast[,2:ncol(maf.silent.vc.cast), with = FALSE])))
 
       maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
-      message(paste('Excluding',nrow(maf.silent), 'silent variants.'))
-      print(summary.silent)
+      if(verbose){
+        message(paste('Excluding',nrow(maf.silent), 'silent variants.'))
+        print(summary.silent)
+      }
+
     } else{
-      message(message(paste('Excluding',nrow(maf.silent), 'silent variants.')))
+      if(verbose){
+        message(message(paste('Excluding',nrow(maf.silent), 'silent variants.')))
+      }
     }
   }else{
-    message('Silent variants are being kept!')
+    if(verbose){
+      message('Silent variants are being kept!')
+    }
   }
 
   if(!is.null(gisticAllLesionsFile)){
@@ -111,9 +123,11 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
     gisticIp[,id := NULL]
 
     maf = rbind(maf, gisticIp, fill =TRUE)
-    oncomat = createOncoMatrix(maf)
+    oncomat = createOncoMatrix(maf, chatty = verbose)
   }else if(!is.null(cnTable)){
-    message('Processing copy number data..')
+    if(verbose){
+      message('Processing copy number data..')
+    }
     cnDat = data.table::fread(input = cnTable, sep = '\t', stringsAsFactors = FALSE, header = TRUE, colClasses = 'character')
     colnames(cnDat) = c('Hugo_Symbol', 'Tumor_Sample_Barcode', 'Variant_Classification')
     cnDat$Variant_Type = 'CNV'
@@ -121,9 +135,9 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
     cnDat = cnDat[!duplicated(id)]
     cnDat[,id := NULL]
     maf = rbind(maf, cnDat, fill =TRUE)
-    oncomat = createOncoMatrix(maf)
+    oncomat = createOncoMatrix(maf, chatty = verbose)
   }else{
-    oncomat = createOncoMatrix(maf)
+    oncomat = createOncoMatrix(maf, chatty = verbose)
   }
 
   #convert to factors
@@ -131,8 +145,10 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
   maf$Variant_Classification = as.factor(as.character(maf$Variant_Classification))
   maf$Tumor_Sample_Barcode = as.factor(as.character(maf$Tumor_Sample_Barcode))
 
-  message('Summarizing..')
-  mafSummary = summarizeMaf(maf = maf)
+  if(verbose){
+    message('Summarizing..')
+  }
+  mafSummary = summarizeMaf(maf = maf, chatty = verbose)
 
   #Create MAF object
     m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,

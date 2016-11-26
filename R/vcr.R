@@ -1,11 +1,12 @@
-#' Samll internal function to make complex events. Ignore this.
-#' @param x charcter to split
+#' Samll internal function to make complex events.
+#' @description Samll internal function to make complex events. Ignore this.
+#' @param xstr charcter to split
 #' @param gis Is input from gistic. Logical.
 #' @return split string
 #' @export
 
-vcr = function(x, gis = FALSE) {
-  x = as.character(x)
+vcr = function(xstr, gis = FALSE) {
+  x = as.character(xstr)
   x = strsplit(x = x, split = ';', fixed = TRUE)[[1]]
   x = unique(x)
   xad = x[x %in% c('Amp', 'Del')]

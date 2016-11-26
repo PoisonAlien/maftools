@@ -7,7 +7,7 @@
 read.maf(maf, removeSilent = TRUE, useAll = TRUE,
   gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL,
   gisticDelGenesFile = NULL, cnTable = NULL,
-  removeDuplicatedVariants = TRUE, isTCGA = FALSE)
+  removeDuplicatedVariants = TRUE, isTCGA = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{maf}{tab delimited MAF file. File can also be gz compressed. Required. Alternatively, you can also provide already read MAF file as a dataframe.}
@@ -27,6 +27,8 @@ read.maf(maf, removeSilent = TRUE, useAll = TRUE,
 \item{removeDuplicatedVariants}{removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
 
 \item{isTCGA}{Is input MAF file from TCGA source.}
+
+\item{verbose}{TRUE logical. Default to be talkative and prints summary.}
 }
 \value{
 An object of class MAF.

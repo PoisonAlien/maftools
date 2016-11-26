@@ -4,7 +4,7 @@ filterCopyNumber = function(seg, tsb.dat, tempCheck, tsb){
   }else{
 
     #Overlap variants with segment data
-    tsb.dat = foverlaps(x = tsb.dat, y = seg, by.x = c('Chromosome', 'Start_Position', 'End_Position'))
+    tsb.dat = data.table::foverlaps(x = tsb.dat, y = seg, by.x = c('Chromosome', 'Start_Position', 'End_Position'))
     tsb.dat = tsb.dat[,.(Hugo_Symbol, Chromosome, i.Start_Position, i.End_Position,
                          Tumor_Sample_Barcode, t_vaf, Start_Position, End_Position, Segment_Mean)]
     colnames(tsb.dat)[c(3:4, 7:8)] = c('Start_Position', 'End_Position', 'Segment_Start', 'Segment_End')

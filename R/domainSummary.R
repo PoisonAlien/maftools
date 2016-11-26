@@ -162,7 +162,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   domainSum = domainSum[order(nMuts, decreasing = TRUE)]
 
   #print(prot.sum)
-  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes, alpha = 0.6))+geom_point()+cowplot::theme_cowplot()+
+  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes, alpha = 0.8))+geom_point()+cowplot::theme_cowplot()+
     geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel, color = 'maroon'), size = 3, fontface = 'bold', force = 30)+
     theme(legend.position = 'none')+cowplot::background_grid(major = 'xy')
 

@@ -1,15 +1,17 @@
 
 #Summarizing MAF
-summarizeMaf = function(maf){
+summarizeMaf = function(maf, chatty = TRUE){
 
   if('NCBI_Build' %in% colnames(maf)){
     NCBI_Build = unique(maf[!Variant_Type %in% 'CNV', NCBI_Build])
     NCBI_Build = NCBI_Build[!is.na(NCBI_Build)]
 
-    if(length(NCBI_Build) > 1){
-      message('NOTE: Mutiple reference builds found!')
-      NCBI_Build = do.call(paste, c(as.list(NCBI_Build), sep=";"))
-      message(NCBI_Build)
+    if(chatty){
+      if(length(NCBI_Build) > 1){
+        message('NOTE: Mutiple reference builds found!')
+        NCBI_Build = do.call(paste, c(as.list(NCBI_Build), sep=";"))
+        message(NCBI_Build)
+      }
     }
   }else{
     NCBI_Build = NA
@@ -19,9 +21,11 @@ summarizeMaf = function(maf){
     Center = unique(maf[!Variant_Type %in% 'CNV', Center])
     #Center = Center[is.na(Center)]
     if(length(Center) > 1){
-      message('Mutiple centers found.')
       Center = do.call(paste, c(as.list(Center), sep=";"))
-      print(Center)
+      if(chatty){
+        message('Mutiple centers found.')
+        print(Center)
+      }
     }
   }else{
     Center = NA
@@ -100,8 +104,6 @@ summarizeMaf = function(maf){
   }else{
     hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
     hs.cast = hs.cast[order(total, decreasing = TRUE)]
-    hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
-    hs.cast[order(total, decreasing = TRUE)]
   }
   #----
 
@@ -116,18 +118,22 @@ summarizeMaf = function(maf){
   summary[,Mean := vc.mean]
   summary[,Median := vc.median]
 
-  print(summary)
+  if(chatty){
+    print(summary)
 
-  message("Frequently mutated genes..")
-  print(hs.cast)
+    message("Frequently mutated genes..")
+    print(hs.cast)
+  }
 
   #Check for flags.
   if(nrow(hs.cast) > 10){
     topten = hs.cast[1:10, Hugo_Symbol]
     topten = topten[topten %in% flags]
-    if(length(topten) > 0){
-      message('NOTE: Possible FLAGS among top ten genes:')
-      print(topten)
+      if(chatty){
+        if(length(topten) > 0){
+          message('NOTE: Possible FLAGS among top ten genes:')
+          print(topten)
+      }
     }
   }
 
@@ -136,9 +142,11 @@ summarizeMaf = function(maf){
 }
 
 # This is using data.table. Very Fast :) :) :)
-createOncoMatrix = function(maf){
+createOncoMatrix = function(maf, chatty = TRUE){
 
+  if(chatty){
     message('Creating oncomatrix (this might take a while)..')
+  }
 
      oncomat = data.table::dcast(data = maf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
                                  fun.aggregate = function(x) {ifelse(test = length(as.character(x))>1 ,
@@ -191,7 +199,9 @@ createOncoMatrix = function(maf){
     mdf = as.matrix(apply(oncomat, 2, function(x) as.numeric(as.character(x))))
     rownames(mdf) = rownames(oncomat.copy)
 
-    message('Sorting..')
+    if(chatty){
+      message('Sorting..')
+    }
 
     #If MAF file contains a single sample, simple sorting is enuf.
     if(ncol(mdf) == 1){

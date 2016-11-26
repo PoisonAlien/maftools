@@ -1,4 +1,4 @@
-validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA){
+validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
 
   #necessary fields.
   required.fields = c('Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele2',
@@ -25,23 +25,29 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA){
   if(rdup){
     maf = maf[, variantId := paste(Chromosome, Start_Position, Tumor_Sample_Barcode, sep = ':')]
     if(nrow(maf[duplicated(variantId)]) > 0){
-      message("NOTE: Removed ",  nrow(maf[duplicated(variantId)]) ," duplicated variants")
+      if(chatty){
+        message("NOTE: Removed ",  nrow(maf[duplicated(variantId)]) ," duplicated variants")
+      }
       maf = maf[!duplicated(variantId)]
     }
     maf[,variantId := NULL]
   }
 
   if(nrow(maf[Hugo_Symbol %in% ""]) > 0){
-    message('NOTE: Found ', nrow(maf[Hugo_Symbol %in% ""]), ' variants with no Gene Symbols.')
-    print(maf[Hugo_Symbol %in% "", required.fields, with = FALSE])
-    message("Annotating them as 'UnknownGene' for convenience")
+    if(chatty){
+      message('NOTE: Found ', nrow(maf[Hugo_Symbol %in% ""]), ' variants with no Gene Symbols.')
+      print(maf[Hugo_Symbol %in% "", required.fields, with = FALSE])
+      message("Annotating them as 'UnknownGene' for convenience")
+    }
     maf$Hugo_Symbol = ifelse(test = maf$Hugo_Symbol == "", yes = 'UnknownGene', no = maf$Hugo_Symbol)
   }
 
   if(nrow(maf[is.na(Hugo_Symbol)]) > 0){
-    message('NOTE: Found ', nrow(maf[is.na(Hugo_Symbol) > 0]), ' variants with no Gene Symbols.')
-    print(maf[is.na(Hugo_Symbol), required.fields, with =FALSE])
-    message("Annotating them as 'UnknownGene' for convenience")
+    if(chatty){
+      message('NOTE: Found ', nrow(maf[is.na(Hugo_Symbol) > 0]), ' variants with no Gene Symbols.')
+      print(maf[is.na(Hugo_Symbol), required.fields, with =FALSE])
+      message("Annotating them as 'UnknownGene' for convenience")
+    }
     maf$Hugo_Symbol = ifelse(test = is.na(maf$Hugo_Symbol), yes = 'UnknownGene', no = maf$Hugo_Symbol)
   }
 

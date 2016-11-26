@@ -75,8 +75,8 @@ subsetMaf = function(maf, includeSyn = FALSE, tsb = NULL, genes = NULL, fields =
 
   if(mafObj){
 
-      mafSummary = summarizeMaf(maf.dat)
-      oncomat = createOncoMatrix(maf.dat)
+      mafSummary = summarizeMaf(maf.dat, chatty = FALSE)
+      oncomat = createOncoMatrix(maf.dat, chatty = FALSE)
 
       m = MAF(data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
               variant.classification.summary = mafSummary$variant.classification.summary,gene.summary = mafSummary$gene.summary,

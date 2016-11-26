@@ -26,7 +26,9 @@ Decompose a matrix of 96 substitution classes into \code{n} signatures.
 }
 \details{
 This function decomposes a non-negative matrix into n signatures.
-Extracted signatures are compared against 21 experimentally validated signatures by calculating correlation coefficient. See http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F2.html for details.
+Extracted signatures are compared against 21 experimentally validated signatures by calculating cosine similarity. See http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F2.html for details. Please be
+noted that the original study described 21 validated signatures, however cosimc catalogue of cancer signatures has now reached ~30 signatures. Validated signatures
+lack some of, now well known signatures such Signature-22 (T>A strand bias occuring in liver), and this comparison might not include them. In that case you may have to manually infer the results.
 }
 \examples{
 \dontrun{
