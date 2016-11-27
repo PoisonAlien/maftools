@@ -19,7 +19,7 @@ extractSignatures(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE,
 \item{parallel}{calls to .opt argument of \code{\link{nmf}}. e.g, 'P4' for using 4 cores. See note on \code{\link{nmf}} for MAC users.}
 }
 \value{
-a list with decomposed scaled signatures, signature contributions in each sample and a correlatoon table against validated signatures.
+a list with decomposed scaled signatures, signature contributions in each sample and a cosine similarity table against validated signatures.
 }
 \description{
 Decompose a matrix of 96 substitution classes into \code{n} signatures.

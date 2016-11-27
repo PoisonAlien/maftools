@@ -12,7 +12,7 @@
 #' @param nTry tries upto this number of signatures before choosing best \code{n}. Default 6.
 #' @param plotBestFitRes plots consensus heatmap for range of values tried. Default FALSE
 #' @param parallel calls to .opt argument of \code{\link{nmf}}. e.g, 'P4' for using 4 cores. See note on \code{\link{nmf}} for MAC users.
-#' @return a list with decomposed scaled signatures, signature contributions in each sample and a correlatoon table against validated signatures.
+#' @return a list with decomposed scaled signatures, signature contributions in each sample and a cosine similarity table against validated signatures.
 #' @examples
 #' \dontrun{
 #' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa', prefix = 'chr',
