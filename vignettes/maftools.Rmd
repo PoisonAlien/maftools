@@ -73,7 +73,6 @@ NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more t
 If we have copy number data along with MAF file, we can include them in oncoplot as to show if any genes are amplified or deleted. One most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF[3](#references). GISTIC generates numerous files but we need mainly three files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt` and `del_genes.conf_XX.txt`, where XX is confidence level. These files contain significantly altered genomic regions along with amplified and delted genes respectively.
 
 ```{r results='hide', message=FALSE}
-suppressWarnings(require(maftools))
 #read TCGA maf file for LAML
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
@@ -292,7 +291,7 @@ We can use copy number information to ignore variants located on copynumber alte
 
 ```{r, fig.align='center', fig.height=5, fig.width=7, eval=T}
 seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
-tcga.ab.3009.het = inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.3009', segFile = seg)
+tcga.ab.3009.het = inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.3009', segFile = seg, vafCol = 'i_TumorVAF_WU')
 #Visualizing results. Highlighting those variants on copynumber altered variants.
 plotClusters(clusters = tcga.ab.3009.het, genes = 'CN_altered', showCNvars = TRUE)
 ```
@@ -335,8 +334,8 @@ laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
 ## Estimating best rank..
 ## Using 2 as a best-fit rank based on maximum cophenetic correlation coefficient.
 ## Comparing against experimentally validated 21 signatures.. (See Alexandrov et.al Nature 2013 for details.)
-## Found Signature_1 most similar to validated Signature_1B. Correlation coeff: 0.788340817468816
-## Found Signature_2 most similar to validated Signature_1A. Correlation coeff: 0.724579532825333
+## Found Signature_1 most similar to validated Signature_1B. CoSine-Similarity: 0.861890421338525
+## Found Signature_2 most similar to validated Signature_1A. CoSine-Similarity: 0.724579532825333
 ```
 
 ```{r, echo=F}
@@ -448,7 +447,9 @@ plotSignatures(laml.sign)
 
 `extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overestimating, it is also possible to be re-run `extractSignatures` by manually specifying r.
 
-Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). In the above exaple, 2 signatures are derived. One of the signatures is most similar to validated signature_1A with a high correlation coefficient. Signature_1A is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, which results in C>T transitions and which predominantly occurs at NpCpG trinucleotide which is a most common process in AML [13](#references).
+Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). In the above exaple, 2 signatures are derived. One of the signatures is most similar to validated signature_1A with a high cosine similarity. Signature_1A is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, which results in C>T transitions and which predominantly occurs at NpCpG trinucleotide which is a most common process in AML [13](#references). 
+
+NOTE: Should you recieve an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `NMF` library and re-run.
 
 #Variant Annotations
 ##Annotating variants using Oncotator.
@@ -521,14 +522,14 @@ subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'))[1:5]
 ##Same as above but return output as an MAF object
 subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), mafObj = TRUE)
 ```
-Specifiying queries and controlling output fields.
+
+###Specifiying queries and controlling output fields.
 ```{r}
 ##Select all Splice_Site mutations from DNMT3A and NPM1
 subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'")
-##Select all variants with VAF above 30%
-subsetMaf(maf = laml, query = "t_vaf > 30")
-##Same as above but include only 'Protein_Change' column in the output
-subsetMaf(maf = laml, query = "t_vaf > 30", fields = 'Protein_Change')
+
+##Same as above but include only 'i_transcript_name' column in the output
+subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'", fields = 'i_transcript_name')
 ```
 
 ##Plotting VAF

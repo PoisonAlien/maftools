@@ -46,7 +46,7 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
     all.prot.dat = all.prot.dat[!is.na(all.prot.dat$pos),]
   }
 
-  gene.sum = summarizeMaf(maf = dat)$gene.summary
+  gene.sum = summarizeMaf(maf = dat, chatty = FALSE)$gene.summary
   #gene.sum = merge.data.frame(x = gene.sum, y = gl, by = 'Hugo_Symbol', all.x = TRUE)
   gene.sum = merge(x = gene.sum, y = gl, by = 'Hugo_Symbol', all.x = TRUE)
   #gene.sum = gene.sum[!is.na(gene.sum$aa.length),]

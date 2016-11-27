@@ -28,12 +28,12 @@ plotOncodrive = function(res = NULL, fdrCutOff = 0.05, useFraction = FALSE){
   res$significant = ifelse(test = res$fdr < fdrCutOff, yes = 'sig', no = 'nonsig')
 
   if(useFraction){
-    p = ggplot(data = res, aes(x = fract_muts_in_clusters, y = -log10(fdr), size = clusters, color = significant, alpha = 0.7))+
+    p = ggplot(data = res, aes(x = fract_muts_in_clusters, y = -log10(fdr), size = clusters, color = significant, alpha = 0.9))+
       geom_point()+cowplot::theme_cowplot()+theme(legend.position = 'NONE')+scale_color_manual(values = c('sig' = 'maroon', 'nonsig' = 'blue'))+
       geom_text_repel(data = dplyr::filter(res, fdr < fdrCutOff), aes(x = fract_muts_in_clusters, y = -log10(fdr), label = label, size = 2))+
       xlab('Fraction of mutations in clusters')+background_grid(major = 'xy')
   }else{
-    p = ggplot(data = res, aes(x = muts_in_clusters, y = -log10(fdr), size = clusters, color = significant, alpha = 0.7))+
+    p = ggplot(data = res, aes(x = muts_in_clusters, y = -log10(fdr), size = clusters, color = significant, alpha = 0.9))+
       geom_point()+cowplot::theme_cowplot()+theme(legend.position = 'NONE')+scale_color_manual(values = c('sig' = 'maroon', 'nonsig' = 'blue'))+
       geom_text_repel(data = dplyr::filter(res, fdr < fdrCutOff), aes(x = muts_in_clusters, y = -log10(fdr), label = label, size = 2))+
       xlab('Number of mutations in clusters')+background_grid(major = 'xy')

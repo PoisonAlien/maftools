@@ -86,8 +86,6 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
     bg.sd = 0.13
   }
 
-
-
   #non-syn variants
   non.syn.maf = maf@data
   #Variant Classification with Low/Modifier variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
