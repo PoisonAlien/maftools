@@ -2,12 +2,12 @@
 % Please edit documentation in R/vcr.R
 \name{vcr}
 \alias{vcr}
-\title{Samll internal function to make complex events. Ignore this.}
+\title{Samll internal function to make complex events.}
 \usage{
-vcr(x, gis = FALSE)
+vcr(xstr, gis = FALSE)
 }
 \arguments{
-\item{x}{charcter to split}
+\item{xstr}{charcter to split}
 
 \item{gis}{Is input from gistic. Logical.}
 }

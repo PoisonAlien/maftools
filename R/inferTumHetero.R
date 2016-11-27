@@ -54,8 +54,6 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
   #If given Copynumber data : Read, Sort and match it to samples in maf
   if(!is.null(segFile)){
     seg.dat = readSegs(segFile)
-    seg.dat$Chromosome = gsub(pattern = 'chr', replacement = '', x = seg.dat$Chromosome, fixed = TRUE)
-    seg.dat = seg.dat[!Chromosome %in% c('X', 'Y')]
     seg.dat = seg.dat[Chromosome %in% onlyContigs]
     seg.dat = seg.dat[order(as.numeric(Chromosome))]
     setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
@@ -88,6 +86,8 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     }else{
       tsb = as.character(maf@variants.per.sample[1:top,Tumor_Sample_Barcode])
     }
+  }else{
+    tsb = gsub(pattern = '-', replacement = '.', x = as.character(tsb))
   }
 
   #empty df to store cluster info
@@ -100,19 +100,12 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     stop(paste(tsb, 'not found in MAF'))
   }
 
-  #Some TCGA studies have Start_Position and End_Position set to as 'position'. Change if so.
-  if(length(grep(pattern = 'Start_position', x = colnames(dat.tsb))) > 0){
-    colnames(dat.tsb)[which(colnames(dat.tsb) == 'Start_position')] = 'Start_Position'
-  }
-
-  if(length(grep(pattern = 'End_position', x = colnames(dat.tsb))) > 0){
-    colnames(dat.tsb)[which(colnames(dat.tsb) == 'End_position')] = 'End_Position'
-  }
 
   #Select only required columns and sort
   dat.tsb = dat.tsb[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, t_vaf)]
   dat.tsb = dat.tsb[order(Chromosome)]
   dat.tsb$Chromosome = as.character(dat.tsb$Chromosome)
+  dat.tsb$t_vaf = as.numeric(as.character(dat.tsb$t_vaf))
   #setkey(x = dat.tsb, Chromosome, Start_Position, End_Position)
 
   #If VAF is in %, covert it to fractions.
