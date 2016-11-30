@@ -20,7 +20,7 @@ Complete specififcation of MAF files can be found on [NCI TCGA page](https://wik
 NOTE: If you have variants stored as VCFs, convert them to MAF using [vcf2maf](https://github.com/mskcc/vcf2maf). Merge MAFs from all samples into a single MAF before processing with maftools.
 
 #### Vignette and a case study.
-A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
+A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 #### Stuffs maftools can do.
 1. Analysis
@@ -224,7 +224,7 @@ Signature_2 which corelates will validated Signature_12 was observed in Liver sa
 
 
 #### Other functions
-For full documentation please refer to [vignette](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
+For full documentation please refer to [vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 ####References.
 1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.
@@ -236,5 +236,5 @@ For full documentation please refer to [vignette](http://bioconductor.org/packag
 7.	Gaujoux, R. and C. Seoighe, A flexible R package for nonnegative matrix factorization. BMC Bioinformatics, 2010. 11: p. 367.
 
 #### Powered By:
-* [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.6
+* [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.8
 * [ggplot2](https://github.com/hadley/ggplot2)
