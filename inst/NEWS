@@ -1,9 +1,15 @@
+CHANGES IN VERSION 1.0.25
+-------------------------
+NON SIGNIFICANT CHANGES
+    o Bug fix in oncodrive while estimating background score for synonymous mutations
+
 CHANGES IN VERSION 1.0.20
 -------------------------
 NON SIGNIFICANT CHANGES
-
     o Major Bug fix in calculating gene summary
     o Bug fix in tumor heterogeneity (character to numric conversion of vaf).
+
+SIGNIFICANT USER-LEVEL CHANGES
     o Added verbose argument to read.maf
     o Replaced cor-coef with cosine-similarity while comparing signatures against validated-signaturs
 

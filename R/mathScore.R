@@ -45,7 +45,7 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
   }
 
   if(max(maf[,t_vaf], na.rm = TRUE) > 1){
-    maf[,t_vaf:= t_vaf/100]
+    maf[,t_vaf:= as.numeric(as.character(t_vaf))/100]
   }
 
   maf = maf[!t_vaf < vafCutOff]
