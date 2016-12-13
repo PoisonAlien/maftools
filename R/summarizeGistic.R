@@ -37,8 +37,16 @@ summarizeGistic = function(gistic){
 gisticMap = function(gistic){
   dat = gistic
 
+  # oncomat = data.table::dcast(data = dat, formula = Cytoband ~ Tumor_Sample_Barcode, value.var = 'Variant_Classification', fill = '' ,
+  #       fun.aggregate = function(x) {ifelse(test = length(as.character(x))>1 ,no = as.character(x), yes = vcr(x))})
+
   oncomat = data.table::dcast(data = dat, formula = Cytoband ~ Tumor_Sample_Barcode, value.var = 'Variant_Classification', fill = '' ,
-        fun.aggregate = function(x) {ifelse(test = length(as.character(x))>1 ,no = as.character(x), yes = vcr(x, gis = TRUE))})
+                              fun.aggregate = function(x) {
+                                x = unique(as.character(x))
+                                xad = x[x %in% c('Amp', 'Del')]
+                                x = ifelse(test = length(xad) > 1, no = xad, yes = 'Complex')
+                                return(x)
+                              })
 
   #If maf contains only one sample converting to matrix is not trivial.
   if(ncol(oncomat) == 2){

@@ -10,6 +10,7 @@
 #' @param repel If points are too close to each other, use this option to repel them. Default FALSE. Warning: naive method, might make plot ugly in case of too many variants!
 #' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'. Changes can be of any format i.e, can be a numeric value or HGVSp annotations (e.g; p.P459L, p.L2195Pfs*30 or p.Leu2195ProfsTer30)
 #' @param colors named vector of colors for each Variant_Classification. Default NULL.
+#' @param legendTxtSize Text size for legend. Default 10
 #' @return ggplot object of the plot, which can be futher modified.
 #' @import ggrepel
 #' @examples
@@ -20,7 +21,7 @@
 #' @export
 
 
-lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = FALSE, colors = NULL){
+lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = FALSE, colors = NULL, legendTxtSize = 10){
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
@@ -35,7 +36,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     gff <- suppressWarnings( data.table(read.csv( file = gff.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(gff.gz)
   } else{
-    gff = fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = FALSE)
+    gff = data.table::fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = FALSE)
   }
 
 
@@ -54,13 +55,13 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange'
   }
 
-  prot.dat = mut[Hugo_Symbol == geneID, .(Variant_Type, Variant_Classification, AAChange)]
+  prot.dat = mut[Hugo_Symbol %in% geneID, .(Variant_Type, Variant_Classification, AAChange)]
   if(nrow(prot.dat) == 0){
     stop(paste(geneID, 'does not seem to have any mutations!', sep=' '))
   }
 
 
-  prot = gff[HGNC == geneID]
+  prot = gff[HGNC %in% geneID]
 
   if(nrow(prot) == 0){
     stop(paste('Structure for protein', geneID, 'not found.', sep=' '))
@@ -88,7 +89,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   #Legth of protein
   len = as.numeric(max(prot$aa.length))
   #Remove NA's
-  prot = prot[!is.na(prot$Label),]
+  prot = prot[!is.na(Label)]
 
   #hard coded colors for variant classification if user doesnt provide any
   if(is.null(colors)){
@@ -104,7 +105,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
   #Remove 'p.'
   prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = TRUE)
-  prot.conv = sapply(prot.spl, function(x) x[length(x)])
+  prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
 
   prot.dat[,conv := prot.conv]
   #If conversions are in HGVSp_long (default HGVSp) format, we will remove strings Ter followed by anything (e.g; p.Asn1986GlnfsTer13)
@@ -120,10 +121,10 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[[', 1))
   prot.dat[,pos := pos]
 
-  if(nrow( prot.dat[is.na(prot.dat$pos),]) > 0){
+  if(nrow( prot.dat[is.na(pos)]) > 0){
     message(paste('Removed', nrow( prot.dat[is.na(prot.dat$pos),]), 'mutations for which AA position was not available', sep = ' '))
-    print(prot.dat[is.na(prot.dat$pos),])
-    prot.dat = prot.dat[!is.na(prot.dat$pos),]
+    print(prot.dat[is.na(pos)])
+    prot.dat = prot.dat[!is.na(pos)]
   }
 
   #prot.snp.sumamry = ddply(prot.dat, .variables = c('Variant_Classification', 'conv', 'pos'), summarise, count =length(AAChange))
@@ -161,7 +162,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     if(nrow(prot.snp.sumamry1) > 0){
 
       p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
-        theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
+        theme(legend.text=element_text(size = legendTxtSize), legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
         scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limits = c(0, maxCount+3))+xlab('')+ylab('Number of variants')+scale_x_continuous(limits = c(0, len))+
         geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')
 
@@ -169,7 +170,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
         theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
     }else{
       p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
-        theme(legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
+        theme(legend.text=element_text(size = legendTxtSize), legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
         scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limits = c(0, maxCount+3))+xlab('')+ylab('Number of variants')+scale_x_continuous(limits = c(0, len))+
         geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')+
         theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
@@ -207,12 +208,12 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
         p = p+geom_text_repel(data = prot.snp.sumamry, aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
       }else{
         prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-        p = p+geom_text_repel(data = dplyr::filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+        p = p+ggrepel::geom_text_repel(data = prot.snp.sumamry[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
         #p = p+geom_text_repel(data = prot.snp.summary[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
       }
     } else{
       prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-      p = p+geom_text_repel(data = dplyr::filter(.data = prot.snp.sumamry, labThis == 'yes'), aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+      p = p+ggrepel::geom_text_repel(data = prot.snp.sumamry[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
       #p = p+geom_text_repel(data = prot.snp.summary[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
     }
   }

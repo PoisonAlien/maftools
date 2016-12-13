@@ -64,7 +64,7 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, annotation = NULL, annotati
   #---------------------------------------Colors and vcs-------------------------------------------------
 
   if(is.null(colors)){
-    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'red', 'green')
+    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue')
     names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
                            'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins',
                            'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del')

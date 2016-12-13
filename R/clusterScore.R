@@ -23,7 +23,7 @@ parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
   all.prot.dat = all.prot.dat[Variant_Classification != 'Splice_Site']
   #parse AAchanges to get postion
   prot.spl = strsplit(x = as.character(all.prot.dat$AAChange), split = '.', fixed = TRUE)
-  prot.conv = sapply(prot.spl, function(x) x[length(x)])
+  prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
 
   all.prot.dat[,conv := prot.conv]
   all.prot.dat = all.prot.dat[!conv == 'NULL']

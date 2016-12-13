@@ -62,12 +62,13 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     }
 
     nmf.sum = summary(nmfTry) # Get summary of estimates
+    data.table::setDT(nmf.sum)
     print(nmf.sum)
     nmf.sum$diff = c(0, diff(nmf.sum$cophenetic))
-    bestFit = dplyr::filter(.data = nmf.sum, diff < 0)[1,'rank'] #First point where cophenetic correlation coefficient starts decreasing
+    bestFit = nmf.sum[diff < 0, rank][1] #First point where cophenetic correlation coefficient starts decreasing
     #bestFit = nmf.sum[which(nmf.sum$cophenetic == max(nmf.sum$)),'rank'] #Get the best rank based on highest cophenetic correlation coefficient
     message(paste('Using ',bestFit, ' as a best-fit rank based on decreasing cophenetic correlation coefficient.', sep=''))
-    n = bestFit
+    n = as.numeric(bestFit)
   }
 
   if(!is.null(parallel)){
