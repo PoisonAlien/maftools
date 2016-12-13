@@ -83,13 +83,14 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
   #Remove 'p.'
   prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = TRUE)
-  prot.conv = sapply(prot.spl, function(x) x[length(x)])
+  prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
 
   prot.dat[,conv := prot.conv]
   pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = prot.dat$conv)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
   pos = gsub(pattern = '^\\*', replacement = '', x = pos)
-  pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[', 1))
+  pos = gsub(pattern = '\\*.*', replacement = '', x = pos) #Remove * followed by position e.g, p.C229Lfs*18
+  pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[[', 1))
   prot.dat[,pos := pos]
 
   if(nrow( prot.dat[is.na(prot.dat$pos),]) > 0){

@@ -116,11 +116,11 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
     write.table(mat, "onco_matrix.txt", sep = "\t", quote = FALSE)
   }
 
-  flags.found = rownames(mat)[rownames(mat) %in% flags]
-  if(length(flags.found) > 0){
-    message('NOTE: Possible FLAGS in plotting area. See details ?oncoplot')
-    print(flags.found)
-  }
+  # flags.found = rownames(mat)[rownames(mat) %in% flags]
+  # if(length(flags.found) > 0){
+  #   message('NOTE: Possible FLAGS in plotting area. See details ?oncoplot')
+  #   print(flags.found)
+  # }
 
   #New version of complexheatmap complains about '' , replacing them with random string xxx
   mat[mat == ''] = 'xxx'
@@ -174,9 +174,9 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
     colnames(anno.df) = colnames(annotation)[2:ncol(annotation)]
 
     if(!is.null(annotationColor)){
-      bot.anno = HeatmapAnnotation(df = anno.df, col = annotationColor)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = anno.df, col = annotationColor)
     }else{
-      bot.anno = HeatmapAnnotation(anno.df)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(anno.df)
     }
   }
 
@@ -210,6 +210,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
       x = mat[i,]
       x = x[x != '']
       x = x[x != 'xxx']
+      x = unlist(strsplit(x, ";"))
       x = sort(x)
       tb[[i]] = table(x)
     }
@@ -314,7 +315,7 @@ oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBa
   celFun = function(j, i, x, y, width, height, fill) {
     type = mat[i, j]
     if(type != 'xxx'){
-      typeList = unlist(strsplit(x = as.character(type), split = ';'))
+      typeList = sort(unlist(strsplit(x = as.character(type), split = ';')), decreasing = TRUE)
       if(length(typeList) > 1){
         for(i in 1:length(typeList)){
           add_oncoprint2(typeList[i], x, y, width, height)

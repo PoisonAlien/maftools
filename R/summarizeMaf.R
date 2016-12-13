@@ -148,10 +148,26 @@ createOncoMatrix = function(maf, chatty = TRUE){
     message('Creating oncomatrix (this might take a while)..')
   }
 
+     # oncomat = data.table::dcast(data = maf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
+     #                             fun.aggregate = function(x) {ifelse(test = length(as.character(x))>1 ,
+     #                            no = as.character(x), yes = vcr(x, gis = FALSE))
+     #                             }, value.var = 'Variant_Classification', fill = '')
+
      oncomat = data.table::dcast(data = maf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
-                                 fun.aggregate = function(x) {ifelse(test = length(as.character(x))>1 ,
-                                no = as.character(x), yes = vcr(x, gis = FALSE))
-                                 }, value.var = 'Variant_Classification', fill = '')
+                            fun.aggregate = function(x){
+                              x = unique(as.character(x))
+                              xad = x[x %in% c('Amp', 'Del')]
+                              xvc = x[!x %in% c('Amp', 'Del')]
+
+                              if(length(xvc)>0){
+                                xvc = ifelse(test = length(xvc) > 1, yes = 'Multi_Hit', no = xvc)
+                              }
+
+                              x = ifelse(test = length(xad) > 0, yes = paste(xad, xvc, sep = ';'), no = xvc)
+                              x = gsub(pattern = ';$', replacement = '', x = x)
+                              x = gsub(pattern = '^;', replacement = '', x = x)
+                              return(x)
+                            } , value.var = 'Variant_Classification', fill = '')
 
     #If maf contains only one sample converting to matrix is not trivial.
     if(ncol(oncomat) == 2){
