@@ -19,8 +19,6 @@
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 #' laml.sig <- oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5)
 #'
-#'
-#' @importFrom dplyr filter
 #' @export
 
 
