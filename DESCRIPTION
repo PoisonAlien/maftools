@@ -12,7 +12,7 @@ License: MIT + file LICENSE
 LazyData: TRUE
 Depends: R (>= 3.3)
 Imports: data.table, ggplot2(>= 2.0), cowplot, cometExactTest,
-        RColorBrewer, dplyr, gplots, NMF, ggrepel, methods,
+        RColorBrewer, NMF, ggrepel, methods,
         ComplexHeatmap, mclust, VariantAnnotation, Biostrings,
         Rsamtools, rjson, grid, DPpackage, wordcloud, grDevices, changepoint
 RoxygenNote: 5.0.1

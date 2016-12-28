@@ -4,20 +4,20 @@
 #'
 #' @param nmfRes results from \code{\link{extractSignatures}}
 #' @param contributions If TRUE plots contribution of signatures in each sample.
-#' @param ... further plot options passed to \code{\link{barplot2}}
+#' @param color colors for each Ti/Tv conversion class. Default NULL
+#' @param ... further plot options passed to \code{\link{barplot}}
 #' @return ggplot object if contributions is TRUE
-#' @importFrom gplots barplot2
 #' @seealso \code{\link{trinucleotideMatrix}}
 #' @export
-plotSignatures = function(nmfRes = NULL, contributions = FALSE, ...){
+plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
   contrib = nmfRes$contributions
 
   if(contributions){
-#     if(nrow(contrib) == 1){
-#       stop('Cannot plot contriubutions for single signature')
-#     }
+    #     if(nrow(contrib) == 1){
+    #       stop('Cannot plot contriubutions for single signature')
+    #     }
     contribt = t(contrib)
     #calculate sd
     contribt = cbind(contribt, sd = apply(contribt, 1, sd))
@@ -35,13 +35,20 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, ...){
     plotData = as.data.frame(t(conv.mat.nmf.signatures))
     nsigs = nrow(plotData)
     par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1,mar = c(0,0,1,1) + 0.1)
-    color = rep(c("blue","black","red","gray","green","maroon"),each=16)
+
+    if(is.null(color)){
+      #color = c("blue","black","red","gray","green","maroon")
+      color = c('coral4', 'lightcyan4', 'deeppink3', 'lightsalmon1', 'forestgreen', 'cornflowerblue')
+    }
+    colors = rep(color, each=16)
 
     for(i in 1:nsigs){
-      gplots::barplot2(as.matrix(plotData[i,]),col=color,beside = TRUE, axisnames = FALSE, ylim=c(-0.1,0.3), cex.axis = 0.6, axes=FALSE, ...)
-      axis(side = 2,at = c(0,0.05,0.1,0.15,0.2,0.25),labels = c(0,0.05,0.1,0.15,0.2,0.25), pos = c(0,0.05,0.1,0.15,0.2,0.25), cex.axis=0.8)
-      abline(h = c(0.05,0.1,0.15,0.2,0.25),lty=2,lwd=0.3)
-      text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.05,6),x = c(20,50,80,110,140,170))
+      d = as.matrix(plotData[i,])
+      barplot(d, xaxt = "n", yaxt = "n", border = FALSE, col = colors, beside = TRUE, ylim = c(-0.1, 0.2), ...)
+      axis(side = 2,at = c(0,0.05,0.1,0.15,0.2),labels = c(0,0.05,0.1,0.15,0.2), pos = c(0,0.05,0.1,0.15,0.2), cex.axis=0.6, las = 2)
+      abline(h = c(0.05,0.1,0.15,0.2,0.25),lty=2,lwd=0.3, col = 'gray70')
+      rect(xleft = seq(0, 192, 32), ybottom = -0.05, xright = 192, ytop = -0.02, col = color, border = 'gray70')
+      text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 0.6)
     }
   }
 }
