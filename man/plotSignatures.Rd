@@ -4,14 +4,16 @@
 \alias{plotSignatures}
 \title{Plots decomposed mutational signatures.}
 \usage{
-plotSignatures(nmfRes = NULL, contributions = FALSE, ...)
+plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL, ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
 
 \item{contributions}{If TRUE plots contribution of signatures in each sample.}
 
-\item{...}{further plot options passed to \code{\link{barplot2}}}
+\item{color}{colors for each Ti/Tv conversion class. Default NULL}
+
+\item{...}{further plot options passed to \code{\link{barplot}}}
 }
 \value{
 ggplot object if contributions is TRUE

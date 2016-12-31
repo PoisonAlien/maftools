@@ -68,7 +68,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build =
     geom_point(size = pointSize, alpha = 0.6)+cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
     theme(axis.line.x = element_blank())+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
     geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+theme(legend.position = 'bottom', legend.title = element_blank())+
-    scale_color_manual(values = col)+ggtitle(tsb)
+    scale_color_manual(values = col)+ggtitle(tsb)+guides(colour = guide_legend(override.aes = list(size=3)))
 
 
   if(detectChangePoints){

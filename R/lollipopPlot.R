@@ -7,10 +7,15 @@
 #' @param refSeqID RefSeq transcript identifier for \code{gene} if known.
 #' @param proteinID RefSeq protein identifier for \code{gene} if known.
 #' @param labelPos Amino acid positions to label. If 'all', labels all variants.
+#' @param labPosSize Text size for labels. Default 3
 #' @param repel If points are too close to each other, use this option to repel them. Default FALSE. Warning: naive method, might make plot ugly in case of too many variants!
 #' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'. Changes can be of any format i.e, can be a numeric value or HGVSp annotations (e.g; p.P459L, p.L2195Pfs*30 or p.Leu2195ProfsTer30)
 #' @param colors named vector of colors for each Variant_Classification. Default NULL.
+#' @param showMutationRate Default FALSE
 #' @param legendTxtSize Text size for legend. Default 10
+#' @param collapsePosLabel Collapses overlapping labels at same position. Default TRUE
+#' @param cBioPortal Adds annotations similar to cBioPortals MutationMapper
+#' @param domainColors Manual colors for protein domains
 #' @return ggplot object of the plot, which can be futher modified.
 #' @import ggrepel
 #' @examples
@@ -21,7 +26,7 @@
 #' @export
 
 
-lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = FALSE, colors = NULL, legendTxtSize = 10){
+lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, labelPos = NULL, AACol = NULL, repel = FALSE, colors = NULL, domainColors = NULL, collapsePosLabel = TRUE, cBioPortal = FALSE, showMutationRate = FALSE, legendTxtSize = 10, labPosSize = 3){
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
@@ -39,11 +44,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     gff = data.table::fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = FALSE)
   }
 
-
-
-  mut = maf@data
-  #Remove CNV's
-  mut = mut[!Variant_Type %in% 'CNV']
+  mut = subsetMaf(maf = maf, includeSyn = FALSE, genes = gene, query = "Variant_Type != 'CNV'")
 
   if(is.null(AACol)){
     if(! 'AAChange' %in% colnames(mut)){
@@ -92,17 +93,28 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   prot = prot[!is.na(Label)]
 
   #hard coded colors for variant classification if user doesnt provide any
-  if(is.null(colors)){
-    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black')
-    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','Silent','Missense_Mutation','IGR','Nonsense_Mutation',
-                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Dell','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
+
+  sampleSize = as.numeric(maf@summary[ID %in% 'Samples', summary])
+  mutRate = round(getGeneSummary(x = maf)[Hugo_Symbol %in% geneID, MutatedSamples]/sampleSize*100, digits = 2)
+  cbioSubTitle = paste0(geneID, ": [Somatic Mutation Rate: ", mutRate, "%]")
+
+  if(cBioPortal){
+    vc = c("Nonstop_Mutation", "Frame_Shift_Del", "Missense_Mutation",
+             "Nonsense_Mutation", "Splice_Site", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins")
+    vc.cbio = c("Truncating", "Truncating", "Missense", "Truncating", "Truncating", "Truncating",
+                  "In-frame", "In-frame")
+    col = c('Truncating' = "black", 'Missense' = "#33A02C", 'In-frame' = 'brown')
   }else{
-    col = colors
+    if(is.null(colors)){
+      col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black')
+      names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','Silent','Missense_Mutation','IGR','Nonsense_Mutation',
+                             'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Dell','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
+    }else{
+      col = colors
+    }
   }
 
-
-
-  prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
+  #prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
   #Remove 'p.'
   prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = TRUE)
   prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
@@ -135,6 +147,10 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   prot.snp.sumamry = prot.snp.sumamry[order(prot.snp.sumamry$pos),]
   #prot.snp.sumamry$distance = c(0,diff(prot.snp.sumamry$pos))
 
+  if(cBioPortal){
+    prot.snp.sumamry$Variant_Classification = suppressWarnings(as.character(factor(x = prot.snp.sumamry$Variant_Classification, levels = vc, labels = vc.cbio)))
+  }
+
   #prot.snp.sumamry$pos2 = ifelse(test = prot.snp.sumamry$distance <= 5 & prot.snp.sumamry$distance != 0, yes = prot.snp.sumamry$pos+5, no = prot.snp.sumamry$pos)
   clusterSize = 10 #Change this later as an argument to user.
   if(repel){
@@ -161,19 +177,28 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
 
     if(nrow(prot.snp.sumamry1) > 0){
 
-      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
-        theme(legend.text=element_text(size = legendTxtSize), legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
-        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limits = c(0, maxCount+3))+xlab('')+ylab('Number of variants')+scale_x_continuous(limits = c(0, len))+
-        geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')
+      p = ggplot()+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos2, y = 0.3, yend = count2-0.03), color = 'gray70')+
+        geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 6, alpha = 0.8)+
+        scale_color_manual(values = col)+cowplot::theme_cowplot()+
+        theme(legend.text=element_text(size = legendTxtSize), axis.text.y = element_text(size = 8), legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
+        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limits = c(0, maxCount+3))+
+        xlab('')+ylab('# Mutations')+scale_x_continuous(limits = c(0, len))+
+        geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count), size = 4)+
+        theme(legend.position = 'none')+
+        guides(colour = guide_legend(nrow = 2, override.aes = list(size = 3)), fill = guide_legend(nrow = 2, override.aes = list(size = 3)))
 
-      p = p+geom_point(data = prot.snp.sumamry1, aes(x = pos2, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+
-        theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
+      p = p+geom_point(data = prot.snp.sumamry1, aes(x = pos2, y = count, color = Variant_Classification), size = 2, alpha = 0.8)+
+        theme(legend.position = 'bottom')
     }else{
-      p = ggplot()+geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
-        theme(legend.text=element_text(size = legendTxtSize), legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
-        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limits = c(0, maxCount+3))+xlab('')+ylab('Number of variants')+scale_x_continuous(limits = c(0, len))+
-        geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+theme(legend.position = 'none')+
-        theme(legend.position = 'bottom')+guides(colour = guide_legend(override.aes = list(size=3)))
+      p = ggplot()+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos2, y = 0.3, yend = count2-0.03), color = 'gray70')+
+        geom_point(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2, color = Variant_Classification), size = 9, alpha = 0.6)+
+        scale_color_manual(values = col)+cowplot::theme_cowplot()+
+        theme(legend.text=element_text(size = legendTxtSize), axis.text.y = element_text(size = 8), legend.position = 'none', axis.line.x = element_blank(), legend.title = element_blank())+
+        scale_y_continuous(breaks = c(0:maxCount, maxCount+3), labels = c(0:maxCount, max(prot.snp.sumamry2$count)+3), limits = c(0, maxCount+3))+xlab('')+
+        ylab('# Mutations')+scale_x_continuous(limits = c(0, len))+
+        geom_text(data = prot.snp.sumamry2, aes(x = pos2, y = maxCount+2,label = count))+
+        theme(legend.position = 'bottom')+
+        guides(colour = guide_legend(nrow = 2, override.aes = list(size = 3)), fill = guide_legend(nrow = 2, override.aes = list(size = 3)))
     }
 
   } else{
@@ -181,42 +206,86 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
     maxCount = maxCount+1
     prot.snp.sumamry$count2 = prot.snp.sumamry$count
     #Plot points
-    p = ggplot()+geom_point(data = prot.snp.sumamry, aes(x = pos2, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
-      theme(legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
-      scale_y_continuous(breaks = c(0:maxCount), labels = c(0:maxCount), limits = c(0, maxCount))+xlab('')+ylab('Number of Variants')
-
+    p = ggplot()+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos2, y = 0.3, yend = count2-0.03), color = 'gray70')+
+      geom_point(data = prot.snp.sumamry, aes(x = pos2, y = count, color = Variant_Classification), size = 3, alpha = 0.6)+scale_color_manual(values = col)+cowplot::theme_cowplot()+
+      theme(legend.text=element_text(size = legendTxtSize), axis.text.y = element_text(size = 8), legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
+      scale_y_continuous(breaks = c(0:maxCount), labels = c(0:maxCount), limits = c(0, maxCount))+xlab('')+ylab('# Mutations')+
+      guides(colour = guide_legend(nrow = 2, override.aes = list(size = 3)), fill = guide_legend(nrow = 2, override.aes = list(size = 3)))
   }
 
   #Plot background protein domain
-  p = p+geom_rect(data = prot, aes(xmin = 0, xmax = len, ymin = 0.1, ymax = 0.3), fill = 'gray')
+  p = p+geom_rect(data = prot, aes(xmin = 0, xmax = len, ymin = 0.1, ymax = 0.5), fill = 'gray')
 
   #Plot protein domains. If no domains found, just draw background protein.
   if(nrow(prot) > 0){
-    p = p+geom_rect(data = prot, aes(xmin = Start, xmax = End, ymin = 0.0, ymax = 0.4, fill = Label))
+    p = p+geom_rect(data = prot, aes(xmin = Start, xmax = End, ymin = 0.0, ymax = 0.7, fill = Label))
+    if(!is.null(domainColors)){
+      p = p+scale_fill_manual(values = domainColors)
+    }
   }
-
-  #Plot lines from protein to points (make lollypops)
-  p = p+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos2, y = 0.3, yend = count2-0.03))+ggtitle(label = paste(geneID, ' (',unique(prot[,refseq.ID]), ')',sep=''))
 
   #If user asks to label points, use ggrepel to label.
   if(!is.null(labelPos)){
-    prot.snp.sumamry = data.table(prot.snp.sumamry)
+    prot.snp.sumamry = data.table::data.table(prot.snp.sumamry)
 
     if(length(labelPos) == 1){
-
-      if(labelPos == 'all'){
-        p = p+geom_text_repel(data = prot.snp.sumamry, aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
-      }else{
+      if(labelPos != 'all'){
         prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-        p = p+ggrepel::geom_text_repel(data = prot.snp.sumamry[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+        labDat = prot.snp.sumamry[labThis %in% 'yes']
+      }else{
+        labDat = prot.snp.sumamry
+      }
+    }else{
+      prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
+      labDat = prot.snp.sumamry[labThis %in% 'yes']
+    }
+
+
+    if(collapsePosLabel){
+      uniquePos = unique(labDat[,pos2])
+      labDatCollapsed = data.table::data.table()
+      for(i in 1:length(uniquePos)){
+        uniqueDat = labDat[pos2 %in% uniquePos[i]]
+        if(nrow(uniqueDat) > 1){
+          maxDat = max(uniqueDat[,count2])
+          maxPos = unique(uniqueDat[,pos2])
+          toLabel = uniqueDat[,conv]
+          toLabel = paste(toLabel[1],paste(gsub(pattern = '^[A-z]*[[:digit:]]*', replacement = '', x = toLabel[2:length(toLabel)]), collapse = '/'), sep = '/')
+          labDatCollapsed = rbind(labDatCollapsed, data.table::data.table(pos2 = maxPos, count2 = maxDat, conv = toLabel))
+        }else{
+          labDatCollapsed = rbind(labDatCollapsed, data.table::data.table(pos2 = uniqueDat[,pos2], count2 = uniqueDat[,count2], conv = uniqueDat[,conv]))
+        }
+      }
+      labDat = labDatCollapsed
+    }
+
+    if(length(labelPos) == 1){
+      if(labelPos == 'all'){
+        p = p+ggrepel::geom_text_repel(data = labDat, aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3, size = labPosSize, segment.alpha = 0.6, min.segment.length = unit(0.7, "cm"))
+      }else{
+        p = p+ggrepel::geom_text_repel(data = labDat, aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.8, nudge_x = 0.3, size = labPosSize, segment.alpha = 0.6, min.segment.length = unit(0.7, "cm"))
         #p = p+geom_text_repel(data = prot.snp.summary[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
       }
     } else{
-      prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-      p = p+ggrepel::geom_text_repel(data = prot.snp.sumamry[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
+      #prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
+      p = p+ggrepel::geom_text_repel(data = labDat, aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3, size = labPosSize, segment.alpha = 0.6, min.segment.length = unit(0.7, "cm"))
       #p = p+geom_text_repel(data = prot.snp.summary[labThis %in% 'yes'], aes(pos2, count2, label = as.character(conv)), force = 2, nudge_y = 0.6, nudge_x = 0.3)
     }
   }
+
+  p = p+ggtitle(label = paste(geneID, ' (',unique(prot[,refseq.ID]), ')',sep=''))
+  if(showMutationRate){
+
+    p = p+ggtitle(label = cbioSubTitle, subtitle = unique(prot[,refseq.ID]))+
+      theme(plot.title = element_text(size = 10, face = "bold"))+
+      theme(plot.subtitle = element_text(size = 7, face = "bold"))
+  }
+
+  if(cBioPortal){
+    p = p+ggtitle(label = cbioSubTitle, subtitle = paste0(geneID, '_HUMAN'))+theme(plot.title = element_text(size = 10, face = "bold", color = 'blue', hjust = 0))+
+      theme(plot.subtitle = element_text(size = 7, face = "bold", color = '#1F78B4'))
+  }
+
   print(p)
   return(p)
   #return(prot.snp.sumamry)
