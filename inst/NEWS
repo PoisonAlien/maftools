@@ -2,7 +2,8 @@ CHANGES IN VERSION 1.0.40
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Updated validated signatures database. Earlier database contained 21 signatures, updated table has 30 signatures as on http://cancer.sanger.ac.uk/cosmic/signatures
-    o Minor improvements to plotSignatures function
+    o Improvements to plotSignatures function
+    o Lollipop plot improvements. Now adds mutation rate.
 
 
 CHANGES IN VERSION 1.0.30
