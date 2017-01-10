@@ -1,10 +1,11 @@
 CHANGES IN VERSION 1.0.40
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Updated validated signatures database. Earlier database contained 21 signatures, updated table has 30 signatures as on http://cancer.sanger.ac.uk/cosmic/signatures
-    o Improvements to plotSignatures function
-    o Lollipop plot improvements. Now adds mutation rate.
-
+    o Updated validated signatures database. Earlier database contained 21 signatures. Updated table has 30 signatures as on http://cancer.sanger.ac.uk/cosmic/signatures.
+    o Updated protein domain database. Now includes ~1000 more protein structures/domains for both HGNC sybols and their synonyms.
+    o Added arguments `showMutationRate`, `cBioPortal`, `domainColor` to lollipopPlot. Better handling of labels by collapsing overlapping protein conversions into single string.
+    o Added argument `sortByAnnotation` to oncostrip and oncoplot for better sorting options. Thanks to Ryan Morin for sortByAnnotation code.
+    o Improvements to plotSignatures function.
 
 CHANGES IN VERSION 1.0.30
 -------------------------

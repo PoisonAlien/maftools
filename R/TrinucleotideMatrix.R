@@ -90,7 +90,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   }
 
 
-  extract.tbl = data.table(Chromosome = maf.snp$Chromosome, Start = maf.snp$Start_Position-1, End = maf.snp$Start_Position+1,
+  extract.tbl = data.table::data.table(Chromosome = maf.snp$Chromosome, Start = maf.snp$Start_Position-1, End = maf.snp$Start_Position+1,
                            Reference_Allele = maf.snp$Reference_Allele, Tumor_Seq_Allele2 = maf.snp$Tumor_Seq_Allele2, Tumor_Sample_Barcode = maf.snp$Tumor_Sample_Barcode)
 
   message('Extracting adjacent bases..')
@@ -98,8 +98,11 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   extract.tbl[,trinucleotide:= as.character(ss)]
   extract.tbl[,Substitution:=paste(extract.tbl$Reference_Allele, extract.tbl$Tumor_Seq_Allele2, sep='>')]
 
-  suppressWarnings( extract.tbl[,SubstitutionType:= as.character(factor(x = extract.tbl$Substitution, levels = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C'),
-                                                                        labels = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")))])
+  conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
+  names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
+  extract.tbl$SubstitutionType = conv[extract.tbl$Substitution]
+  # suppressWarnings( extract.tbl[,SubstitutionType:= as.character(factor(x = extract.tbl$Substitution, levels = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C'),
+  #                                                                       labels = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")))])
 
   type = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
   extract.tbl[,SomaticMutationType:= type]

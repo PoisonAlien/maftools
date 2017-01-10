@@ -37,8 +37,12 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build =
 
   maf.snp$con = paste(maf.snp[,Reference_Allele], maf.snp[,Tumor_Seq_Allele2], sep = '>')
 
-  maf.snp$con.class = suppressWarnings(as.character(factor(maf.snp$con, levels = c("A>G", "T>C", "C>T", "G>A", "A>T", "T>A", "A>C", "T>G", "C>A", "G>T", "C>G", "G>C"),
-                                                                   labels = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G"))))
+  conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
+  names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
+  maf.snp$con.class = conv[as.character(maf.snp$con)]
+
+  # maf.snp$con.class = suppressWarnings(as.character(factor(maf.snp$con, levels = c("A>G", "T>C", "C>T", "G>A", "A>T", "T>A", "A>C", "T>G", "C>A", "G>T", "C>G", "G>C"),
+  #                                                                  labels = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G"))))
 
   if(nrow(maf.snp) == 0){
     stop(paste0('No SNVs found in sample ', tsb))

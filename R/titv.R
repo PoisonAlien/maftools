@@ -39,21 +39,27 @@ titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL)
   }
 
   maf = maf[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
-  maf$con = paste(maf[,Reference_Allele], maf[,Tumor_Seq_Allele2], sep = '-')
+  maf$con = paste(maf[,Reference_Allele], maf[,Tumor_Seq_Allele2], sep = '>')
 
   maf.con.summary = maf[,.N, by = .(Tumor_Sample_Barcode, con)]
-  maf.con.summary$con.class = suppressWarnings(as.character(factor(maf.con.summary$con, levels = c("A-G", "T-C", "C-T", "G-A", "A-T", "T-A", "A-C", "T-G", "C-A", "G-T", "C-G", "G-C"),
-                                                                   labels = c("T-C", "T-C", "C-T", "C-T", "T-A", "T-A", "T-G", "T-G", "C-A", "C-A", "C-G", "C-G"))))
+  conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
+  names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
+  conv.class = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv')
+  names(conv.class) = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G")
 
+  maf.con.summary$con.class = conv[as.character(maf.con.summary$con)]
+  # maf.con.summary$con.class = suppressWarnings(as.character(factor(maf.con.summary$con, levels = c("A-G", "T-C", "C-T", "G-A", "A-T", "T-A", "A-C", "T-G", "C-A", "G-T", "C-G", "G-C"),
+  #                                                                  labels = c("T-C", "T-C", "C-T", "C-T", "T-A", "T-A", "T-G", "T-G", "C-A", "C-A", "C-G", "C-G"))))
 
   maf.con.class.summary = maf.con.summary[,sum(N), by = .(Tumor_Sample_Barcode, con.class)]
   colnames(maf.con.class.summary)[ncol(maf.con.class.summary)] = 'nVars'
   suppressWarnings(maf.con.class.summary[,fract := (nVars/sum(nVars))*100, by = .(Tumor_Sample_Barcode)])
 
   maf.con.class.summary$con.class = factor(x = maf.con.class.summary$con.class,
-                                           levels = c("T-C", "C-T", "T-A", "T-G", "C-A", "C-G"))
-  maf.con.class.summary$TiTv = suppressWarnings(as.character(factor(x = maf.con.class.summary$con.class,
-                                                                    levels = c("T-C", "C-T", "T-A", "T-G", "C-A", "C-G"), labels = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv'))))
+                                           levels = c("C>A", "C>G", "C>T", "T>C", "T>A", "T>G"))
+  maf.con.class.summary$TiTv = conv.class[as.character(maf.con.class.summary$con.class)]
+  # maf.con.class.summary$TiTv = suppressWarnings(as.character(factor(x = maf.con.class.summary$con.class,
+  #                                                                   levels = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G"), labels = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv'))))
 
   fract.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'fract', fill = 0)
   raw.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'nVars', fill = 0)

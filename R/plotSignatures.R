@@ -45,10 +45,10 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, ..
     for(i in 1:nsigs){
       d = as.matrix(plotData[i,])
       barplot(d, xaxt = "n", yaxt = "n", border = FALSE, col = colors, beside = TRUE, ylim = c(-0.1, 0.2), ...)
-      axis(side = 2,at = c(0,0.05,0.1,0.15,0.2),labels = c(0,0.05,0.1,0.15,0.2), pos = c(0,0.05,0.1,0.15,0.2), cex.axis=0.6, las = 2)
+      axis(side = 2,at = c(0,0.05,0.1,0.15,0.2),labels = c(0,0.05,0.1,0.15,0.2), pos = c(0,0.05,0.1,0.15,0.2), las = 2)
       abline(h = c(0.05,0.1,0.15,0.2,0.25),lty=2,lwd=0.3, col = 'gray70')
       rect(xleft = seq(0, 192, 32), ybottom = -0.05, xright = 192, ytop = -0.02, col = color, border = 'gray70')
-      text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 0.6)
+      text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 0.8)
     }
   }
 }

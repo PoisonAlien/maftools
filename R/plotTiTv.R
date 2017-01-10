@@ -32,22 +32,27 @@ plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5, color = NULL
 
   titv.frac = res$fraction.contribution
   titv.frac.melt = data.table::melt(data = titv.frac, id = 'Tumor_Sample_Barcode')
-  titv.frac.melt$variable = factor(x = titv.frac.melt$variable, levels = c('C-T', 'C-G', 'C-A', 'T-A', 'T-C', 'T-G'),
-                                   labels = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G'))
+  conv.class = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv')
+  names(conv.class) = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G")
+  titv.frac.melt$TiTv = conv.class[as.character(titv.frac.melt$variable)]
+  # titv.frac.melt$variable = factor(x = titv.frac.melt$variable, levels = c('C-T', 'C-G', 'C-A', 'T-A', 'T-C', 'T-G'),
+  #                                  labels = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G'))
 
-  titv.frac.melt$TiTv = suppressWarnings( factor(x = titv.frac.melt$variable, levels = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G'),
-                                   labels = c('Ti', 'Tv', 'Tv', 'Tv', 'Ti', 'Tv')) )
+  # titv.frac.melt$TiTv = suppressWarnings( factor(x = titv.frac.melt$variable, levels = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G'),
+  #                                  labels = c('Ti', 'Tv', 'Tv', 'Tv', 'Ti', 'Tv')) )
 
   titv.contrib = suppressMessages(data.table::melt(res$TiTv.fractions, id = 'Tumor_Sample_Barcode'))
+  titv.frac.melt$variable = factor(x = titv.frac.melt$variable,
+                                   levels = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G"))
 
   p1 = ggplot(data = titv.frac.melt, aes(x = variable, y = value, color = variable)) +
-    geom_boxplot() + ylim(0, 100) + cowplot::theme_cowplot() +
+    geom_boxplot(outlier.alpha = 0.6, outlier.size = 1) + ylim(0, 100) + cowplot::theme_cowplot(font_size = 12) +
     xlab("") + theme(axis.line = element_line(colour = "black"), legend.position = 'none') +
-    ylab("Fraction of Mutations")+scale_colour_manual(values = col)+cowplot::background_grid(major = 'xy', minor = 'none')
+    ylab("% Mutations")+scale_colour_manual(values = col)+cowplot::background_grid(major = 'xy', minor = 'none')
     #scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))+cowplot::background_grid(major = 'xy', minor = 'none')
 
   p2 = ggplot(data = titv.contrib, aes(x = variable, y = value, color = variable)) +
-    geom_boxplot() + ylim(0, 100) + cowplot::theme_cowplot() +
+    geom_boxplot(outlier.alpha = 0.6, outlier.size = 1) + ylim(0, 100) + cowplot::theme_cowplot(font_size = 12) +
     xlab('')+theme(axis.line = element_line(colour = "black"), legend.title = element_blank(), axis.title.y = element_blank(), legend.position = 'none') +
     scale_color_manual(values = c('Ti' = 'burlywood4', 'Tv' = 'burlywood4'))+cowplot::background_grid(major = 'xy', minor = 'none')
 
@@ -58,10 +63,10 @@ plotTiTv = function(res = NULL, file = NULL, width = 6, height = 5, color = NULL
   orderlvl = as.character(titv.order$variable)
   titv.frac.melt$variable = factor(x = titv.frac.melt$variable, levels = orderlvl)
 
-  p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value))+geom_bar(aes(fill =variable) ,stat = 'identity', alpha = 0.8)+ cowplot::theme_cowplot() +
+  p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value))+geom_bar(aes(fill =variable) ,stat = 'identity', alpha = 0.8)+ cowplot::theme_cowplot(font_size = 12) +
     theme(legend.position = 'bottom', legend.title = element_blank(),  axis.ticks.x = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = textSize),
           axis.line.y = element_blank(), axis.line.x = element_blank())+
-            ylab('Fraction of Mutations')+xlab('Samples')+scale_fill_manual(values = col)
+            ylab('% Mutations')+xlab('Samples')+scale_fill_manual(values = col)
 
   if(!showBarcodes){
     p3 = p3+theme(axis.text.x = element_blank())
