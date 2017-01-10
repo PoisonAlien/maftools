@@ -61,9 +61,11 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDu
     "5'UTR", "3'UTR", "IGR", "IGR", "IGR", "IGR", "IGR", "5'Flank",
     "3'Flank", "In_Frame_Del", "In_Frame_Del", "In_Frame_Ins", "In_Frame_Ins")
 
+  names(maf.vc) = vep.vc
 
   #Add MAF Variant_Classification levels correspoding to VEP consequences
-  icgc$Variant_Classification = suppressWarnings(as.character(factor(x = icgc$consequence_type, levels = vep.vc, labels = maf.vc)))
+  icgc$Variant_Classification = maf.vc[as.character(icgc$consequence_type)]
+  #icgc$Variant_Classification = suppressWarnings(as.character(factor(x = icgc$consequence_type, levels = vep.vc, labels = maf.vc)))
 
   #Add MAF Variant_Classification levels of INDELS correspoding to VEP consequences
   icgc.indels$Variant_Classification = ifelse(test = icgc.indels$consequence_type %in% "frameshift_variant" & icgc.indels$mutation_type %in% "insertion of <=200bp", yes = "Frame_Shift_Ins", no = "Frame_Shift_Del")

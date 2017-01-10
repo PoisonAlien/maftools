@@ -103,6 +103,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
              "Nonsense_Mutation", "Splice_Site", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins")
     vc.cbio = c("Truncating", "Truncating", "Missense", "Truncating", "Truncating", "Truncating",
                   "In-frame", "In-frame")
+    names(vc.cbio) = vc
     col = c('Truncating' = "black", 'Missense' = "#33A02C", 'In-frame' = 'brown')
   }else{
     if(is.null(colors)){
@@ -148,7 +149,8 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   #prot.snp.sumamry$distance = c(0,diff(prot.snp.sumamry$pos))
 
   if(cBioPortal){
-    prot.snp.sumamry$Variant_Classification = suppressWarnings(as.character(factor(x = prot.snp.sumamry$Variant_Classification, levels = vc, labels = vc.cbio)))
+    #prot.snp.sumamry$Variant_Classification = suppressWarnings(as.character(factor(x = prot.snp.sumamry$Variant_Classification, levels = vc, labels = vc.cbio)))
+    prot.snp.sumamry$Variant_Classification = vc.cbio[as.character(prot.snp.sumamry$Variant_Classification)]
   }
 
   #prot.snp.sumamry$pos2 = ifelse(test = prot.snp.sumamry$distance <= 5 & prot.snp.sumamry$distance != 0, yes = prot.snp.sumamry$pos+5, no = prot.snp.sumamry$pos)
@@ -282,7 +284,7 @@ lollipopPlot = function(maf, gene = NULL, refSeqID = NULL, proteinID = NULL, lab
   }
 
   if(cBioPortal){
-    p = p+ggtitle(label = cbioSubTitle, subtitle = paste0(geneID, '_HUMAN'))+theme(plot.title = element_text(size = 10, face = "bold", color = 'blue', hjust = 0))+
+    p = p+ggtitle(label = cbioSubTitle, subtitle = paste0(geneID, ': ' ,unique(prot[,refseq.ID])))+theme(plot.title = element_text(size = 10, face = "bold", color = 'blue', hjust = 0))+
       theme(plot.subtitle = element_text(size = 7, face = "bold", color = '#1F78B4'))
   }
 
