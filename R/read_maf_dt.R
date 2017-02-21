@@ -43,7 +43,7 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
       #If system is Linux use fread, else use gz connection to read gz file.
       if(Sys.info()[['sysname']] == 'Windows'){
         maf.gz = gzfile(description = maf, open = 'r')
-        suppressWarnings(maf <- data.table(read.csv(file = maf.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)))
+        suppressWarnings(maf <- data.table(read.csv(file = maf.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = "#")))
         close(maf.gz)
       } else{
         maf = suppressWarnings(data.table::fread(input = paste('zcat <', maf), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))

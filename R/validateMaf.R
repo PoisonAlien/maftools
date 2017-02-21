@@ -55,7 +55,27 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
     maf$Tumor_Sample_Barcode = substr(x = maf$Tumor_Sample_Barcode, start = 1, stop = 12)
   }
 
+  #Variant Classification with Low/Modifier variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
+  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
+             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
+  #Variant Classification with High/Moderate variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
+  vc.nonSilent = c("Frame_Shift_Del", "Frame_Shift_Ins", "Splice_Site", "Translation_Start_Site",
+                   "Nonsense_Mutation", "Nonstop_Mutation", "In_Frame_Del",
+                   "In_Frame_Ins", "Missense_Mutation")
+  vt = c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
+
+  maf.vcs = unique(as.character(maf[,Variant_Classification]))
+  maf.vts = unique(as.character(maf[,Variant_Type]))
+
+  if(length(maf.vcs[!maf.vcs %in% c(silent, vc.nonSilent)] > 0)){
+    message("NOTE: Non MAF specific values in Variant_Classification column:")
+    print(maf.vcs[!maf.vcs %in% c(silent, vc.nonSilent)])
+  }
+
+  if(length(maf.vts[!maf.vts %in% vt] > 0)){
+    message("NOTE: Non MAF specific values in Variant_Type column:")
+    print(maf.vts[!maf.vts %in% vt])
+  }
+
   return(maf)
 }
-
-

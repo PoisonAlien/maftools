@@ -7,7 +7,7 @@
 oncoplot(maf, writeMatrix = FALSE, top = 20, genes = NULL,
   drawRowBar = TRUE, drawColBar = TRUE, showTumorSampleBarcodes = FALSE,
   annotation = NULL, annotationColor = NULL, genesToIgnore = NULL,
-  removeNonMutated = FALSE, colors = NULL, fontSize = 10,
+  removeNonMutated = TRUE, colors = NULL, fontSize = 10,
   sortByMutation = FALSE, sortByAnnotation = FALSE)
 }
 \arguments{
@@ -32,7 +32,7 @@ for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to cust
 
 \item{genesToIgnore}{do not show these genes in Oncoplot. Default NULL.}
 
-\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.}
+\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
 \item{colors}{named vector of colors for each Variant_Classification.}
 
