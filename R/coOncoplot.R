@@ -5,7 +5,7 @@
 #' @param m2 second \code{\link{MAF}} object
 #' @param genes draw these genes. Default plots top 5 mutated genes from two cohorts.
 #' @param colors named vector of colors for each Variant_Classification.
-#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
+#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param m1Name optional name for first cohort
 #' @param m2Name optional name for second cohort
 #' @export
@@ -21,7 +21,7 @@
 #' dev.off()
 #' @return Returns nothing. Just draws plot.
 
-coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = FALSE, m1Name = NULL, m2Name = NULL){
+coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE, m1Name = NULL, m2Name = NULL){
 
   if(is.null(genes)){
     m1.genes = getGeneSummary(m1)[1:5]

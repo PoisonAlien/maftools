@@ -61,14 +61,17 @@ pancanComparision = function(mutsigResults, qval = 0.1, cohortName = 'input', in
   #message(paste0('Unique SMGs across ', cohortName ,' and PanCan: ', length(pancan.input.smg)))
 
   com.pancan.q = pancan[gene %in% pancan.input.smg, .(gene, pancan)]
-  if('npat' %in% colnames(mutsig)){
-    com.input.q = mutsig[gene %in% pancan.input.smg, .(gene, q, npat)]
-    colnames(com.input.q)[3] = 'nMut'
+
+  nNonCols = c('npat', 'nnon', 'n_nonsilent')
+
+  if(length(nNonCols[nNonCols %in% colnames(mutsig)]) > 0){
+    nNonCols = nNonCols[nNonCols %in% colnames(mutsig)][1]
+    colnames(mutsig)[which(colnames(mutsig) == nNonCols)] = 'nMut'
   }else{
-    com.input.q = mutsig[gene %in% pancan.input.smg, .(gene, q, nnon)]
-    colnames(com.input.q)[3] = 'nMut'
+    stop('Column with number of non-silent mutations not found in input MutSigCV results!')
   }
 
+  com.input.q = mutsig[gene %in% pancan.input.smg, .(gene, q, nMut)]
 
   pancan.input.q = merge(com.pancan.q, com.input.q, by = 'gene', all = TRUE)
   #Some genes are exlusively mutated in one cohort; such genes have q value set to NA. We will set them to 1 for plotting convenience

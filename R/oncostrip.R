@@ -6,7 +6,7 @@
 #' @param sortByAnnotation logical sort oncomatrix by provided annotations. Defaults to FALSE. This is mutually exclusive with \code{sort}.
 #' @param annotation \code{data.frame} with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.
 #' @param top how many top genes to be drawn. defaults to 5.
-#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization.
+#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default TRUE.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param annotationColor list of colors to use for annotation. Default NULL.
@@ -21,7 +21,7 @@
 #' @export
 
 
-oncostrip = function(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE, annotation = NULL, annotationColor = NULL, removeNonMutated = FALSE, top = 5, showTumorSampleBarcodes = FALSE, colors = NULL){
+oncostrip = function(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE, annotation = NULL, annotationColor = NULL, removeNonMutated = TRUE, top = 5, showTumorSampleBarcodes = FALSE, colors = NULL){
 
   mat_origin = maf@numericMatrix
 

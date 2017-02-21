@@ -4,7 +4,7 @@
 \alias{coOncoplot}
 \title{Draw two oncoplots side by side for cohort comparision.}
 \usage{
-coOncoplot(m1, m2, genes = NULL, colors = NULL, removeNonMutated = FALSE,
+coOncoplot(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE,
   m1Name = NULL, m2Name = NULL)
 }
 \arguments{
@@ -16,7 +16,7 @@ coOncoplot(m1, m2, genes = NULL, colors = NULL, removeNonMutated = FALSE,
 
 \item{colors}{named vector of colors for each Variant_Classification.}
 
-\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.}
+\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
 \item{m1Name}{optional name for first cohort}
 

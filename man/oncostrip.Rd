@@ -5,7 +5,7 @@
 \title{draw an oncostrip similar to cBioportal oncoprinter output.}
 \usage{
 oncostrip(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE,
-  annotation = NULL, annotationColor = NULL, removeNonMutated = FALSE,
+  annotation = NULL, annotationColor = NULL, removeNonMutated = TRUE,
   top = 5, showTumorSampleBarcodes = FALSE, colors = NULL)
 }
 \arguments{
@@ -21,7 +21,7 @@ oncostrip(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE,
 
 \item{annotationColor}{list of colors to use for annotation. Default NULL.}
 
-\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization.}
+\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default TRUE.}
 
 \item{top}{how many top genes to be drawn. defaults to 5.}
 

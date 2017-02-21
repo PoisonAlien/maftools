@@ -17,7 +17,7 @@
 #' @param annotation data.frame with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
 #' @param annotationColor list of colors to use for annotation. Default NULL.
-#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
+#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param fontSize font size for gene names. Default 10.
 #' @param sortByMutation Helpful in case of MAF was read along with copy number data. Default FALSE.
@@ -37,7 +37,7 @@
 
 oncoplot = function (maf, writeMatrix = FALSE, top = 20, genes = NULL, drawRowBar = TRUE, drawColBar = TRUE,
                       showTumorSampleBarcodes = FALSE, annotation = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                      removeNonMutated = FALSE, colors = NULL, fontSize = 10, sortByMutation = FALSE, sortByAnnotation = FALSE) {
+                      removeNonMutated = TRUE, colors = NULL, fontSize = 10, sortByMutation = FALSE, sortByAnnotation = FALSE) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
