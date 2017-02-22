@@ -13,6 +13,11 @@ vignette: >
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. [Resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of somatic variants are stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner from either TCGA sources or any in-house studies as long as the data is in MAF format.
 
+##Citation
+Please cite the below if you find this tool useful for you.
+
+Mayakonda, A. & Koeffler, H.P. Maftools: Efficient analysis, visualization and summarization of MAF files from large-scale cohort based cancer studies. bioRxiv (2016). doi: http://dx.doi.org/10.1101/052662
+
 #MAF field requirements.
 MAF files contain many fields ranging from chromosome names to cosmic annotations. However most of the analysis in maftools uses following fields.
 
@@ -123,9 +128,9 @@ plotTiTv(res = laml.titv)
 ##Lollipop plots for amino acid changes.
 Lollipop plots are simple and most effective way showing mutation spots on protein structure. Many oncogenes have a preferential sites which are mutated more often than any other locus. These spots are considered to be mutational hotspots and lollipop plots can be used to display them along with rest of the mutations. We can draw such plots using the function `lollipopPlot`. This fuction requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all availble fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argumnet `AACol`. This function also returns the plot as a ggplot object, which user can later modify if needed.
 
-```{r,fig.height=4,fig.width=7,fig.align='center'}
+```{r,fig.height=4.5,fig.width=8,fig.align='center'}
 #Lets plot lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
-dnmt3a.lpop = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change')
+dnmt3a.lpop = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', showMutationRate = TRUE, domainLabelSize = 2.5)
 ```
 
 Note that `lollipopPlot` warns user on availability of diferent transcripts for the given gene. If we know the transcript id before hand, we can specify it as `refSeqID` or `proteinID`. By default lollipopPlot uses the longer isoform.
@@ -133,12 +138,20 @@ Note that `lollipopPlot` warns user on availability of diferent transcripts for 
 ###Labelling and repelling points.
 We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. Sometimes, many mutations are clustered within a range of few amino acid positons. In that case we can use `repel` option which tries to repel points for clear representation. 
 
-```{r,fig.height=3,fig.width=8,fig.align='center'}
+```{r,fig.height=4,fig.width=8,fig.align='center'}
 #Lets plot mutations on KIT gene, without repel option.
-kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222')
+kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', domainLabelSize = 3)
 #Same plot with repel=TRUE
-kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE)
+kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE, domainLabelSize = 3)
 ```
+
+###cBioPortal style annotations
+MutationMapper on cBioPortal collapses Variant Classfications into truncating and others. It also includes somatic mutation rate.
+
+```{r, warning=FALSE, message=FALSE, fig.height=4.5,fig.width=8,fig.align='center'}
+laml.dnmt3a = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', refSeqID = 'NM_175629', labelPos = 882, collapsePosLabel = TRUE, cBioPortal = TRUE, domainLabelSize = 3)
+```
+
 
 ##Integrating somatic variants and copy number alterations
 Many cancer genomic studies involve copy number data generated either from sequencing or SNP chip arrays. Copy number analysis provides us a lot of information from genome wide copy number aberations to tumor purity. Most of the time copy number data is stored as segments, with each segment represented by a log ratio of copy number changes compared to matched normals. There are many segmentation algorithms, with the most popular being Circular Binary Segmentation implemented in [DNACopy bioconductor](https://www.bioconductor.org/packages/3.3/bioc/html/DNAcopy.html)[4](#references). We can plot such segmented copy number data and map all mutations on to it. It provides a quick way of knowing which variants (in a way which genes) are located on copy number altered genomic regions.
@@ -315,9 +328,9 @@ print(laml.math)
 From the above results, sample TCGA.AB.2849 has highest of MATH score (20.58) compared to rest of the three samples. It is also evident from the density plot, that vaf distribution is wider for this sample, whereas rest of three samples have sharp peaks with relatively low MATH scores, suggesting more homogeneity and lesser heterogeneity. 
 
 ##Mutational Signatures.
-Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such mutational signatures, derived from over 7000 cancer samples[11](#references). Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [21 validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures). 
+Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such mutational signatures, derived from over 7000 cancer samples[5](#references). Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures). 
 
-`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures [12](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known 21 signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and correlation coeeficient is calculated to identify best match [11](#references).
+`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
 
 NOTE: Eventhough reading fasta and extracting bases is fairly fast, it is a memory consuming process as it occupies ~3gb of memory while running.
 
@@ -327,117 +340,121 @@ laml.tnm = trinucleotideMatrix(maf = laml, ref_genome = '/path/to/hg19.fa',
                                prefix = 'chr', add = TRUE, ignoreChr = 'chr23', useSyn = TRUE)
 ```
 
-```{r, fig.height=5, fig.width=5, eval=F}
+```{r, fig.height=5, fig.width=5, eval=F, message=FALSE}
 #Run main function with maximum 6 signatures. 
+require('NMF')
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
-## Warning : Found zero mutations for conversions A[T>G]C
-## Estimating best rank..
-## Using 2 as a best-fit rank based on maximum cophenetic correlation coefficient.
-## Comparing against experimentally validated 21 signatures.. (See Alexandrov et.al Nature 2013 for details.)
-## Found Signature_1 most similar to validated Signature_1B. CoSine-Similarity: 0.861890421338525
-## Found Signature_2 most similar to validated Signature_1A. CoSine-Similarity: 0.724579532825333
+# Warning : Found zero mutations for conversions A[T>G]C
+# Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)
+# Found Signature_1 most similar to validated Signature_1. CoSine-Similarity: 0.778739082321156 
+# Found Signature_2 most similar to validated Signature_1. CoSine-Similarity: 0.782748375695661
 ```
 
 ```{r, echo=F}
-laml.sign = structure(list(signatures = structure(c(0.0188253312203968, 0.0108560245997858, 
-0.00570899206006542, 9.02584597832905e-19, 9.02584597832905e-19, 
-9.02584597832905e-19, 0.00798908345795425, 9.02584597832905e-19, 
-9.02584597832905e-19, 9.02584597832905e-19, 0.00554013015871254, 
-0.00906586191997992, 0.0129424152140228, 0.00915581596661287, 
-9.02584597832905e-19, 0.0294145800318701, 0.0152955816165724, 
-9.02584597832905e-19, 0.00705949920764882, 9.02584597832905e-19, 
-9.02584597832905e-19, 0.00250097818128397, 0.017648748019122, 
-9.02584597832905e-19, 0.0117085058837841, 0.00705949920764882, 
-0.00145423657396816, 0.00705949920764882, 0.00351261465262355, 
-0.00823608240892362, 0.00655428772997421, 3.16584451150982e-10, 
-0.0447101616484425, 0.0168776517741237, 0.0843006539138647, 9.02584597832905e-19, 
-0.0507204981749981, 0.037243056940506, 0.096122157993921, 0.0405193900343099, 
-0.0447101616484425, 0.0200288705914744, 0.027962792487326, 0.0333515555926063, 
-0.022203427900867, 9.02584597832905e-19, 0.0495594817896151, 
-0.0233849028874635, 0.00214023037309487, 0.00210330402362136, 
-9.02584597832905e-19, 9.02584597832905e-19, 0.00235316640254961, 
-0.00823608240892362, 0.0141189984152976, 0.00651077698107633, 
-0.00206331531764248, 0.0105892488114732, 0.00588291600637401, 
-9.02584597832905e-19, 0.0011765832012748, 9.02584597832905e-19, 
-0.000647524758589879, 0.00470633280509921, 0.00800218554138202, 
-9.02584597832905e-19, 0.0118522019873281, 0.0329443296356945, 
-0.00331719478032513, 0.00780753137981535, 9.02584597832905e-19, 
-0.0211784976229465, 9.02584597832905e-19, 0.00468206699897619, 
-0.00707759003249691, 0.00474683447685859, 0.00235316640254961, 
-0.00470633280509921, 0.00636590445820346, 9.02584597832905e-19, 
-0.00470633280509921, 0.0100038703594569, 9.02584597832905e-19, 
-9.02584597832905e-19, 9.02584597832905e-19, 9.02584597832905e-19, 
-0.00514936857903451, 0.00588291600637401, 0.00352974960382441, 
-9.02584597832905e-19, 9.02584597832905e-19, 9.02584597832905e-19, 
-0.00352974960382441, 9.02584597832905e-19, 0.00235316640254961, 
-9.02584597832905e-19, 8.08587587136962e-19, 0.00913575679424068, 
-0.00387726069897548, 0.00747816360942334, 0.0121520158653129, 
-0.0130867863164908, 0.00580485814591106, 0.0121520158653129, 
-0.0149563272188467, 0.00747816360942334, 0.00120710655212577, 
-0.00962323270360145, 8.08587587136962e-19, 0.0123560774709514, 
-0.011217245414135, 8.08587587136962e-19, 8.08587587136962e-19, 
-0.00560862270706751, 8.08587587136962e-19, 0.00747816360942334, 
-0.0130867863164909, 0.00268687802374693, 8.08587587136962e-19, 
-0.00841293406060126, 0.0019150852985174, 8.08587587136962e-19, 
-0.00445326252778329, 8.08587587136962e-19, 0.00188315425842584, 
-8.08587587136962e-19, 0.004140461630987, 0.00934770426025953, 
-8.08587587136962e-19, 0.039872978595969, 0.0723057119036414, 
-0.0233692612794479, 0.0242027988241808, 0.0685620768790476, 0.0965655133550832, 
-0.0883935904074667, 8.08587587136962e-19, 0.0289564678801311, 
-0.0778045914738293, 0.0108937130102545, 0.0188158940614483, 0.0289778839865154, 
-0.0297990540254919, 0.0160076962880105, 0.00203871407099345, 
-0.00861144443235405, 0.00280431135353375, 0.00280431135353375, 
-8.08587587136962e-19, 8.08587587136962e-19, 8.08587587136962e-19, 
-0.00137071864655311, 0.00209982145465293, 8.08587587136962e-19, 
-8.08587587136962e-19, 0.00467385225588959, 8.08587587136962e-19, 
-0.00186954090235584, 0.00322463708879178, 8.08587587136962e-19, 
-0.0188812351344225, 0.0130867863164908, 0.00927908539498494, 
-8.08587587136962e-19, 0.00577749301564168, 0.00781863833182143, 
-0.0177606385723804, 8.08587587136962e-19, 0.00841293406060126, 
-0.00375836047409369, 0.00652902038079363, 0.00370690408371161, 
-8.08587587136962e-19, 8.08587587136962e-19, 0.00242058725094486, 
-0.0186954090235583, 8.08587587136962e-19, 0.00953234416709177, 
-0.00186954090235583, 0.00280431135353375, 0.000934770451177918, 
-0.00841293406060126, 0.00525664016147213, 8.08587587136962e-19, 
-8.08587587136962e-19, 0.00280431135353375, 0.00467385225588959, 
-0.00373908180471167, 8.08587587136962e-19, 0.00467385225588959, 
-8.08587587136962e-19, 0.00560862270706751), .Dim = c(96L, 2L), .Dimnames = list(
-    c("A[C>A]A", "A[C>A]C", "A[C>A]G", "A[C>A]T", "C[C>A]A", 
-    "C[C>A]C", "C[C>A]G", "C[C>A]T", "G[C>A]A", "G[C>A]C", "G[C>A]G", 
-    "G[C>A]T", "T[C>A]A", "T[C>A]C", "T[C>A]G", "T[C>A]T", "A[C>G]A", 
-    "A[C>G]C", "A[C>G]G", "A[C>G]T", "C[C>G]A", "C[C>G]C", "C[C>G]G", 
-    "C[C>G]T", "G[C>G]A", "G[C>G]C", "G[C>G]G", "G[C>G]T", "T[C>G]A", 
-    "T[C>G]C", "T[C>G]G", "T[C>G]T", "A[C>T]A", "A[C>T]C", "A[C>T]G", 
-    "A[C>T]T", "C[C>T]A", "C[C>T]C", "C[C>T]G", "C[C>T]T", "G[C>T]A", 
-    "G[C>T]C", "G[C>T]G", "G[C>T]T", "T[C>T]A", "T[C>T]C", "T[C>T]G", 
-    "T[C>T]T", "A[T>A]A", "A[T>A]C", "A[T>A]G", "A[T>A]T", "C[T>A]A", 
-    "C[T>A]C", "C[T>A]G", "C[T>A]T", "G[T>A]A", "G[T>A]C", "G[T>A]G", 
-    "G[T>A]T", "T[T>A]A", "T[T>A]C", "T[T>A]G", "T[T>A]T", "A[T>C]A", 
-    "A[T>C]C", "A[T>C]G", "A[T>C]T", "C[T>C]A", "C[T>C]C", "C[T>C]G", 
-    "C[T>C]T", "G[T>C]A", "G[T>C]C", "G[T>C]G", "G[T>C]T", "T[T>C]A", 
-    "T[T>C]C", "T[T>C]G", "T[T>C]T", "A[T>G]A", "A[T>G]C", "A[T>G]G", 
-    "A[T>G]T", "C[T>G]A", "C[T>G]C", "C[T>G]G", "C[T>G]T", "G[T>G]A", 
-    "G[T>G]C", "G[T>G]G", "G[T>G]T", "T[T>G]A", "T[T>G]C", "T[T>G]G", 
-    "T[T>G]T"), c("Signature_1", "Signature_2"))), corTable = structure(c(0.778439049788447, 
-0.724579532825333, 0.788340817468816, 0.718314020391453, 0.0774615504710396, 
-0.061187479472836, -0.0405758863668983, -0.113253571934054, 0.0215437598720942, 
-0.0368280494167392, 0.397886860567507, 0.321437635997587, 0.628887363450396, 
-0.649246431686657, 0.231410563208561, 0.375463335348244, 0.198815299931041, 
-0.133061340212547, -0.00839716809342338, -0.0688476751301835, 
-0.253697010273925, 0.0654371338622379, 0.281411060546338, 0.511188585647839, 
--0.0126454799211963, 0.0273671159443648, 0.00350075761425314, 
-0.00611361803498541, 0.369554253203226, 0.430341741741454, 0.281135513302693, 
-0.423803590022172, 0.0865853537467677, 0.0184651013556118, 0.0234382417598754, 
--0.0288268638451162, 0.0524982989107897, 0.0340916078412234, 
-0.551305287258253, 0.653122978837916, 0.350607320032417, 0.306339259742027, 
-0.0812573289808097, 0.0855544290480513), .Dim = c(2L, 22L), .Dimnames = list(
-    c("Signature_1", "Signature_2"), c("Signature_1A", "Signature_1B", 
-    "Signature_2", "Signature_3", "Signature_4", "Signature_5", 
-    "Signature_6", "Signature_7", "Signature_8", "Signature_9", 
-    "Signature_10", "Signature_11", "Signature_12", "Signature_13", 
-    "Signature_14", "Signature_15", "Signature_16", "Signature_17", 
-    "Signature_18", "Signature_19", "Signature_20", "Signature_21"
-    )))), .Names = c("signatures", "corTable"))
+laml.sign = structure(list(signatures = structure(c(1.08748973712201e-18, 
+0.00839574301030403, 1.08748973712201e-18, 1.08748973712201e-18, 
+0.00240385240062567, 0.0077139799108362, 1.08748973712201e-18, 
+1.08748973712201e-18, 0.0162307404236774, 1.08748973712201e-18, 
+1.08748973712201e-18, 0.00375682293486133, 0.0149882188409168, 
+0.0166193873319139, 1.08748973712201e-18, 0.0340641337293563, 
+0.0177133495392653, 1.08748973712201e-18, 1.08748973712201e-18, 
+0.010900522793394, 1.08748973712201e-18, 1.08748973712201e-18, 
+0.0204384802376138, 1.08748973712201e-18, 0.016350784190091, 
+0.00817539209504552, 0.00817539209504552, 0.00510268819463668, 
+4.64672034428952e-06, 1.08748973712201e-18, 0.00226222985404151, 
+0.0136256534917425, 0.0305962431704599, 1.08748973712201e-18, 
+0.0644710774331736, 0.00640610796992356, 0.0940170090930234, 
+0.0580805923991668, 0.0849820094561238, 1.08748973712201e-18, 
+0.0397128561572591, 0.0074963059243485, 0.0626642796173211, 0.0351236523951451, 
+0.0201728180626018, 0.014196017550947, 0.0643882909888946, 1.08748973712201e-18, 
+1.08748973712201e-18, 0.00455330562748865, 0.00408769604752276, 
+1.08748973712201e-18, 0.00272513069834851, 0.00650167581744194, 
+0.016350784190091, 1.08748973712201e-18, 1.08748973712201e-18, 
+0.0122630881425683, 1.08748973712201e-18, 0.00334016875229922, 
+0.00136256534917425, 1.08748973712201e-18, 0.00545026139669701, 
+0.00545026139669701, 4.42324620317284e-15, 1.08748973712201e-18, 
+0.00737413388604955, 0.0269789492628818, 0.00988463958213221, 
+0.0100520699314415, 1.08748973712201e-18, 0.00316631020385699, 
+1.08748973712201e-18, 0.010900522793394, 1.08748973712201e-18, 
+0.010900522793394, 0.00272513069834851, 1.08748973712201e-18, 
+0.00394072268462079, 0.00852966039575841, 7.59566702198884e-17, 
+0.0115340943434354, 1.08748973712201e-18, 0.00237636221356833, 
+1.08748973712201e-18, 1.08748973712201e-18, 0.0136256534917425, 
+0.00181567829546557, 0.00408769604752276, 1.08748973712201e-18, 
+1.08748973712201e-18, 0.00545026139669701, 0.00408769604752276, 
+0.00499540259887787, 0.00272513069834851, 0.00353514720450814, 
+0.0134931114940269, 0.0108267734159331, 0.00758987521539011, 
+0.00674655574701343, 0.0094753598393619, 0.0070321331529894, 
+0.0109631530888968, 0.0109631530888968, 0.00344757540744538, 
+0.00674655574701343, 0.00505991681026007, 0.0128545761394095, 
+9.04499029878464e-19, 0.00742363125585919, 0.0101198336205201, 
+9.04499029878464e-19, 9.04499029878464e-19, 0.00505991681026007, 
+0.00505991681026007, 9.04499029878464e-19, 0.0118064725572735, 
+0.00421659734188339, 9.04499029878464e-19, 0.00758987521539011, 
+9.04499029878464e-19, 9.04499029878464e-19, 9.04499029878464e-19, 
+0.00190175907624695, 0.00421372139194615, 0.00590323627863675, 
+0.00703305451506787, 9.04499029878464e-19, 0.0131095012433463, 
+0.0480692096974707, 0.0857521368222207, 0.0171181159082965, 9.04499029878464e-19, 
+0.0526012816612792, 0.103417003771369, 0.108788211420591, 0.00746704363785783, 
+0.0358397179449789, 0.051450983147391, 0.0119940343267555, 0.020404090976265, 
+0.0173566988936855, 0.0225544149118068, 0.0312028203299371, 0.00337327787350671, 
+0.00645838048724634, 9.04499029878464e-19, 0.00252995840513004, 
+9.04499029878464e-19, 0.00187921658868539, 9.04499029878464e-19, 
+0.00590323627863675, 0.00337327787350671, 9.04499029878464e-19, 
+0.00421659734188339, 0.002149298816947, 9.04499029878464e-19, 
+0.00168663893675336, 9.04499029878464e-19, 9.04499029878464e-19, 
+0.0227696256461676, 0.0118064725572735, 0.0123023875952219, 0.00691512349188281, 
+0.00147207029502386, 0.00642836104928948, 0.0160230698991569, 
+0.0132200565053105, 0.00758987521539011, 9.04499029878464e-19, 
+0.0109631530888968, 9.04499029878464e-19, 9.04499029878464e-19, 
+0.00337327787350671, 0.00430756215200655, 0.0115872086847547, 
+0.00337327787350667, 0.0086313879649405, 0.00168663893675336, 
+0.00105917939270956, 0.000843319468376679, 0.00758987521539011, 
+9.04499029878464e-19, 0.00309283703504524, 9.04499029878464e-19, 
+0.00252995840513004, 0.00421659734188339, 9.04499029878464e-19, 
+9.04499029878464e-19, 0.00112484084993519, 9.04499029878464e-19, 
+0.00287194214691947), .Dim = c(96L, 2L), .Dimnames = list(c("A[C>A]A", 
+"A[C>A]C", "A[C>A]G", "A[C>A]T", "C[C>A]A", "C[C>A]C", "C[C>A]G", 
+"C[C>A]T", "G[C>A]A", "G[C>A]C", "G[C>A]G", "G[C>A]T", "T[C>A]A", 
+"T[C>A]C", "T[C>A]G", "T[C>A]T", "A[C>G]A", "A[C>G]C", "A[C>G]G", 
+"A[C>G]T", "C[C>G]A", "C[C>G]C", "C[C>G]G", "C[C>G]T", "G[C>G]A", 
+"G[C>G]C", "G[C>G]G", "G[C>G]T", "T[C>G]A", "T[C>G]C", "T[C>G]G", 
+"T[C>G]T", "A[C>T]A", "A[C>T]C", "A[C>T]G", "A[C>T]T", "C[C>T]A", 
+"C[C>T]C", "C[C>T]G", "C[C>T]T", "G[C>T]A", "G[C>T]C", "G[C>T]G", 
+"G[C>T]T", "T[C>T]A", "T[C>T]C", "T[C>T]G", "T[C>T]T", "A[T>A]A", 
+"A[T>A]C", "A[T>A]G", "A[T>A]T", "C[T>A]A", "C[T>A]C", "C[T>A]G", 
+"C[T>A]T", "G[T>A]A", "G[T>A]C", "G[T>A]G", "G[T>A]T", "T[T>A]A", 
+"T[T>A]C", "T[T>A]G", "T[T>A]T", "A[T>C]A", "A[T>C]C", "A[T>C]G", 
+"A[T>C]T", "C[T>C]A", "C[T>C]C", "C[T>C]G", "C[T>C]T", "G[T>C]A", 
+"G[T>C]C", "G[T>C]G", "G[T>C]T", "T[T>C]A", "T[T>C]C", "T[T>C]G", 
+"T[T>C]T", "A[T>G]A", "A[T>G]C", "A[T>G]G", "A[T>G]T", "C[T>G]A", 
+"C[T>G]C", "C[T>G]G", "C[T>G]T", "G[T>G]A", "G[T>G]C", "G[T>G]G", 
+"G[T>G]T", "T[T>G]A", "T[T>G]C", "T[T>G]G", "T[T>G]T"), c("Signature_1", 
+"Signature_2"))), coSineSimMat = structure(c(0.76789895507522, 
+0.757733629596811, 0.171803248681684, 0.199391522195904, 0.407671912943102, 
+0.372979035914154, 0.344078922420868, 0.319857408370786, 0.573357292983596, 
+0.562412460243176, 0.685700701802704, 0.686217358302521, 0.377725890462418, 
+0.386689478887272, 0.382312659188403, 0.407516946456442, 0.339149804914427, 
+0.305305965796845, 0.386629499233586, 0.15685755480318, 0.350678506033931, 
+0.562433289508901, 0.268840367435164, 0.322933955777266, 0.108666524311962, 
+0.0628339785033974, 0.49126593617209, 0.527932757462746, 0.47172512923794, 
+0.461711639647726, 0.362590079921887, 0.387794528034913, 0.154909499589746, 
+0.154613800740969, 0.303423806321064, 0.204479833568232, 0.570031076792535, 
+0.740784602225925, 0.445644443725404, 0.510768207280784, 0.248807908838572, 
+0.28784224944225, 0.140154287925718, 0.0725523826114571, 0.407829024906403, 
+0.610157444568381, 0.256945337078229, 0.227615984891259, 0.43572741633734, 
+0.391864627867027, 0.296855754287958, 0.345602091793204, 0.105681572106723, 
+0.0918011629446175, 0.0955192240249301, 0.0892005087879189, 0.35734783741945, 
+0.351111836488432, 0.570462074592721, 0.532907409369077), .Dim = c(2L, 
+30L), .Dimnames = list(c("Signature_1", "Signature_2"), c("Signature_1", 
+"Signature_2", "Signature_3", "Signature_4", "Signature_5", "Signature_6", 
+"Signature_7", "Signature_8", "Signature_9", "Signature_10", 
+"Signature_11", "Signature_12", "Signature_13", "Signature_14", 
+"Signature_15", "Signature_16", "Signature_17", "Signature_18", 
+"Signature_19", "Signature_20", "Signature_21", "Signature_22", 
+"Signature_23", "Signature_24", "Signature_25", "Signature_26", 
+"Signature_27", "Signature_28", "Signature_29", "Signature_30"
+)))), .Names = c("signatures", "coSineSimMat"))
 ```
 
 ```{r, fig.width=7, fig.height=5, fig.align='center', eval = T}
@@ -447,13 +464,20 @@ plotSignatures(laml.sign)
 
 `extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overestimating, it is also possible to be re-run `extractSignatures` by manually specifying r.
 
-Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). In the above exaple, 2 signatures are derived. One of the signatures is most similar to validated signature_1A with a high cosine similarity. Signature_1A is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, which results in C>T transitions and which predominantly occurs at NpCpG trinucleotide which is a most common process in AML [13](#references). 
+Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). See [here](http://cancer.sanger.ac.uk/cosmic/signatures) for list of validated signatures. In the above exaple, 2 signatures are derived, which are similar to validated Signature-1. Signature_1 is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, resulting in C>T transitions and predominantly occurs at NpCpG trinucleotide, which is a most common process in AML [12](#references). 
+
+Full table of cosine similarities against validated signatures are also returned, which can be further analysed. Below plot shows comparision of similarities of detected signatures against validated signatures.
+
+```{r}
+require('corrplot')
+corrplot::corrplot(corr = laml.sign$coSineSimMat, col = RColorBrewer::brewer.pal(n = 9, name = 'Oranges'), is.corr = FALSE, tl.cex = 0.6, tl.col = 'black', cl.cex = 0.6)
+```
 
 NOTE: Should you recieve an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `NMF` library and re-run.
 
 #Variant Annotations
 ##Annotating variants using Oncotator.
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API [14](#references). `oncotate` function quires oncotator web api to annotate given set of variants and converts them into MAF format. Input should be a five column file with chr, start, end, ref_allele, alt_allele. However, it can conatain other information such as sample names (Tumor_Sample_Barcode), read counts, vaf information and so on, but only first five columns will be used, rest of the columns will be attached at the end of the table.
+We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API [13](#references). `oncotate` function quires oncotator web api to annotate given set of variants and converts them into MAF format. Input should be a five column file with chr, start, end, ref_allele, alt_allele. However, it can conatain other information such as sample names (Tumor_Sample_Barcode), read counts, vaf information and so on, but only first five columns will be used, rest of the columns will be attached at the end of the table.
 
 ```{r}
 var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
@@ -475,7 +499,7 @@ var.maf[1:10, 1:20, with = FALSE]
 NOTE: This is quite time consuming if input is big.
 
 ##Coverting annovar output to MAF.
-Annovar is one of the most widely used Variant Annotation tool in Genomics [15](#references). Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
+Annovar is one of the most widely used Variant Annotation tool in Genomics [14](#references). Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
 
 e.g, 
 `table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (refGene),cytoBand,dbnsfp30a -operation (g),r,f -nastring NA`
@@ -536,22 +560,21 @@ subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classificati
 maftools has few other functions such as `plotVaf` and `genesToBarcodes` which helps to plot vaf distributions and maps samples where a given genes are mutated respectively.
 
 #References
-1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.
-2. Gu, Z., R. Eils, and M. Schlesner, Complex heatmaps reveal patterns and correlations in multidimensional genomic data. Bioinformatics, 2016.
-2.	Leiserson, M.D., et al., CoMEt: a statistical approach to identify combinations of mutually exclusive alterations in cancer. Genome Biol, 2015. 16: p. 160.
-3. Mermel, C.H., et al., GISTIC2.0 facilitates sensitive and confident localization of the targets of focal somatic copy-number alteration in human cancers. Genome Biol, 2011. 12(4): p. R41.
-4. Olshen, A.B., et al., Circular binary segmentation for the analysis of array-based DNA copy number data. Biostatistics, 2004. 5(4): p. 557-72.
-5. Alexandrov, L.B., et al., Signatures of mutational processes in human cancer. Nature, 2013. 500(7463): p. 415-21.
-6. Leiserson, M.D., et al., CoMEt: a statistical approach to identify combinations of mutually exclusive alterations in cancer. Genome Biol, 2015. 16: p. 160.
-7.	Tamborero, D., A. Gonzalez-Perez, and N. Lopez-Bigas, OncodriveCLUST: exploiting the positional clustering of somatic mutations to identify cancer genes. Bioinformatics, 2013. 29(18): p. 2238-44.
-8. Dees, N.D., et al., MuSiC: identifying mutational significance in cancer genomes. Genome Res, 2012. 22(8): p. 1589-98.
-9. Madan, V., et al., Comprehensive mutational analysis of primary and relapse acute promyelocytic leukemia. Leukemia, 2016.  doi: 10.1038/leu.2016.69.
-10.	Mroz, E.A., et al., Intra-tumor genetic heterogeneity and mortality in head and neck cancer: analysis of data from the Cancer Genome Atlas. PLoS Med, 2015. 12(2): p. e1001786.
-11. Alexandrov, L.B., et al., Signatures of mutational processes in human cancer. Nature, 2013. 500(7463): p. 415-21.
-12.	Gaujoux, R. and C. Seoighe, A flexible R package for nonnegative matrix factorization. BMC Bioinformatics, 2010. 11: p. 367.
-13.	Welch, J.S., et al., The origin and evolution of mutations in acute myeloid leukemia. Cell, 2012. 150(2): p. 264-78.
-14.	Ramos, A.H., et al., Oncotator: cancer variant annotation tool. Hum Mutat, 2015. 36(4): p. E2423-9.
-15. Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
+1.	Cancer Genome Atlas Research, N. Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med 368, 2059-74 (2013).
+2.	Gu, Z., Eils, R. & Schlesner, M. Complex heatmaps reveal patterns and correlations in multidimensional genomic data. Bioinformatics (2016).
+3.	Mermel, C.H. et al. GISTIC2.0 facilitates sensitive and confident localization of the targets of focal somatic copy-number alteration in human cancers. Genome Biol 12, R41 (2011).
+4.	Olshen, A.B., Venkatraman, E.S., Lucito, R. & Wigler, M. Circular binary segmentation for the analysis of array-based DNA copy number data. Biostatistics 5, 557-72 (2004).
+5.	Alexandrov, L.B. et al. Signatures of mutational processes in human cancer. Nature 500, 415-21 (2013).
+6.	Leiserson, M.D., Wu, H.T., Vandin, F. & Raphael, B.J. CoMEt: a statistical approach to identify combinations of mutually exclusive alterations in cancer. Genome Biol 16, 160 (2015).
+7.	Tamborero, D., Gonzalez-Perez, A. & Lopez-Bigas, N. OncodriveCLUST: exploiting the positional clustering of somatic mutations to identify cancer genes. Bioinformatics 29, 2238-44 (2013).
+8.	Dees, N.D. et al. MuSiC: identifying mutational significance in cancer genomes. Genome Res 22, 1589-98 (2012).
+9.	Madan, V. et al. Comprehensive mutational analysis of primary and relapse acute promyelocytic leukemia. Leukemia 30, 1672-81 (2016).
+10.	Mroz, E.A. & Rocco, J.W. MATH, a novel measure of intratumor genetic heterogeneity, is high in poor-outcome classes of head and neck squamous cell carcinoma. Oral Oncol 49, 211-5 (2013).
+11.	Gaujoux, R. & Seoighe, C. A flexible R package for nonnegative matrix factorization. BMC Bioinformatics 11, 367 (2010).
+12.	Welch, J.S. et al. The origin and evolution of mutations in acute myeloid leukemia. Cell 150, 264-78 (2012).
+13.	Ramos, A.H. et al. Oncotator: cancer variant annotation tool. Hum Mutat 36, E2423-9 (2015).
+14.	Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
+
 
 #Session Info
 ```{r}

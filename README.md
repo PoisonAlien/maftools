@@ -1,11 +1,15 @@
 ### maftools - An R package to summarize, analyze and visualize MAF files.
 
 ####Introduction.
-With advances in Cancer Genomics, maf format is being widley accepted and used to store variants detected. 
+With advances in Cancer Genomics, Mutation Annotation Format (MAF) is being widley accepted and used to store variants detected. 
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. The [resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of genetic variants is stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). 
 This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner either from TCGA sources or any in-house studies as long as the data is in MAF format. Maftools can also handle ICGC Simple Somatic Mutation format.
 
 maftools is on :point_right: [bioRxiv](http://biorxiv.org/content/early/2016/05/11/052662) :bowtie:
+
+Please cite the below if you find this tool useful for you.
+
+Mayakonda, A. and H.P. Koeffler, Maftools: Efficient analysis, visualization and summarization of MAF files from large-scale cohort based cancer studies. bioRxiv, 2016. doi: http://dx.doi.org/10.1101/052662
 
 #### MAF field requirements.
 MAF files contains many fields ranging from chromosome names to cosmic annotations. However, most of the analysis in maftools uses following fields.
@@ -16,7 +20,7 @@ Complete specififcation of MAF files can be found on [NCI TCGA page](https://wik
 NOTE: If you have variants stored as VCFs, convert them to MAF using [vcf2maf](https://github.com/mskcc/vcf2maf). Merge MAFs from all samples into a single MAF before processing with maftools.
 
 #### Vignette and a case study.
-A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
+A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 #### Stuffs maftools can do.
 1. Analysis
@@ -27,6 +31,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Extract mutational signatures and compare them to validated signatures.
   * Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation.
   * Read and summarize GISTIC results.
+  * Pan-cancer analysis/comparisison
 2. Visualization
   * Make oncoplots.
   * Make lollipop plots.
@@ -43,6 +48,16 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
   * Convert ICGC simple somatic mutation format into MAF.
 
 #### Installation:
+
+Easy way: Install from [Bioconductor](http://bioconductor.org/packages/release/bioc/html/maftools.html).
+
+```{r}
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("maftools")
+```
+
+Install from Github for updated features (some of functions from here may not be available on Bioconductor release).
 
 ```{r results='hide'}
 #Install Bioconductor dependencies.
@@ -152,22 +167,8 @@ laml.pfam$domainSummary[,1:3, with = F]
 
 ![image15](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image15.png)
 
-#### Annotating variants with Oncotator
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API<sup>4</sup>.
-
-```{r}
-var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
-#This is what input looks like
-var = read.delim(var.file, sep = '\t')
-head(var)
-```
-
-```{r, results='hide'}
-#Annotate 
-var.maf = oncotate(maflite = var.file, header = T)
-```
-
-This is quite time consuming if input is big.
+####Pan-cancer comparision
+![image17](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/image17.png)
 
 #### Mutual Exclusivity and Oncoprint.
 Many genes in cancer show strong exclusiveness in mutation pattern. We can detect such pair of genes using `mutExclusive` which runs `comet_exact_test` from `cometExactTest` package for significance<sup>5</sup>. 
@@ -223,7 +224,7 @@ Signature_2 which corelates will validated Signature_12 was observed in Liver sa
 
 
 #### Other functions
-For full documentation please refer to [vignette](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
+For full documentation please refer to [vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 ####References.
 1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.
@@ -235,5 +236,5 @@ For full documentation please refer to [vignette](http://bioconductor.org/packag
 7.	Gaujoux, R. and C. Seoighe, A flexible R package for nonnegative matrix factorization. BMC Bioinformatics, 2010. 11: p. 367.
 
 #### Powered By:
-* [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.6
+* [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive) 1.9.8
 * [ggplot2](https://github.com/hadley/ggplot2)
