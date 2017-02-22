@@ -128,9 +128,9 @@ plotTiTv(res = laml.titv)
 ##Lollipop plots for amino acid changes.
 Lollipop plots are simple and most effective way showing mutation spots on protein structure. Many oncogenes have a preferential sites which are mutated more often than any other locus. These spots are considered to be mutational hotspots and lollipop plots can be used to display them along with rest of the mutations. We can draw such plots using the function `lollipopPlot`. This fuction requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all availble fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argumnet `AACol`. This function also returns the plot as a ggplot object, which user can later modify if needed.
 
-```{r,fig.height=4,fig.width=8,fig.align='center'}
+```{r,fig.height=4.5,fig.width=8,fig.align='center'}
 #Lets plot lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
-dnmt3a.lpop = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', showMutationRate = TRUE)
+dnmt3a.lpop = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', showMutationRate = TRUE, domainLabelSize = 2.5)
 ```
 
 Note that `lollipopPlot` warns user on availability of diferent transcripts for the given gene. If we know the transcript id before hand, we can specify it as `refSeqID` or `proteinID`. By default lollipopPlot uses the longer isoform.
@@ -138,18 +138,18 @@ Note that `lollipopPlot` warns user on availability of diferent transcripts for 
 ###Labelling and repelling points.
 We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. Sometimes, many mutations are clustered within a range of few amino acid positons. In that case we can use `repel` option which tries to repel points for clear representation. 
 
-```{r,fig.height=3,fig.width=8,fig.align='center'}
+```{r,fig.height=4,fig.width=8,fig.align='center'}
 #Lets plot mutations on KIT gene, without repel option.
-kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222')
+kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', domainLabelSize = 3)
 #Same plot with repel=TRUE
-kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE)
+kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE, domainLabelSize = 3)
 ```
 
 ###cBioPortal style annotations
 MutationMapper on cBioPortal collapses Variant Classfications into truncating and others. It also includes somatic mutation rate.
 
-```{r, warning=FALSE, message=FALSE, fig.height=4,fig.width=8,fig.align='center'}
-laml.dnmt3a = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', refSeqID = 'NM_175629', labelPos = 882, collapsePosLabel = TRUE, cBioPortal = TRUE)
+```{r, warning=FALSE, message=FALSE, fig.height=4.5,fig.width=8,fig.align='center'}
+laml.dnmt3a = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', refSeqID = 'NM_175629', labelPos = 882, collapsePosLabel = TRUE, cBioPortal = TRUE, domainLabelSize = 3)
 ```
 
 

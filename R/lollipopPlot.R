@@ -217,9 +217,9 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, showMut
   p = ggplot()+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos2, y = 0.8, yend = count2-0.03), color = 'gray70', size = 0.5)+
     geom_point(data = prot.snp.sumamry, aes(x = pos2, y = count2, color = Variant_Classification), size = 1.5, alpha = 0.7)+
     scale_color_manual(values = col)+cowplot::theme_cowplot()+
-    theme(legend.text=element_text(size = legendTxtSize), axis.text.y = element_text(size = 8), legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank())+
+    theme(legend.text=element_text(size = legendTxtSize), axis.text.y = element_text(size = 8), legend.position = 'bottom', axis.line.x = element_blank(), legend.title = element_blank(), legend.key.size =  unit(0.35, "cm"))+
     xlab('')+ylab('# Mutations')+
-    guides(colour = guide_legend(nrow = 3, override.aes = list(size = 3)), fill = guide_legend(nrow = 3, override.aes = list(size = 3)), legend.key.size =  unit(0.30, "cm"), legend.box.spacing = unit(1, 'cm'))+
+    guides(colour = guide_legend(nrow = 3, override.aes = list(size = 3)), fill = guide_legend(nrow = 3, override.aes = list(size = 3)))+
     scale_x_continuous(breaks = pretty(0:max(prot$aa.length)))+
     scale_y_continuous(breaks = lim.pos, labels = lim.lab, limits = c(0, 6.5))
 

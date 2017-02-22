@@ -35,7 +35,7 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
                     gisticDelGenesFile = NULL, cnTable = NULL, removeDuplicatedVariants = TRUE, isTCGA = FALSE, verbose = TRUE){
 
   if(is.data.frame(x = maf)){
-    maf  = maf
+    maf  = data.table::setDT(maf)
   } else{
     message('reading maf..')
 
