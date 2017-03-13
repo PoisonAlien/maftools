@@ -20,16 +20,16 @@
 
 
 math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075){
-  
+
   sampSum = getSampleSummary(maf)
-  
+
   maf = maf@data
-  
+
   #Get all samples
   tsbs = levels(maf[,Tumor_Sample_Barcode])
-  
+
   math.df = data.frame()
-  
+
   if(!'t_vaf' %in% colnames(maf)){
     if(is.null(vafCol)){
       message('Available fields..')
@@ -39,30 +39,30 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
       colnames(maf)[which(colnames(maf) == vafCol)] = 't_vaf'
     }
   }
-  
+
   if(!is.null(sampleName)){
     maf = maf[Tumor_Sample_Barcode %in% sampleName]
   }
-  
+
   if(max(maf[,t_vaf], na.rm = TRUE) > 1){
     maf[,t_vaf:= as.numeric(as.character(t_vaf))/100]
   }
-  
+
   maf = maf[!t_vaf < vafCutOff]
-  
+
   if(!is.null(plotFile)){
     pdf(file = paste(plotFile, 'pdf', sep='.'),width = 6,height = 5,bg="white",pointsize = 9,paper = "special",onefile = TRUE)
   }
-  
+
   par(mfrow = c(2,2))
-  
+
   pb= txtProgressBar(min = 0, max = length(tsbs), style = 3)
-  
+
   for(i in 1:length(tsbs)){
-    
+
     setTxtProgressBar(pb = pb, value = i)
     pat = maf[Tumor_Sample_Barcode == tsbs[i]]
-    
+
     if(nrow(pat)>1){
       pid = tsbs[i]
       #MATH score - for details see PMID:25668320
@@ -77,7 +77,7 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
         muts = unique(as.character(pat$Hugo_Symbol))
         pat.df = data.frame(pid = pid,math.score = pat.math,mad = pat.mad)
         math.df = rbind(math.df,pat.df)
-        
+
         plot(x = vaf,y = rep(0,length(vaf)),xlab="vaf",ylab="density",xlim=c(0,1),pch=10,col="red",main = pid, ylim = c(0,round(max(density(vaf)$y))+0.1))
         lines(density(vaf))
         abline(v = median(vaf),lty=1)
@@ -86,11 +86,11 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
       }
     }
   }
-  
+
   if(!is.null(plotFile)){
     dev.off()
   }
-  
+
   colnames(math.df) = c('Tumor_Sample_Barcode', 'MATH', 'MedianAbsoluteDeviation')
   math.df = data.table(math.df[order(math.df$MATH, decreasing = TRUE),])
   math.df = merge(math.df, sampSum, by = 'Tumor_Sample_Barcode', all.X = TRUE)
