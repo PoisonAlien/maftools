@@ -22,7 +22,10 @@ NOTE: If you have variants stored as VCFs or as an MAF like tab seperated format
 #### Vignette and a case study.
 A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
-![Alt Text](https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/maftools.gif)
+<p align="center">
+<img src="https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/maftools.gif">
+</p>
+
 
 #### Stuffs maftools can do.
 1. Analysis
