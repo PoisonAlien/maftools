@@ -25,13 +25,15 @@
 #' @seealso \code{\link{read.maf}} \code{\link{MAF}}
 #' @export
 
-plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, width = 6, height = 5, addStat = NULL, showBarcodes = FALSE, fs = 10, textSize = 2, color = NULL, statFontSize = 3, titvColor = NULL, top = 10){
+plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE,
+                          width = 6, height = 5, addStat = NULL, showBarcodes = FALSE, fs = 10,
+                          textSize = 2, color = NULL, statFontSize = 3, titvColor = NULL, top = 10){
 
 
   if(dashboard){
     #Plot in dashboard style
-
-    gg.summary= dashboard(maf = maf, color = color, rmOutlier = TRUE, titv.color = titvColor, fontSize = fs, sfs = statFontSize, n = top)
+    pie = FALSE
+    gg.summary= dashboard(maf = maf, color = color, rmOutlier = TRUE, titv.color = titvColor, fontSize = fs, sfs = statFontSize, n = top, donut = pie)
 
   }else{
 

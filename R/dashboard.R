@@ -1,4 +1,4 @@
-dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10){
+dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie){
 
   #--------------------------- Color code for VC -----------------
 
@@ -75,9 +75,23 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
     names(titv.color) = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G')
   }
 
-  titv.gg = ggplot(data = titv.sums, aes(x = class, y = value, fill = class))+geom_bar(stat = 'identity')+scale_fill_manual(values = titv.color)+
-    cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'xy')+coord_flip()+
-    theme(legend.position = 'none')+xlab('')+ylab('N')+ggtitle('SNV Class')
+  if(donut){
+    titv.sums$fraction = titv.sums$value/sum(titv.sums$value)
+    titv.sums$ymax = cumsum(titv.sums$fraction)
+    titv.sums$ymin = c(0, head(titv.sums$ymax, n=-1))
+
+    #Credit: http://stackoverflow.com/questions/13615562/ggplot-donut-chart
+    #Credit: http://stackoverflow.com/questions/35267115/ggplot2-how-to-add-percentage-labels-to-a-donut-chart
+    titv.gg = ggplot(titv.sums, aes(fill= class, ymax=ymax, ymin=ymin, xmax=4, xmin=3))+geom_rect(colour="grey30")+coord_polar(theta="y") +
+      xlim(c(0, 4))+
+      theme(panel.background = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), legend.position = 'bottom', legend.title = element_blank(), legend.key.size = unit(0.35, "cm"), legend.box.background = element_blank())+
+      geom_label(aes(label=round(dat$fraction, digits = 2),x=3.5,y=(ymin+ymax)/2),inherit.aes = TRUE, show.legend = FALSE, size = 2)
+  }else{
+    titv.gg = ggplot(data = titv.sums, aes(x = class, y = value, fill = class))+geom_bar(stat = 'identity')+scale_fill_manual(values = titv.color)+
+      cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'xy')+coord_flip()+
+      theme(legend.position = 'none')+xlab('')+ylab('N')+ggtitle('SNV Class')
+  }
+
 
 
   #--------------------------- variant type plot -----------------
@@ -85,10 +99,24 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   vt.plot.dat = vt.plot.dat[,colnames(vt.plot.dat)[!colnames(x = vt.plot.dat) %in% c('total', 'CNV')], with = FALSE]
   vt.plot.dat = suppressWarnings( data.table::melt(vt.plot.dat[,c(2:(ncol(vt.plot.dat))), with = FALSE], id = NULL))
 
-  vt.gg = ggplot(data = vt.plot.dat, aes(x = variable, y = value, fill = variable))+
-    geom_bar(stat = 'identity')+coord_flip()+cowplot::theme_cowplot(font_size = fontSize)+
-    cowplot::background_grid(major = 'xy')+
-    theme(legend.position = 'none')+xlab('')+ylab('N')+ggtitle('Variant Type')
+  if(donut){
+    vt.plot.dat = vt.plot.dat[,sum(value),variable]
+    colnames(vt.plot.dat)[2] = 'value'
+    vt.plot.dat$fraction = vt.plot.dat$value/sum(titv.sums$value)
+    vt.plot.dat$ymax = cumsum(vt.plot.dat$fraction)
+    vt.plot.dat$ymin = c(0, head(vt.plot.dat$ymax, n=-1))
+
+    vt.gg = ggplot(vt.plot.dat, aes(fill= variable, ymax=ymax, ymin=ymin, xmax=4, xmin=3))+geom_rect(colour="grey30")+coord_polar(theta="y") +
+      xlim(c(0, 4))+ggtitle('Variant Type')+
+      theme(panel.background = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), legend.position = 'bottom', legend.title = element_blank(), legend.key.size = unit(0.35, "cm"), legend.box.background = element_blank())
+
+  }else{
+    vt.gg = ggplot(data = vt.plot.dat, aes(x = variable, y = value, fill = variable))+
+      geom_bar(stat = 'identity')+coord_flip()+cowplot::theme_cowplot(font_size = fontSize)+
+      cowplot::background_grid(major = 'xy')+
+      theme(legend.position = 'none')+xlab('')+ylab('N')+ggtitle('Variant Type')
+  }
+
 
   #--------------------------- variant classification plot -----------------
 #   vc.plot.dat = vcs
@@ -98,12 +126,24 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   vc.plot.dat = suppressWarnings( data.table::melt(vc.plot.dat))
   vc.plot.dat$variable = factor(x = vc.plot.dat$variable, levels = names(vc.lvl))
 
-  vc.gg = ggplot(data = vc.plot.dat, aes(x = variable, y = value, fill = variable))+
-    geom_bar(stat = 'identity')+scale_fill_manual(values = col)+coord_flip()+
-    cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'xy')+
-    theme(legend.position = 'none')+xlab('')+ylab('N')
+  if(donut){
+    vc.plot.dat = vc.plot.dat[,sum(value),variable]
+    colnames(vc.plot.dat)[2] = 'value'
+    vc.plot.dat$fraction = vc.plot.dat$value/sum(titv.sums$value)
+    vc.plot.dat$ymax = cumsum(vc.plot.dat$fraction)
+    vc.plot.dat$ymin = c(0, head(vc.plot.dat$ymax, n=-1))
 
-  vc.gg = vc.gg+ggtitle('Variant Classification')
+    vc.gg = ggplot(vc.plot.dat, aes(fill= variable, ymax=ymax, ymin=ymin, xmax=4, xmin=3))+geom_rect(colour="grey30")+coord_polar(theta="y") +
+      xlim(c(0, 4))+ggtitle('Variant Classification')+scale_fill_manual(values = col)+
+      theme(panel.background = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), legend.position = 'bottom', legend.title = element_blank(), legend.key.size = unit(0.35, "cm"), legend.box.background = element_blank())
+
+  }else{
+    vc.gg = ggplot(data = vc.plot.dat, aes(x = variable, y = value, fill = variable))+
+      geom_bar(stat = 'identity')+scale_fill_manual(values = col)+coord_flip()+
+      cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'xy')+
+      theme(legend.position = 'none')+xlab('')+ylab('N')+ggtitle('Variant Classification')
+  }
+
 
 
 #--------------------------- hugo-symbol plot -----------------
