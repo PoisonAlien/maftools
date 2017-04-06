@@ -53,15 +53,28 @@ mafSurvival = function(maf, clinicalData, genes = NULL, time = "Time",
     colnames(clinicalData)[colnames(clinicalData) %in% Status] = 'Status'
   }
 
-  genesTSB = unique(as.character(subsetMaf(maf = maf, includeSyn = FALSE, genes = genes)[,Tumor_Sample_Barcode]))
+  #genesTSB = unique(as.character(subsetMaf(maf = maf, includeSyn = FALSE, genes = genes)[,Tumor_Sample_Barcode]))
+  genesTSB = lapply(X = genes, FUN = function(x) unique(as.character(subsetMaf(maf = maf, includeSyn = FALSE, genes = x)[,Tumor_Sample_Barcode])))
+  names(genesTSB) = genes
+  genesTSB = genesTSB[sapply(genesTSB, FUN = function(x) length(x) != 0)]
+  message("Number of mutated samples for given genes: ")
+  print(sapply(genesTSB, FUN = length))
 
-  if(length(genes) > 1){
+  genesMissing = genes[!genes %in% names(genesTSB)]
+  if(length(genesMissing) > 0){
+    genes = genes[!genes %in% genesMissing]
+    genesMissing = paste(genesMissing, collapse = ', ')
+    message(paste0("genes ", genesMissing, " does not seeem to be mutated. Removing them."))
+  }
+
+  if(length(genes) == 0){
+    stop('None of the given genes are mutated!')
+  }else{
     genes = paste(genes, collapse = ', ')
   }
 
-  if(length(genesTSB) == 0){
-    stop(paste0(genes, " seems to be not mutated!"))
-  }
+  genesTSB = unique(as.character(unlist(genesTSB)))
+
 
   clinicalData$Group = ifelse(test = clinicalData$Tumor_Sample_Barcode %in% genesTSB, yes = 'Mutant', no = 'Wildtype')
   clin.mut.dat = clinicalData[,.(medianTime = median(Time, na.rm = TRUE),N = .N), Group][order(Group)]
@@ -69,10 +82,10 @@ mafSurvival = function(maf, clinicalData, genes = NULL, time = "Time",
 
   clinicalData$Time = ifelse(test = is.infinite(clinicalData$Time), yes = 0, no = clinicalData$Time)
 
-  surv.km = survfit(formula = Surv(time = Time, event = Status) ~ Group, data = clinicalData, conf.type = "log-log")
+  surv.km = survival::survfit(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData, conf.type = "log-log")
   res = summary(surv.km)
 
-  surv.diff = survdiff(formula = Surv(time = Time, event = Status) ~ Group, data = clinicalData)
+  surv.diff = survival::survdiff(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData)
 
   surv.diff.pval = round(1 - pchisq(surv.diff$chisq, length(surv.diff$n) - 1), digits = 5)
 
