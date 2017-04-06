@@ -72,12 +72,12 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
           tsb.mapped.cn = tsb.mapped.cn[Chromosome == chr]
           p = p+geom_point(data = tsb.mapped, aes(x = Start_Position, y = Segment_Mean, label = Hugo_Symbol, color = 'green'), size = 0.6)+
             ggrepel::geom_text_repel(data = tsb.mapped.cn, aes(x = Start_Position, y = Segment_Mean,
-            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5)+theme(legend.position = 'none')
+            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5, segment.alpha = 0.60)+theme(legend.position = 'none')
         }else{
           #Lable all variants
           p = p+geom_point(data = tsb.mapped, aes(x = Start_Position, y = Segment_Mean, label = Hugo_Symbol, color = 'green'), size = 0.6)+
             ggrepel::geom_text_repel(data = tsb.mapped, aes(x = Start_Position, y = Segment_Mean,
-            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5)+theme(legend.position = 'none')
+            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5, segment.alpha = 0.60)+theme(legend.position = 'none')
 
         }
       }else{
@@ -93,11 +93,11 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
 
           p = p+geom_point(data = tsb.mapped, aes(x = Start_Position_updated, y = Segment_Mean, label = Hugo_Symbol, color = 'green'), size = 0.6)+
             ggrepel::geom_text_repel(data = tsb.mapped.cn, aes(x = Start_Position_updated, y = Segment_Mean,
-            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5)+theme(legend.position = 'none')
+            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5, segment.alpha = 0.60)+theme(legend.position = 'none')
         }else{
           p = p+geom_point(data = tsb.mapped, aes(x = Start_Position_updated, y = Segment_Mean, label = Hugo_Symbol), size = 0.6)+
             ggrepel::geom_text_repel(data = tsb.mapped, aes(x = Start_Position_updated, y = Segment_Mean,
-            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5)+theme(legend.position = 'none')
+            label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5, segment.alpha = 0.60)+theme(legend.position = 'none')
         }
       }
 

@@ -169,7 +169,7 @@ plotCBS = function(segData, tsb, build = 'hg19'){
   chr.labels= c(1:22, 'X', 'Y')
 
   p = ggplot(data = seg.spl.transformed)+geom_segment(data = seg.spl.transformed, aes(x = Start_Position_updated, xend = End_Position_updated, y = Segment_Mean, yend = Segment_Mean, color = Chromosome), size = 3)+
-    geom_vline(xintercept = chr.lens.sumsum[1:nchrs], linetype = 'dotted', size = 0.3)+
+    geom_vline(xintercept = chr.lens.sumsum[1:nchrs], linetype = 'dotted', size = 0.3, alpha = 0.7)+
     cowplot::theme_cowplot(font_size = 8)+theme(legend.position = 'none')+xlab('Chromosome')+ylim(-2,2)+scale_x_continuous(breaks = chr.lens.sumsum[1:nchrs], labels = chr.labels[1:nchrs])+ylab('Segment Mean')+
     theme(axis.line.x = element_blank())+ggtitle(tsb)+cowplot::background_grid(major = 'onlyminor', minor = 'y')
 
