@@ -28,8 +28,6 @@ plotVaf(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10,
 \item{width}{Width of plot to be saved. Default 6}
 
 \item{height}{Height of plot to be saved. Default 5}
-
-\item{density}{logical whether to plot density plot of vaf}
 }
 \value{
 ggplot object which can be further modified.
