@@ -40,7 +40,7 @@ pancanComparision = function(mutsigResults, qval = 0.1, cohortName = 'input', in
     if(Sys.info()[['sysname']] == 'Windows'){
       mutsigResults.gz = gzfile(description = mutsigResults, open = 'r')
       suppressWarnings(mutsig <- data.table(read.csv(file = mutsigResults.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = '#')))
-      close(maf.gz)
+      close(mutsigResults.gz)
     } else{
       mutsig = suppressWarnings(data.table::fread(input = paste('zcat <', mutsigResults), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
     }

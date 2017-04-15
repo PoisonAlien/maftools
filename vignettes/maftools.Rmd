@@ -67,7 +67,7 @@ write.mafSummary(maf = laml, basename = 'laml')
 ##Plotting MAF summary.
 We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. We can add either mean or median line to the stacked barplot to display average/median number of variants across the cohort.
 ```{r,fig.height=6, fig.width=8}
-plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE)
+plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
 ## Oncoplots (aka waterfall plots)
@@ -337,7 +337,7 @@ plotClusters(clusters = tcga.ab.2972.het)
 
 Above figure shows clear seperation of two clones clustered at mean variant allele frequencies of ~45% (major clone) and another minor clone at variant allele frequency of ~25%.
 
-####Ignoring variants in copy number altered regions.
+###Ignoring variants in copy number altered regions.
 We can use copy number information to ignore variants located on copynumber altered regions. Copy number alterations results in abnormally high/low variant allele frequencies, which tends to affect clustering. Removing such variants improves clustering and density estimation while retaining biologically meaningful results. Copy number information can be provided as a segmented file generated from segmentation programmes, such as Circular Binary Segmentation from DNACopy Bioconductor package [6](#references).
 
 ```{r, fig.align='center', fig.height=5, fig.width=7, eval=T}

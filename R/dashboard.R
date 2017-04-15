@@ -1,4 +1,4 @@
-dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie){
+dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie, rawcount = TRUE){
 
   #--------------------------- Color code for VC -----------------
 
@@ -67,11 +67,14 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   titv.counts = titv$raw.counts
   titv.sums = data.table::melt(colSums(titv.counts[,2:7, with =FALSE]))
   titv.sums$class = rownames(titv.sums)
-  titv.sums$class = gsub(pattern = '-', replacement = '>', x = titv.sums$class)
+  if(!rawcount){
+    titv.sums$value = titv.sums$value/sum(titv.sums$value)
+  }
 
 
   if(is.null(titv.color)){
-    titv.color = RColorBrewer::brewer.pal(n = 6, name = 'Set3')
+    #titv.color = RColorBrewer::brewer.pal(n = 6, name = 'Set3')
+    titv.color = c('coral4', 'lightcyan4', 'cornflowerblue', 'lightsalmon1', 'forestgreen', 'deeppink3')
     names(titv.color) = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G')
   }
 
@@ -90,6 +93,10 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
     titv.gg = ggplot(data = titv.sums, aes(x = class, y = value, fill = class))+geom_bar(stat = 'identity')+scale_fill_manual(values = titv.color)+
       cowplot::theme_cowplot(font_size = fontSize)+cowplot::background_grid(major = 'xy')+coord_flip()+
       theme(legend.position = 'none')+xlab('')+ylab('N')+ggtitle('SNV Class')
+  }
+
+  if(!rawcount){
+    titv.gg = titv.gg+scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 1, 0.2), limits = c(0, 1))
   }
 
 
