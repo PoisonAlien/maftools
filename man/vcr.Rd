@@ -17,4 +17,3 @@ split string
 \description{
 Samll internal function to make complex events. Ignore this.
 }
-

@@ -3,8 +3,10 @@
 \docType{methods}
 \name{getGeneSummary}
 \alias{getGeneSummary}
-\alias{getGeneSummary,GISTIC-method}
 \alias{getGeneSummary,MAF-method}
+\alias{getGeneSummary}
+\alias{getGeneSummary,GISTIC-method}
+\alias{getGeneSummary}
 \title{extract gene summary from MAF or GISTIC object}
 \usage{
 getGeneSummary(x)
@@ -27,4 +29,3 @@ laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 getGeneSummary(laml)
 }
-

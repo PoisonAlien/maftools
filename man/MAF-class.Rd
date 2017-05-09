@@ -2,8 +2,8 @@
 % Please edit documentation in R/mafObjects.R
 \docType{class}
 \name{MAF-class}
-\alias{MAF}
 \alias{MAF-class}
+\alias{MAF}
 \title{Class MAF}
 \description{
 S4 class for storing summarized MAF.
@@ -31,7 +31,7 @@ S4 class for storing summarized MAF.
 
 \item{\code{maf.silent}}{subset of main MAF containing only silent variants}
 }}
+
 \seealso{
 \code{\link{getGeneSummary}} \code{\link{getSampleSummary}} \code{\link{getFields}}
 }
-

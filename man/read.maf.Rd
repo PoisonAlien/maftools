@@ -56,4 +56,3 @@ Shyr C, Tarailo-Graovac M, Gottlieb M, Lee JJ, van Karnebeek C, Wasserman WW. FL
 \seealso{
 \code{\link{plotmafSummary}} \code{\link{write.mafSummary}}
 }
-

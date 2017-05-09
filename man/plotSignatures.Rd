@@ -24,4 +24,3 @@ Plots decomposed mutational signatures as a barplot.
 \seealso{
 \code{\link{trinucleotideMatrix}}
 }
-

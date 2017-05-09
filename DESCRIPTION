@@ -15,7 +15,7 @@ Imports: data.table, ggplot2(>= 2.0), cowplot, cometExactTest,
         RColorBrewer, NMF, ggrepel, methods,
         ComplexHeatmap, mclust, VariantAnnotation, Biostrings,
         Rsamtools, rjson, grid, DPpackage, wordcloud, grDevices, changepoint, gridExtra, survival
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 biocViews: DataRepresentation, DNASeq, Visualization, DriverMutation, VariantAnnotation,

@@ -31,4 +31,3 @@ plotOncodrive(res = laml.sig, fdrCutOff = 0.1)
 \seealso{
 \code{\link{oncodrive}}
 }
-

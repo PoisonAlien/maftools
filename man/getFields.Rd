@@ -4,6 +4,7 @@
 \name{getFields}
 \alias{getFields}
 \alias{getFields,MAF-method}
+\alias{getFields}
 \title{extract available fields from MAF object}
 \usage{
 getFields(x)
@@ -24,4 +25,3 @@ laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 getFields(x = laml)
 }
-

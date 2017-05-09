@@ -28,4 +28,3 @@ mutExclusive(maf = laml, top = 5)
 \references{
 Leiserson, Mark DM et al. CoMEt: A Statistical Approach to Identify Combinations of Mutually Exclusive Alterations in Cancer. Genome Biology 16.1 (2015): 160.
 }
-

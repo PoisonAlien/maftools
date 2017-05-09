@@ -28,4 +28,3 @@ write.GisticSummary(gistic = laml.gistic, basename = 'laml')
 \seealso{
 \code{\link{readGistic}}
 }
-

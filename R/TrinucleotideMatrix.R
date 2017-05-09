@@ -86,9 +86,9 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
     print(chrs)
     message('missing reference contigs from fasta file.')
     print(chrs.missing)
-    stop("Contig names in maf must match to contig names in reference fasta. Use prefix to add or remove prefixes from maf if its necessary. Use ignoreChr to ignore missing contigs.")
+    message(paste0("Contig names in MAF must match to contig names in reference fasta. Ignorinig ", nrow(maf.snp[Chromosome %in% chrs.missing]) ," single nucleotide variants from ", paste(chrs.missing, collapse = ', ')))
+    maf.snp = maf.snp[!Chromosome %in% chrs.missing]
   }
-
 
   extract.tbl = data.table::data.table(Chromosome = maf.snp$Chromosome, Start = maf.snp$Start_Position-1, End = maf.snp$Start_Position+1,
                            Reference_Allele = maf.snp$Reference_Allele, Tumor_Seq_Allele2 = maf.snp$Tumor_Seq_Allele2, Tumor_Sample_Barcode = maf.snp$Tumor_Sample_Barcode)

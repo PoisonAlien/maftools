@@ -31,4 +31,3 @@ laml.input <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.input, useAll = FALSE)
 geneCloud(input = laml, minMut = 5)
 }
-

@@ -48,4 +48,3 @@ tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene')
 \references{
 Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
 }
-

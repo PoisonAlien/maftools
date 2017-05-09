@@ -51,4 +51,3 @@ tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package =
 plotCBSsegments(cbsFile = tcga.ab.009.seg)
 
 }
-

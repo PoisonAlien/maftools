@@ -56,4 +56,3 @@ Olshen AB, Venkatraman ES, Lucito R, Wigler M. Circular binary segmentation for 
 \seealso{
 \code{\link{plotClusters}}
 }
-

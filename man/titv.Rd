@@ -30,4 +30,3 @@ laml.titv = titv(maf = laml, useSyn = TRUE)
 \seealso{
 \code{\link{plotTiTv}}
 }
-

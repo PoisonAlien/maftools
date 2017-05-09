@@ -70,4 +70,3 @@ laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change')
 
 }
-

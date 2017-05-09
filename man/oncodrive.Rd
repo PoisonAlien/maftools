@@ -45,4 +45,3 @@ Tamborero D, Gonzalez-Perez A and Lopez-Bigas N. OncodriveCLUST: exploiting the 
 \seealso{
 \code{\link{plotOncodrive}}
 }
-

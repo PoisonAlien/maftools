@@ -42,4 +42,3 @@ plotClusters(TCGA.AB.3009.clust, genes = c('NF1', 'SUZ12'), showCNvars = TRUE)
 \seealso{
 \code{\link{inferHeterogeneity}}
 }
-

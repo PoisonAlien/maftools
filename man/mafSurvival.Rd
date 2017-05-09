@@ -50,4 +50,3 @@ laml.surv <- read.delim(system.file("extdata", "laml_survival.tsv", package = "m
 mafSurvival(maf = laml, clinicalData = laml.surv, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
 
 }
-

@@ -62,4 +62,3 @@ oncoplot(maf = laml, top = 3)
 \seealso{
 \code{\link{oncostrip}}
 }
-

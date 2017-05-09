@@ -4,6 +4,7 @@
 \name{getCytobandSummary}
 \alias{getCytobandSummary}
 \alias{getCytobandSummary,GISTIC-method}
+\alias{getCytobandSummary}
 \title{extract cytoband summary from GISTIC object}
 \usage{
 getCytobandSummary(x)
@@ -26,4 +27,3 @@ del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools
 laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
 getCytobandSummary(laml.gistic)
 }
-

@@ -44,4 +44,3 @@ gisticPlot(gistic.summary)
 \seealso{
 \code{\link{oncostrip}}
 }
-

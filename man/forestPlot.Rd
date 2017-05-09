@@ -46,4 +46,3 @@ forestPlot(mafCompareRes = pt.vs.rt, show = 'stat')
 \seealso{
 \code{\link{mafCompare}}
 }
-

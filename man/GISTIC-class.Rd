@@ -2,8 +2,8 @@
 % Please edit documentation in R/gisticObject.R
 \docType{class}
 \name{GISTIC-class}
-\alias{GISTIC}
 \alias{GISTIC-class}
+\alias{GISTIC}
 \title{Class GISTIC}
 \description{
 S4 class for storing summarized MAF.
@@ -27,7 +27,7 @@ S4 class for storing summarized MAF.
 
 \item{\code{classCode}}{mapping between numeric values in numericMatrix and copy number events.}
 }}
+
 \seealso{
 \code{\link{getGeneSummary}} \code{\link{getSampleSummary}} \code{\link{getCytobandSummary}}
 }
-

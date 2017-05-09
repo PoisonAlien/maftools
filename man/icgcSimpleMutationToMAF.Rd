@@ -34,4 +34,3 @@ ICGC Simple Somatic Mutattion format specififcation can be found here: http://do
 esca.icgc <- system.file("extdata", "simple_somatic_mutation.open.ESCA-CN.sample.tsv.gz", package = "maftools")
 esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc)
 }
-

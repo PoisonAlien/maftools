@@ -33,4 +33,3 @@ del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools
 laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
 plotGisticResults(gistic = laml.gistic)
 }
-

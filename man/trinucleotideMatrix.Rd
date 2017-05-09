@@ -40,4 +40,3 @@ prefix = 'chr', add = TRUE, useSyn = TRUE)
 \seealso{
 \code{\link{extractSignatures}}
 }
-

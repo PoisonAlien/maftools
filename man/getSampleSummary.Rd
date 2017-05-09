@@ -3,8 +3,10 @@
 \docType{methods}
 \name{getSampleSummary}
 \alias{getSampleSummary}
-\alias{getSampleSummary,GISTIC-method}
 \alias{getSampleSummary,MAF-method}
+\alias{getSampleSummary}
+\alias{getSampleSummary,GISTIC-method}
+\alias{getSampleSummary}
 \title{extract sample summary from MAF or GISTIC object}
 \usage{
 getSampleSummary(x)
@@ -27,4 +29,3 @@ laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 getSampleSummary(x = laml)
 }
-

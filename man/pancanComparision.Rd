@@ -45,4 +45,3 @@ pancanComparision(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', 
 \references{
 Lawrence MS, Stojanov P, Mermel CH, et al. Discovery and saturation analysis of cancer genes across 21 tumor types. Nature. 2014;505(7484):495-501. doi:10.1038/nature12912.
 }
-

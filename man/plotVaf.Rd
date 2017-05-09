@@ -41,4 +41,3 @@ laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
 plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU')
 
 }
-

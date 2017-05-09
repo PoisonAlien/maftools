@@ -40,4 +40,3 @@ plotTiTv(laml.titv)
 \seealso{
 \code{\link{titv}}
 }
-

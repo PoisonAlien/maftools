@@ -44,4 +44,3 @@ subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), fields = 'i_Tumor
 \seealso{
 \code{\link{getFields}}
 }
-

@@ -42,4 +42,3 @@ relapse.apl <- read.maf(maf = relapse.apl)
 coOncoplot(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary APL', m2Name = 'Relapse APL')
 dev.off()
 }
-

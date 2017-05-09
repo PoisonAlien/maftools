@@ -45,4 +45,3 @@ oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'), removeNonMutated = TRUE)
 \seealso{
 \code{\link{oncoplot}}
 }
-

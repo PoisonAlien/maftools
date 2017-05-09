@@ -54,4 +54,3 @@ plotmafSummary(maf = laml, addStat = 'median')
 \seealso{
 \code{\link{read.maf}} \code{\link{MAF}}
 }
-

@@ -31,4 +31,3 @@ amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools
 del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
 laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
 }
-

@@ -26,4 +26,3 @@ write.mafSummary(maf = laml, basename = 'laml')
 \seealso{
 \code{\link{read.maf}}
 }
-
