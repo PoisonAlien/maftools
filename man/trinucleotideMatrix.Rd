@@ -2,7 +2,7 @@
 % Please edit documentation in R/TrinucleotideMatrix.R
 \name{trinucleotideMatrix}
 \alias{trinucleotideMatrix}
-\title{Extract single 5' and 3' bases flanking the mutated site and estimate APOBAC enrichment score.}
+\title{Extract single 5' and 3' bases flanking the mutated site and estimate APOBEC enrichment score.}
 \usage{
 trinucleotideMatrix(maf, ref_genome, prefix = NULL, add = TRUE,
   ignoreChr = NULL, useSyn = TRUE)
@@ -21,24 +21,26 @@ trinucleotideMatrix(maf, ref_genome, prefix = NULL, add = TRUE,
 \item{useSyn}{Logical. Whether to include synonymous variants in analysis. Defaults to TRUE}
 }
 \value{
-A matrix of dimension nx96, where n is the number of samples in the MAF.
+list of 2. A matrix of dimension nx96, where n is the number of samples in the MAF and a table describing APOBEC enrichment per sample.
 }
 \description{
-Extract single 5' and 3' bases flanking the mutated site and estimate APOBAC enrichment score.
+Extract single 5' and 3' bases flanking the mutated site and estimate APOBEC enrichment score.
 }
 \details{
 Extracts immediate 5' and 3' bases flanking the mutated site and classifies them into 96 substitution classes.
 This function loads reference genome into memeory. Typical human geneome occupies a peak memory of ~3 gb while extracting bases.
 
-APOBAC Enrichment: Enrichment score is calculated using the same method described by Roberts et al to estimate APOBAC enrichment.
+APOBEC Enrichment: Enrichment score is calculated using the same method described by Roberts et al.
 
                 E = (n_tcw * background_c) / (n_C * background_tcw)
-       
- where, n_tcw = number of mutations within T[C>T]W and T[C>G]W context. W -> A or T
-        n_C   = number of mutated C and G 
+
+ where, n_tcw = number of mutations within T[C>T]W and T[C>G]W context. (W -> A or T)
+
+        n_C   = number of mutated C and G
+
         background_C and background_tcw motifs are number of C and TCW motifs occuring around +/- 20bp of each mutation.
-                
-One-sided Fisher's Exact test is performed to determine the enrichment of APOBAC tcw mutations over background.
+
+One-sided Fisher's Exact test is performed to determine the enrichment of APOBEC tcw mutations over background.
 }
 \examples{
 \dontrun{
