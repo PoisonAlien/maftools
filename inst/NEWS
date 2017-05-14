@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.2.20
+-------------------------
+SIGNIFICANT USER-LEVEL IMPROVEMENT
+    o APOBEC enrichment - trinucleotideMatrix function now calculates APOBEC enrichment in parallel. See details for more.
+    o Survival improvements - mafSurvival can perform survival analysis based on sample grouping
+
+NON SIGNIFICANT CHANGES
+    o Bug fixes and improvements.
+
 CHANGES IN VERSION 1.2.0
 -------------------------
 NEW FUNCTIONS
