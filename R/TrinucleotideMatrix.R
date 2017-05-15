@@ -1,4 +1,4 @@
-#' Extract single 5' and 3' bases flanking the mutated site and estimate APOBEC enrichment score.
+#' Extract single 5' and 3' bases flanking the mutated site for de-novo signature analysis. Also estimates APOBEC enrichment scores.
 #' @details Extracts immediate 5' and 3' bases flanking the mutated site and classifies them into 96 substitution classes.
 #' This function loads reference genome into memeory. Typical human geneome occupies a peak memory of ~3 gb while extracting bases.
 #'
@@ -23,6 +23,7 @@
 #' @param add If prefix is used, default is to add prefix to contig names in MAF file. If false prefix will be removed from contig names.
 #' @param ignoreChr Chromsomes to remove from analysis. e.g. chrM
 #' @param useSyn Logical. Whether to include synonymous variants in analysis. Defaults to TRUE
+#' @param fn If provided writes APOBEC results to an output file with basename fn. Default NULL.
 #' @return list of 2. A matrix of dimension nx96, where n is the number of samples in the MAF and a table describing APOBEC enrichment per sample.
 #' @examples
 #' \dontrun{
@@ -36,7 +37,7 @@
 #' @seealso \code{\link{extractSignatures}}
 #' @export
 
-trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = TRUE){
+trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = TRUE, fn = NULL){
 
   #suppressPackageStartupMessages(require('VariantAnnotation', quietly = TRUE))
   #suppressPackageStartupMessages(require('Biostrings', quietly = TRUE))
@@ -284,5 +285,8 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   #Set NAs to zeros if any (highly unlikely)
   conv.mat[is.na(conv.mat)] = 0
   message(paste('matrix of dimension ', nrow(conv.mat), 'x', ncol(conv.mat), sep=''))
+  if(!is.null(fn)){
+    write.table(x = sub.tbl, file = paste0(fn, "_APOBEC_enrichment.tsv"), sep = '\t', quote = FALSE, row.names = FALSE)  
+  }
   return(list(nmf_matrix = conv.mat, APOBEC_scores = sub.tbl))
 }

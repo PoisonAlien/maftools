@@ -1,11 +1,14 @@
 CHANGES IN VERSION 1.2.20
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o APOBEC enrichment - trinucleotideMatrix function now calculates APOBEC enrichment in parallel. See details for more.
+    o APOBEC enrichment - trinucleotideMatrix function now calculates APOBEC enrichment scores in parallel. See details for more.
     o Survival improvements - mafSurvival can perform survival analysis based on sample grouping
+    o GISTIC plot improvements - plotGisticResults can plot genomic segment plot
 
 NON SIGNIFICANT CHANGES
+    o Auto detects prtein_change columns while drawing lollipop plots.
     o Bug fixes and improvements.
+    
 
 CHANGES IN VERSION 1.2.0
 -------------------------
