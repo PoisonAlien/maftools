@@ -10,7 +10,12 @@ get_threshold = function(gene_muts, gene_length){
 parse_prot = function(dat, AACol, gl, m, calBg = FALSE, nBg){
 
   if(is.null(AACol)){
-    if(! 'AAChange' %in% colnames(dat)){
+    pchange = c('HGVSp_Short', 'Protein_Change', 'AAChange')
+    if(pchange[pchange %in% colnames(dat)] > 0){
+      pchange = suppressWarnings(pchange[pchange %in% colnames(dat)][1])
+      message(paste0("Assuming protein change information are stored under column ", pchange,". Use argument AACol to override if necessary."))
+      colnames(dat)[which(colnames(dat) == pchange)] = 'AAChange'
+    }else{
       message('Available fields:')
       print(colnames(dat))
       stop('AAChange field not found in MAF. Use argument AACol to manually specifiy field name containing protein changes.')

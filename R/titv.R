@@ -15,8 +15,7 @@
 #' @export
 
 
-titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL)
-{
+titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL){
 
   #Synonymous variants
   maf.silent = maf@maf.silent
@@ -58,13 +57,14 @@ titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL)
   maf.con.class.summary$con.class = factor(x = maf.con.class.summary$con.class,
                                            levels = c("C>A", "C>G", "C>T", "T>C", "T>A", "T>G"))
   maf.con.class.summary$TiTv = conv.class[as.character(maf.con.class.summary$con.class)]
+  maf.con.class.summary$TiTv = factor(x = maf.con.class.summary$TiTv, levels = c('Ti', 'Tv'))
   # maf.con.class.summary$TiTv = suppressWarnings(as.character(factor(x = maf.con.class.summary$con.class,
   #                                                                   levels = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G"), labels = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv'))))
 
-  fract.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'fract', fill = 0)
-  raw.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'nVars', fill = 0)
+  fract.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'fract', fill = 0, drop = FALSE)
+  raw.classes = data.table::dcast(data = maf.con.class.summary, formula = Tumor_Sample_Barcode ~ con.class, value.var = 'nVars', fill = 0, drop = FALSE)
   titv.summary = maf.con.class.summary[,sum(fract), by = .(Tumor_Sample_Barcode, TiTv)]
-  titv.summary = data.table::dcast(data = titv.summary, Tumor_Sample_Barcode ~ TiTv, value.var = 'V1', fill = 0)
+  titv.summary = data.table::dcast(data = titv.summary, Tumor_Sample_Barcode ~ TiTv, value.var = 'V1', fill = 0, drop = FALSE)
 
   titv.res = list(fraction.contribution = fract.classes, raw.counts = raw.classes, TiTv.fractions = titv.summary)
 

@@ -65,7 +65,12 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   }
 
   if(is.null(AACol)){
-    if(! 'AAChange' %in% colnames(mut)){
+    pchange = c('HGVSp_Short', 'Protein_Change', 'AAChange')
+    if(pchange[pchange %in% colnames(mut)] > 0){
+      pchange = suppressWarnings(pchange[pchange %in% colnames(mut)][1])
+      message(paste0("Assuming protein change information are stored under column ", pchange,". Use argument AACol to override if necessary."))
+      colnames(mut)[which(colnames(mut) == pchange)] = 'AAChange'
+    }else{
       message('Available fields:')
       print(colnames(mut))
       stop('AAChange field not found in MAF. Use argument AACol to manually specifiy field name containing protein changes.')
@@ -76,11 +81,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   prot.dat = mut[,.(Hugo_Symbol, Variant_Type, Variant_Classification, AAChange)]
 
-  if(nrow(prot.dat) == 0){
-    stop(paste(geneID, 'does not seem to have any mutations!', sep=' '))
-  }
-
-  prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
+  #prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
   #Remove 'p.'
   prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = TRUE)
   prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
