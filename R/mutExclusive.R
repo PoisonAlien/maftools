@@ -43,7 +43,7 @@ mutExclusive = function(maf, genes = NULL, top = 10){
 
     #choose top genes
     if(nrow(mat) < top){
-      mat = mat[1:nrow(top),]
+      mat = mat
     }else{
       mat = mat[1:top,]
     }

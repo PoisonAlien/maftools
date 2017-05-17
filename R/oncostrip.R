@@ -35,7 +35,11 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE, a
 
   #if user doesnt provide a gene vector, use top 5.
   if(is.null(genes)){
-    mat = mat_origin[1:top, ]
+    if(nrow(mat_origin) < top){
+      mat = mat_origin
+    }else{
+      mat = mat_origin[1:top,]
+    }
   } else{
     mat = mat_origin[genes,]
   }

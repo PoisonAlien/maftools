@@ -156,7 +156,13 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 #--------------------------- hugo-symbol plot -----------------
   gs = getGeneSummary(maf)
   gs = gs[,colnames(gs)[!colnames(x = gs) %in% c('total', 'Amp', 'Del', 'CNV_total', 'MutatedSamples')], with = FALSE]
-  gs.dat = gs[1:n]
+
+  if(nrow(gs) < n){
+    gs.dat = gs
+  }else{
+    gs.dat = gs[1:n]
+  }
+
   gs.lvl = gs.dat[,Hugo_Symbol]
   gs.dat = suppressWarnings(data.table::melt(gs.dat))
   gs.dat$Hugo_Symbol = factor(x = gs.dat$Hugo_Symbol, levels = rev(gs.lvl))
