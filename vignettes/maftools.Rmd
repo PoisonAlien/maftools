@@ -368,15 +368,40 @@ From the above results, sample TCGA.AB.2849 has highest of MATH score (20.58) co
 ##Mutational Signatures.
 Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such mutational signatures, derived from over 7000 cancer samples [5](#references). Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures). 
 
-`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
-
+First step in signature analysis is to obtain the adjacent bases sorounding the mutated base and form a mutation matrix. 
 NOTE: Eventhough reading fasta and extracting bases is fairly fast, it is a memory consuming process as it occupies ~3gb of memory while running.
 
 ```{r, eval=FALSE}
-#First we extract adjacent bases to the mutated locus and clssify them into 96 substitution classes.
+#First we extract adjacent bases to the mutated locus and clssify them into 96 substitution classes. This also estimates APOBEC enrichment per sample.
 laml.tnm = trinucleotideMatrix(maf = laml, ref_genome = '/path/to/hg19.fa', 
                                prefix = 'chr', add = TRUE, ignoreChr = 'chr23', useSyn = TRUE)
+# reading /path/to/hg19.fa (this might take few minutes)..
+# Extracting 5' and 3' adjacent bases..
+# Extracting +/- 20bp around mutated bases for background estimation..
+# Estimating APOBEC enrichment scores.. 
+# Performing one-way Fisher's test for APOBEC enrichment..
+# APOBEC related mutations are enriched in 2.674% of samples (APOBEC enrichment score > 2 ; 5 of 187 samples)
+# Creating mutation matrix..
+# matrix of dimension 193x96
 ```
+
+Above function performs two steps:
+1. Estimates APOBEC enrichment scores
+2. Prepares a mutational matrix for signature analysis.
+
+###APOBEC Enrichment estimation.
+Note that above command prints APOBEC Enrichment statistics. APOBEC induced mutations are more frequent in solid tumors and are mainly associated with C>T transition events occuring in TCW motif. This contribution of APOBEC induced mutations can be estimated as an enrichment score. APOBEC enrichment scores in the above command are estimated using the method described by Roberts et al[12](#references). Briefly, enrichment of C>T mutations occuring within TCW motif over all of the C>T mutations in a given sample is compared to background Cytosines and TCWs occuring within 20bp of mutated bases. A one-sided fishers exact test is also performed to statsitsically evaluate the enrichment score, as described in original study by Roberts et al.
+
+                                              E = (n_tcw * background_c) / (n_C * background_tcw)
+                                              
+were, n_tcw = number of mutations within T[C>T]W and T[C>G]W context. (W -> A or T)
+      n_C   = number of mutated C and G
+      background_C and background_tcw motifs are number of C and TCW motifs occuring around +/- 20bp of each mutation.
+
+
+###Signature analysis
+`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
+
 
 ```{r, fig.height=5, fig.width=5, eval=F, message=FALSE}
 #Run main function with maximum 6 signatures. 
@@ -620,11 +645,12 @@ maftools has few other functions such as `plotVaf` and `genesToBarcodes` which h
 9. Lawrence MS, Stojanov P, Mermel CH, Robinson JT, Garraway LA, Golub TR, Meyerson M, Gabriel SB, Lander ES, Getz G: Discovery and saturation analysis of cancer genes across 21 tumour types. Nature 2014, 505:495-501.
 10.	Madan, V. et al. Comprehensive mutational analysis of primary and relapse acute promyelocytic leukemia. Leukemia 30, 1672-81 (2016).
 11.	Mroz, E.A. & Rocco, J.W. MATH, a novel measure of intratumor genetic heterogeneity, is high in poor-outcome classes of head and neck squamous cell carcinoma. Oral Oncol 49, 211-5 (2013).
-12.	Gaujoux, R. & Seoighe, C. A flexible R package for nonnegative matrix factorization. BMC Bioinformatics 11, 367 (2010).
-13.	Welch, J.S. et al. The origin and evolution of mutations in acute myeloid leukemia. Cell 150, 264-78 (2012).
-14.	Ramos, A.H. et al. Oncotator: cancer variant annotation tool. Hum Mutat 36, E2423-9 (2015).
-15.	Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
-16. Lawrence MS, Stojanov P, Polak P, Kryukov GV, Cibulskis K, Sivachenko A, Carter SL, Stewart C, Mermel CH, Roberts SA, et al: Mutational heterogeneity in cancer and the search for new cancer-associated genes. Nature 2013, 499:214-218.
+12. Roberts SA, Lawrence MS, Klimczak LJ, et al. An APOBEC Cytidine Deaminase Mutagenesis Pattern is Widespread in Human Cancers. Nature genetics. 2013;45(9):970-976. doi:10.1038/ng.2702.
+13.	Gaujoux, R. & Seoighe, C. A flexible R package for nonnegative matrix factorization. BMC Bioinformatics 11, 367 (2010).
+14.	Welch, J.S. et al. The origin and evolution of mutations in acute myeloid leukemia. Cell 150, 264-78 (2012).
+15.	Ramos, A.H. et al. Oncotator: cancer variant annotation tool. Hum Mutat 36, E2423-9 (2015).
+16.	Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
+17. Lawrence MS, Stojanov P, Polak P, Kryukov GV, Cibulskis K, Sivachenko A, Carter SL, Stewart C, Mermel CH, Roberts SA, et al: Mutational heterogeneity in cancer and the search for new cancer-associated genes. Nature 2013, 499:214-218.
 
 
 #Session Info
