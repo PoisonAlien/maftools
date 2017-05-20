@@ -214,13 +214,13 @@ Similar to MAF objects, there are methods available to access slots of GISTIC ob
 Similar to oncoplots we can draw copy number data.
 
 ```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
-gisticPlot(gistic = laml.gistic)
+  gisticPlot(gistic = laml.gistic)
 ```
 
 ###Plot gistic results.
 A bubble plot to display summarized gistic results. 
 ```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
-plotGisticResults(gistic = laml.gistic)
+gr = plotGisticResults(gistic = laml.gistic)
 ```
 
 #Analysis.
@@ -257,7 +257,7 @@ plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE)
 ##Adding and summarizing pfam domains.
 maftools comes with the function `pfamDomains`, which adds pfam domain information to the amino acid changes. `pfamDomain` also summarizes amino acid changes accoriding to the domains that are affected. This serves the puposes of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation modulce from MuSic tool [8](#references).
 
-```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
+```{r, fig.align='left',fig.width=7, fig.height=5, eval=T, results='hide'}
 laml.pfam = pfamDomains(maf = laml, AACol = 'Protein_Change', top = 10)
 #Protein summary (Printing first 7 columns for display convenience)
 laml.pfam$proteinSummary[,1:7, with = FALSE]
@@ -385,19 +385,101 @@ laml.tnm = trinucleotideMatrix(maf = laml, ref_genome = '/path/to/hg19.fa',
 # matrix of dimension 193x96
 ```
 
+
 Above function performs two steps:
-1. Estimates APOBEC enrichment scores
-2. Prepares a mutational matrix for signature analysis.
+
+  * Estimates APOBEC enrichment scores
+  * Prepares a mutational matrix for signature analysis.
 
 ###APOBEC Enrichment estimation.
-Note that above command prints APOBEC Enrichment statistics. APOBEC induced mutations are more frequent in solid tumors and are mainly associated with C>T transition events occuring in TCW motif. This contribution of APOBEC induced mutations can be estimated as an enrichment score. APOBEC enrichment scores in the above command are estimated using the method described by Roberts et al[12](#references). Briefly, enrichment of C>T mutations occuring within TCW motif over all of the C>T mutations in a given sample is compared to background Cytosines and TCWs occuring within 20bp of mutated bases. A one-sided fishers exact test is also performed to statsitsically evaluate the enrichment score, as described in original study by Roberts et al.
+Note that above command prints APOBEC Enrichment statistics. APOBEC induced mutations are more frequent in solid tumors and are mainly associated with C>T transition events occuring in TCW motif. APOBEC enrichment scores in the above command are estimated using the method described by Roberts et al [12](#references). Briefly, enrichment of C>T mutations occuring within TCW motif over all of the C>T mutations in a given sample is compared to background Cytosines and TCWs occuring within 20bp of mutated bases. 
 
-                                              E = (n_tcw * background_c) / (n_C * background_tcw)
+$$\frac{n_{tCw} * background_C}{n_C * background_{TCW}}$$
                                               
-were, n_tcw = number of mutations within T[C>T]W and T[C>G]W context. (W -> A or T)
-      n_C   = number of mutated C and G
-      background_C and background_tcw motifs are number of C and TCW motifs occuring around +/- 20bp of each mutation.
+                                              
+A one-sided fishers exact test is also performed to statsitsically evaluate the enrichment score, as described in original study by Roberts et al.
 
+```{r, echo=FALSE}
+sub.tbl = structure(list(n_mutations = c(3, 8, 4, 6, 6, 10, 4, 11, 7, 11, 
+12, 8, 10, 11, 10, 9, 10, 9, 18, 11, 20, 8, 10, 10, 15, 9, 12, 
+13, 17, 9, 15, 14, 10, 13, 9, 14, 10, 11, 13, 14, 19, 18, 14, 
+13, 16, 15, 16, 15, 16, 22, 17, 19, 14, 18, 14, 20, 14, 25, 19, 
+23, 17, 26, 14, 5, 14, 13, 9, 4, 8, 7, 10, 10, 14, 3, 1, 4, 12, 
+10, 9, 2, 10, 8, 1, 2, 2, 20, 4, 2, 11, 3, 11, 24, 3, 6, 8, 11, 
+2, 14, 12, 10, 10, 17, 15, 1, 13, 10, 12, 10, 1, 15, 2, 1, 9, 
+4, 11, 6, 4, 7, 1, 5, 15, 1, 17, 17, 16, 2, 13, 16, 11, 14, 1, 
+12, 20, 9, 14, 9, 5, 10, 5, 1, 8, 9, 8, 14, 2, 11, 2, 1, 13, 
+1, 4, 2, 7, 15, 7, 6, 9, 21, 4, 7, 2, 14, 6, 5, 4, 2, 14, 10, 
+5, 9, 6, 13, 9, 8, 8, 7, 6, 8, 11, 3, 10, 26, 17, 17, 35, 5, 
+1), APOBEC_Enriched = c("yes", "yes", "yes", "no", "no", "yes", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "yes", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+NA, "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", NA, 
+"no", "no", "no", "no", "no", "no", NA, NA, "no", "no", "no", 
+"no", "no", "no", NA, "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", NA, "no", "no", "no", "no", "no", "no", 
+"no", "no", NA, "no", "no", "no", "no", "no", "no", "no", NA, 
+"no", NA, "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", NA, "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no"), fraction_APOBEC_mutations = c(0.333, 
+0.125, 0.25, 0.167, 0.167, 0.2, 0.25, 0.182, 0.143, 0.182, 0.167, 
+0.125, 0.2, 0.091, 0.1, 0.111, 0.1, 0.111, 0.111, 0.091, 0.2, 
+0.125, 0.1, 0.1, 0.067, 0.111, 0.083, 0.077, 0.118, 0.111, 0.067, 
+0.071, 0.1, 0.077, 0.111, 0.071, 0.1, 0.091, 0.077, 0.071, 0.105, 
+0.056, 0.071, 0.077, 0.125, 0.067, 0.062, 0.067, 0.062, 0.091, 
+0.118, 0.105, 0.071, 0.056, 0.071, 0.1, 0.071, 0.04, 0.053, 0.043, 
+0.059, 0.038, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0)), .Names = c("n_mutations", "APOBEC_Enriched", "fraction_APOBEC_mutations"
+), row.names = c(NA, -187L), class = c("data.table", "data.frame"
+))
+
+data.table::setDT(sub.tbl)
+
+sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no')) #Set levels
+    yp = boxplot.stats(x = sub.tbl[,n_mutations])$stats #yaxis points and limits
+
+    pieDat = sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched]
+    pieDat[,nonApobec := 1 - V1]
+    colnames(pieDat)[2] = 'Apobec'
+    pieDat = data.table::melt(pieDat, id.vars = 'APOBEC_Enriched', drop = FALSE)
+    pieDat[,title := paste0(variable, ' [', round(value, digits = 3), ']')]
+    pieDat$title = gsub(pattern = '^Apobec', replacement = 'tCw', x = pieDat$title)
+    pieDat$title = gsub(pattern = '^nonApobec', replacement = 'non-tCw', x = pieDat$title)
+
+    layout(matrix(c(1,2,1,3), 2, 2, byrow = TRUE), widths=c(2, 3))
+    par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=NA)
+
+    boxplot(n_mutations ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = FALSE, lty=1,
+            outwex=0, staplewex=0, frame.plot = FALSE, col = c('maroon', 'royalblue'), yaxt = 'n',
+            ylim = c(min(yp), max(yp)),
+            outcol="gray70", outcex = 0.8, outpch  = 16)
+    title(main = 'Mutation load between APOBEC enriched \n and non-APOBEC enriched samples', cex.main=0.9)
+
+    axis(side = 2, at = c(min(yp), max(yp)), lwd = 1.8, las = 1)
+
+    pie(x = pieDat[APOBEC_Enriched %in% 'yes', value], col = c('maroon', 'royalblue'),
+        border="white", radius = 0.95, cex.main=0.6, labels =  pieDat[APOBEC_Enriched %in% 'yes', title], clockwise = TRUE)
+    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
+    title(main = 'Average tCw mutations in \n APOBEC enriched samples', cex.main=0.9)
+
+    pie(x = pieDat[APOBEC_Enriched %in% 'no', value], col = c('maroon', 'royalblue'),
+        border="white",  radius = 0.95, cex.main=1.33, labels =  pieDat[APOBEC_Enriched %in% 'no', title], clockwise = TRUE)
+    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
+    title(main = 'Average tCw mutations in \n non-APOBEC enriched samples', cex.main = 0.9)
+    
+```
 
 ###Signature analysis
 `extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
@@ -645,7 +727,7 @@ maftools has few other functions such as `plotVaf` and `genesToBarcodes` which h
 9. Lawrence MS, Stojanov P, Mermel CH, Robinson JT, Garraway LA, Golub TR, Meyerson M, Gabriel SB, Lander ES, Getz G: Discovery and saturation analysis of cancer genes across 21 tumour types. Nature 2014, 505:495-501.
 10.	Madan, V. et al. Comprehensive mutational analysis of primary and relapse acute promyelocytic leukemia. Leukemia 30, 1672-81 (2016).
 11.	Mroz, E.A. & Rocco, J.W. MATH, a novel measure of intratumor genetic heterogeneity, is high in poor-outcome classes of head and neck squamous cell carcinoma. Oral Oncol 49, 211-5 (2013).
-12. Roberts SA, Lawrence MS, Klimczak LJ, et al. An APOBEC Cytidine Deaminase Mutagenesis Pattern is Widespread in Human Cancers. Nature genetics. 2013;45(9):970-976. doi:10.1038/ng.2702.
+12. Roberts SA, Lawrence MS, Klimczak LJ, et al. An APOBEC Cytidine Deaminase Mutagenesis Pattern is Widespread in Human Cancers. Nature genetics. 2013;45(9):970-976. 
 13.	Gaujoux, R. & Seoighe, C. A flexible R package for nonnegative matrix factorization. BMC Bioinformatics 11, 367 (2010).
 14.	Welch, J.S. et al. The origin and evolution of mutations in acute myeloid leukemia. Cell 150, 264-78 (2012).
 15.	Ramos, A.H. et al. Oncotator: cancer variant annotation tool. Hum Mutat 36, E2423-9 (2015).
