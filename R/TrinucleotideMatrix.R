@@ -23,8 +23,7 @@
 #' @param add If prefix is used, default is to add prefix to contig names in MAF file. If false prefix will be removed from contig names.
 #' @param ignoreChr Chromsomes to remove from analysis. e.g. chrM
 #' @param useSyn Logical. Whether to include synonymous variants in analysis. Defaults to TRUE
-#' @param APOBEC_plot Whether to plot APOBEC enrichment plot. Default TRUE
-#' @param fn If provided writes APOBEC results to an output file with basename fn. Default NULL.
+#' @param fn If given writes APOBEC results to an output file with basename fn. Default NULL.
 #' @return list of 2. A matrix of dimension nx96, where n is the number of samples in the MAF and a table describing APOBEC enrichment per sample.
 #' @examples
 #' \dontrun{
@@ -38,7 +37,7 @@
 #' @seealso \code{\link{extractSignatures}}
 #' @export
 
-trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = TRUE, APOBEC_plot = TRUE, fn = NULL){
+trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = TRUE, fn = NULL){
 
   #suppressPackageStartupMessages(require('VariantAnnotation', quietly = TRUE))
   #suppressPackageStartupMessages(require('Biostrings', quietly = TRUE))
@@ -106,7 +105,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
     message(paste0("Contig names in MAF must match to contig names in reference fasta. Ignorinig ", nrow(maf.snp[Chromosome %in% chrs.missing]) ," single nucleotide variants from ", paste(chrs.missing, collapse = ', ')))
     maf.snp = maf.snp[!Chromosome %in% chrs.missing]
     if(nrow(maf.snp) == 0){
-      stop('Zero mutations to analyze!')
+      stop('Zero mutations to analyze! Maybe add or remove prefix?')
     }
   }
 
@@ -263,50 +262,6 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   message(paste0("APOBEC related mutations are enriched in "), round(nrow(sub.tbl[APOBEC_Enriched %in% 'yes']) / nrow(sub.tbl) * 100, digits = 3), "% of samples (APOBEC enrichment score > 2 ; ",
           nrow(sub.tbl[APOBEC_Enriched %in% 'yes']), " of " , nrow(sub.tbl), " samples)")
 
-  if(APOBEC_plot){
-    sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no')) #Set levels
-    yp = boxplot.stats(x = sub.tbl[,n_mutations])$stats #yaxis points and limits
-
-    pieDat = sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched]
-    pieDat[,nonApobec := 1 - V1]
-    colnames(pieDat)[2] = 'Apobec'
-    pieDat = data.table::melt(pieDat, id.vars = 'APOBEC_Enriched', drop = FALSE)
-    pieDat[,title := paste0(variable, ' [', round(value, digits = 3), ']')]
-    pieDat$title = gsub(pattern = '^Apobec', replacement = 'tCw', x = pieDat$title)
-    pieDat$title = gsub(pattern = '^nonApobec', replacement = 'non-tCw', x = pieDat$title)
-
-    if(!is.null(fn)){
-      pdf(file = paste0(fn, '_APOBEC.pdf'), width = 6, height = 7, paper = 'special', bg = 'white')
-    }
-
-
-    layout(matrix(c(1,2,1,3), 2, 2, byrow = TRUE), widths=c(2, 3))
-    par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=NA)
-
-    boxplot(n_mutations ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = FALSE, lty=1,
-            outwex=0, staplewex=0, frame.plot = FALSE, col = c('maroon', 'royalblue'), yaxt = 'n',
-            ylim = c(min(yp), max(yp)),
-            outcol="gray70", outcex = 0.8, outpch  = 16)
-    title(main = 'Mutation load between APOBEC enriched \n and non-APOBEC enriched samples', cex.main=0.9)
-
-    #axis(side = 1, at = c(1, 2), labels = c('APOBEC', 'non-APOBEC'), las = 2, tick = FALSE)
-    axis(side = 2, at = c(min(yp), max(yp)), lwd = 1.8, las = 1)
-
-    pie(x = pieDat[APOBEC_Enriched %in% 'yes', value], col = c('maroon', 'royalblue'),
-        border="white", radius = 0.95, cex.main=0.6, labels =  pieDat[APOBEC_Enriched %in% 'yes', title], clockwise = TRUE)
-    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-    title(main = 'Average tCw mutations in \n APOBEC enriched samples', cex.main=0.9)
-
-    pie(x = pieDat[APOBEC_Enriched %in% 'no', value], col = c('maroon', 'royalblue'),
-        border="white",  radius = 0.95, cex.main=1.33, labels =  pieDat[APOBEC_Enriched %in% 'no', title], clockwise = TRUE)
-    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-    title(main = 'Average tCw mutations in \n non-APOBEC enriched samples', cex.main = 0.9)
-
-    if(!is.null(fn)){
-      dev.off()
-    }
-
-  }
 
   message("Creating mutation matrix..")
   extract.tbl.summary = extract.tbl[,.N , by = list(Tumor_Sample_Barcode, SubstitutionTypeMotif)]
@@ -330,8 +285,10 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   #Set NAs to zeros if any (highly unlikely)
   conv.mat[is.na(conv.mat)] = 0
   message(paste('matrix of dimension ', nrow(conv.mat), 'x', ncol(conv.mat), sep=''))
+
   if(!is.null(fn)){
     write.table(x = sub.tbl, file = paste0(fn, "_APOBEC_enrichment.tsv"), sep = '\t', quote = FALSE, row.names = FALSE)
   }
+
   return(list(nmf_matrix = conv.mat, APOBEC_scores = sub.tbl))
 }

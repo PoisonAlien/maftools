@@ -25,8 +25,13 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10, o
 
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
-      print(colnames(dat))
-      stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
+        message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
+        dat[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
+      }else{
+        print(colnames(dat))
+        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+      }
     }else{
       colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
     }
@@ -61,7 +66,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10, o
         geom_boxplot(outlier.color = 'gray70', outlier.size = 0.6, alpha = 0.6, fill = 'gray70')
   }
 
-  gg = gg+cowplot::theme_cowplot(font_size = 10)+ylim(0, 1)+
+  gg = gg+cowplot::theme_cowplot(font_size = 12)+ylim(0, 1)+
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),legend.position = 'none')+
     ylab('VAF')+xlab('')+cowplot::background_grid(major = 'xy')
 

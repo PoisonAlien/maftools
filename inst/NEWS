@@ -1,14 +1,16 @@
-CHANGES IN VERSION 1.2.20
+CHANGES IN VERSION 1.2.30
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT
     o APOBEC enrichment - trinucleotideMatrix function now calculates APOBEC enrichment scores in parallel. See details for more.
+    o APOBEC plot - plotSignatures function now plots APOBEC enrichment plot using output from trinucleotideMatrix
     o Survival improvements - mafSurvival can perform survival analysis based on sample grouping
-    o GISTIC plot improvements - plotGisticResults can plot genomic segment plot
+    o GISTIC plot improvements - plotGisticResults can plot genomic segment plot using scores.gistic file
 
 NON SIGNIFICANT CHANGES
-    o Auto detects prtein_change columns while drawing lollipop plots.
+    o Auto detects protein_change columns for functions requiring amino acid change information.
+    o Added colCode and labelSize arguments to plotOncodrive.
     o Bug fixes and improvements.
-    
+
 
 CHANGES IN VERSION 1.2.0
 -------------------------

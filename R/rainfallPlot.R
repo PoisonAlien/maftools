@@ -1,4 +1,4 @@
-#' Rainfall plot to display kataegis or hyper mutated genomic regions.
+#' Rainfall plot to display hyper mutated genomic regions.
 #' @description Plots inter variant distance as a function of genomic locus.
 #' @details Note that detected change points are only loci where the distribution of inter-event distance changes. Segments may have to be manually inferred by adjacent change-points.
 #'

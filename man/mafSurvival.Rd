@@ -16,7 +16,7 @@ mafSurvival(maf, clinicalData, genes = NULL, samples = NULL,
 
 \item{genes}{gene names for which survival analysis needs to be performed.}
 
-\item{samples}{samples to group by. genes and samples are mutually exclusive.}
+\item{samples}{samples to group by. Genes and samples are mutually exclusive.}
 
 \item{time}{column name contining time in \code{clinicalData}}
 
@@ -30,7 +30,7 @@ mafSurvival(maf, clinicalData, genes = NULL, samples = NULL,
 
 \item{col}{colors for plotting.}
 
-\item{isTCGA}{FALSE. If data is from TCGA.}
+\item{isTCGA}{FALSE. Is data is from TCGA.}
 
 \item{textSize}{Text size for surv table. Default 7.}
 
@@ -41,7 +41,7 @@ mafSurvival(maf, clinicalData, genes = NULL, samples = NULL,
 \item{height}{height of plot to be saved. Default 6}
 }
 \description{
-Performs survival analysis by grouping samples from maf based on mutation status of given genes.
+Performs survival analysis by grouping samples from maf based on mutation status of given gene(s) or manual grouping of samples.
 }
 \details{
 This function takes MAF file and groups them based on mutation status associated with given gene(s) and performs survival analysis. Requires dataframe containing survival status and time to event.

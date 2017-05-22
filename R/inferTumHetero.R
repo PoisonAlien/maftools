@@ -44,8 +44,13 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
   #Check if t_vaf exists
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
-      print(colnames(dat))
-      stop('t_vaf field is missing. Use argument vafCol to manually specify vaf column name.')
+      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
+        message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
+        dat[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
+      }else{
+        print(colnames(dat))
+        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+      }
     }else{
       colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
     }
@@ -162,7 +167,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
       }else{
         #More than 7 clusters possible ? May not be biologically meaningful.
         #Use finite mixture model
-        tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7)
+        tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7, verbose = FALSE)
         tsb.dat$cluster = as.character(tsb.cluster$classification)
       }
 

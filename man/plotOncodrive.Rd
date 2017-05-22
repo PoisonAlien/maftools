@@ -4,7 +4,8 @@
 \alias{plotOncodrive}
 \title{Plots results from \code{oncodrive}}
 \usage{
-plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = FALSE)
+plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = FALSE,
+  colCode = NULL, labelSize = 2)
 }
 \arguments{
 \item{res}{results from \code{\link{oncodrive}}}
@@ -12,6 +13,10 @@ plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = FALSE)
 \item{fdrCutOff}{fdr cutoff to call a gene as a driver.}
 
 \item{useFraction}{if TRUE uses a fraction of total variants as X-axis scale instead of absolute counts.}
+
+\item{colCode}{Colors to use for indicating significant and non-signififcant genes. Default NULL}
+
+\item{labelSize}{font size for labelling genes. Default 2.}
 }
 \value{
 a ggplot object which can be further modified.

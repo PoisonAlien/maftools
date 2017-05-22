@@ -32,9 +32,13 @@ math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, va
 
   if(!'t_vaf' %in% colnames(maf)){
     if(is.null(vafCol)){
-      message('Available fields..')
-      print(colnames(maf))
-      stop('t_vaf field is missing. Use argument vafCol to manually specify vaf column name.')
+      if(all(c('t_ref_count', 't_alt_count') %in% colnames(maf))){
+        message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
+        maf[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
+      }else{
+        print(colnames(maf))
+        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+      }
     }else{
       colnames(maf)[which(colnames(maf) == vafCol)] = 't_vaf'
     }

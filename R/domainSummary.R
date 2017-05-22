@@ -96,7 +96,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   if(nrow( prot.dat[is.na(prot.dat$pos),]) > 0){
     message(paste('Removed', nrow( prot.dat[is.na(prot.dat$pos),]), 'mutations for which AA position was not available', sep = ' '))
-    print(prot.dat[is.na(prot.dat$pos),])
+    #print(prot.dat[is.na(prot.dat$pos),])
     prot.dat = prot.dat[!is.na(prot.dat$pos),]
   }
 
@@ -165,7 +165,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   #print(prot.sum)
   p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point()+cowplot::theme_cowplot()+
-    ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel, color = 'red'), size = 3, fontface = 'bold', force = 20)+
+    ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = 3, fontface = 'bold', force = 20)+
     theme(legend.position = 'none')+cowplot::background_grid(major = 'xy')
 
   print(p)
