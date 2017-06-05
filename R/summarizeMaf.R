@@ -290,8 +290,8 @@ sortByAnnotation <-function(numMat,maf, anno){
   adf = as.data.frame(anno.named)
   fulldf = cbind(adf,tndf)
 
-  #numMat = t(tnumMat[do.call(order, c(as.list(fulldf), decreasing = TRUE)), ]) #sort
-  numMat = t(tnumMat[rownames(fulldf[order(fulldf$anno.named),]),])
+  numMat = t(tnumMat[do.call(order, c(as.list(fulldf), decreasing = TRUE)), ]) #sort
+  #numMat = t(tnumMat[rownames(fulldf[order(fulldf$anno.named),]),])
   numMat = numMat[geneOrder[geneOrder %in% rownames(numMat)],]
 
   return(numMat)

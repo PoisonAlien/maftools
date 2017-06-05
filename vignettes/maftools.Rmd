@@ -100,20 +100,24 @@ oncoplot(maf = laml.plus.gistic, top = 10, removeNonMutated = TRUE, sortByMutati
 
 This plot shows frequent deletions in TP53 gene which is located on one of the significanlty deleted locus 17p13.2.
 
-###Changing colors and adding annotations to oncoplots.
-It is often the case that we include meta data to show sample characterstics such as gender, treatment, etc. We can include such meta data by passing them to `annotation` argument of `oncoplot`. We can also change colors for Variant_Classification by providing a named vector of colors.
+###Changing colors, including MutSig Q-Values and adding annotations to oncoplots.
+It is often the case that we include meta data to show sample characterstics such as gender, treatment, etc. We can include such meta data by passing them to `annotation` argument of `oncoplot`. We can also change colors for Variant_Classification by providing a named vector of colors. If MutSigCV results are available, you can pass them via argument `mutsig` which will draw all signififcant genes and includes q-values (-log10 transformed) as a side barplot.
 
 ```{r, fig.height=7,fig.width=10, eval=T, fig.align='left'}
 #Read FAB classification of TCGA LAML barcodes.
 laml.fab.anno = system.file('extdata', 'tcga_laml_fab_annotation.txt', package = 'maftools')
 laml.fab.anno = read.delim(laml.fab.anno, sep = '\t')
 head(laml.fab.anno)
+
 #Changing colors (You can use any colors, here in this example we will use a color palette from RColorBrewer)
 col = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
 names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Multi_Hit', 'Frame_Shift_Ins',
                'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
-#We will plot same top ten mutated genes with FAB classification as annotation and using above defined colors.
-oncoplot(maf = laml, top = 10, annotation = laml.fab.anno, removeNonMutated = TRUE, colors = col)
+
+#MutSig reusults
+laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
+
+oncoplot(maf = laml, annotation = laml.fab.anno, mutsig = laml.mutsig, colors = col)
 ```
 
 ##Oncostrip
