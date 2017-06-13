@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.2.40
+-------------------------
+SIGNIFICANT USER-LEVEL IMPROVEMENT
+    o Now you can include q values from mutsig (or any q-values) as a side barplot in oncoplot
+
+NON SIGNIFICANT CHANGES
+    o mafCompare output includes adjusted p-values
+    o trinucleotideMatrix output includes adjusted p-values
+    o added plot arguments to control title size and point size in lollipopPlot
+    o minor bug fixes in plotGisticResults
+
 CHANGES IN VERSION 1.2.30
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT

@@ -71,6 +71,7 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5){
  }
 
   fisherTable = fisherTable[order(pval)]
+  fisherTable[,adjPval := p.adjust(p = pval, method = 'fdr')]
 
   colnames(fisherTable)[2:3] = c(m1Name, m2Name)
 

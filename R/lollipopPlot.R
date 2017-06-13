@@ -23,6 +23,8 @@
 #' @param domainColors Manual colors for protein domains
 #' @param labelOnlyUniqueDoamins Default TRUE only labels unique doamins.
 #' @param defaultYaxis If FALSE, just labels min and maximum y values on y axis.
+#' @param pointSize size of lollipop heads. Default 1.5
+#' @param titleSize font size for title and subtitle. Default c(12, 10)
 #' @return ggplot object of the plot, which can be futher modified.
 #' @import ggrepel
 #' @examples
@@ -35,7 +37,7 @@
 lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, showMutationRate = TRUE, fn = NULL,
                          showDomainLabel = TRUE, cBioPortal = FALSE, refSeqID = NULL, proteinID = NULL,
                          repel = FALSE, collapsePosLabel = TRUE, legendTxtSize = 10, labPosSize = 2, labPosAngle = 0, domainLabelSize = 2.5,
-                         printCount = FALSE, colors = NULL, domainColors = NULL, labelOnlyUniqueDoamins = TRUE, defaultYaxis = TRUE){
+                         printCount = FALSE, colors = NULL, domainColors = NULL, labelOnlyUniqueDoamins = TRUE, defaultYaxis = TRUE, titleSize = c(12, 10), pointSize = 1.5){
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
@@ -203,10 +205,10 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, showMut
   }
 
   pl = ggplot()+geom_segment(data = prot.snp.sumamry, aes(x = pos, xend = pos2, y = 0.8, yend = count2-0.03), color = 'gray70', size = 0.5)
-  pl = pl+geom_point(data = prot.snp.sumamry, aes(x = pos2, y = count2, color = Variant_Classification), size = 1.5, alpha = 0.7)
+  pl = pl+geom_point(data = prot.snp.sumamry, aes(x = pos2, y = count2, color = Variant_Classification), size = pointSize, alpha = 0.7)
   pl = pl+scale_color_manual(values = col)+xlab('')+ylab('# Mutations')
   pl = pl+geom_segment(aes_all(c('x','y', 'xend', 'yend')), data = data.frame(y = c(min(lim.pos), 0), yend = c(6, 0), x = c(0, 0), xend = c(0, max(xlimPos))), size = 0.7)
-  pl = pl+theme(panel.background = element_blank(), axis.text.y = element_text(face="bold", size = 9), axis.text.x = element_text(face="bold", size = 9))
+  pl = pl+theme(panel.background = element_blank(), axis.text.y = element_text(face="bold", size = 12), axis.text.x = element_text(face="bold", size = 9))
   pl = pl+scale_y_continuous(breaks = lim.pos, labels = lim.lab, expand = c(0, 0), limits = c(0, 6.5))
   pl = pl+scale_x_continuous(breaks = xlimPos, expand = c(0, 0), limits = c(0, max(xlimPos)+round(0.02*max(xlimPos))))
   pl = pl+theme(legend.position = 'bottom', legend.text=element_text(size = legendTxtSize), legend.title = element_blank(), legend.key.size =  unit(0.35, "cm"), legend.box.background = element_blank())
@@ -303,8 +305,8 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, showMut
   if(showMutationRate){
 
     p = p+ggtitle(label = cbioSubTitle, subtitle = unique(prot[,refseq.ID]))+
-      theme(plot.title = element_text(size = 10, face = "bold"))+
-      theme(plot.subtitle = element_text(size = 7, face = "bold"))
+      theme(plot.title = element_text(size = titleSize[1], face = "bold"))+
+      theme(plot.subtitle = element_text(size = titleSize[2], face = "bold"))
   }
 
   if(cBioPortal){

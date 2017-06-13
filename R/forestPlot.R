@@ -3,6 +3,7 @@
 #' @details Plots results from \code{link{mafCompare}} as a forest plot with x-axis as log10 converted odds ratio and differentially mutated genes on y-axis.
 #' @param mafCompareRes results from \code{\link{mafCompare}}
 #' @param pVal p-value threshold. Default 0.05.
+#' @param fdr fdr threshold. Default NULL. If provided uses adjusted pvalues (fdr).
 #' @param show can be either \code{stat} or \code{pval}
 #' @param color vector of colors for cohorts. Default NULL.
 #' @param file basename for output file. Plot will saved to an output pdf.
@@ -23,10 +24,15 @@
 #' m2Name = 'Relapse', minMut = 5)
 #' forestPlot(mafCompareRes = pt.vs.rt, show = 'stat')
 
-forestPlot = function(mafCompareRes, pVal = 0.05, show = NULL, color = NULL, file = NULL, width = 5, height = 6){
+forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color = NULL, file = NULL, width = 5, height = 6){
 
   res = mafCompareRes$results
-  m.sigs = res[pval < pVal]
+
+  if(is.null(fdr)){
+    m.sigs = res[pval < pVal]
+  }else{
+    m.sigs = res[adjPval < fdr]
+  }
 
   m1Name = mafCompareRes$SampleSummary[1, Cohort]
   m2Name = mafCompareRes$SampleSummary[2, Cohort]

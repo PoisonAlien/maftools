@@ -4,13 +4,15 @@
 \alias{forestPlot}
 \title{Draw forest plot for differences betweeen cohorts.}
 \usage{
-forestPlot(mafCompareRes, pVal = 0.05, show = NULL, color = NULL,
-  file = NULL, width = 5, height = 6)
+forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL,
+  color = NULL, file = NULL, width = 5, height = 6)
 }
 \arguments{
 \item{mafCompareRes}{results from \code{\link{mafCompare}}}
 
 \item{pVal}{p-value threshold. Default 0.05.}
+
+\item{fdr}{fdr threshold. Default NULL. If provided uses adjusted pvalues (fdr).}
 
 \item{show}{can be either \code{stat} or \code{pval}}
 

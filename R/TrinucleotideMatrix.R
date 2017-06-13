@@ -258,6 +258,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
 
   ##Choosing APOBEC Enrichment scores > 2 as cutoff
   sub.tbl$APOBEC_Enriched = ifelse(test = sub.tbl$APOBEC_Enrichment >2, yes = 'yes', no = 'no')
+  sub.tbl[,fdr := p.adjust(fisher_pvalue, method = 'fdr')] #Adjusted p-values
 
   message(paste0("APOBEC related mutations are enriched in "), round(nrow(sub.tbl[APOBEC_Enriched %in% 'yes']) / nrow(sub.tbl) * 100, digits = 3), "% of samples (APOBEC enrichment score > 2 ; ",
           nrow(sub.tbl[APOBEC_Enriched %in% 'yes']), " of " , nrow(sub.tbl), " samples)")
