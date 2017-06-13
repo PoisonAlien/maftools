@@ -122,7 +122,7 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
       poisson.test(as.numeric(x[observed_mut_colIndex]), as.numeric(x[expected_mut_colIndex]))$p.value
     })
 
-    nonsyn.scores$poissonFdr = p.adjust(nonsyn.scores$poissonPval)
+    nonsyn.scores$poissonFdr = p.adjust(nonsyn.scores$poissonPval, method = 'fdr')
     nonsyn.scores = nonsyn.scores[order(poissonFdr)]
 
     nonsyn.scores$fdr = apply(nonsyn.scores[,.(tFdr, poissonFdr)], MARGIN = 1, FUN = min)
@@ -156,7 +156,7 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
       poisson.test(as.numeric(x[observed_mut_colIndex]), as.numeric(x[expected_mut_colIndex]))$p.value
     })
 
-    nonsyn.scores$fdr = p.adjust(nonsyn.scores$pval)
+    nonsyn.scores$fdr = p.adjust(nonsyn.scores$pval, method = 'fdr')
     nonsyn.scores = nonsyn.scores[order(fdr)]
   }
   message('Done !')
