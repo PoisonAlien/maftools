@@ -11,7 +11,7 @@
 #' @seealso \code{\link{trinucleotideMatrix}}
 #' @export
 #'
-plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order=NULL ...){
+plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order=NULL, ...){
 
   if(length(nmfRes) == 2){
     sub.tbl <- nmfRes$APOBEC_scores
