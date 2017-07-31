@@ -88,7 +88,7 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
   non.syn.maf = maf@data
   #Variant Classification with Low/Modifier variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
   silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "Amp", "Del")
+             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "Amp", "Del", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
   non.syn.maf = non.syn.maf[!Variant_Classification %in% silent] #Remove silent variants from main table
 
   #Remove genes to ignore

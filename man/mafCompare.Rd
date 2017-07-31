@@ -4,7 +4,8 @@
 \alias{mafCompare}
 \title{compare two cohorts (MAF).}
 \usage{
-mafCompare(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5)
+mafCompare(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5,
+  useCNV = TRUE)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}
@@ -16,6 +17,8 @@ mafCompare(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5)
 \item{m2Name}{optional name for second cohort}
 
 \item{minMut}{Consider only genes with minimum this number of samples mutated in atleast one of the cohort for analysis. Helful to ignore single mutated genes. Default 5.}
+
+\item{useCNV}{whether to include copy number events to compare MAFs. Only applicable when MAF is read along with copy number data. Default TRUE if available.}
 }
 \value{
 result list

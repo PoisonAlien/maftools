@@ -80,7 +80,7 @@ read.maf = function(maf, removeSilent = TRUE, useAll = TRUE, gisticAllLesionsFil
 
   #Variant Classification with Low/Modifier variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
   silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
+             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
   #Variant Classification with High/Moderate variant consequences. http://asia.ensembl.org/Help/Glossary?id=535
   vc.nonSilent = c("Frame_Shift_Del", "Frame_Shift_Ins", "Splice_Site", "Translation_Start_Site",
                    "Nonsense_Mutation", "Nonstop_Mutation", "In_Frame_Del",

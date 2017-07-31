@@ -154,7 +154,7 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDu
       maf.oncomat = createOncoMatrix(maf = icgc.maf)
 
       silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-                 "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
+                 "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
       maf.silent = icgc.maf[Variant_Classification %in% silent]
 
       icgc.maf = MAF(data = icgc.maf, variants.per.sample = maf.summary$variants.per.sample, variant.type.summary = maf.summary$variant.type.summary,

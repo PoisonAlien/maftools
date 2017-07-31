@@ -28,7 +28,7 @@ from large-scale cohort based cancer studies. bioRxiv (2016). doi: http://dx.doi
 #MAF field requirements.
 MAF files contain many fields ranging from chromosome names to cosmic annotations. However most of the analysis in maftools uses following fields.
 
-  * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_Position, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
+  * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
   
   * Recommended optional fields: non MAF specific fields containing vaf and amino acid change information. 
 
@@ -736,8 +736,6 @@ subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classificati
 subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'", fields = 'i_transcript_name')
 ```
 
-##Plotting VAF
-maftools has few other functions such as `plotVaf` and `genesToBarcodes` which helps to plot vaf distributions and maps samples where a given genes are mutated respectively.
 
 #References
 1.	Cancer Genome Atlas Research, N. Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med 368, 2059-74 (2013).

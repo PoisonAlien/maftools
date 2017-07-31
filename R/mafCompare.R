@@ -6,6 +6,7 @@
 #' @param m1Name optional name for first cohort
 #' @param m2Name optional name for second cohort
 #' @param minMut Consider only genes with minimum this number of samples mutated in atleast one of the cohort for analysis. Helful to ignore single mutated genes. Default 5.
+#' @param useCNV whether to include copy number events to compare MAFs. Only applicable when MAF is read along with copy number data. Default TRUE if available.
 #' @return result list
 #' @examples
 #' primary.apl <- system.file("extdata", "APL_primary.maf.gz", package = "maftools")
@@ -17,18 +18,29 @@
 #' @export
 #' @seealso \code{\link{forestPlot}}
 
-mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5){
- m1.gs = getGeneSummary(x = m1)
- m2.gs = getGeneSummary(x = m2)
+mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE){
+
+  m1.gs = getGeneSummary(x = m1)
+  m2.gs = getGeneSummary(x = m2)
 
 
- if(is.null(m1Name)){
-   m1Name = 'M1'
- }
+   if(is.null(m1Name)){
+     m1Name = 'M1'
+   }
 
- if(is.null(m2Name)){
-   m2Name = 'M2'
- }
+   if(is.null(m2Name)){
+     m2Name = 'M2'
+   }
+
+  if(useCNV){
+    if('CNV_total' %in% colnames(m1.gs)){
+      m1.gs = m1.gs[,MutatedSamples := MutatedSamples + CNV_total][order(MutatedSamples, decreasing = TRUE)]
+    }
+
+    if('CNV_total' %in% colnames(m2.gs)){
+      m2.gs = m2.gs[,MutatedSamples := MutatedSamples + CNV_total][order(MutatedSamples, decreasing = TRUE)]
+    }
+  }
 
 
   m1.genes = m1.gs[MutatedSamples >= minMut,Hugo_Symbol]
@@ -43,7 +55,7 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5){
  m1.gs.comGenes = m1.gs[Hugo_Symbol %in% uniqueGenes]
  m2.gs.comGenes = m2.gs[Hugo_Symbol %in% uniqueGenes]
 
- sampleSummary = data.table(Cohort = c(m1Name, m2Name), SampleSize = c(m1.sampleSize, m2.sampleSize))
+ sampleSummary = data.table::data.table(Cohort = c(m1Name, m2Name), SampleSize = c(m1.sampleSize, m2.sampleSize))
 
  m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)], m2.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)],
                     by = 'Hugo_Symbol', all = TRUE)
@@ -58,7 +70,7 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5){
    gene = m.gs.meged[i, 1]
    m1Mut = m.gs.meged[i,2]
    m2Mut = m.gs.meged[i,3]
-
+   #print(i)
    xf = fisher.test(matrix(c(m1Mut, m1.sampleSize-m1Mut, m2Mut, m2.sampleSize-m2Mut),
                            byrow = TRUE, nrow = 2), conf.int = TRUE, conf.level = 0.95)
 
@@ -66,7 +78,7 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5){
    or = xf$estimate
    ci.up = xf$conf.int[1]
    ci.low = xf$conf.int[2]
-   tdat = data.table(Hugo_Symbol = gene, m1Mut , m2Mut, pval = pval, or = or, ci.up = ci.up, ci.low = ci.low)
+   tdat = data.table::data.table(Hugo_Symbol = gene, m1Mut , m2Mut, pval = pval, or = or, ci.up = ci.up, ci.low = ci.low)
    fisherTable = rbind(fisherTable, tdat)
  }
 

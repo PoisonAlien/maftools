@@ -41,6 +41,19 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE, a
       mat = mat_origin[1:top,]
     }
   } else{
+
+    #Check for any missing genes and ignore them if necessary
+    if(length(genes[!genes %in% rownames(mat_origin)]) > 0){
+      message('Following genes are not available in MAF:')
+      print(genes[!genes %in% rownames(mat_origin)])
+      message('Ignoring them.')
+      genes = genes[genes %in% rownames(mat_origin)]
+    }
+
+    if(length(genes) < 2){
+      stop('Provide at least 2 genes.')
+    }
+
     mat = mat_origin[genes,]
   }
 
@@ -100,7 +113,7 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE, a
 
   type_name = structure(variant.classes, names = variant.classes)
 
-  variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
+  #variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
 
   #Make annotation
   if(!is.null(annotation)){
