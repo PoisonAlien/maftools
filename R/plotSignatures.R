@@ -6,12 +6,13 @@
 #' @param nmfRes results from \code{\link{extractSignatures}} or \code{\link{trinucleotideMatrix}}
 #' @param contributions If TRUE plots contribution of signatures in each sample.
 #' @param color colors for each Ti/Tv conversion class. Default NULL
+#' @param patient_order User defined ordering of samples. Default NULL.
 #' @param ... further plot options passed to \code{\link{barplot}}
 #' @return ggplot object if contributions is TRUE
 #' @seealso \code{\link{trinucleotideMatrix}}
 #' @export
 #'
-plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order=NULL, ...){
+plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL, ...){
 
   if(length(nmfRes) == 2){
     sub.tbl <- nmfRes$APOBEC_scores
@@ -72,7 +73,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
         }else{
         contribt = contribt[order(contribt[,ncol(contribt)]),] #order according to standard deviation
         }
-      
+
       contrib = t(contribt[,1:(ncol(contribt)-1)])
       contrib.melt = data.table::melt(contrib)
 

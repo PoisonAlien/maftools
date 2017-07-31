@@ -4,7 +4,8 @@
 \alias{plotSignatures}
 \title{Plots decomposed mutational signatures or APOBEC enrichment plot.}
 \usage{
-plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL, ...)
+plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
+  patient_order = NULL, ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}} or \code{\link{trinucleotideMatrix}}}
@@ -12,6 +13,8 @@ plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL, ...)
 \item{contributions}{If TRUE plots contribution of signatures in each sample.}
 
 \item{color}{colors for each Ti/Tv conversion class. Default NULL}
+
+\item{patient_order}{User defined ordering of samples. Default NULL.}
 
 \item{...}{further plot options passed to \code{\link{barplot}}}
 }
