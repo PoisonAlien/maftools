@@ -14,7 +14,7 @@ Mayakonda, A. and H.P. Koeffler, Maftools: Efficient analysis, visualization and
 
 ### MAF field requirements.
 MAF files contains many fields ranging from chromosome names to cosmic annotations. However, most of the analysis in maftools uses following fields. Please stick to MAF specifications for better results.
-  * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_position, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
+  * Mandatoty fields: __Hugo_Symbol, Chromosome, Start_Position, End_position, Reference_Allele, Tumor_Seq_Allele2, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
   * Recommended optional fields: non MAF specific fields containing vaf and amino acid change information. 
 Complete specififcation of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
@@ -28,7 +28,12 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 <img src="https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/maftools.gif">
 </p>
 
+##Usage
+Simple usage: Just read maf file using `read.maf` and pass the resulting maf object to any one of the function for plotting or analysis or set operations.
 
+<p align="center">
+<img src="https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/overview.png">
+</p>
 
 ### Stuffs maftools can do.
 1. Analysis
@@ -86,7 +91,7 @@ install_github(repo = "PoisonAlien/maftools")
 For full documentation please refer to [vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 
-###References.
+####References.
 
 1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.
 2.	Tamborero, D., A. Gonzalez-Perez, and N. Lopez-Bigas, OncodriveCLUST: exploiting the positional clustering of somatic mutations to identify cancer genes. Bioinformatics, 2013. 29(18): p. 2238-44.
