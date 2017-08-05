@@ -75,7 +75,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
         }
       
       #contrib = t(contribt[,1:(ncol(contribt)-1)])
-      
+      contrib = t(contribt[,1:(ncol(contribt))])
       contrib.melt = data.table::melt(contrib)
 
       contrib.gg = ggplot(data = contrib.melt, aes(x = Var2, y = value, fill = Var1))+geom_bar(stat = 'identity')+
