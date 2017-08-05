@@ -151,7 +151,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   swapSubTypeMotif[swap.ind] = complemented.triplets[swap.ind]
 
   extract.tbl$SubstitutionTypeMotif = swapSubTypeMotif
-  extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
+  #extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
 
   #Possible substitutions and and their motifs
   sub.levels = extract.tbl[,.N,Substitution][,Substitution]
