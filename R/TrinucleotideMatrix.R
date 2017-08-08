@@ -137,7 +137,8 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
 
   extract.tbl$SubstitutionType = conv[extract.tbl$Substitution]
-  
+  complement=c("A","C","G","T")
+  names(complement)=c("T","G","C","A")
   #need to reverse-complement triplet for mutated purines (not just the middle base)
   complemented.triplets = paste(
   complement[
