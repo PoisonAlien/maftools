@@ -137,7 +137,22 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
 
   extract.tbl$SubstitutionType = conv[extract.tbl$Substitution]
-  extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
+  complement=c("A","C","G","T")
+  names(complement)=c("T","G","C","A")
+  #need to reverse-complement triplet for mutated purines (not just the middle base)
+  complemented.triplets = paste(
+  complement[
+    substr(x = as.character(extract.tbl$trinucleotide), 3, 3)],
+  '[',extract.tbl$SubstitutionType, ']', 
+  complement[substr(as.character(extract.tbl$trinucleotide), 1, 1)],
+  sep='')
+  #which ones need to be reverse-complemented
+  swap.ind = which(substr(x=extract.tbl$Substitution,1,1) %in% c("G","A"))
+  swapSubTypeMotif =  extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
+  swapSubTypeMotif[swap.ind] = complemented.triplets[swap.ind]
+
+  extract.tbl$SubstitutionTypeMotif = swapSubTypeMotif
+  #extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
 
   #Possible substitutions and and their motifs
   sub.levels = extract.tbl[,.N,Substitution][,Substitution]
