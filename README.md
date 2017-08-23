@@ -1,6 +1,6 @@
 ## maftools - An R package to summarize, analyze and visualize MAF files.
 
-##Introduction. 
+## Introduction. 
 With advances in Cancer Genomics, Mutation Annotation Format (MAF) is being widley accepted and used to store variants detected. 
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has seqenced over 30 different cancers with sample size of each cancer type being over 200. The [resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of genetic variants is stored in the form of [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification). 
 This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner either from TCGA sources or any in-house studies as long as the data is in MAF format. Maftools can also handle ICGC Simple Somatic Mutation format.
@@ -29,8 +29,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 </p>
 
 
-##Usage.
-
+## Usage.
 Simple usage: Just read maf file using `read.maf` and pass the resulting maf object to any one of the function for plotting or analysis or set operations.
 
 <p align="center">
@@ -93,7 +92,7 @@ install_github(repo = "PoisonAlien/maftools")
 For full documentation please refer to [vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 
-###References.
+### References.
 
 1.	Cancer Genome Atlas Research, N., Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med, 2013. 368(22): p. 2059-74.
 2.	Tamborero, D., A. Gonzalez-Perez, and N. Lopez-Bigas, OncodriveCLUST: exploiting the positional clustering of somatic mutations to identify cancer genes. Bioinformatics, 2013. 29(18): p. 2238-44.
