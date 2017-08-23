@@ -108,16 +108,12 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     for(i in 1:ncol(w)){
       sig = w[,i]
       coSineMat = rbind(coSineMat, apply(sigs, 2, function(x){
-        crossprod(sig, x)/sqrt(crossprod(x) * crossprod(sig)) #Estimate cosine similarity against all 21 signatures
+        crossprod(sig, x)/sqrt(crossprod(x) * crossprod(sig)) #Estimate cosine similarity against all 30 signatures
       }))
       #corMat = rbind(corMat, apply(sigs, 2, function(x) cor.test(x, sig)$estimate[[1]])) #Calulate correlation coeff.
     }
     #rownames(corMat) = colnames(w)
     rownames(coSineMat) = colnames(w)
-
-    # for(i in 1:nrow(corMat)){
-    #   message('Found ',rownames(corMat)[i], ' most similar to validated ',names(which(corMat[i,] == max(corMat[i,]))), '. Correlation coeff: ', max(corMat[i,]), sep=' ')
-    # }
 
     for(i in 1:nrow(coSineMat)){
       message('Found ',rownames(coSineMat)[i], ' most similar to validated ',names(which(coSineMat[i,] == max(coSineMat[i,]))), '. CoSine-Similarity: ', max(coSineMat[i,]), sep=' ')

@@ -40,7 +40,7 @@ subsetMaf = function(maf, includeSyn = FALSE, tsb = NULL, genes = NULL, fields =
   #Select
   if(!is.null(tsb)){
 
-    tsb = gsub(pattern = '-', replacement = '.', x = tsb)
+    #tsb = gsub(pattern = '-', replacement = '.', x = tsb)
 
     if(isTCGA){
       tsb = substr(x = tsb, start = 1, stop = 12)

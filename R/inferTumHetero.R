@@ -26,7 +26,7 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
-#' TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
+#' TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
 #'
 #' @importFrom mclust densityMclust
 #' @importFrom DPpackage DPdensity
@@ -89,11 +89,11 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
     if(!is.null(segFile)){
       tsb = seg.tsb
     }else{
-      tsb = as.character(maf@variants.per.sample[1:top,Tumor_Sample_Barcode])
+      tsb = as.character(getSampleSummary(x = laml)[1:top, Tumor_Sample_Barcode])
     }
-  }else{
-    tsb = gsub(pattern = '-', replacement = '.', x = as.character(tsb))
-  }
+  }#else{
+  #   #tsb = gsub(pattern = '-', replacement = '.', x = as.character(tsb))
+  # }
 
   #empty df to store cluster info
   clust.dat = c()
@@ -104,7 +104,6 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, dirichlet
   if(nrow(dat.tsb) < 1){
     stop(paste(tsb, 'not found in MAF'))
   }
-
 
   #Select only required columns and sort
   dat.tsb = dat.tsb[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, t_vaf)]

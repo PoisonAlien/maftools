@@ -5,7 +5,8 @@
 \title{Draw two oncoplots side by side for cohort comparision.}
 \usage{
 coOncoplot(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE,
-  m1Name = NULL, m2Name = NULL)
+  m1Name = NULL, m2Name = NULL, geneNamefont = 10,
+  showSampleNames = FALSE, SampleNamefont = 10)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}
@@ -21,6 +22,12 @@ coOncoplot(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE,
 \item{m1Name}{optional name for first cohort}
 
 \item{m2Name}{optional name for second cohort}
+
+\item{geneNamefont}{font size for gene names. Default 10}
+
+\item{showSampleNames}{whether to show sample names. Defult FALSE.}
+
+\item{SampleNamefont}{font size for sample names. Default 10}
 }
 \value{
 Returns nothing. Just draws plot.

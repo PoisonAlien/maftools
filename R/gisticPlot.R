@@ -65,7 +65,7 @@ gisticPlot = function (gistic, top = NULL,
 
   #annotation if given
   if(!is.null(annotation)){
-    annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
+    #annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
     rownames(annotation) = annotation[,1]
     annotation = annotation[colnames(mat_origin),]
     annotation = annotation[complete.cases(annotation),]

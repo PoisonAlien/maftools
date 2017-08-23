@@ -1,12 +1,10 @@
 ---
 title: "maftools : Summarize, Analyze and Visualize MAF Files"
-author: "\\
-
-  Anand Mayakonda\\
-  
-        Cancer Science Institute of Singapore, National University of Singapore."
-date: "`r Sys.Date()`"
-output: BiocStyle::html_document
+author: 
+- name: "Anand Mayakonda"
+output:
+  BiocStyle::html_document:
+    toc_float: true
 vignette: >
   %\VignetteIndexEntry{Summarize, Analyze and Visualize MAF Files}
   %\VignetteEngine{knitr::rmarkdown}
@@ -35,6 +33,12 @@ MAF files contain many fields ranging from chromosome names to cosmic annotation
 Complete specififcation of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
 This vignette demonstrates the usage and application of maftools on an example MAF file from TCGA LAML cohort [1](#references).
+
+#Overview of the package
+maftools functions can be categorized into mainly Visualization and Analysis modules. Each of these functions and a short description is summarized as shown below. Usage is simple, just read your MAF file with `read.maf` and pass the resulting MAF object to the desired function for plotting or analysis.
+
+![](overview.png)
+
 
 # Reading and summarizing maf files.
 ##Reading MAF files.
@@ -66,17 +70,17 @@ write.mafSummary(maf = laml, basename = 'laml')
 #Visualization.
 ##Plotting MAF summary.
 We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. We can add either mean or median line to the stacked barplot to display average/median number of variants across the cohort.
-```{r,fig.height=6, fig.width=8}
+```{r,fig.height=5, fig.width=8}
 plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
 ## Oncoplots (aka waterfall plots)
 ###Drawing oncoplots.
-Bettter representaion of maf file can be shown as oncoplots, also known as waterfall plots. Oncoplot function uses [ComplexHeatmap](https://github.com/jokergoo/ComplexHeatmap) to draw oncoplots[2](#references). To be specific,  `oncoplot` is a wrapper around ComplexHeatmap's `OncoPrint` function with little modification and automation which makes plotting easier. Side barplot and top barplots can be controlled by `drawRowBar` and `drawColBar` arguments respectivelly.
+Bettter representaion of maf file can be shown as oncoplots, also known as waterfall plots. Oncoplot function uses `r Biocpkg("ComplexHeatmap")` to draw oncoplots[2](#references). To be specific,  `oncoplot` is a wrapper around ComplexHeatmap's `OncoPrint` function with little modification and automation which makes plotting easier. Side barplot and top barplots can be controlled by `drawRowBar` and `drawColBar` arguments respectivelly.
 
-```{r, fig.align='left',fig.height=6,fig.width=10, eval=T, fig.align='left'}
+```{r, fig.align='left',fig.height=5,fig.width=10, fig.align='left'}
 #We will draw oncoplots for top ten mutated genes. (Removing non-mutated samples from the plot for better visualization)
-oncoplot(maf = laml, top = 10, removeNonMutated = TRUE)
+oncoplot(maf = laml, top = 10, fontSize = 12)
 ```
 
 NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more than once in the same sample.
@@ -84,7 +88,7 @@ NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more t
 ###Including copy number data into oncoplots.
 If we have copy number data along with MAF file, we can include them in oncoplot as to show if any genes are amplified or deleted. One most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF[3](#references). GISTIC generates numerous files but we need mainly three files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt` and `del_genes.conf_XX.txt`, where XX is confidence level. These files contain significantly altered genomic regions along with amplified and delted genes respectively.
 
-```{r results='hide', message=FALSE}
+```{r results='hide', message=FALSE, fig.height=5,fig.width=10, fig.align='left'}
 #read TCGA maf file for LAML
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
@@ -93,9 +97,9 @@ del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools
 laml.plus.gistic = read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE, gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
 ```
 
-```{r, fig.align='left',fig.height=6,fig.width=10, eval=T, fig.align='left'}
+```{r, fig.align='left',fig.height=5,fig.width=10, eval=T, fig.align='left'}
 #We will draw oncoplots for top ten mutated genes. (Removing non-mutated samples from the plot for better visualization)
-oncoplot(maf = laml.plus.gistic, top = 10, removeNonMutated = TRUE, sortByMutation = TRUE)
+oncoplot(maf = laml.plus.gistic, top = 10, sortByMutation = TRUE, fontSize = 12)
 ```
 
 This plot shows frequent deletions in TP53 gene which is located on one of the significanlty deleted locus 17p13.2.
@@ -117,20 +121,20 @@ names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Mult
 #MutSig reusults
 laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
 
-oncoplot(maf = laml, annotation = laml.fab.anno, mutsig = laml.mutsig, colors = col)
+oncoplot(maf = laml, annotation = laml.fab.anno, mutsig = laml.mutsig, colors = col, mutsigQval = 0.05)
 ```
 
 ##Oncostrip
 We can visualize any set of genes using `oncostrip` function, which draws mutations in each sample similar to [OncoPrinter tool](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do). `oncostrip` can be used to draw any number of genes using `top` or `genes` arguments.
 
-```{r, fig.height=2,fig.width=8,fig.align='center'}
+```{r, fig.height=1.5,fig.width=8,fig.align='center'}
 oncostrip(maf = laml, genes = c('DNMT3A','NPM1', 'RUNX1'), removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE)
 ```
 
 ##Transition and Transversions.
 `titv` function classifies SNPs into [Transitions and Transversions](http://www.mun.ca/biology/scarr/Transitions_vs_Transversions.html) and returns a list of summarized tables in various ways. Summarized data can also be visulaized as a boxplot showing overall distribution of six different conversions and as a stacked barplot showing fraction of conversions in each sample.
 
-```{r, fig.align='default', fig.height=6, fig.width=8, eval = T}
+```{r, fig.height=5, fig.width=6, eval = T}
 laml.titv = titv(maf = laml, plot = FALSE, useSyn = TRUE)
 #plot titv summary
 plotTiTv(res = laml.titv)
@@ -146,26 +150,24 @@ dnmt3a.lpop = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change'
 
 Note that `lollipopPlot` warns user on availability of diferent transcripts for the given gene. If we know the transcript id before hand, we can specify it as `refSeqID` or `proteinID`. By default lollipopPlot uses the longer isoform.
 
-###Labelling and repelling points.
-We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. Sometimes, many mutations are clustered within a range of few amino acid positons. In that case we can use `repel` option which tries to repel points for clear representation. 
+###Labelling points.
+We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. 
 
 ```{r,fig.height=4,fig.width=8,fig.align='center'}
 #Lets plot mutations on KIT gene, without repel option.
-kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', domainLabelSize = 3)
-#Same plot with repel=TRUE
-kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', repel = TRUE, domainLabelSize = 3)
+kit.lpop = lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = c(416, 418), refSeqID = 'NM_000222', domainLabelSize = 3, labPosSize = 3)
 ```
 
 ###cBioPortal style annotations
 MutationMapper on cBioPortal collapses Variant Classfications into truncating and others. It also includes somatic mutation rate.
 
 ```{r, warning=FALSE, message=FALSE, fig.height=4,fig.width=8,fig.align='center'}
-laml.dnmt3a = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', refSeqID = 'NM_175629', labelPos = 882, collapsePosLabel = TRUE, cBioPortal = TRUE, domainLabelSize = 3, defaultYaxis = FALSE)
+laml.dnmt3a = lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', refSeqID = 'NM_175629', labelPos = 882, collapsePosLabel = TRUE, cBioPortal = TRUE, domainLabelSize = 3, defaultYaxis = FALSE, labPosSize = 3)
 ```
 
 
 ##Integrating somatic variants and copy number alterations
-Many cancer genomic studies involve copy number data generated either from sequencing or SNP chip arrays. Copy number analysis provides us a lot of information from genome wide copy number aberations to tumor purity. Most of the time copy number data is stored as segments, with each segment represented by a log ratio of copy number changes compared to matched normals. There are many segmentation algorithms, with the most popular being Circular Binary Segmentation implemented in [DNACopy bioconductor](https://www.bioconductor.org/packages/3.3/bioc/html/DNAcopy.html) [4](#references). We can plot such segmented copy number data and map all mutations on to it. It provides a quick way of knowing which variants (in a way which genes) are located on copy number altered genomic regions.
+Many cancer genomic studies involve copy number data generated either from sequencing or SNP chip arrays. Copy number analysis provides us a lot of information from genome wide copy number aberations to tumor purity. Most of the time copy number data is stored as segments, with each segment represented by a log ratio of copy number changes compared to matched normals. There are many segmentation algorithms, with the most popular being Circular Binary Segmentation implemented in `r Biocpkg("DNACopy")` [4](#references). We can plot such segmented copy number data and map all mutations on to it. It provides a quick way of knowing which variants (in a way which genes) are located on copy number altered genomic regions.
 
 ```{r, fig.height=4,fig.width=8,fig.align='center'}
 tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package = "maftools")
@@ -208,7 +210,6 @@ vafPlot = plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU', flip = TRUE)
 ```
 
 
-
 #GISTIC files.
 ##Reading and summarizing gistic output files.
 We can summarize output files generated by GISTIC programme. As mentioned earlier, we need three files that were generated by GISTIC, i.e, all_lesions.conf_XX.txt, amp_genes.conf_XX.txt and del_genes.conf_XX.txt, where XX is the confidence level. See [GISTIC documentation](ftp://ftp.broadinstitute.org/pub/GISTIC2.0/GISTICDocumentation_standalone.htm) for details.
@@ -227,7 +228,7 @@ Similar to MAF objects, there are methods available to access slots of GISTIC ob
 Similar to oncoplots we can draw copy number data.
 
 ```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
-  gisticPlot(gistic = laml.gistic)
+gisticPlot(gistic = laml.gistic)
 ```
 
 ###Plot gistic results.
@@ -238,7 +239,7 @@ gr = plotGisticResults(gistic = laml.gistic)
 
 #Analysis.
 ##Mutual exclusivity.
-Many disease causing genes in cancer show strong exlcusiveness in their mutation pattern. Such mutually exlcuive set of genes can be detected using `mutExclusive` function, which performs an exact test to detect such significant pair of genes. `mutExclusive` uses `comet_exact_test` on a given set of genes to calculate significance value. Please cite [CoMET](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4531541/) article if you use this function [6](#references).
+Many disease causing genes in cancer show strong exlcusiveness in their mutation pattern. Such mutually exlcuive set of genes can be detected using `mutExclusive` function, which performs an exact test to detect such significant pair of genes. `mutExclusive` uses `comet_exact_test` from `r CRANpkg("cometExactTest")` on a given set of genes to calculate significance value. Please cite [CoMET](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4531541/) article if you use this function [6](#references).
 
 ```{r}
 #We will run mutExclusive on top 10 mutated genes. 
@@ -342,7 +343,7 @@ Tumors are generally heterogenous i.e, consist of multiple clones. This heteroge
 
 ```{r, echo = TRUE, fig.align='center', fig.height=5, fig.width=7, eval=T}
 #We will run this for sample TCGA.AB.2972
-tcga.ab.2972.het = inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.2972', vafCol = 'i_TumorVAF_WU')
+tcga.ab.2972.het = inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
 print(tcga.ab.2972.het$clusterMeans)
 #Visualizing results
 plotClusters(clusters = tcga.ab.2972.het)
@@ -351,11 +352,11 @@ plotClusters(clusters = tcga.ab.2972.het)
 Above figure shows clear seperation of two clones clustered at mean variant allele frequencies of ~45% (major clone) and another minor clone at variant allele frequency of ~25%.
 
 ###Ignoring variants in copy number altered regions.
-We can use copy number information to ignore variants located on copynumber altered regions. Copy number alterations results in abnormally high/low variant allele frequencies, which tends to affect clustering. Removing such variants improves clustering and density estimation while retaining biologically meaningful results. Copy number information can be provided as a segmented file generated from segmentation programmes, such as Circular Binary Segmentation from DNACopy Bioconductor package [6](#references).
+We can use copy number information to ignore variants located on copynumber altered regions. Copy number alterations results in abnormally high/low variant allele frequencies, which tends to affect clustering. Removing such variants improves clustering and density estimation while retaining biologically meaningful results. Copy number information can be provided as a segmented file generated from segmentation programmes, such as Circular Binary Segmentation from `r Biocpkg("DNACopy")` Bioconductor package [6](#references).
 
 ```{r, fig.align='center', fig.height=5, fig.width=7, eval=T}
 seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
-tcga.ab.3009.het = inferHeterogeneity(maf = laml, tsb = 'TCGA.AB.3009', segFile = seg, vafCol = 'i_TumorVAF_WU')
+tcga.ab.3009.het = inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-3009', segFile = seg, vafCol = 'i_TumorVAF_WU')
 #Visualizing results. Highlighting those variants on copynumber altered variants.
 plotClusters(clusters = tcga.ab.3009.het, genes = 'CN_altered', showCNvars = TRUE)
 ```
@@ -369,7 +370,7 @@ Although clustering of variant allele frequencies gives us a fair idea on hetero
 ```{r, results='hide', message=F, fig.align='center',fig.width=7, fig.height=6, eval = T}
 #we will specify for random 4 patients.
 laml.math = math.score(maf = laml, vafCol = 'i_TumorVAF_WU', 
-                       sampleName = c('TCGA.AB.3009', 'TCGA.AB.2849', 'TCGA.AB.3002', 'TCGA.AB.2972'))
+                       sampleName = c('TCGA-AB-3009', 'TCGA-AB-2849', 'TCGA-AB-3002', 'TCGA-AB-2972'))
 ```
 
 ```{r, eval=T}
@@ -626,7 +627,7 @@ laml.sign = structure(list(signatures = structure(c(1.08748973712201e-18,
 ))), nmfObj = NULL), .Names = c("signatures", "coSineSimMat", "nmfObj"))
 ```
 
-```{r, fig.width=7, fig.height=5, fig.align='center', eval = T}
+```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
 plotSignatures(laml.sign)
 ```
 
@@ -637,12 +638,12 @@ Once decomposed, signatures are compared against known and validated signatures 
 
 Full table of cosine similarities against validated signatures are also returned, which can be further analysed. Below plot shows comparision of similarities of detected signatures against validated signatures.
 
-```{r}
+```{r, fig.width=6, fig.height=2}
 require('corrplot')
 corrplot::corrplot(corr = laml.sign$coSineSimMat, col = RColorBrewer::brewer.pal(n = 9, name = 'Oranges'), is.corr = FALSE, tl.cex = 0.6, tl.col = 'black', cl.cex = 0.6)
 ```
 
-NOTE: Should you recieve an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `NMF` library and re-run.
+NOTE: Should you recieve an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `CRANpkg('NMF')` library and re-run.
 
 #Variant Annotations
 ##Annotating variants using Oncotator.
@@ -722,9 +723,9 @@ laml.mutsig.corrected = prepareMutSig(maf = laml)
 We can also subset MAF using function `subsetMaf`
 ```{r}
 ##Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933'  (Printing just 5 rows for display convenience)
-subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'))[1:5]
+subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'))[1:5]
 ##Same as above but return output as an MAF object
-subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), mafObj = TRUE)
+subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), mafObj = TRUE)
 ```
 
 ###Specifiying queries and controlling output fields.

@@ -1,5 +1,5 @@
 
-getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE, left = FALSE, showTumorSampleBarcodes = FALSE, hmName = hmName){
+getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE, left = FALSE, showTumorSampleBarcodes = FALSE, hmName = hmName, fs = 10, gfs = 10){
 
   #-----preprocess matrix
   mat_origin = maf@numericMatrix
@@ -176,14 +176,14 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
 
   if(showGenes){
     ht = ComplexHeatmap::Heatmap(matrix = mat,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                 row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
+                                 row_names_gp = grid::gpar(fontsize = gfs), show_column_names = showTumorSampleBarcodes,
                                  show_heatmap_legend = FALSE,
-                                 column_title = hmName)
+                                 column_title = hmName, column_names_gp = grid::gpar(fontsize = fs))
   }else{
     ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                  show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
                                  top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
-                                 column_title =  hmName)
+                                 column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs))
   }
 
 

@@ -280,7 +280,7 @@ sortByAnnotation <-function(numMat,maf, anno){
 
   numMat[numMat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
   tnumMat = t(numMat) #transposematrix
-  rownames(anno) = gsub("-",".",anno[,1])
+  #rownames(anno) = gsub("-",".",anno[,1])
   anno.named = anno[colnames(numMat),2]
 
   names(anno.named) = anno[colnames(numMat),1]

@@ -47,7 +47,7 @@ mafSurvival = function(maf, clinicalData, genes = NULL, samples = NULL, time = "
     stop("Column Tumo_Sample_Barcode not found in clinicdata. Check column names and rename it to Tumo_Sample_Barcode if necessary.")
   }
 
-  clinicalData$Tumor_Sample_Barcode = gsub(pattern = '-', replacement = '.', x = clinicalData$Tumor_Sample_Barcode)
+  #clinicalData$Tumor_Sample_Barcode = gsub(pattern = '-', replacement = '.', x = clinicalData$Tumor_Sample_Barcode)
   if(isTCGA){
     clinicalData$Tumor_Sample_Barcode = substr(x = clinicalData$Tumor_Sample_Barcode, start = 1, stop = 12)
   }
@@ -87,7 +87,8 @@ mafSurvival = function(maf, clinicalData, genes = NULL, samples = NULL, time = "
 
     genesTSB = unique(as.character(unlist(genesTSB)))
   }else{
-    genesTSB = gsub(pattern = '-', replacement = '.', x = samples)
+    #genesTSB = gsub(pattern = '-', replacement = '.', x = samples)
+    genesTSB = samples
   }
 
   #clinicalData = clinicalData[!is.na(Time)]

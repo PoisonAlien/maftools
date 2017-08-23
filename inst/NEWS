@@ -3,12 +3,16 @@ CHANGES IN VERSION 1.2.40
 SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Now you can include q values from mutsig (or any q-values) as a side barplot in oncoplot
     o New function mutCountMatrix to generate count matrix
+    o Tumor_Sample_Barcodes remains as is - earlier '-' were converted to '.' in sample names
 
 NON SIGNIFICANT CHANGES
     o mafCompare output includes adjusted p-values
-    o trinucleotideMatrix output includes adjusted p-values
+    o trinucleotideMatrix output includes adjusted p-values (APOBEC enrichment)
     o added plot arguments to control title size and point size in lollipopPlot
     o minor bug fixes in plotGisticResults and oncostrip
+
+BUG FIX
+    o Major bug fix in signature analysis
 
 CHANGES IN VERSION 1.2.30
 -------------------------

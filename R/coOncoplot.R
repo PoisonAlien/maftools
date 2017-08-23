@@ -8,6 +8,9 @@
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param m1Name optional name for first cohort
 #' @param m2Name optional name for second cohort
+#' @param geneNamefont font size for gene names. Default 10
+#' @param showSampleNames whether to show sample names. Defult FALSE.
+#' @param SampleNamefont font size for sample names. Default 10
 #' @export
 #' @examples
 #' #' ##Primary and Relapse APL
@@ -21,7 +24,7 @@
 #' dev.off()
 #' @return Returns nothing. Just draws plot.
 
-coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE, m1Name = NULL, m2Name = NULL){
+coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE, m1Name = NULL, m2Name = NULL, geneNamefont = 10, showSampleNames = FALSE, SampleNamefont = 10){
 
   if(is.null(genes)){
     m1.genes = getGeneSummary(m1)[1:5]
@@ -52,9 +55,9 @@ coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TR
   m2Name = paste(m2Name, ' (n = ' , m2.sampleSize, ')',sep = '')
 
   m1.oc = getOncoPlot(maf = m1, genes = genes, removeNonMutated = removeNonMutated,
-                      colors = colors, showGenes = TRUE, left = TRUE, hmName = m1Name)
+                      colors = colors, showGenes = TRUE, left = TRUE, hmName = m1Name, showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont)
   m2.oc = getOncoPlot(maf = m2, genes = genes, removeNonMutated = removeNonMutated,
-                      colors = colors, showGenes = FALSE, left = FALSE, hmName = m2Name)
+                      colors = colors, showGenes = FALSE, left = FALSE, hmName = m2Name, showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont)
 
   oc.list = m1.oc[[1]] + m2.oc[[1]]
 

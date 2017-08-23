@@ -117,7 +117,7 @@ oncostrip = function(maf, genes = NULL, sort = TRUE, sortByAnnotation = FALSE, a
 
   #Make annotation
   if(!is.null(annotation)){
-    annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
+    #annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
 
     if(nrow(annotation[duplicated(annotation$Tumor_Sample_Barcode),]) > 0){
       annotation = annotation[!duplicated(annotation$Tumor_Sample_Barcode),]

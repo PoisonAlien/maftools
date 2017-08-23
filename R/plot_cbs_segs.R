@@ -42,7 +42,7 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
     #Number of unique samples in segmentation file
     tsb = unique(as.character(seg[,Sample]))
   }else{
-    tsb = gsub(pattern = '-', replacement = '.', x = as.character(tsb))
+    #tsb = gsub(pattern = '-', replacement = '.', x = as.character(tsb))
   }
 
   #If maf object is specified, map mutations on to segments

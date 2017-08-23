@@ -224,7 +224,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   #annotation if given
   if(!is.null(annotation)){
-    annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
+    #annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
     rownames(annotation) = annotation[,1]
     annotation = annotation[colnames(mat_origin),]
     annotation = annotation[complete.cases(annotation),]
@@ -338,7 +338,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   ##This function adds columnbar
   anno_column_bar = function(index) {
     n = length(index)
-    tb = apply(mat_origin[, index], 2, function(x) {
+    tb = apply(mat_origin[, index, drop = FALSE], 2, function(x) {
       x = unlist(strsplit(x, ";"))
       x = x[!grepl("^\\s*$", x)]
       x = sort(x)
