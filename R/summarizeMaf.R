@@ -1,6 +1,4 @@
-
-#Summarizing MAF
-summarizeMaf = function(maf, chatty = TRUE){
+summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
 
   if('NCBI_Build' %in% colnames(maf)){
     NCBI_Build = unique(maf[!Variant_Type %in% 'CNV', NCBI_Build])
@@ -62,11 +60,10 @@ summarizeMaf = function(maf, chatty = TRUE){
     vc.median = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, median))))
 
   }else{
-    vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
-    vc.cast = vc.cast[order(total, decreasing = TRUE)]
+    vc.cast = vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])][order(total, decreasing = TRUE)]
 
-    vc.mean = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, mean))))
-    vc.median = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, median))))
+    vc.mean = round(as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, mean)))), 3)
+    vc.median = round(as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, median)))), 3)
   }
 
   #summarise and casting by 'Variant_Type'
@@ -77,14 +74,12 @@ summarizeMaf = function(maf, chatty = TRUE){
     vt.cast.cnv = vt.cast[,colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')], with =FALSE]
 
     vt.cast = vt.cast[,!colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')], with =FALSE]
-    vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
-    vt.cast = vt.cast[order(total, decreasing = TRUE)]
+    vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])][order(total, decreasing = TRUE)]
 
     vt.cast = cbind(vt.cast, vt.cast.cnv)
     vt.cast[order(total, CNV, decreasing = TRUE)]
   }else{
-    vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
-    vt.cast = vt.cast[order(total, decreasing = TRUE)]
+    vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])][order(total, decreasing = TRUE)]
   }
 
   #summarise and casting by 'Hugo_Symbol'
@@ -92,10 +87,10 @@ summarizeMaf = function(maf, chatty = TRUE){
   hs.cast = data.table::dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N')
   #----
   if(any(colnames(hs.cast) %in% c('Amp', 'Del'))){
-    hs.cast.cnv = hs.cast[,colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with =FALSE]
+    hs.cast.cnv = hs.cast[,colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with = FALSE]
     hs.cast.cnv$CNV_total = rowSums(x = hs.cast.cnv)
 
-    hs.cast = hs.cast[,!colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with =FALSE]
+    hs.cast = hs.cast[,!colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with = FALSE]
     hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
 
     hs.cast = cbind(hs.cast, hs.cast.cnv)
@@ -121,7 +116,7 @@ summarizeMaf = function(maf, chatty = TRUE){
   if(chatty){
     print(summary)
 
-    message("Frequently mutated genes..")
+    message("Gene Summary..")
     print(hs.cast)
   }
 
@@ -137,264 +132,40 @@ summarizeMaf = function(maf, chatty = TRUE){
     }
   }
 
-  return(list(variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
-              gene.summary = hs.cast, summary = summary))
-}
-
-# This is using data.table. Very Fast :) :) :)
-createOncoMatrix = function(maf, chatty = TRUE){
 
   if(chatty){
-    message('Creating oncomatrix (this might take a while)..')
+    message("Checking annotations..")
   }
 
-     # oncomat = data.table::dcast(data = maf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
-     #                             fun.aggregate = function(x) {ifelse(test = length(as.character(x))>1 ,
-     #                            no = as.character(x), yes = vcr(x, gis = FALSE))
-     #                             }, value.var = 'Variant_Classification', fill = '')
-
-     oncomat = data.table::dcast(data = maf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
-                            fun.aggregate = function(x){
-                              x = unique(as.character(x))
-                              xad = x[x %in% c('Amp', 'Del')]
-                              xvc = x[!x %in% c('Amp', 'Del')]
-
-                              if(length(xvc)>0){
-                                xvc = ifelse(test = length(xvc) > 1, yes = 'Multi_Hit', no = xvc)
-                              }
-
-                              x = ifelse(test = length(xad) > 0, yes = paste(xad, xvc, sep = ';'), no = xvc)
-                              x = gsub(pattern = ';$', replacement = '', x = x)
-                              x = gsub(pattern = '^;', replacement = '', x = x)
-                              return(x)
-                            } , value.var = 'Variant_Classification', fill = '')
-
-    #If maf contains only one sample converting to matrix is not trivial.
-    if(ncol(oncomat) == 2){
-      genes = oncomat[,Hugo_Symbol]
-      sampleId = colnames(oncomat)[2]
-      oncomat = as.matrix(data.frame(row.names = genes, sample = oncomat[,2, with =FALSE]))
-    }else if(nrow(oncomat) == 1){
-      #If MAF has only one gene
-      gene = oncomat[,Hugo_Symbol]
-      oncomat[,Hugo_Symbol:= NULL]
-      oncomat = as.matrix(oncomat)
-      rownames(oncomat) = gene
-      sampleID = colnames(oncomat)
-      }else{
-      oncomat = as.matrix(oncomat)
-      rownames(oncomat) = oncomat[,1]
-      oncomat = oncomat[,-1]
-      }
-
-     variant.classes = as.character(unique(maf[,Variant_Classification]))
-     variant.classes = c('',variant.classes, 'Multi_Hit')
-     names(variant.classes) = 0:(length(variant.classes)-1)
-
-     #Complex variant classes will be assigned a single integer.
-     vc.onc = unique(unlist(apply(oncomat, 2, unique)))
-     vc.onc = vc.onc[!vc.onc %in% names(variant.classes)]
-     names(vc.onc) = rep(as.character(as.numeric(names(variant.classes)[length(variant.classes)])+1), length(vc.onc))
-     variant.classes2 = c(variant.classes, vc.onc)
-
-     oncomat.copy <- oncomat
-    #Make a numeric coded matrix
-    for(i in 1:length(variant.classes2)){
-      oncomat[oncomat == variant.classes2[i]] = names(variant.classes2)[i]
-    }
-
-    #If maf has only one gene
-    if(nrow(oncomat) == 1){
-      mdf  = t(matrix(as.numeric(oncomat)))
-      rownames(mdf) = gene
-      colnames(mdf) = sampleID
-      return(list(oncomat = oncomat.copy, nummat = mdf, vc = variant.classes))
-    }
-
-    #convert from character to numeric
-    mdf = as.matrix(apply(oncomat, 2, function(x) as.numeric(as.character(x))))
-    rownames(mdf) = rownames(oncomat.copy)
-
+  if(is.null(anno)){
     if(chatty){
-      message('Sorting..')
+      message("NOTE: Missing sample annotations! It is strongly recommended to provide sample annotations if available.")
+    }
+    sample.anno = tsb[,.(Tumor_Sample_Barcode)]
+  }else if(is.data.frame(x = anno)){
+      sample.anno  = data.table::setDT(anno)
+    }else{
+      if(file.exists(anno)){
+        sample.anno = data.table::fread(anno, stringsAsFactors = FALSE)
+        if(!'Tumor_Sample_Barcode' %in% colnames(sample.anno)){
+          message(paste0('Available fields in ', basename(anno), '..'))
+          print(colnames(sample.anno))
+          stop(paste0('Tumor_Sample_Barcode column not found in ', anno, '. Rename column name containing sample names to Tumor_Sample_Barcode if necessary.'))
+        }
+      }
     }
 
-    #If MAF file contains a single sample, simple sorting is enuf.
-    if(ncol(mdf) == 1){
-      mdf = as.matrix(mdf[order(mdf, decreasing = TRUE),])
-      colnames(mdf) = sampleId
+  maf.tsbs = levels(tsb[,Tumor_Sample_Barcode])
+  sample.anno = sample.anno[Tumor_Sample_Barcode %in% maf.tsbs][!duplicated(Tumor_Sample_Barcode)]
+  anno.tsbs = sample.anno[,Tumor_Sample_Barcode]
 
-      oncomat.copy = as.matrix(oncomat.copy[rownames(mdf),])
-      colnames(oncomat.copy) = sampleId
-
-      return(list(oncomat = oncomat.copy, nummat = mdf, vc = variant.classes))
-    } else{
-      #Sort by rows as well columns if >1 samples present in MAF
-      #Add total variants per gene
-      mdf = cbind(mdf, variants = apply(mdf, 1, function(x) {
-        length(x[x != "0"])
-      }))
-      #Sort by total variants
-      mdf = mdf[order(mdf[, ncol(mdf)], decreasing = TRUE), ]
-      #colnames(mdf) = gsub(pattern = "^X", replacement = "", colnames(mdf))
-      nMut = mdf[, ncol(mdf)]
-
-      mdf = mdf[, -ncol(mdf)]
-
-      mdf.temp.copy = mdf #temp copy of original unsorted numeric coded matrix
-
-      mdf[mdf != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
-      tmdf = t(mdf) #transposematrix
-      mdf = t(tmdf[do.call(order, c(as.list(as.data.frame(tmdf)), decreasing = TRUE)), ]) #sort
-
-      mdf.temp.copy = mdf.temp.copy[rownames(mdf),] #organise original matrix into sorted matrix
-      mdf.temp.copy = mdf.temp.copy[,colnames(mdf)]
-      mdf = mdf.temp.copy
-
-      #organise original character matrix into sorted matrix
-      oncomat.copy <- oncomat.copy[,colnames(mdf)]
-      oncomat.copy <- oncomat.copy[rownames(mdf),]
-
-      return(list(oncomat = oncomat.copy, nummat = mdf, vc = variant.classes))
+  if(!length(maf.tsbs[!maf.tsbs %in% anno.tsbs]) == 0){
+    if(chatty){
+      message('Annotation missing for below samples in MAF')
+      print(maf.tsbs[!maf.tsbs %in% anno.tsbs])
     }
+  }
+
+  return(list(variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
+              gene.summary = hs.cast, summary = summary, sample.anno = sample.anno))
 }
-
-#This is small function to sort genes according to total samples in which it is mutated.
-sortByMutation = function(numMat, maf){
-
-  geneOrder = getGeneSummary(x = maf)[,Hugo_Symbol]
-  numMat = numMat[geneOrder[geneOrder %in% rownames(numMat)],]
-
-  numMat[numMat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
-  tnumMat = t(numMat) #transposematrix
-  numMat = t(tnumMat[do.call(order, c(as.list(as.data.frame(tnumMat)), decreasing = TRUE)), ]) #sort
-
-  return(numMat)
-}
-
-#Thanks to Ryan Morin for this function (https://github.com/rdmorin)
-#known limitations:
-#-will only sort on the values in the first column of the annotation data frame. This could easily be extended to all columns but I think the utility of it would degrade rather quickly with multiple annotations
-#-gsub is used to make the names in the annotation (provided by the user) hopefully have the same format as the post-processed names generated by maftools
-sortByAnnotation <-function(numMat,maf, anno){
-
-  numMat[numMat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
-  tnumMat = t(numMat) #transposematrix
-  #rownames(anno) = gsub("-",".",anno[,1])
-  anno.named = anno[colnames(numMat),2]
-
-  names(anno.named) = anno[colnames(numMat),1]
-  geneOrder = getGeneSummary(x = maf)[,Hugo_Symbol]
-
-  tndf = as.data.frame(tnumMat[,geneOrder[geneOrder %in% rownames(numMat)]])
-  adf = as.data.frame(anno.named)
-  fulldf = cbind(adf,tndf)
-
-  numMat = t(tnumMat[do.call(order, c(as.list(fulldf), decreasing = TRUE)), ]) #sort
-  #numMat = t(tnumMat[rownames(fulldf[order(fulldf$anno.named),]),])
-  numMat = numMat[geneOrder[geneOrder %in% rownames(numMat)],]
-
-  return(numMat)
-}
-
-
-# This is the original function for creating oncomatrix till 0.99.20. Verrrrrryyyyyy SLOWWWWWW !!!
-#
-# createOncoMatrix = function(maf){
-#   message('Creating oncomatrix (this might take a while)..')
-#
-#   #tsbs
-#   tsbs = levels(maf[,Tumor_Sample_Barcode])
-#   #get all unique genes
-#   genes = unique(maf[,Hugo_Symbol])
-#
-#   variant.classes = levels(maf[,Variant_Classification])
-#   mdf = data.table(Hugo_Symbol = genes)
-#
-#   #prgress bar for for-loop
-#   pb <- txtProgressBar(min = 0, max = length(tsbs), style = 3) #progress bar
-#
-#   for(i in 1:length(tsbs)) {
-#     #message(paste('processing ',tsbs[i]))
-#     barcode1 = maf[Tumor_Sample_Barcode == tsbs[i]]
-#
-#     if (nrow(barcode1) == 0)
-#       break
-#
-#     x = barcode1[,.N, by = .(Hugo_Symbol, Variant_Classification)] #summerize by Hugo_Symbol and Variant_Classification
-#
-#     x.hits = x[,.N, Hugo_Symbol] #count number of mutation per gene
-#     x.multihit.genes = x.hits[N > 1, Hugo_Symbol] #check for genes with >1 mutation
-#     x.singlehits = x.hits[N == 1, Hugo_Symbol] #check for genes with single mutation
-#
-#     xs = x[Hugo_Symbol %in% x.singlehits, .(Hugo_Symbol, Variant_Classification)] #data table for single mutation
-#
-#     if(length(x.multihit.genes) > 0){
-#       xm = data.table(Hugo_Symbol = x.multihit.genes, Variant_Classification = 'Multi_Hit') #data table for multi hit gene but Variant_Classification set to 'multi_hits'
-#       x.hits.dt = rbind(xs, xm) #bind them togeather
-#       colnames(x.hits.dt)[2] = tsbs[i] #change colnames to TSB
-#       mdf = merge(mdf, x.hits.dt, by = 'Hugo_Symbol', all = TRUE) #merge
-#     } else{
-#       colnames(xs)[2] = tsbs[i]
-#       mdf = merge(mdf, xs, by = 'Hugo_Symbol', all = TRUE) #merge
-#     }
-#     setTxtProgressBar(pb, i)
-#   }
-#
-#   genes = as.character(mdf$Hugo_Symbol)
-#   mdf = data.frame(mdf)
-#   mdf = mdf[, -1]
-#   mdf = data.frame(lapply(mdf, as.character), stringsAsFactors = FALSE)
-#   mdf.copy = mdf #make a copy of this
-#   mdf.copy[is.na(mdf.copy)] = ""
-#   rownames(mdf.copy) = genes
-#   mdf[is.na(mdf)] = 0
-#
-#   variant.classes = as.list(apply(mdf, 2, unique))
-#   variant.classes = unique(as.vector(unlist(variant.classes)))
-#   variant.classes = variant.classes[!variant.classes == "0"]
-#
-#   for (i in 1:length(variant.classes)) {
-#     mdf[mdf == variant.classes[i]] = i
-#   }
-#
-#   #numeric code for variant classes
-#   names(variant.classes) = 1:length(variant.classes)
-#
-#   #convert dataframe to matrix
-#   mdf = as.matrix(apply(mdf, 2, function(x) as.numeric(as.character(x))))
-#   rownames(mdf) = genes #this is numeric coded matrix - maybe useful to used
-#
-#   message('Sorting..')
-#   #Add total variants per gene
-#   mdf = cbind(mdf, variants = apply(mdf, 1, function(x) {
-#     length(x[x != "0"])
-#   }))
-#
-#   #Sort the matrix
-#   mdf = mdf[order(mdf[, ncol(mdf)], decreasing = TRUE), ]
-#   colnames(mdf) = gsub(pattern = "^X", replacement = "", colnames(mdf))
-#   nMut = mdf[, ncol(mdf)]
-#   mdf = mdf[, -ncol(mdf)]
-#
-#   mdf.temp.copy = mdf #temp copy of original unsorted numeric coded matrix
-#
-#   mdf[mdf != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
-#   tmdf = t(mdf) #transposematrix
-#   mdf = t(tmdf[do.call(order, c(as.list(as.data.frame(tmdf)), decreasing = TRUE)), ]) #sort
-#
-#   mdf.temp.copy = mdf.temp.copy[rownames(mdf),] #organise original matrix into sorted matrix
-#   mdf.temp.copy = mdf.temp.copy[,colnames(mdf)]
-#   mdf = mdf.temp.copy
-#
-#   mat.numericCode = mdf #This is sorted, numeric coded matrix - maybe useful to user
-#
-#   mdf[is.na(mdf)] = 0
-#   mdf.copy = mdf.copy[rownames(mdf), ]
-#   #if names begin with numericasl they will be converted to ^X, sub it to get original id
-#   colnames(mdf.copy) = gsub(pattern = '^X', replacement = '', x = colnames(mdf.copy))
-#   mdf.copy = as.matrix(mdf.copy[, colnames(mdf)])
-#
-#   return(list(oncomat = mdf.copy, nummat = mat.numericCode, vc = variant.classes))
-#
-# }

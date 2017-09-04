@@ -23,6 +23,8 @@ S4 class for storing summarized MAF.
 
 \item{\code{numericMatrix}}{numeric matrix of dimension n*m where n is number of genes and m is number of samples}
 
+\item{\code{gis.scores}}{gistic.scores}
+
 \item{\code{summary}}{table with basic GISTIC summary stats}
 
 \item{\code{classCode}}{mapping between numeric values in numericMatrix and copy number events.}

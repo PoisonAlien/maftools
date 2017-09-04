@@ -16,7 +16,9 @@
 #' @param drawRowBar logical plots barplot for each gene. Default \code{TRUE}.
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
 #' @param showTumorSampleBarcodes logical to include sample names.
-#' @param annotation data.frame with first column containing Tumor_Sample_Barcodes and rest of columns with annotations. Default NULL.
+#' @param annotationCols columns names from `annotation` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
+#' @param annotationDat If MAF file was read without annotations, provide a custom \code{data.frame} with a column containing Tumor_Sample_Barcodes along with rest of columns with annotations.
+#' You can specify which columns to be drawn using `annotationCols` argument.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
 #' @param annotationColor list of colors to use for annotation. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
@@ -38,7 +40,7 @@
 
 
 oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
-                      annotation = NULL, annotationColor = NULL, genesToIgnore = NULL, showTumorSampleBarcodes = FALSE,
+                     annotationCols = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL, showTumorSampleBarcodes = FALSE,
                       removeNonMutated = TRUE, colors = NULL, fontSize = 10, sortByMutation = FALSE, sortByAnnotation = FALSE, writeMatrix = FALSE) {
 
   #set seed for consistancy.
@@ -46,57 +48,18 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   #-------------------------------------Preprocess matrix---------------------------------------------------
 
-  #numeric matrix and char matrix
-  numMat = maf@numericMatrix
-  mat_origin = maf@oncoMatrix
+  if(!is.null(genes)){ #If user provides a gene list
 
-  #If <2 samples stop !
-  if(ncol(numMat) < 2){
-    stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
-  }
+    om = createOncoMatrix(m = maf, g = genes)
+    numMat = om$numericMatrix
+    mat_origin = om$oncoMatrix
+  } else if(!is.null(mutsig)){ #If user provides significant gene table (e.g; mutsig results)
 
-  #remove genes from genesToIgnore if any
-  if(!is.null(genesToIgnore)){
-    numMat = numMat[!rownames(numMat) %in% genesToIgnore,]
-    mat_origin = mat_origin[!rownames(mat_origin) %in% genesToIgnore,]
-  }
-
-  #If user provides a gene list
-  if(!is.null(genes)){
-
-    #Check for any missing genes and ignore them if necessary
-    if(length(genes[!genes %in% rownames(numMat)]) > 0){
-      message('Following genes are not available in MAF:')
-      print(genes[!genes %in% rownames(numMat)])
-      message('Ignoring them.')
-      genes = genes[genes %in% rownames(numMat)]
-    }
-
-    if(length(genes) < 2){
-      stop('Provide at least 2 genes.')
-    }
-
-    numMat = numMat[genes,, drop = FALSE]
-    if(sortByAnnotation){
-      if(is.null(annotation)){
-        stop("Missing annotation data. Use argument `annotation` to provide annotations.")
-      }
-      numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation)
-    }else{
-      numMat = sortByMutation(numMat = numMat, maf = maf)
-    }
-
-    mat_origin = mat_origin[rownames(numMat), , drop = FALSE]
-    mat_origin = mat_origin[,colnames(numMat), drop = FALSE]
-    mat = mat_origin
-  } else if(!is.null(mutsig)){
-
-    #Read MutSig Results
     if(as.logical(length(grep(pattern = 'gz$', x = mutsig, fixed = FALSE)))){
       #If system is Linux use fread, else use gz connection to read gz file.
       if(Sys.info()[['sysname']] == 'Windows'){
         mutsigResults.gz = gzfile(description = mutsig, open = 'r')
-        suppressWarnings(ms <- data.table(read.csv(file = mutsigResults.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = '#')))
+        suppressWarnings(ms <- data.table::as.data.table(read.csv(file = mutsigResults.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = '#')))
         close(mutsigResults.gz)
       } else{
         ms = suppressWarnings(data.table::fread(input = paste('zcat <', mutsig), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
@@ -110,62 +73,92 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     mach.epsi = .Machine$double.eps
     ms$q = ifelse(test = ms$q == 0, yes = mach.epsi, no = ms$q)
     ms.smg = ms[q < mutsigQval]
-    ms.smg.genes = as.character(ms[q < mutsigQval, gene])
+    genes = as.character(ms[q < mutsigQval, gene])
 
+    om = createOncoMatrix(m = maf, g = genes)
+    numMat = om$numericMatrix
+    mat_origin = om$oncoMatrix
 
     #Check for any missing genes and ignore them if necessary
-    if(length(ms.smg.genes[!ms.smg.genes %in% rownames(numMat)]) > 0){
+    if(length(genes[!genes %in% rownames(numMat)]) > 0){
       message('Following genes from MutSig results are not available in MAF:')
-      print(ms.smg.genes[!ms.smg.genes %in% rownames(numMat)])
+      print(genes[!genes %in% rownames(numMat)])
       message('Ignoring them.')
-      ms.smg.genes = ms.smg.genes[ms.smg.genes %in% rownames(numMat)]
+      genes = genes[ms.smg.genes %in% rownames(numMat)]
       ms.smg = ms.smg[gene %in% ms.smg.genes]
     }
 
     ms.smg = ms.smg[,.(gene, FDR)]
     ms.smg = data.frame(row.names = ms.smg$gene, FDR = ms.smg$FDR)
+  }else { #If user does not provide gene list or MutSig results, draw TOP (default 20) genes
 
-    numMat = numMat[ms.smg.genes,, drop = FALSE]
+    genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
+    om = createOncoMatrix(m = maf, g = genes)
+    numMat = om$numericMatrix
+    mat_origin = om$oncoMatrix
+  }
 
-    if(sortByAnnotation){
-      if(is.null(annotation)){
-        stop("Missing annotation data. Use argument `annotation` to provide annotations.")
+  #Annotations
+  if(!is.null(annotationCols)){
+    if(!is.null(annotationDat)){
+      data.table::setDF(annotationDat)
+      if(length(annotationCols[!annotationCols %in% colnames(annotationDat)]) > 0){
+        message('Following columns are missing from provided annotation data. Ignoring them..')
+        print(annotationCols[!annotationCols %in% colnames(annotationDat)])
+        annotationCols = annotationCols[annotationCols %in% colnames(annotationDat)]
+        if(length(annotationCols) == 0){
+          stop('Zero annotaions to add! Make at-least one of the provided annotationCols are present in annotationDat')
+        }
       }
-      numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation)
-    }else if(sortByMutation){
-      numMat = sortByMutation(numMat = numMat, maf = maf)
-      ms.smg = ms.smg[rownames(numMat),, drop = FALSE]
-    }
-
-    mat_origin = mat_origin[rownames(numMat), , drop = FALSE]
-    mat_origin = mat_origin[,colnames(numMat), drop = FALSE]
-    mat = mat_origin
-
-  }else {
-    #If user does not provide gene list or MutSig results draw TOP (default 20) genes
-
-    if(sortByAnnotation){
-      if(is.null(annotation)){
-        stop("Missing annotation data. Use argument `annotation` to provide annotations.")
+      annotation = annotationDat[,c('Tumor_Sample_Barcode', annotationCols)]
+      annotation = data.frame(row.names = annotation$Tumor_Sample_Barcode ,annotation[,annotationCols, drop = FALSE])
+    } else{
+      annotationDat = getAnnotations(x = maf)
+      #data.table::setDF(annotationDat)
+      if(length(annotationCols[!annotationCols %in% colnames(annotationDat)]) > 0){
+        message('Following columns are missing from annotation slot of MAF. Ignoring them..')
+        print(annotationCols[!annotationCols %in% colnames(annotationDat)])
+        annotationCols = annotationCols[annotationCols %in% colnames(annotationDat)]
+        if(length(annotationCols) == 0){
+          message('Make sure at-least one of the values from provided annotationCols are present in annotation slot of MAF. Here are available annotaions from MAF..')
+          print(head(getAnnotations(maf)))
+          stop('Zero annotaions to add! You can also provide custom annotations via annotationDat argument.')
+        }
       }
-      numMat = sortByAnnotation(numMat,maf,annotation)
-      mat_origin = mat_origin[rownames(numMat),, drop = FALSE]
-      mat_origin = mat_origin[,colnames(numMat), drop = FALSE]
-    }else{
-      if(sortByMutation){
-        #This is in case input maf was read with copynumber data but still wants to maintain mutation order (ignoring copynumber variants).
-        numMat = sortByMutation(numMat = numMat, maf = maf)
-        mat_origin = mat_origin[rownames(numMat),, drop = FALSE]
-        mat_origin = mat_origin[,colnames(numMat), drop = FALSE]
-      }
-    }
-
-    if(nrow(mat_origin) < top){
-      mat = mat_origin
-    }else{
-      mat = mat_origin[1:top, , drop = FALSE]
+      annotation = data.frame(row.names = annotationDat$Tumor_Sample_Barcode ,annotationDat[,annotationCols, with = FALSE])
     }
   }
+
+  #--Sort
+  numMat = numMat[genes,, drop = FALSE]
+  if(sortByAnnotation){
+    if(is.null(annotation)){
+      stop("Missing annotation data. Use argument `annotation` to provide annotations.")
+    }
+    numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation)
+  }else{
+    numMat = sortByMutation(numMat = numMat, maf = maf)
+  }
+
+  mat = mat_origin[rownames(numMat), , drop = FALSE]
+  mat = mat[,colnames(numMat), drop = FALSE]
+
+  #---remove genes from genesToIgnore if any
+  if(!is.null(genesToIgnore)){
+    numMat = numMat[!rownames(numMat) %in% genesToIgnore,]
+    mat_origin = mat_origin[!rownames(mat_origin) %in% genesToIgnore,]
+  }
+
+  #If <2 samples stop !
+  if(ncol(numMat) < 2){
+    stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
+  }
+
+  #If <2 samples stop !
+  if(nrow(numMat) < 2){
+    stop('Cannot create oncoplot for single gene. Minimum two genes required ! ')
+  }
+  #-----------------------
 
   #To remove samples with no mutations in top n genes, if user says removeNonMutated
   if(removeNonMutated){
@@ -223,27 +216,15 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   vc.type_col = vc.type_col[!is.na(vc.type_col)]
 
   #annotation if given
-  if(!is.null(annotation)){
-    #annotation[,1] = gsub(pattern = '-', replacement = '.', x = annotation[,1])
-    rownames(annotation) = annotation[,1]
-    annotation = annotation[colnames(mat_origin),]
-    annotation = annotation[complete.cases(annotation),]
-    anno.df = data.frame(row.names = annotation[,1])
-    anno.df = cbind(anno.df, annotation[,2:ncol(annotation)])
-    colnames(anno.df) = colnames(annotation)[2:ncol(annotation)]
-    #needed such that the annotation order matches the sample order if any type of sort is used
+  if(!is.null(annotationCols)){
     if(sortByMutation || sortByAnnotation){
-      sorted.order = colnames(mat)
-      anno.df.sorted = as.data.frame(anno.df[sorted.order,])
-      rownames(anno.df.sorted) = sorted.order
-      colnames(anno.df.sorted) = colnames(anno.df)
-      anno.df = anno.df.sorted
+      annotation = annotation[colnames(mat),, drop = FALSE]
     }
 
     if(!is.null(annotationColor)){
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = anno.df, col = annotationColor)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor)
     }else{
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(anno.df)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation)
     }
   }
 
@@ -303,16 +284,6 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
         tb[[i]] = table(x)
       }
       tb = rev(tb)
-
-      #     tb = apply(mat[rev(index), ], 1, function(x) {
-      #       x = unlist(strsplit(x, ";"))
-      #       #x = x[!grepl("^\\s*$", x)]
-      #       x = x[!x == '']
-      #       x = x[!x == 'xxx']
-      #       x = sort(x)
-      #       table(x)
-      #     })
-      #     print(tb)
 
       max_count = max(sapply(tb, sum))
       grid::pushViewport(grid::viewport(xscale = c(0, max_count * 1.1), yscale = c(0.5, n + 0.5)))
@@ -426,7 +397,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
 
   if(drawColBar){
-    if(is.null(annotation)){
+    if(is.null(annotationCols)){
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
@@ -442,7 +413,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   } else{
 
-    if(is.null(annotation)){
+    if(is.null(annotationCols)){
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE)
@@ -462,7 +433,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     ht_list =  ht_list + ha_row_bar
   }
 
-  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col), nrow = 2)
+  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col), nrow = 3)
 
   suppressWarnings( ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
 }

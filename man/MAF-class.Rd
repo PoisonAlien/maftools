@@ -11,7 +11,7 @@ S4 class for storing summarized MAF.
 \section{Slots}{
 
 \describe{
-\item{\code{data}}{data.table of original MAF file.}
+\item{\code{data}}{data.table of MAF file containing all non-synonymous variants.}
 
 \item{\code{variants.per.sample}}{table containing variants per sample}
 
@@ -21,15 +21,11 @@ S4 class for storing summarized MAF.
 
 \item{\code{gene.summary}}{table containing variant classification per gene}
 
-\item{\code{oncoMatrix}}{character matrix of dimension n*m where n is number of genes and m is number of variants}
-
-\item{\code{numericMatrix}}{numeric matrix of dimension n*m where n is number of genes and m is number of variants}
-
 \item{\code{summary}}{table with basic MAF summary stats}
 
-\item{\code{classCode}}{mapping between numeric values in numericMatrix and Variant Classification}
-
 \item{\code{maf.silent}}{subset of main MAF containing only silent variants}
+
+\item{\code{sample.anno}}{annotations associated with each sample/Tumor_Sample_Barcode in MAF. Ideally annotation would contain clinical data, survival information and other features features associated with samples.}
 }}
 
 \seealso{

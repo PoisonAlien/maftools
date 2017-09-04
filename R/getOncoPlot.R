@@ -2,7 +2,8 @@
 getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE, left = FALSE, showTumorSampleBarcodes = FALSE, hmName = hmName, fs = 10, gfs = 10){
 
   #-----preprocess matrix
-  mat_origin = maf@numericMatrix
+  om = createOncoMatrix(m = maf, g = genes)
+  mat_origin = om$numericMatrix
 
   if(ncol(mat_origin) < 2){
     stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
@@ -40,9 +41,8 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     }
 
 
-    mat_origin = maf@oncoMatrix
-    char.mat = maf@oncoMatrix
-    char.mat = char.mat[rownames(mat),, drop = FALSE]
+    mat_origin = om$oncoMatrix
+    char.mat = mat_origin[rownames(mat),, drop = FALSE]
     char.mat = char.mat[,colnames(mat), drop = FALSE]
     mat = char.mat
 

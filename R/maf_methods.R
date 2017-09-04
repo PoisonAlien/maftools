@@ -48,10 +48,27 @@ setGeneric(name = "getCytobandSummary", function(x) standardGeneric("getCytoband
 #' getFields(x = laml)
 setGeneric(name = "getFields", function(x) standardGeneric("getFields"))
 
+#' extract annotations from MAF object
+#' @name getAnnotations
+#' @rdname getAnnotations
+#' @param x An object of class MAF
+#' @return annotations associated with samples in MAF
+#' @exportMethod getAnnotations
+#' @examples
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' getAnnotations(x = laml)
+setGeneric(name = "getAnnotations", function(x) standardGeneric("getAnnotations"))
+
 ## Accessor methods
 #' @rdname getGeneSummary
 #' @aliases getGeneSummary
 setMethod(f = "getGeneSummary",signature = "MAF", function(x) x@gene.summary)
+
+## Accessor methods
+#' @rdname getAnnotations
+#' @aliases getAnnotations
+setMethod(f = "getAnnotations",signature = "MAF", function(x) x@sample.anno)
 
 #' @rdname getGeneSummary
 #' @aliases getGeneSummary

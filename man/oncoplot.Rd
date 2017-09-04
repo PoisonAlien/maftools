@@ -5,8 +5,8 @@
 \title{draw an oncoplot}
 \usage{
 oncoplot(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1,
-  drawRowBar = TRUE, drawColBar = TRUE, annotation = NULL,
-  annotationColor = NULL, genesToIgnore = NULL,
+  drawRowBar = TRUE, drawColBar = TRUE, annotationCols = NULL,
+  annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
   showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
   fontSize = 10, sortByMutation = FALSE, sortByAnnotation = FALSE,
   writeMatrix = FALSE)
@@ -26,7 +26,10 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1,
 
 \item{drawColBar}{logical plots barplot for each sample. Default \code{TRUE}.}
 
-\item{annotation}{data.frame with first column containing Tumor_Sample_Barcodes and rest of columns with annotations. Default NULL.}
+\item{annotationCols}{columns names from `annotation` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
+
+\item{annotationDat}{If MAF file was read without annotations, provide a custom \code{data.frame} with a column containing Tumor_Sample_Barcodes along with rest of columns with annotations.
+You can specify which columns to be drawn using `annotationCols` argument.}
 
 \item{annotationColor}{list of colors to use for annotation. Default NULL.}
 
