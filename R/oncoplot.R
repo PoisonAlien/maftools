@@ -142,7 +142,6 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     }
   }
 
-  numMat = numMat[genes,, drop = FALSE]
   if(sortByAnnotation){
     if(is.null(annotation)){
       stop("Missing annotation data. Use argument `annotation` to provide annotations.")
@@ -321,13 +320,16 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   ##This function adds columnbar
   anno_column_bar = function(index) {
     n = length(index)
-    tb = apply(mat_origin[, index, drop = FALSE], 2, function(x) {
-      x = unlist(strsplit(x, ";"))
-      x = x[!grepl("^\\s*$", x)]
-      x = sort(x)
-      table(x)
-    })
+
+    ss = getSampleSummary(x = maf)
+    tb = ss[Tumor_Sample_Barcode %in% colnames(mat)]
+    tb[,total := NULL]
+    tb = split(tb, as.factor(as.character(tb$Tumor_Sample_Barcode)))
+    tb = lapply(X = tb, function(x) unlist(x)[-1])
+    tb = tb[colnames(mat)]
+
     max_count = max(sapply(tb, sum))
+
     grid::pushViewport(grid::viewport(yscale = c(0, max_count * 1.1),
                                       xscale = c(0.5, n + 0.5)))
     for (i in seq_along(tb)) {
