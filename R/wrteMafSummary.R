@@ -6,7 +6,7 @@
 #' @seealso \code{\link{read.maf}}
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' write.mafSummary(maf = laml, basename = 'laml')
 #'
 #' @export
@@ -23,12 +23,6 @@ write.mafSummary = function(maf, basename = NULL){
   write.table(x = maf@variant.classification.summary, file = paste(basename,'_sampleSummary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
   #write summary
   write.table(x = maf@summary,file = paste(basename,'_summary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
-  #write oncomatrix
-  write.table(x = maf@oncoMatrix, file = paste(basename,'_oncomatrix.txt', sep=''), sep='\t', quote = FALSE, row.names = TRUE)
-  #write oncomatrix numeric
-  write.table(x = maf@numericMatrix, file = paste(basename,'_oncomatrixNumeric.txt', sep=''), sep='\t', quote = FALSE, row.names = TRUE)
   #write main maf
-  dat = maf@data
-  dat = dat[!Variant_Type %in% 'CNV']
-  write.table(x = dat, file = paste(basename,'_maftools.maf', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
+  data.table::fwrite(x = rbind(maf@data, maf@maf.silent), file = paste(basename,'_maftools.maf', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
 }

@@ -31,7 +31,7 @@
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' oncoplot(maf = laml, top = 3)
 #' @import ComplexHeatmap
 #' @import grid
@@ -130,6 +130,18 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   }
 
   #--Sort
+
+  if(length(genes[!genes %in% rownames(numMat)]) > 0){
+    message('Following genes from provided gene list are missing from MAF:')
+    print(genes[!genes %in% rownames(numMat)])
+    message('Ignoring them.')
+    genes = genes[genes %in% rownames(numMat)]
+
+    if(length(genes) < 1){
+      stop('Only one gene left! At-least two genes required for plotting.')
+    }
+  }
+
   numMat = numMat[genes,, drop = FALSE]
   if(sortByAnnotation){
     if(is.null(annotation)){

@@ -13,7 +13,7 @@
 #' @seealso \code{\link{getFields}}
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' ##Select all Splice_Site mutations from DNMT3A and NPM1
 #' subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'),
 #' query = "Variant_Classification == 'Splice_Site'")

@@ -17,15 +17,16 @@
 #' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
-#' gistic.summary = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
-#' gisticPlot(gistic.summary)
+#' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
+#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
+#' gisticOncoPlot(laml.gistic)
 #' @import ComplexHeatmap
 #' @import grid
 #' @seealso \code{\link{oncostrip}}
 #' @export
 
 
-gisticPlot = function (gistic, top = NULL,
+gisticOncoPlot = function (gistic, top = NULL,
                      showTumorSampleBarcodes = FALSE, annotation = NULL, bandsToIgnore = NULL,
                      removeNonAltered = FALSE, colors = NULL, fontSize = 10) {
 
@@ -36,7 +37,6 @@ gisticPlot = function (gistic, top = NULL,
   drawRowBar = FALSE
   drawColBar = FALSE
   writeMatrix = FALSE
-
 
   numMat = gistic@numericMatrix
   rownames(numMat) = sapply(strsplit(x = rownames(numMat), split = ':'), '[', 2)

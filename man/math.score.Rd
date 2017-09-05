@@ -27,7 +27,7 @@ High MATH scores are related to lower survival rates. This function requies vafs
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+laml <- read.maf(maf = laml.maf)
 laml.math <- math.score(maf = laml, vafCol = 'i_TumorVAF_WU',
 sampleName = c('TCGA-AB-3009', 'TCGA-AB-2849', 'TCGA-AB-3002', 'TCGA-AB-2972'))
 }

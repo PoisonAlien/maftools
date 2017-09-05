@@ -8,7 +8,7 @@ dirichletClusters = function(tsb.dat){
   #Hyper parameters
   prior1 = list(alpha=0.05,m1=rep(0,1),psiinv1=diag(0.5,1),nu1=6,tau1=0.2,tau2=1000)
   #Run main function
-  dp = DPpackage::DPdensity(y = tsb.dat[,t_vaf]*100, prior = prior1, mcmc = mcmc, status = TRUE)
+  #dp = DPpackage::DPdensity(y = tsb.dat[,t_vaf]*100, prior = prior1, mcmc = mcmc, status = TRUE)
   #Assign clusters
   tsb.dat$cluster = as.character(dp$state$ss)
   return(tsb.dat)

@@ -5,7 +5,8 @@
 \title{Converts annovar annotations into MAF.}
 \usage{
 annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
-  table = "refGene", basename = NULL, sep = "\\t", MAFobj = FALSE)
+  table = "refGene", basename = NULL, sep = "\\t", MAFobj = FALSE,
+  sampleAnno = NULL)
 }
 \arguments{
 \item{annovar}{input annovar annotation file.}
@@ -23,6 +24,8 @@ annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
 \item{sep}{field seperator for input file. Default tab seperated.}
 
 \item{MAFobj}{If TRUE, returns results as an \code{\link{MAF}} object.}
+
+\item{sampleAnno}{annotations associated with each sample/Tumor_Sample_Barcode in input annovar file. If provided it will be included in MAF object. Could be a text file or a data.frame. Ideally annotation would contain clinical data, survival information and other necessary features associated with samples. Default NULL.}
 }
 \value{
 MAF table.

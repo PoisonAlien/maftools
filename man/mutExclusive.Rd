@@ -21,7 +21,7 @@ Performs statistical test between given set of genes for mutual excluisiveness.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+laml <- read.maf(maf = laml.maf)
 mutExclusive(maf = laml, top = 5)
 
 }

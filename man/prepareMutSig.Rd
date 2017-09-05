@@ -24,6 +24,6 @@ from analysis and is represented as an insignificant gene in MutSig results. Thi
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+laml <- read.maf(maf = laml.maf)
 prepareMutSig(maf = laml)
 }

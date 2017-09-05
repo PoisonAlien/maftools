@@ -6,7 +6,7 @@
 #' @exportMethod getGeneSummary
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' getGeneSummary(laml)
 setGeneric(name = "getGeneSummary", function(x) standardGeneric("getGeneSummary"))
 
@@ -18,7 +18,7 @@ setGeneric(name = "getGeneSummary", function(x) standardGeneric("getGeneSummary"
 #' @exportMethod getSampleSummary
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' getSampleSummary(x = laml)
 setGeneric(name = "getSampleSummary", function(x) standardGeneric("getSampleSummary"))
 
@@ -32,7 +32,8 @@ setGeneric(name = "getSampleSummary", function(x) standardGeneric("getSampleSumm
 #' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
-#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
+#' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
+#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
 #' getCytobandSummary(laml.gistic)
 setGeneric(name = "getCytobandSummary", function(x) standardGeneric("getCytobandSummary"))
 
@@ -44,7 +45,7 @@ setGeneric(name = "getCytobandSummary", function(x) standardGeneric("getCytoband
 #' @exportMethod getFields
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' getFields(x = laml)
 setGeneric(name = "getFields", function(x) standardGeneric("getFields"))
 
@@ -56,7 +57,7 @@ setGeneric(name = "getFields", function(x) standardGeneric("getFields"))
 #' @exportMethod getAnnotations
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' getAnnotations(x = laml)
 setGeneric(name = "getAnnotations", function(x) standardGeneric("getAnnotations"))
 

@@ -64,7 +64,7 @@ Thanks to Ryan Morin for \code{sortByAnnotation} code.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+laml <- read.maf(maf = laml.maf)
 oncoplot(maf = laml, top = 3)
 }
 \seealso{

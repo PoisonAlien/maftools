@@ -26,6 +26,6 @@ extract gene summary from MAF or GISTIC object
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+laml <- read.maf(maf = laml.maf)
 getGeneSummary(laml)
 }

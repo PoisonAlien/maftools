@@ -32,6 +32,6 @@ Compares mutation load in input MAF against all of 33 TCGA cohorts
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+laml <- read.maf(maf = laml.maf)
 tcgaCompare(maf = laml, cohortName = "AML")
 }

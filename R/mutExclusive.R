@@ -9,7 +9,7 @@
 #' @return table with number of events in all possible combinations and p-value. Column header describes mutation status of gene1 and gene2 respectively. n.00 number of samples where both gene1 and gene2 are not mutated c.01 number of samples where gene1 is not mutated but gene2 is mutated and so on.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' mutExclusive(maf = laml, top = 5)
 #'
 #' @import cometExactTest
@@ -18,8 +18,23 @@
 
 mutExclusive = function(maf, genes = NULL, top = 10){
 
-  mat = maf@numericMatrix
-  ampdel = as.numeric(names(maf@classCode[maf@classCode %in% c('Amp', 'Del')]))
+  #if gene list is not given, use top ten genes and do pairwise comparision
+  if(is.null(genes)){
+    genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
+    genes = genes[!is.na(genes)]
+  }
+
+  if(length(genes) < 2){
+    stop('provide at-least two genes between which exlclusiveness has to be estimated.')
+  }
+
+  om = createOncoMatrix(m = maf, g = genes)
+  mat = om$numericMatrix
+
+  genes = rownames(mat)
+  genes.combn = combn(genes, 2) #generate all pairwise combinations of top n genes chosen.
+
+  ampdel = as.numeric(names(om$vc[om$vc %in% c('Amp', 'Del')]))
 
   if(length(ampdel) > 0){
     for(i in 1:length(ampdel)){
@@ -38,24 +53,6 @@ mutExclusive = function(maf, genes = NULL, top = 10){
   #convert various Variant_Classification class codes to binary (1 = mutated; 0 = nonmutated)
   mat[mat>0] = 1
 
-  #if gene list is not given, use top ten genes and do pairwise comparision
-  if(is.null(genes)){
-
-    #choose top genes
-    if(nrow(mat) < top){
-      mat = mat
-    }else{
-      mat = mat[1:top,]
-    }
-    genes = rownames(mat)
-    genes.combn = combn(genes, 2) #generate all pairwise combinations of top n genes chosen.
-  } else{
-
-    if(length(genes) < 2){
-      stop('provide atleast two genes between which exlclusiveness has to be estimated.')
-    }
-    genes.combn = combn(genes, 2) #generate all pairwise combinations of top n genes chosen.
-  }
 
     ptbl.df = c() #table to store p-values and raw counts
 
@@ -84,6 +81,7 @@ mutExclusive = function(maf, genes = NULL, top = 10){
 
   ptbl.df = data.frame('n.00' = ptbl.df[,1], 'n.01' = ptbl.df[,2], 'n.10' = ptbl.df[,3], 'n.11' = ptbl.df[,4], 'gene1' = ptbl.df[,5], 'gene2' = ptbl.df[,6], 'pval' = ptbl.df[,7], row.names = NULL)
   ptbl.df = ptbl.df[order(ptbl.df$pval, decreasing = FALSE),]
-  rownames(ptbl.df) = 1:nrow(ptbl.df)
-  return(ptbl.df)
+  data.table::setDT(ptbl.df)
+  ptbl.df$pval = round(as.numeric(as.character(ptbl.df$pval)), 5)
+  ptbl.df
 }

@@ -6,6 +6,7 @@
 #' @slot gene.summary table containing alterations per gene
 #' @slot cnMatrix character matrix of dimension n*m where n is number of genes and m is number of samples
 #' @slot numericMatrix numeric matrix of dimension n*m where n is number of genes and m is number of samples
+#' @slot gis.scores gistic.scores
 #' @slot summary table with basic GISTIC summary stats
 #' @slot classCode mapping between numeric values in numericMatrix and copy number events.
 #' @exportClass GISTIC
@@ -15,7 +16,7 @@
 ## MAF object
 GISTIC <- setClass(Class = 'GISTIC', slots =  c(data = 'data.table', cnv.summary = 'data.table',
                                              cytoband.summary = 'data.table', gene.summary = 'data.table', cnMatrix = 'matrix',
-                                          numericMatrix = 'matrix', summary = 'data.table', classCode = 'character'
+                                          numericMatrix = 'matrix', gis.scores = 'data.table', summary = 'data.table', classCode = 'character'
                                           ))
 
 setMethod(f = 'show', signature = 'GISTIC', definition = function(object){

@@ -9,7 +9,7 @@
 #' @seealso  \code{\link{plotTiTv}}
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' laml.titv = titv(maf = laml, useSyn = TRUE)
 #'
 #' @export
@@ -17,17 +17,12 @@
 
 titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL){
 
-  #Synonymous variants
-  maf.silent = maf@maf.silent
   #Main data
   maf = maf@data
 
-  #in case user read maf without removing silent variants, remove theme here.
-  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
-  maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
-
   if(useSyn){
+    #Synonymous variants
+    maf.silent = maf@maf.silent
     maf = rbind(maf, maf.silent, fill = TRUE)
   }
 

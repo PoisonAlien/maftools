@@ -13,7 +13,7 @@
 #' @export
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
 #' TCGA.AB.3009.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-3009',
 #' segFile = seg, vafCol = 'i_TumorVAF_WU')

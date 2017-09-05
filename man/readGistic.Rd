@@ -34,5 +34,5 @@ all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maft
 amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
 scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
-laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic, fdrCutOff = 0.1, isTCGA = TRUE)
+laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic, isTCGA = TRUE)
 }

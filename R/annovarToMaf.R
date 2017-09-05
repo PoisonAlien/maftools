@@ -17,6 +17,7 @@
 #' @param basename If provided writes resulting MAF file to an output file.
 #' @param sep field seperator for input file. Default tab seperated.
 #' @param MAFobj If TRUE, returns results as an \code{\link{MAF}} object.
+#' @param sampleAnno annotations associated with each sample/Tumor_Sample_Barcode in input annovar file. If provided it will be included in MAF object. Could be a text file or a data.frame. Ideally annotation would contain clinical data, survival information and other necessary features associated with samples. Default NULL.
 #' @references Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
 #' @return MAF table.
 #' @examples
@@ -25,7 +26,7 @@
 #' tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene')
 #' @export
 
-annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL , sep = '\t', MAFobj = FALSE){
+annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL , sep = '\t', MAFobj = FALSE, sampleAnno = NULL){
 
   ann = data.table::fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, header = TRUE)
 
@@ -196,27 +197,24 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
   }
 
   if(MAFobj){
+    #Convert to factors.
+    ann.maf$Tumor_Sample_Barcode = as.factor(x = as.character(ann.maf$Tumor_Sample_Barcode))
+    ann.maf$Variant_Classification = as.factor(x = as.character(ann.maf$Variant_Classification))
+    ann.maf$Variant_Type = as.factor(x = as.character(ann.maf$Variant_Type))
     ann.maf = validateMaf(maf = ann.maf, isTCGA = FALSE, rdup = TRUE)
-    ann.maf.summary = summarizeMaf(maf = ann.maf)
+    ann.maf.summary = summarizeMaf(maf = ann.maf, anno = sampleAnno, chatty = FALSE)
     if(length(unique(ann.maf[,Tumor_Sample_Barcode])) < 2){
       message('Too few samples to create MAF object. Returning MAF table.')
       return(ann.maf)
     }else{
-      #Convert to factors.
-      ann.maf$Tumor_Sample_Barcode = as.factor(x = as.character(ann.maf$Tumor_Sample_Barcode))
-      ann.maf$Variant_Classification = as.factor(x = as.character(ann.maf$Variant_Classification))
-      ann.maf$Variant_Type = as.factor(x = as.character(ann.maf$Variant_Type))
-
-      ann.maf.oncomat = createOncoMatrix(maf = ann.maf)
-
       silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
                  "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
       ann.maf.silent = ann.maf[Variant_Classification %in% silent]
+      ann.maf = ann.maf[!Variant_Classification %in% silent]
 
       m = MAF(data = ann.maf, variants.per.sample = ann.maf.summary$variants.per.sample, variant.type.summary = ann.maf.summary$variant.type.summary,
               variant.classification.summary = ann.maf.summary$variant.classification.summary, gene.summary = ann.maf.summary$gene.summary,
-              oncoMatrix = ann.maf.oncomat$oncomat, numericMatrix = ann.maf.oncomat$nummat, summary = ann.maf.summary$summary,
-              classCode = ann.maf.oncomat$vc, maf.silent = ann.maf.silent)
+              summary = ann.maf.summary$summary, maf.silent = ann.maf.silent, sample.anno = ann.maf.summary$sample.anno)
 
       return(m)
     }

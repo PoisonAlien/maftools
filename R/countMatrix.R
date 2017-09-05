@@ -9,7 +9,7 @@
 #' @seealso \code{\link{getFields}} \code{\link{getGeneSummary}} \code{\link{getSampleSummary}}
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' ##Generate matrix
 #' mutCountMatrix(maf = laml)
 #' ##Generate count matrix of Splice_Site mutations

@@ -8,7 +8,7 @@
 #' @return list of \code{data.table}s with samples in which given genes are mutated.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, removeSilent = TRUE, useAll = FALSE)
+#' laml <- read.maf(maf = laml.maf)
 #' genesToBarcodes(maf = laml, genes = 'DNMT3A')
 #' @export
 
@@ -19,7 +19,7 @@ genesToBarcodes = function(maf, genes = NULL, justNames = FALSE){
     stop('Atleast one gene name is required.')
   }
 
-  dat = maf@numericMatrix
+  dat = createOncoMatrix(m = maf, g = genes)$numericMatrix
 
   if(length(genes[!genes %in% rownames(dat)]) > 0){
     message(paste(genes[!genes %in% rownames(dat)], 'not found in MAF. Excluding it..\n', sep=' '))
@@ -40,7 +40,7 @@ genesToBarcodes = function(maf, genes = NULL, justNames = FALSE){
   }
 
   if(justNames){
-    res = sapply(res, function(x) return(x$Tumor_Sample_Barcode))
+    res = sapply(X = res, FUN = function(x) as.character(x[,Tumor_Sample_Barcode]))
     return(res)
   }else{
     return(res)

@@ -155,6 +155,8 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
       }
     }
 
+  colnames(sample.anno) = gsub(pattern = ' ', replacement = '_', x = colnames(sample.anno), fixed = TRUE) #replace spaces in column names for annotation data
+
   maf.tsbs = levels(tsb[,Tumor_Sample_Barcode])
   sample.anno = sample.anno[Tumor_Sample_Barcode %in% maf.tsbs][!duplicated(Tumor_Sample_Barcode)]
   anno.tsbs = sample.anno[,Tumor_Sample_Barcode]

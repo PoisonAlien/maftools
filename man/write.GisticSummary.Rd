@@ -21,7 +21,8 @@ Writes GISTIC summaries to output tab-delimited text files.
 all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
 amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
-laml.gistic <- readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, isTCGA = TRUE)
+scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
+laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
 write.GisticSummary(gistic = laml.gistic, basename = 'laml')
 
 }
