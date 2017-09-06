@@ -52,7 +52,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
     maf.silent = maf.silent[eval(parse(text=query))]
   }
 
-  default.fields = c('Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele1','Tumor_Seq_Allele2','Variant_Classification', 'Variant_Type', 'Tumor_Sample_Barcode') #necessary fields.
+  default.fields = c('Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele2','Variant_Classification', 'Variant_Type', 'Tumor_Sample_Barcode') #necessary fields.
 
   if(!is.null(fields)){
     default.fields = unique(c(default.fields, fields))

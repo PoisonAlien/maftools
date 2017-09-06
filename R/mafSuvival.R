@@ -7,7 +7,7 @@
 #' @param samples samples to group by. Genes and samples are mutually exclusive.
 #' @param clinicalData dataframe containing events and time to events. Default looks for clinical data in annotation slot of \code{\link{MAF}}.
 #' @param time column name contining time in \code{clinicalData}
-#' @param Status column name containing status of patients in \code{clinicalData}. e.g, Dead or Alive, 1 or 0.
+#' @param Status column name containing status of patients in \code{clinicalData}. must be logical or numeric. e.g, TRUE or FALSE, 1 or 0.
 #' @param groupNames names for groups. Should be of length two. Default c("Mutant", "WT")
 #' @param col colors for plotting.
 #' @param isTCGA FALSE. Is data is from TCGA.
@@ -27,7 +27,7 @@
 #'
 #'@export
 
-mafSurvival = function(maf, clinicalData = NULL, genes = NULL, samples = NULL, time = "Time",
+mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, time = "Time",
                        Status = "Status", groupNames = c("Mutant", "WT"), showConfInt = TRUE, addInfo = TRUE,
                        col = c('maroon', 'royalblue'), isTCGA = FALSE,
                        textSize = 12, fn = NULL, width = 6, height = 6){
@@ -121,7 +121,7 @@ mafSurvival = function(maf, clinicalData = NULL, genes = NULL, samples = NULL, t
     geom_point(aes(color = Group))+
     cowplot::theme_cowplot(font_size = 12)+
     theme(legend.position = 'bottom', plot.title = element_text(size = 14, face = "bold"),
-          plot.subtitle = element_text(size = 12, face = "bold", colour = ifelse(surv.diff.pval < 0.01, yes = 'red', no = 'black')), legend.title = element_blank())+
+          plot.subtitle = element_text(size = 12, face = "bold", colour = ifelse(surv.diff.pval < 0.05, yes = 'red', no = 'black')), legend.title = element_blank())+
     ggtitle(label = paste0(groupNames[1], " v/s ", groupNames[2]), subtitle = paste0("P-value: ", surv.diff.pval))+
     xlab('Time')+ylab('Survival')+
     scale_color_manual(values = col)

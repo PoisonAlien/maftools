@@ -18,24 +18,24 @@
 titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL){
 
   #Main data
-  maf = maf@data
+  mafDat = maf@data
 
   if(useSyn){
     #Synonymous variants
     maf.silent = maf@maf.silent
-    maf = rbind(maf, maf.silent, fill = TRUE)
+    mafDat = rbind(mafDat, maf.silent, fill = TRUE)
   }
 
-  maf = maf[Variant_Type == 'SNP']
+  mafDat = mafDat[Variant_Type == 'SNP']
 
-  if(nrow(maf) == 0){
+  if(nrow(mafDat) == 0){
     stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
   }
 
-  maf = maf[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
-  maf$con = paste(maf[,Reference_Allele], maf[,Tumor_Seq_Allele2], sep = '>')
+  mafDat = mafDat[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
+  mafDat$con = paste(mafDat[,Reference_Allele], mafDat[,Tumor_Seq_Allele2], sep = '>')
 
-  maf.con.summary = maf[,.N, by = .(Tumor_Sample_Barcode, con)]
+  maf.con.summary = mafDat[,.N, by = .(Tumor_Sample_Barcode, con)]
   conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
   names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
   conv.class = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv')

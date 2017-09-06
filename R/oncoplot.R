@@ -49,7 +49,6 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   #-------------------------------------Preprocess matrix---------------------------------------------------
 
   if(!is.null(genes)){ #If user provides a gene list
-
     om = createOncoMatrix(m = maf, g = genes)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
@@ -147,7 +146,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
       stop("Missing annotation data. Use argument `annotation` to provide annotations.")
     }
     numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation)
-  }else{
+  }else if(sortByMutation){
     numMat = sortByMutation(numMat = numMat, maf = maf)
   }
 
@@ -249,7 +248,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   ##This function adds percent rate
   anno_pct = function(index) {
     n = length(index)
-    pct = apply(mat_origin[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
+    pct = apply(mat[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
