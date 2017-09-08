@@ -35,12 +35,12 @@ genesToBarcodes = function(maf, genes = NULL, justNames = FALSE){
   for(i in 1:length(genes)){
     x = dat[genes[i],]
     tsbs = names(x[x!= 0])
-    res[i] = list(subset(maf@variant.classification.summary, Tumor_Sample_Barcode %in% tsbs))
+    res[i] = list(maf@variant.classification.summary[Tumor_Sample_Barcode %in% tsbs])
     names(res)[i] = genes[i]
   }
 
   if(justNames){
-    res = sapply(X = res, FUN = function(x) as.character(x[,Tumor_Sample_Barcode]))
+    res = lapply(X = res, FUN = function(x) as.character(x[,Tumor_Sample_Barcode]))
     return(res)
   }else{
     return(res)
