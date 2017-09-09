@@ -4,6 +4,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   #-----preprocess matrix
   om = createOncoMatrix(m = maf, g = genes)
   mat_origin = om$numericMatrix
+  numMat = om$numericMatrix
 
   if(ncol(mat_origin) < 2){
     stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
@@ -40,16 +41,20 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
       mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = TRUE)), ])
     }
 
-
     mat_origin = om$oncoMatrix
     char.mat = mat_origin[rownames(mat),, drop = FALSE]
     char.mat = char.mat[,colnames(mat), drop = FALSE]
     mat = char.mat
+    numMat = numMat[rownames(mat),, drop = FALSE]
+    numMat = numMat[,colnames(mat), drop = FALSE]
 
     if(length(genes.missing) > 0){
       genes.missing.mat = t(matrix(data = '', ncol = ncol(mat), nrow = length(genes.missing)))
+      genes.missing.numat = t(matrix(data = 0, ncol = ncol(mat), nrow = length(genes.missing)))
       colnames(genes.missing.mat) = genes.missing
+      colnames(genes.missing.numat) = genes.missing
       mat = rbind(mat, t(genes.missing.mat))
+      numMat = rbind(numMat, t(genes.missing.numat))
       #mat = mat[genes,]
 
       genes.missing.mat2 = t(matrix(data = '', ncol = ncol(mat_origin), nrow = length(genes.missing)))
@@ -99,7 +104,8 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   ##This function adds percent rate
   anno_pct = function(index) {
     n = length(index)
-    pct = apply(mat_origin[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
+    #pct = apply(mat_origin[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
+    pct = apply(numMat[rev(index),], 1, function(x) length(x[x != 0]))/as.numeric(maf@summary[3, summary]) * 100
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",

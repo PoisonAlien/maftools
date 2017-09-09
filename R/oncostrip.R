@@ -171,7 +171,8 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, ann
   ##This function adds percent rate
   anno_pct = function(index) {
     n = length(index)
-    pct = apply(mat_origin[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
+    #pct = apply(mat_origin[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
+    pct = apply(numMat[rev(index),], 1, function(x) length(x[x != 0]))/as.numeric(maf@summary[3, summary]) * 100
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",

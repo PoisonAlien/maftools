@@ -61,6 +61,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
   }else{
     conv.mat.nmf.signatures = nmfRes$signatures
     contrib = nmfRes$contributions
+    coSineMat = nmfRes$coSineSimMat
 
     if(contributions){
       #     if(nrow(contrib) == 1){
@@ -73,7 +74,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
         }else{
         contribt = contribt[order(contribt[,ncol(contribt)]),] #order according to standard deviation
         }
-      
+
       #contrib = t(contribt[,1:(ncol(contribt)-1)])
       contrib = t(contribt[,1:(ncol(contribt))])
       contrib.melt = data.table::melt(contrib)
@@ -85,9 +86,27 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       return(contrib.gg)
 
     }else{
+      aetiology = structure(list(aetiology = c("spontaneous deamination of 5-methylcytosine",
+                                               "APOBEC Cytidine Deaminase (C>T)", "defects in DNA-DSB repair by HR",
+                                               "exposure to tobacco (smoking) mutagens", "Unknown", "defective DNA mismatch repair",
+                                               "UV exposure", "Unknown", "defects in polymerase-eta", "defects in polymerase POLE",
+                                               "exposure to alkylating agents", "Unknown", "APOBEC Cytidine Deaminase (C>G)",
+                                               "Unknown", "defective DNA mismatch repair", "Unknown", "Unknown",
+                                               "Unknown", "Unknown", "defective DNA mismatch repair", "unknown",
+                                               "exposure to aristolochic acid", "Unknown", "exposures to aflatoxin",
+                                               "Unknown", "defective DNA mismatch repair", "Unknown", "Unknown",
+                                               "exposure to tobacco (chewing) mutagens", "Unknown")), .Names = "aetiology", row.names = c("Signature_1",
+                                                                                                                                          "Signature_2", "Signature_3", "Signature_4", "Signature_5", "Signature_6",
+                                                                                                                                          "Signature_7", "Signature_8", "Signature_9", "Signature_10",
+                                                                                                                                          "Signature_11", "Signature_12", "Signature_13", "Signature_14",
+                                                                                                                                          "Signature_15", "Signature_16", "Signature_17", "Signature_18",
+                                                                                                                                          "Signature_19", "Signature_20", "Signature_21", "Signature_22",
+                                                                                                                                          "Signature_23", "Signature_24", "Signature_25", "Signature_26",
+                                                                                                                                          "Signature_27", "Signature_28", "Signature_29", "Signature_30"
+                                               ), class = "data.frame")
+
       plotData = as.data.frame(t(conv.mat.nmf.signatures))
       nsigs = nrow(plotData)
-      par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1,mar = c(0,0,1,1) + 0.1)
 
       if(is.null(color)){
         #color = c("blue","black","red","gray","green","maroon")
@@ -95,13 +114,18 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       }
       colors = rep(color, each=16)
 
+      par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1,mar = c(0,0,1,1) + 0.1, las=1, tcl=-.25, font.main=2)
+
       for(i in 1:nsigs){
+        ae = aetiology[names(which(coSineMat[i,] == max(coSineMat[i,]))),]
+        ae = paste0("Aetiology: ", ae, " [cosine-similarity: ", max(coSineMat[i,]), "]")
         d = as.matrix(plotData[i,])
-        barplot(d, xaxt = "n", yaxt = "n", border = FALSE, col = colors, beside = TRUE, ylim = c(-0.1, 0.2), ...)
-        axis(side = 2,at = c(0,0.05,0.1,0.15,0.2),labels = c(0,0.05,0.1,0.15,0.2), pos = c(0,0.05,0.1,0.15,0.2), las = 2)
-        abline(h = c(0.05,0.1,0.15,0.2,0.25),lty=2,lwd=0.3, col = 'gray70')
+        barplot(d, xaxt = "n", yaxt = "n", border = FALSE, col = colors, beside = TRUE, ylim = c(-0.1, 0.3), main = ae, cex.main = 1, adj = 0.25, ...)
+        #mtext(text = ae, side = 1, line = 2, font = 1, cex = 0.5, at = 0.3)
+        axis(side = 2,at = seq(0, 0.3, 0.1),labels = seq(0, 0.3, 0.1), pos = seq(0, 0.3, 0.1), las = 2)
+        #abline(h = seq(0, 0.3, 0.1),lty=2,lwd=0.3, col = 'gray70')
         rect(xleft = seq(0, 192, 32), ybottom = -0.05, xright = 192, ytop = -0.02, col = color, border = 'gray70')
-        text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 0.8)
+        text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 1)
       }
     }
   }

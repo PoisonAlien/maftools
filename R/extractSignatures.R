@@ -102,13 +102,32 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     #sigs = sigs[,1:22] #use only first 21 validated sigantures
     sigs = sigs[rownames(w),]
 
+    aetiology = structure(list(aetiology = c("spontaneous deamination of 5-methylcytosine",
+                                             "APOBEC Cytidine Deaminase (C>T)", "defects in DNA-DSB repair by HR",
+                                             "exposure to tobacco (smoking) mutagens", "Unknown", "defective DNA mismatch repair",
+                                             "UV exposure", "Unknown", "defects in polymerase-eta", "defects in polymerase POLE",
+                                             "exposure to alkylating agents", "Unknown", "APOBEC Cytidine Deaminase (C>G)",
+                                             "Unknown", "defective DNA mismatch repair", "Unknown", "Unknown",
+                                             "Unknown", "Unknown", "defective DNA mismatch repair", "unknown",
+                                             "exposure to aristolochic acid", "Unknown", "exposures to aflatoxin",
+                                             "Unknown", "defective DNA mismatch repair", "Unknown", "Unknown",
+                                             "exposure to tobacco (chewing) mutagens", "Unknown")), .Names = "aetiology", row.names = c("Signature_1",
+                                                                                                                                        "Signature_2", "Signature_3", "Signature_4", "Signature_5", "Signature_6",
+                                                                                                                                        "Signature_7", "Signature_8", "Signature_9", "Signature_10",
+                                                                                                                                        "Signature_11", "Signature_12", "Signature_13", "Signature_14",
+                                                                                                                                        "Signature_15", "Signature_16", "Signature_17", "Signature_18",
+                                                                                                                                        "Signature_19", "Signature_20", "Signature_21", "Signature_22",
+                                                                                                                                        "Signature_23", "Signature_24", "Signature_25", "Signature_26",
+                                                                                                                                        "Signature_27", "Signature_28", "Signature_29", "Signature_30"
+                                             ), class = "data.frame")
+
     message('Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)')
     #corMat = c()
     coSineMat = c()
     for(i in 1:ncol(w)){
       sig = w[,i]
       coSineMat = rbind(coSineMat, apply(sigs, 2, function(x){
-        crossprod(sig, x)/sqrt(crossprod(x) * crossprod(sig)) #Estimate cosine similarity against all 30 signatures
+        round(crossprod(sig, x)/sqrt(crossprod(x) * crossprod(sig)), digits = 3) #Estimate cosine similarity against all 30 signatures
       }))
       #corMat = rbind(corMat, apply(sigs, 2, function(x) cor.test(x, sig)$estimate[[1]])) #Calulate correlation coeff.
     }
@@ -116,7 +135,9 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     rownames(coSineMat) = colnames(w)
 
     for(i in 1:nrow(coSineMat)){
-      message('Found ',rownames(coSineMat)[i], ' most similar to validated ',names(which(coSineMat[i,] == max(coSineMat[i,]))), '. CoSine-Similarity: ', max(coSineMat[i,]), sep=' ')
+      ae = aetiology[names(which(coSineMat[i,] == max(coSineMat[i,]))),]
+      ae = paste0("Aetiology: ", ae, " [cosine-similarity: ", max(coSineMat[i,]), "]")
+      message('Found ',rownames(coSineMat)[i], ' most similar to validated ', names(which(coSineMat[i,] == max(coSineMat[i,]))), '. ', ae, sep=' ')
     }
 
     return(list(signatures = w, contributions = h, coSineSimMat = coSineMat, nmfObj = conv.mat.nmf))

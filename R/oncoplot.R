@@ -246,9 +246,20 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   #------------------------------------------------------------------------------------------------------
 
   ##This function adds percent rate
+  # anno_pct = function(index){
+  #   n = length(index)
+  #   pct = paste0(round(apply(numMat[rownames(mat)[n],], 1, function(x) length(x[x != 0]))/as.numeric(maf@summary[3, summary]), digits = 2)*100, "%")
+  #   grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
+  #   grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
+  #                   just = "right", gp = grid::gpar(fontsize = fontSize))
+  #   grid::upViewport()
+  # }
+
+
   anno_pct = function(index) {
     n = length(index)
-    pct = apply(mat[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
+    pct = apply(numMat[rev(index),], 1, function(x) length(x[x != 0]))/as.numeric(maf@summary[3, summary]) * 100
+    #pct = apply(mat[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
@@ -319,10 +330,9 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   ##This function adds columnbar
   anno_column_bar = function(index) {
     n = length(index)
-
     ss = getSampleSummary(x = maf)
     tb = ss[Tumor_Sample_Barcode %in% colnames(mat)]
-    tb[,total := NULL]
+    tb = tb[,colnames(tb)[!colnames(tb) %in% c('total', 'Amp', 'Del', 'CNV_total')], with = FALSE]
     tb = split(tb, as.factor(as.character(tb$Tumor_Sample_Barcode)))
     tb = lapply(X = tb, function(x) unlist(x)[-1])
     tb = tb[colnames(mat)]

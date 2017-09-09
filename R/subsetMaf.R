@@ -77,7 +77,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
     return(m)
   }else{
     if(includeSyn){
-      return(rbind(maf.dat, maf.silent))
+      return(rbind(maf.dat, maf.silent, use.names = TRUE, fill = TRUE))
     }else{
       return(maf.dat)
     }
