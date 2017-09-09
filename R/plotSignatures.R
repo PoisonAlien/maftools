@@ -1,72 +1,23 @@
-#' Plots decomposed mutational signatures or APOBEC enrichment plot.
+#' Plots decomposed mutational signatures
 #'
-#' @description If input is results from \code{\link{extractSignatures}} plots decomposed mutational signatures as a barplot. If input is results from \code{\link{trinucleotideMatrix}}
-#' plots APOBEC enrichment plot.
+#' @description Takes results from \code{\link{extractSignatures}} and plots decomposed mutational signatures as a barplot.
 #'
-#' @param nmfRes results from \code{\link{extractSignatures}} or \code{\link{trinucleotideMatrix}}
+#' @param nmfRes results from \code{\link{extractSignatures}}
 #' @param contributions If TRUE plots contribution of signatures in each sample.
 #' @param color colors for each Ti/Tv conversion class. Default NULL
 #' @param patient_order User defined ordering of samples. Default NULL.
 #' @param ... further plot options passed to \code{\link{barplot}}
 #' @return ggplot object if contributions is TRUE
-#' @seealso \code{\link{trinucleotideMatrix}}
+#' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'
 plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL, ...){
 
-  if(length(nmfRes) == 2){
-    sub.tbl <- nmfRes$APOBEC_scores
-    sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no')) #Set levels
-    #yp = boxplot.stats(x = sub.tbl[,n_mutations])$stats #yaxis points and limits
-    yp = pretty(x = c(1: max(sub.tbl[,n_mutations], na.rm = TRUE)))
-    yp[length(yp)] = max(sub.tbl[,n_mutations], na.rm = TRUE)
-    yp[1] = 1
-
-    if(nrow(sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched][APOBEC_Enriched %in% 'yes']) == 0){
-      stop('None of the samples are enriched for APOBEC. Nothing to plot.')
-    }
-
-    pieDat = sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched]
-    pieDat[,nonApobec := 1 - V1]
-    colnames(pieDat)[2] = 'Apobec'
-    pieDat = data.table::melt(pieDat, id.vars = 'APOBEC_Enriched', drop = FALSE)
-    pieDat[,title := paste0(variable, ' [', round(value, digits = 3), ']')]
-    pieDat$title = gsub(pattern = '^Apobec', replacement = 'tCw', x = pieDat$title)
-    pieDat$title = gsub(pattern = '^nonApobec', replacement = 'non-tCw', x = pieDat$title)
-
-    layout(matrix(c(1,2,1,3), 2, 2, byrow = TRUE), widths=c(2, 3))
-    par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=NA)
-
-    pieCol  = c("#084594", "#9ECAE1")
-
-    boxplot(n_mutations ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = TRUE, lty=1,
-            outwex=0, staplewex=0, frame.plot = FALSE, col = c('maroon', 'royalblue'), yaxt = 'n',
-            ylim = c(min(yp), max(yp)),
-            outcol="gray70", outcex = 0.8, outpch  = 16)
-    title(main = 'Mutation load between APOBEC enriched \n and non-APOBEC enriched samples', cex.main=0.9)
-
-    axis(side = 1, at = c(1, 2), labels = na.omit(sub.tbl[,.N,APOBEC_Enriched])[,paste0('N=', N)], las = 1, tick = FALSE)
-    axis(side = 2, at = yp, lwd = 1.8, las = 1)
-
-    pie(x = pieDat[APOBEC_Enriched %in% 'yes', value], col = pieCol,
-        border="white", radius = 0.95, cex.main=0.6, labels =  pieDat[APOBEC_Enriched %in% 'yes', title], clockwise = TRUE)
-    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-    title(main = 'Average tCw mutations in \n APOBEC enriched samples', cex.main=0.9)
-
-    pie(x = pieDat[APOBEC_Enriched %in% 'no', value], col = pieCol,
-        border="white",  radius = 0.95, cex.main=1.33, labels =  pieDat[APOBEC_Enriched %in% 'no', title], clockwise = TRUE)
-    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-    title(main = 'Average tCw mutations in \n non-APOBEC enriched samples', cex.main = 0.9)
-
-  }else{
     conv.mat.nmf.signatures = nmfRes$signatures
     contrib = nmfRes$contributions
     coSineMat = nmfRes$coSineSimMat
 
     if(contributions){
-      #     if(nrow(contrib) == 1){
-      #       stop('Cannot plot contriubutions for single signature')
-      #     }
       contribt = t(contrib)
       #calculate sd
       if(!is.null(patient_order)){
@@ -128,5 +79,4 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
         text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 1)
       }
     }
-  }
 }

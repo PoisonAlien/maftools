@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotSignatures.R
 \name{plotSignatures}
 \alias{plotSignatures}
-\title{Plots decomposed mutational signatures or APOBEC enrichment plot.}
+\title{Plots decomposed mutational signatures}
 \usage{
 plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
   patient_order = NULL, ...)
 }
 \arguments{
-\item{nmfRes}{results from \code{\link{extractSignatures}} or \code{\link{trinucleotideMatrix}}}
+\item{nmfRes}{results from \code{\link{extractSignatures}}}
 
 \item{contributions}{If TRUE plots contribution of signatures in each sample.}
 
@@ -22,9 +22,8 @@ plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
 ggplot object if contributions is TRUE
 }
 \description{
-If input is results from \code{\link{extractSignatures}} plots decomposed mutational signatures as a barplot. If input is results from \code{\link{trinucleotideMatrix}}
-plots APOBEC enrichment plot.
+Takes results from \code{\link{extractSignatures}} and plots decomposed mutational signatures as a barplot.
 }
 \seealso{
-\code{\link{trinucleotideMatrix}}
+\code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 }
