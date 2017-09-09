@@ -16,7 +16,7 @@
 #' @export
 
 plotApobecDiff = function(tnm){
-  sub.tbl <- nmfRes$APOBEC_scores
+  sub.tbl <- tnm$APOBEC_scores
   sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no')) #Set levels
   #yp = boxplot.stats(x = sub.tbl[,n_mutations])$stats #yaxis points and limits
   yp = pretty(x = c(1: max(sub.tbl[,n_mutations], na.rm = TRUE)))
