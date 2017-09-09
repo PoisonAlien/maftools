@@ -100,7 +100,7 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
 #---- This is small function to sort genes according to total samples in which it is mutated.
 sortByMutation = function(numMat, maf){
 
-  geneOrder = getGeneSummary(x = maf)[,Hugo_Symbol]
+  geneOrder = getGeneSummary(x = maf)[order(MutatedSamples, decreasing = TRUE), Hugo_Symbol]
   numMat = numMat[geneOrder[geneOrder %in% rownames(numMat)],, drop = FALSE]
 
   numMat[numMat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)

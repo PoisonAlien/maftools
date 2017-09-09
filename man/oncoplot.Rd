@@ -43,9 +43,9 @@ You can specify which columns to be drawn using `annotationCols` argument.}
 
 \item{fontSize}{font size for gene names. Default 10.}
 
-\item{sortByMutation}{Helpful in case of MAF was read along with copy number data. Default FALSE.}
+\item{sortByMutation}{Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.}
 
-\item{sortByAnnotation}{logical sort oncomatrix by provided annotations. Defaults to FALSE. This is mutually exclusive with sortByMutation.}
+\item{sortByAnnotation}{logical sort oncomatrix (samples) by provided annotations. Defaults to FALSE. column-sort}
 
 \item{writeMatrix}{writes character coded matrix used to generate the plot to an output file. This can be used as an input
 for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to customize the plot.}

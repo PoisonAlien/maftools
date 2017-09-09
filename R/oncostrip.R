@@ -246,8 +246,8 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, ann
 
   if(is.null(annotationCols)){
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
-                                show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"))
+                                 row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
+                                 show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"))
   }else{
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                  row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,

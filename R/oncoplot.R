@@ -24,8 +24,8 @@
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param fontSize font size for gene names. Default 10.
-#' @param sortByMutation Helpful in case of MAF was read along with copy number data. Default FALSE.
-#' @param sortByAnnotation logical sort oncomatrix by provided annotations. Defaults to FALSE. This is mutually exclusive with sortByMutation.
+#' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
+#' @param sortByAnnotation logical sort oncomatrix (samples) by provided annotations. Defaults to FALSE. column-sort
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file. This can be used as an input
 #' for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to customize the plot.
 #' @return None.
@@ -97,6 +97,23 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     mat_origin = om$oncoMatrix
   }
 
+  #---remove genes from genesToIgnore if any
+  if(!is.null(genesToIgnore)){
+    numMat = numMat[!rownames(numMat) %in% genesToIgnore,]
+    mat_origin = mat_origin[!rownames(mat_origin) %in% genesToIgnore,]
+  }
+
+  #If <2 samples stop !
+  if(ncol(numMat) < 2){
+    stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
+  }
+
+  #If <2 samples stop !
+  if(nrow(numMat) < 2){
+    stop('Cannot create oncoplot for single gene. Minimum two genes required ! ')
+  }
+  #-----------------------
+
   #Annotations
   if(!is.null(annotationCols)){
     if(!is.null(annotationDat)){
@@ -106,7 +123,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
         print(annotationCols[!annotationCols %in% colnames(annotationDat)])
         annotationCols = annotationCols[annotationCols %in% colnames(annotationDat)]
         if(length(annotationCols) == 0){
-          stop('Zero annotaions to add! Make at-least one of the provided annotationCols are present in annotationDat')
+          stop('Zero annotaions to add! Make sure at-least one of the provided annotationCols are present in annotationDat')
         }
       }
       annotation = annotationDat[,c('Tumor_Sample_Barcode', annotationCols)]
@@ -141,34 +158,19 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     }
   }
 
+  if(sortByMutation){
+    numMat = sortByMutation(numMat = numMat, maf = maf)
+  }
+
   if(sortByAnnotation){
-    if(is.null(annotation)){
-      stop("Missing annotation data. Use argument `annotation` to provide annotations.")
+    if(is.null(annotationCols)){
+      stop("Use argument `annotationCol` to provide at-least one of the annotations.")
     }
     numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation)
-  }else if(sortByMutation){
-    numMat = sortByMutation(numMat = numMat, maf = maf)
   }
 
   mat = mat_origin[rownames(numMat), , drop = FALSE]
   mat = mat[,colnames(numMat), drop = FALSE]
-
-  #---remove genes from genesToIgnore if any
-  if(!is.null(genesToIgnore)){
-    numMat = numMat[!rownames(numMat) %in% genesToIgnore,]
-    mat_origin = mat_origin[!rownames(mat_origin) %in% genesToIgnore,]
-  }
-
-  #If <2 samples stop !
-  if(ncol(numMat) < 2){
-    stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
-  }
-
-  #If <2 samples stop !
-  if(nrow(numMat) < 2){
-    stop('Cannot create oncoplot for single gene. Minimum two genes required ! ')
-  }
-  #-----------------------
 
   #To remove samples with no mutations in top n genes, if user says removeNonMutated
   if(removeNonMutated){
@@ -178,6 +180,12 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     tsb.exclude = colnames(numMat[,colSums(numMat) == 0, drop = FALSE])
     tsb.include = tsb[!tsb %in% tsb.exclude]
     mat = mat[,tsb.include, drop = FALSE]
+  }
+
+  #finally sort annotation data in same order as plot matrix
+  if(!is.null(annotationCols)){
+    annotation = annotation[rownames(annotation) %in% colnames(mat),, drop = FALSE]
+    annotation = annotation[colnames(mat), , drop = FALSE]
   }
 
   if (writeMatrix) {
@@ -225,18 +233,15 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   vc.type_col = structure(col[vc.mat], names = names(col[vc.mat]))
   vc.type_col = vc.type_col[!is.na(vc.type_col)]
 
-  #annotation if given
+  #Bottom annotations
   if(!is.null(annotationCols)){
-    if(sortByMutation || sortByAnnotation){
-      annotation = annotation[colnames(mat),, drop = FALSE]
-    }
-
     if(!is.null(annotationColor)){
       bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor)
     }else{
       bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation)
     }
   }
+
 
   #------------------------------------functions to add %, rowbar and colbar----------------------------------------------------
 
