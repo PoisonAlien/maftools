@@ -1,15 +1,23 @@
 ---
 title: "maftools : Summarize, Analyze and Visualize MAF Files"
-author: 
-- name: "Anand Mayakonda"
-output:
-  BiocStyle::html_document:
+author: "Anand Mayakonda"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
     toc_float: true
+    number_sections: true
+    self_contained: yes
+    css: corp-styles.css
+    highlight: pygments
 vignette: >
   %\VignetteIndexEntry{Summarize, Analyze and Visualize MAF Files}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+<img src="maftools.svg" height="155" width="240" style="position:absolute;top:30px;right:1px;" />
 
 # Introduction.
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 
