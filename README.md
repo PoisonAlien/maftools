@@ -1,6 +1,6 @@
-## maftools - An R package to summarize, analyze and visualize MAF files.
+<img src="https://github.com/PoisonAlien/maftools/blob/devel/vignettes/maftools.svg" />
 
-<img src="https://github.com/PoisonAlien/maftools/blob/devel/vignettes/maftools.svg" height="155" width="240" style="position:absolute;top:30px;right:1px;" />
+## maftools - An R package to summarize, analyze and visualize MAF files.
 
 ## Introduction. 
 With advances in Cancer Genomics, Mutation Annotation Format (MAF) is being widley accepted and used to store variants detected. 
