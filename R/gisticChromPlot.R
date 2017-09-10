@@ -69,8 +69,7 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL, col
     geom_segment(alpha = 0.6)+geom_segment(data = gis.scores[!Variant_Classification %in% 'neutral'], alpha = 0.6)+cowplot::theme_cowplot()+theme(legend.position = 'none')+
     scale_color_manual(values = c('Amp'  ='red', 'Del' = 'blue', 'neutral' = 'gray70'))+ylab('G Score')+
     theme(axis.line.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank())+xlab("")+
-    geom_rect(data = chr.tbl, aes(xmin = start, xmax = end, ymin = -cytobandOffset, ymax = cytobandOffset), fill = chr.tbl$color, inherit.aes = FALSE, alpha = 0.9)+
-    ylim(-0.5, 0.5)
+    geom_rect(data = chr.tbl, aes(xmin = start, xmax = end, ymin = -cytobandOffset, ymax = cytobandOffset), fill = chr.tbl$color, inherit.aes = FALSE, alpha = 0.9)
 
   if(!is.null(file)){
     cowplot::save_plot(filename = paste(file, 'pdf', sep='.'), plot = gist.gg, base_height = height, base_width = width)

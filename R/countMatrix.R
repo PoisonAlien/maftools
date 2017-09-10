@@ -23,11 +23,6 @@ mutCountMatrix = function(maf, includeSyn = FALSE, countOnly = NULL, removeNonMu
   #Main data
   maf.dat = maf@data
 
-  #in case user read maf without removing silent variants, remove theme here.
-  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
-  maf.dat = maf.dat[!Variant_Classification %in% silent] #Remove silent variants from main table
-
   if(includeSyn){
     maf.dat = rbind(maf.dat, maf.silent, fill = TRUE)
   }

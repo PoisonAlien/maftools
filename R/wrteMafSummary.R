@@ -24,5 +24,5 @@ write.mafSummary = function(maf, basename = NULL){
   #write summary
   write.table(x = maf@summary,file = paste(basename,'_summary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
   #write main maf
-  data.table::fwrite(x = rbind(maf@data, maf@maf.silent), file = paste(basename,'_maftools.maf', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
+  data.table::fwrite(x = rbind(maf@data, maf@maf.silent, fill = TRUE), file = paste(basename,'_maftools.maf', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
 }
