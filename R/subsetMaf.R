@@ -26,11 +26,11 @@
 subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE, includeSyn = TRUE, isTCGA = FALSE){
 
   #Synonymous variants
-  maf.silent = maf@maf.silent
+  maf.silent <- maf@maf.silent
   #Main data
-  maf.dat = maf@data
+  maf.dat <- maf@data
   #Annotations
-  maf.anno = maf@sample.anno
+  maf.anno <- maf@sample.anno
 
 
   #Select

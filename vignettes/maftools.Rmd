@@ -17,7 +17,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<img src="maftools.svg" height="155" width="240" style="position:absolute;top:30px;right:1px;" />
+<img src="maftools.svg" height="155" width="250" style="position:absolute;top:30px;right:0px;" />
 
 # Introduction.
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 
@@ -277,7 +277,7 @@ gisticOncoPlot(gistic = laml.gistic)
 
 #Analysis.
 ##Mutual exclusivity.
-Many disease causing genes in cancer show strong exlcusiveness in their mutation pattern. Such mutually exlcuive set of genes can be detected using `mutExclusive` function, which performs an exact test to detect such significant pair of genes. `mutExclusive` uses `comet_exact_test` from `r CRANpkg("cometExactTest")` on a given set of genes to calculate significance value. Please cite [CoMET](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4531541/) article if you use this function [6](#references).
+Many disease causing genes in cancer show strong exlcusiveness in their mutation pattern. Such mutually exlcuive set of genes can be detected using `mutExclusive` function, which performs an exact test to detect such significant pair of genes. `mutExclusive` uses `comet_exact_test` from "cometExactTest" on a given set of genes to calculate significance value. Please cite [CoMET](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4531541/) article if you use this function [6](#references).
 
 ```{r}
 #We will run mutExclusive on top 10 mutated genes. 
@@ -679,7 +679,7 @@ require('corrplot')
 corrplot::corrplot(corr = laml.sign$coSineSimMat, col = RColorBrewer::brewer.pal(n = 9, name = 'Oranges'), is.corr = FALSE, tl.cex = 0.6, tl.col = 'black', cl.cex = 0.6)
 ```
 
-NOTE: Should you recieve an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `CRANpkg('NMF')` library and re-run.
+NOTE: Should you recieve an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the "NMF" library and re-run.
 
 #Variant Annotations
 ##Annotating variants using Oncotator.

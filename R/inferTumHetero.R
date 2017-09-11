@@ -32,7 +32,7 @@
 #' @export
 #' @seealso \code{\link{plotClusters}}
 
-inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1){
+inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, dirichlet = FALSE){
 
   #Main data
   dat = maf@data

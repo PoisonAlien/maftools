@@ -20,8 +20,8 @@
 
 mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE){
 
-  m1.gs = getGeneSummary(x = m1)
-  m2.gs = getGeneSummary(x = m2)
+  m1.gs <- getGeneSummary(x = m1)
+  m2.gs <- getGeneSummary(x = m2)
 
 
    if(is.null(m1Name)){
@@ -33,32 +33,33 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
    }
 
   if(useCNV){
-    if('CNV_total' %in% colnames(m1.gs)){
-      m1.gs = m1.gs[,MutatedSamples := MutatedSamples + CNV_total][order(MutatedSamples, decreasing = TRUE)]
-    }
-
-    if('CNV_total' %in% colnames(m2.gs)){
-      m2.gs = m2.gs[,MutatedSamples := MutatedSamples + CNV_total][order(MutatedSamples, decreasing = TRUE)]
-    }
+    m1.genes = m1.gs[AlteredSamples >= minMut,Hugo_Symbol]
+    m2.genes = m2.gs[AlteredSamples >= minMut,Hugo_Symbol]
+    uniqueGenes = unique(c(m1.genes, m2.genes))
+  }else{
+    m1.genes = m1.gs[MutatedSamples >= minMut, Hugo_Symbol]
+    m2.genes = m2.gs[MutatedSamples >= minMut, Hugo_Symbol]
+    uniqueGenes = unique(c(m1.genes, m2.genes))
   }
-
-
-  m1.genes = m1.gs[MutatedSamples >= minMut,Hugo_Symbol]
-  m2.genes = m2.gs[MutatedSamples >= minMut,Hugo_Symbol]
-  uniqueGenes = unique(c(m1.genes, m2.genes))
 
  #com.genes = intersect(m1.gs[,Hugo_Symbol], m2.gs[,Hugo_Symbol])
 
- m1.sampleSize = as.numeric(m1@summary[3,summary])
- m2.sampleSize = as.numeric(m2@summary[3,summary])
+ m1.sampleSize = as.numeric(m1@summary[3, summary])
+ m2.sampleSize = as.numeric(m2@summary[3, summary])
 
  m1.gs.comGenes = m1.gs[Hugo_Symbol %in% uniqueGenes]
  m2.gs.comGenes = m2.gs[Hugo_Symbol %in% uniqueGenes]
 
  sampleSummary = data.table::data.table(Cohort = c(m1Name, m2Name), SampleSize = c(m1.sampleSize, m2.sampleSize))
 
- m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)], m2.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)],
-                    by = 'Hugo_Symbol', all = TRUE)
+ if(useCNV){
+   m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)], m2.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)],
+                      by = 'Hugo_Symbol', all = TRUE)
+ }else{
+   m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)], m2.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)],
+                      by = 'Hugo_Symbol', all = TRUE)
+ }
+
  #Set missing genes to zero
  m.gs.meged[is.na(m.gs.meged)] = 0
 

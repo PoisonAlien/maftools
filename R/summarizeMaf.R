@@ -47,14 +47,13 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   vc.cast = data.table::dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N')
 
   if(any(colnames(vc.cast) %in% c('Amp', 'Del'))){
-    vc.cast.cnv = vc.cast[,colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')], with =FALSE]
-    vc.cast.cnv$CNV_total = rowSums(x = vc.cast.cnv)
+    vc.cast.cnv = vc.cast[,c('Tumor_Sample_Barcode', colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')]), with =FALSE]
+    vc.cast.cnv$CNV_total = rowSums(vc.cast.cnv[,2:ncol(vc.cast.cnv)], na.rm = TRUE)
 
     vc.cast = vc.cast[,!colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')], with =FALSE]
     vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
 
-    vc.cast = cbind(vc.cast, vc.cast.cnv)
-    vc.cast = vc.cast[order(total, CNV_total, decreasing = TRUE)]
+    vc.cast = merge(vc.cast, vc.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
 
     vc.mean = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, mean))))
     vc.median = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, median))))
@@ -71,13 +70,12 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   vt.cast = data.table::dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0)
 
   if(any(colnames(vt.cast) %in% c('CNV'))){
-    vt.cast.cnv = vt.cast[,colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')], with =FALSE]
+    vt.cast.cnv = vt.cast[,c('Tumor_Sample_Barcode', colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')]), with =FALSE]
 
     vt.cast = vt.cast[,!colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')], with =FALSE]
-    vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])][order(total, decreasing = TRUE)]
+    vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
 
-    vt.cast = cbind(vt.cast, vt.cast.cnv)
-    vt.cast[order(total, CNV, decreasing = TRUE)]
+    vt.cast = merge(vt.cast, vt.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV, decreasing = TRUE)]
   }else{
     vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])][order(total, decreasing = TRUE)]
   }
@@ -87,15 +85,13 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   hs.cast = data.table::dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N')
   #----
   if(any(colnames(hs.cast) %in% c('Amp', 'Del'))){
-    hs.cast.cnv = hs.cast[,colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with = FALSE]
-    hs.cast.cnv$CNV_total = rowSums(x = hs.cast.cnv)
+    hs.cast.cnv = hs.cast[,c('Hugo_Symbol', colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')]), with = FALSE]
+    hs.cast.cnv$CNV_total = rowSums(x = hs.cast.cnv[,2:ncol(hs.cast.cnv), with = FALSE], na.rm = TRUE)
 
     hs.cast = hs.cast[,!colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with = FALSE]
-    hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
+    hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE], na.rm = TRUE)]
 
-    hs.cast = cbind(hs.cast, hs.cast.cnv)
-    hs.cast = hs.cast[order(total, CNV_total, decreasing = TRUE)]
-
+    hs.cast = merge(hs.cast, hs.cast.cnv, by = 'Hugo_Symbol', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
   }else{
     hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
     hs.cast = hs.cast[order(total, decreasing = TRUE)]
@@ -104,9 +100,13 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
 
   #Get in how many samples a gene ismutated
   numMutatedSamples = maf[!Variant_Type %in% 'CNV', .(MutatedSamples = length(unique(Tumor_Sample_Barcode))), by = Hugo_Symbol]
+  numAlteredSamples = maf[, .(AlteredSamples = length(unique(Tumor_Sample_Barcode))), by = Hugo_Symbol]
+  numAlteredSamples = merge(numMutatedSamples, numAlteredSamples, by = 'Hugo_Symbol', all = TRUE)
   #Merge and sort
-  hs.cast = merge(hs.cast, numMutatedSamples, by = 'Hugo_Symbol', all = TRUE)
-  hs.cast = hs.cast[order(MutatedSamples, total, decreasing = TRUE)]
+  hs.cast = merge(hs.cast, numAlteredSamples, by = 'Hugo_Symbol', all = TRUE)[order(MutatedSamples, total, decreasing = TRUE)]
+  #Replace NAs with 0
+  hs.cast$AlteredSamples = ifelse(test = is.na(x = hs.cast$AlteredSamples), yes = 0, no = hs.cast$AlteredSamples)
+  hs.cast$MutatedSamples = ifelse(test = is.na(x = hs.cast$MutatedSamples), yes = 0, no = hs.cast$MutatedSamples)
   #Make a summarized table
   summary = data.table::data.table(ID = c('NCBI_Build', 'Center','Samples', 'nGenes',colnames(vc.cast)[2:ncol(vc.cast)]),
                        summary = c(NCBI_Build, Center, nrow(vc.cast), nGenes, colSums(vc.cast[,2:ncol(vc.cast), with =FALSE])))
