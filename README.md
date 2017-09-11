@@ -1,4 +1,4 @@
-<img src="https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/maftools.png" height="120" width="240" />
+<img src="https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/maftools.png" />
 
 ## maftools - An R package to summarize, analyze and visualize MAF files.
 
