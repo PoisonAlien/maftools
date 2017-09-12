@@ -450,41 +450,101 @@ $$\frac{n_{tCw} * background_C}{n_C * background_{TCW}}$$
 One-sided fishers exact test is also performed to statsitsically evaluate the enrichment score, as described in original study by Roberts et al.
 
 
-```{r, eval=FALSE}
-plotApobecDiff(laml.tnm)
-```
-
-
 ```{r, echo=FALSE}
-sub.tbl = structure(list(n_mutations = c(3, 8, 4, 6, 6, 10, 4, 11, 7, 11, 
-12, 8, 10, 11, 10, 9, 10, 9, 18, 11, 20, 8, 10, 10, 15, 9, 12, 
-13, 17, 9, 15, 14, 10, 13, 9, 14, 10, 11, 13, 14, 19, 18, 14, 
-13, 16, 15, 16, 15, 16, 22, 17, 19, 14, 18, 14, 20, 14, 25, 19, 
-23, 17, 26, 14, 5, 14, 13, 9, 4, 8, 7, 10, 10, 14, 3, 1, 4, 12, 
-10, 9, 2, 10, 8, 1, 2, 2, 20, 4, 2, 11, 3, 11, 24, 3, 6, 8, 11, 
-2, 14, 12, 10, 10, 17, 15, 1, 13, 10, 12, 10, 1, 15, 2, 1, 9, 
-4, 11, 6, 4, 7, 1, 5, 15, 1, 17, 17, 16, 2, 13, 16, 11, 14, 1, 
-12, 20, 9, 14, 9, 5, 10, 5, 1, 8, 9, 8, 14, 2, 11, 2, 1, 13, 
-1, 4, 2, 7, 15, 7, 6, 9, 21, 4, 7, 2, 14, 6, 5, 4, 2, 14, 10, 
-5, 9, 6, 13, 9, 8, 8, 7, 6, 8, 11, 3, 10, 26, 17, 17, 35, 5, 
-1), APOBEC_Enriched = c("yes", "yes", "yes", "no", "no", "yes", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+APOBEC_scores = structure(list(Tumor_Sample_Barcode = structure(c(136L, 10L, 
+132L, 90L, 192L, 101L, 189L, 39L, 188L, 140L, 72L, 94L, 110L, 
+180L, 70L, 176L, 61L, 69L, 129L, 80L, 96L, 112L, 1L, 64L, 85L, 
+128L, 117L, 92L, 179L, 160L, 134L, 11L, 53L, 139L, 111L, 18L, 
+43L, 177L, 9L, 81L, 106L, 35L, 17L, 120L, 159L, 147L, 152L, 143L, 
+76L, 95L, 59L, 19L, 148L, 99L, 97L, 103L, 24L, 146L, 55L, 118L, 
+71L, 6L, 2L, 3L, 4L, 5L, 7L, 8L, 12L, 13L, 14L, 15L, 16L, 21L, 
+22L, 23L, 25L, 26L, 27L, 28L, 29L, 30L, 31L, 32L, 33L, 34L, 37L, 
+38L, 40L, 41L, 42L, 45L, 46L, 47L, 48L, 49L, 50L, 51L, 52L, 54L, 
+56L, 57L, 58L, 60L, 62L, 63L, 65L, 66L, 67L, 68L, 73L, 74L, 75L, 
+78L, 79L, 82L, 83L, 84L, 86L, 87L, 88L, 89L, 91L, 93L, 98L, 102L, 
+104L, 105L, 107L, 108L, 109L, 113L, 114L, 115L, 116L, 119L, 121L, 
+122L, 123L, 124L, 125L, 126L, 127L, 130L, 131L, 135L, 137L, 138L, 
+141L, 142L, 144L, 145L, 149L, 150L, 151L, 153L, 154L, 155L, 156L, 
+157L, 158L, 161L, 162L, 163L, 164L, 165L, 166L, 167L, 168L, 169L, 
+170L, 171L, 172L, 173L, 174L, 175L, 178L, 181L, 182L, 183L, 184L, 
+185L, 186L, 187L, 190L, 191L, 193L), .Label = c("TCGA-AB-2802", 
+"TCGA-AB-2803", "TCGA-AB-2804", "TCGA-AB-2805", "TCGA-AB-2806", 
+"TCGA-AB-2807", "TCGA-AB-2808", "TCGA-AB-2809", "TCGA-AB-2810", 
+"TCGA-AB-2812", "TCGA-AB-2813", "TCGA-AB-2814", "TCGA-AB-2816", 
+"TCGA-AB-2817", "TCGA-AB-2818", "TCGA-AB-2819", "TCGA-AB-2820", 
+"TCGA-AB-2821", "TCGA-AB-2822", "TCGA-AB-2823", "TCGA-AB-2824", 
+"TCGA-AB-2825", "TCGA-AB-2826", "TCGA-AB-2827", "TCGA-AB-2828", 
+"TCGA-AB-2829", "TCGA-AB-2830", "TCGA-AB-2831", "TCGA-AB-2832", 
+"TCGA-AB-2833", "TCGA-AB-2834", "TCGA-AB-2835", "TCGA-AB-2836", 
+"TCGA-AB-2838", "TCGA-AB-2839", "TCGA-AB-2840", "TCGA-AB-2841", 
+"TCGA-AB-2842", "TCGA-AB-2843", "TCGA-AB-2844", "TCGA-AB-2845", 
+"TCGA-AB-2846", "TCGA-AB-2847", "TCGA-AB-2848", "TCGA-AB-2849", 
+"TCGA-AB-2850", "TCGA-AB-2851", "TCGA-AB-2853", "TCGA-AB-2854", 
+"TCGA-AB-2855", "TCGA-AB-2857", "TCGA-AB-2858", "TCGA-AB-2859", 
+"TCGA-AB-2860", "TCGA-AB-2861", "TCGA-AB-2862", "TCGA-AB-2863", 
+"TCGA-AB-2864", "TCGA-AB-2865", "TCGA-AB-2866", "TCGA-AB-2867", 
+"TCGA-AB-2868", "TCGA-AB-2869", "TCGA-AB-2870", "TCGA-AB-2871", 
+"TCGA-AB-2872", "TCGA-AB-2873", "TCGA-AB-2874", "TCGA-AB-2875", 
+"TCGA-AB-2876", "TCGA-AB-2877", "TCGA-AB-2878", "TCGA-AB-2879", 
+"TCGA-AB-2880", "TCGA-AB-2881", "TCGA-AB-2882", "TCGA-AB-2883", 
+"TCGA-AB-2884", "TCGA-AB-2885", "TCGA-AB-2886", "TCGA-AB-2887", 
+"TCGA-AB-2888", "TCGA-AB-2889", "TCGA-AB-2890", "TCGA-AB-2891", 
+"TCGA-AB-2892", "TCGA-AB-2894", "TCGA-AB-2895", "TCGA-AB-2896", 
+"TCGA-AB-2897", "TCGA-AB-2898", "TCGA-AB-2899", "TCGA-AB-2900", 
+"TCGA-AB-2901", "TCGA-AB-2904", "TCGA-AB-2905", "TCGA-AB-2906", 
+"TCGA-AB-2907", "TCGA-AB-2908", "TCGA-AB-2909", "TCGA-AB-2910", 
+"TCGA-AB-2911", "TCGA-AB-2912", "TCGA-AB-2913", "TCGA-AB-2914", 
+"TCGA-AB-2915", "TCGA-AB-2916", "TCGA-AB-2917", "TCGA-AB-2918", 
+"TCGA-AB-2919", "TCGA-AB-2920", "TCGA-AB-2921", "TCGA-AB-2922", 
+"TCGA-AB-2923", "TCGA-AB-2924", "TCGA-AB-2925", "TCGA-AB-2926", 
+"TCGA-AB-2927", "TCGA-AB-2928", "TCGA-AB-2929", "TCGA-AB-2930", 
+"TCGA-AB-2931", "TCGA-AB-2932", "TCGA-AB-2933", "TCGA-AB-2934", 
+"TCGA-AB-2935", "TCGA-AB-2936", "TCGA-AB-2937", "TCGA-AB-2938", 
+"TCGA-AB-2939", "TCGA-AB-2940", "TCGA-AB-2941", "TCGA-AB-2942", 
+"TCGA-AB-2943", "TCGA-AB-2945", "TCGA-AB-2946", "TCGA-AB-2947", 
+"TCGA-AB-2948", "TCGA-AB-2949", "TCGA-AB-2950", "TCGA-AB-2952", 
+"TCGA-AB-2954", "TCGA-AB-2955", "TCGA-AB-2956", "TCGA-AB-2957", 
+"TCGA-AB-2959", "TCGA-AB-2963", "TCGA-AB-2964", "TCGA-AB-2965", 
+"TCGA-AB-2966", "TCGA-AB-2967", "TCGA-AB-2968", "TCGA-AB-2970", 
+"TCGA-AB-2971", "TCGA-AB-2972", "TCGA-AB-2973", "TCGA-AB-2974", 
+"TCGA-AB-2975", "TCGA-AB-2976", "TCGA-AB-2977", "TCGA-AB-2978", 
+"TCGA-AB-2979", "TCGA-AB-2980", "TCGA-AB-2981", "TCGA-AB-2982", 
+"TCGA-AB-2983", "TCGA-AB-2984", "TCGA-AB-2985", "TCGA-AB-2986", 
+"TCGA-AB-2987", "TCGA-AB-2988", "TCGA-AB-2989", "TCGA-AB-2990", 
+"TCGA-AB-2991", "TCGA-AB-2992", "TCGA-AB-2993", "TCGA-AB-2994", 
+"TCGA-AB-2995", "TCGA-AB-2996", "TCGA-AB-2997", "TCGA-AB-2998", 
+"TCGA-AB-2999", "TCGA-AB-3000", "TCGA-AB-3001", "TCGA-AB-3002", 
+"TCGA-AB-3005", "TCGA-AB-3006", "TCGA-AB-3007", "TCGA-AB-3008", 
+"TCGA-AB-3009", "TCGA-AB-3011", "TCGA-AB-3012", "TCGA-AB-2903"
+), class = "factor"), n_mutations = c(3, 8, 4, 6, 6, 10, 4, 11, 
+7, 11, 12, 8, 10, 11, 10, 9, 10, 9, 18, 11, 20, 8, 10, 10, 15, 
+9, 12, 13, 17, 9, 15, 14, 10, 13, 9, 14, 10, 11, 13, 14, 19, 
+18, 14, 13, 16, 15, 16, 15, 16, 22, 17, 19, 14, 18, 14, 20, 14, 
+25, 19, 23, 17, 26, 14, 5, 14, 13, 9, 4, 8, 7, 10, 10, 14, 3, 
+1, 4, 12, 10, 9, 2, 10, 8, 1, 2, 2, 20, 4, 2, 11, 3, 11, 24, 
+3, 6, 8, 11, 2, 14, 12, 10, 10, 17, 15, 1, 13, 10, 12, 10, 1, 
+15, 2, 1, 9, 4, 11, 6, 4, 7, 1, 5, 15, 1, 17, 17, 16, 2, 13, 
+16, 11, 14, 1, 12, 20, 9, 14, 9, 5, 10, 5, 1, 8, 9, 8, 14, 2, 
+11, 2, 1, 13, 1, 4, 2, 7, 15, 7, 6, 9, 21, 4, 7, 2, 14, 6, 5, 
+4, 2, 14, 10, 5, 9, 6, 13, 9, 8, 8, 7, 6, 8, 11, 3, 10, 26, 17, 
+17, 35, 5, 1), APOBEC_Enriched = c("yes", "yes", "yes", "no", 
 "no", "yes", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "yes", "no", "no", "no", "no", "no", 
 "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
 "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
 "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
 "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", NA, "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
+"no", "no", NA, "no", "no", "no", "no", "no", "no", NA, NA, "no", 
+"no", "no", "no", "no", "no", NA, "no", "no", "no", "no", "no", 
+"no", "no", "no", "no", "no", "no", NA, "no", "no", "no", "no", 
+"no", "no", "no", "no", NA, "no", "no", "no", "no", "no", "no", 
+"no", NA, "no", NA, "no", "no", "no", "no", "no", "no", "no", 
 "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
 NA, "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", NA, 
-"no", "no", "no", "no", "no", "no", NA, NA, "no", "no", "no", 
-"no", "no", "no", NA, "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", NA, "no", "no", "no", "no", "no", "no", 
-"no", "no", NA, "no", "no", "no", "no", "no", "no", "no", NA, 
-"no", NA, "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", NA, "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no"), fraction_APOBEC_mutations = c(0.333, 
+"no", "no", "no", "no", "no", "no", "no", "no"), fraction_APOBEC_mutations = c(0.333, 
 0.125, 0.25, 0.167, 0.167, 0.2, 0.25, 0.182, 0.143, 0.182, 0.167, 
 0.125, 0.2, 0.091, 0.1, 0.111, 0.1, 0.111, 0.111, 0.091, 0.2, 
 0.125, 0.1, 0.1, 0.067, 0.111, 0.083, 0.077, 0.118, 0.111, 0.067, 
@@ -497,49 +557,21 @@ NA, "no", "no", "no", "no", "no", "no", "no", "no", "no", "no",
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0)), .Names = c("n_mutations", "APOBEC_Enriched", "fraction_APOBEC_mutations"
-), row.names = c(NA, -187L), class = c("data.table", "data.frame"
-))
+0, 0, 0, 0)), .Names = c("Tumor_Sample_Barcode", "n_mutations", 
+"APOBEC_Enriched", "fraction_APOBEC_mutations"), row.names = c(NA, 
+-187L), class = c("data.table", "data.frame"))
 
-data.table::setDT(sub.tbl)
-
-sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no')) #Set levels
-    yp = pretty(x = c(1: max(sub.tbl[,n_mutations], na.rm = TRUE)))
-    yp[length(yp)] = max(sub.tbl[,n_mutations], na.rm = TRUE)
-    yp[1] = 1
-
-    pieDat = sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched]
-    pieDat[,nonApobec := 1 - V1]
-    colnames(pieDat)[2] = 'Apobec'
-    pieDat = data.table::melt(pieDat, id.vars = 'APOBEC_Enriched', drop = FALSE)
-    pieDat[,title := paste0(variable, ' [', round(value, digits = 3), ']')]
-    pieDat$title = gsub(pattern = '^Apobec', replacement = 'tCw', x = pieDat$title)
-    pieDat$title = gsub(pattern = '^nonApobec', replacement = 'non-tCw', x = pieDat$title)
-
-    layout(matrix(c(1,2,1,3), 2, 2, byrow = TRUE), widths=c(2, 3))
-    par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=NA)
-
-    pieCol  = c("#084594", "#9ECAE1")
-
-    boxplot(n_mutations ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = TRUE, lty=1,
-            outwex=0, staplewex=0, frame.plot = FALSE, col = c('maroon', 'royalblue'), yaxt = 'n',
-            ylim = c(min(yp), max(yp)),
-            outcol="gray70", outcex = 0.8, outpch  = 16)
-    title(main = 'Mutation load between APOBEC enriched \n and non-APOBEC enriched samples', cex.main=0.9)
-
-    axis(side = 1, at = c(1, 2), labels = na.omit(sub.tbl[,.N,APOBEC_Enriched])[,paste0('N=', N)], las = 1, tick = FALSE)
-    axis(side = 2, at = yp, lwd = 1.8, las = 1)
-
-    pie(x = pieDat[APOBEC_Enriched %in% 'yes', value], col = pieCol,
-        border="white", radius = 0.95, cex.main=0.6, labels =  pieDat[APOBEC_Enriched %in% 'yes', title], clockwise = TRUE)
-    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-    title(main = 'Average tCw mutations in \n APOBEC enriched samples', cex.main=0.9)
-
-    pie(x = pieDat[APOBEC_Enriched %in% 'no', value], col = pieCol,
-        border="white",  radius = 0.95, cex.main=1.33, labels =  pieDat[APOBEC_Enriched %in% 'no', title], clockwise = TRUE)
-    symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-    title(main = 'Average tCw mutations in \n non-APOBEC enriched samples', cex.main = 0.9)
+laml.tnm = list(nmf_matrix = NA, APOBEC_scores = APOBEC_scores)
     
+```
+
+
+####Plotting differences betweeen APOBEC enriched and non-enriched samples
+
+We can also see the mutational pattern differnces between APOBEC enriched and non-APOBEC enriched samples. However LAML is not an ideal cohort for this sort of analysis and hence below plot is only for demonstration purposes. 
+
+```{r, eval=TRUE}
+plotApobecDiff(laml.tnm)
 ```
 
 ###Signature analysis
@@ -551,9 +583,9 @@ sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no'
 require('NMF')
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
 # Warning : Found zero mutations for conversions A[T>G]C
-# Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)
-# Found Signature_1 most similar to validated Signature_1. CoSine-Similarity: 0.778739082321156 
-# Found Signature_2 most similar to validated Signature_1. CoSine-Similarity: 0.782748375695661
+#Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)
+#Found Signature_1 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.939] 
+#Found Signature_2 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.888] 
 ```
 
 ```{r, echo=F}
@@ -663,12 +695,12 @@ laml.sign = structure(list(signatures = structure(c(1.08748973712201e-18,
 ))), nmfObj = NULL), .Names = c("signatures", "coSineSimMat", "nmfObj"))
 ```
 
-```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
+```{r, fig.width=8, fig.height=5, fig.align='center', eval = T}
 plotSignatures(laml.sign)
 ```
 
 
-`extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overestimating, it is also possible to be re-run `extractSignatures` by manually specifying r.
+`extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overfitted/underfitted, it is also possible to be re-run `extractSignatures` by manually specifying r.
 
 Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). See [here](http://cancer.sanger.ac.uk/cosmic/signatures) for list of validated signatures. In the above exaple, 2 signatures are derived, which are similar to validated Signature-1. Signature_1 is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, resulting in C>T transitions and predominantly occurs at NpCpG trinucleotide, which is a most common process in AML [12](#references). 
 

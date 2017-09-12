@@ -65,15 +65,19 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       }
       colors = rep(color, each=16)
 
-      par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1,mar = c(0,0,1,1) + 0.1, las=1, tcl=-.25, font.main=2)
+      par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1,mar = c(0,0,1,1) + 0.1, las=1, tcl=-.25, font.main=4, xpd = NA)
+
 
       for(i in 1:nsigs){
         ae = aetiology[names(which(coSineMat[i,] == max(coSineMat[i,]))),]
-        ae = paste0("Aetiology: ", ae, " [cosine-similarity: ", max(coSineMat[i,]), "]")
+        ae = paste0("Aetiology: ", ae, " \n cosine-similarity: ", max(coSineMat[i,]))
         d = as.matrix(plotData[i,])
-        barplot(d, xaxt = "n", yaxt = "n", border = FALSE, col = colors, beside = TRUE, ylim = c(-0.1, 0.3), main = ae, cex.main = 1, adj = 0.25, ...)
+        barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, 0.3),
+                cex.main = 1, border = NA, font.axis = 2, font.lab = 2,
+                adj = 0.25, ...)
+        title(main = ae, cex.main=0.9, line = -0.3)
         #mtext(text = ae, side = 1, line = 2, font = 1, cex = 0.5, at = 0.3)
-        axis(side = 2,at = seq(0, 0.3, 0.1),labels = seq(0, 0.3, 0.1), pos = seq(0, 0.3, 0.1), las = 2)
+        axis(side = 2,at = seq(0, 0.3, 0.1),labels = seq(0, 0.3, 0.1), pos = seq(0, 0.3, 0.1), las = 2, lwd = 2, hadj = 0.4)
         #abline(h = seq(0, 0.3, 0.1),lty=2,lwd=0.3, col = 'gray70')
         rect(xleft = seq(0, 192, 32), ybottom = -0.05, xright = 192, ytop = -0.02, col = color, border = 'gray70')
         text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 1)

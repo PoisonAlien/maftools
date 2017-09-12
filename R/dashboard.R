@@ -155,7 +155,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
 #--------------------------- hugo-symbol plot -----------------
   gs = getGeneSummary(maf)
-  gs = gs[,colnames(gs)[!colnames(x = gs) %in% c('total', 'Amp', 'Del', 'CNV_total', 'MutatedSamples')], with = FALSE]
+  gs = gs[,colnames(gs)[!colnames(x = gs) %in% c('total', 'Amp', 'Del', 'CNV_total', 'MutatedSamples', 'AlteredSamples')], with = FALSE]
 
   if(nrow(gs) < n){
     gs.dat = gs
