@@ -34,8 +34,15 @@
 
 inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, dirichlet = FALSE){
 
-  #Main data
-  dat = maf@data
+  if(is.null(tsb)){
+    tsb = as.character(getGeneSummary(x = maf)[1:top, Tumor_Sample_Barcode])
+  }
+
+  dat.tsb = subsetMaf(maf = maf, tsb = tsb, includeSyn = FALSE)
+
+  if(nrow(dat.tsb) == 0){
+    stop(paste(tsb, 'not found in MAF'))
+  }
 
   #chromosme 1 to 22
   onlyContigs = as.character(seq(1:22))
@@ -44,17 +51,17 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
   dirichlet = FALSE
 
   #Check if t_vaf exists
-  if(!'t_vaf' %in% colnames(dat)){
+  if(!'t_vaf' %in% colnames(dat.tsb)){
     if(is.null(vafCol)){
-      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
+      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat.tsb))){
         message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
-        dat[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
+        dat.tsb[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
       }else{
-        print(colnames(dat))
+        print(colnames(dat.tsb))
         stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
       }
     }else{
-      colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
+      colnames(dat.tsb)[which(colnames(dat.tsb) == vafCol)] = 't_vaf'
     }
   }
 
@@ -67,51 +74,27 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
 
     seg.tsbs = unique(seg.dat[,Sample])
 
-    #Match sample names from segmentation files to maf file
-    seg.tsb = seg.tsbs[seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
-    tsb.mismatch = seg.tsbs[!seg.tsbs %in% as.character(maf@variants.per.sample[,Tumor_Sample_Barcode])]
-    if(length(seg.tsb) > 0){
-      message('Copy number data found for samples:')
-      print(seg.tsb)
-      if(length(tsb.mismatch) > 0){
-        message('Removed mismatch samples:')
-        print(tsb.mismatch)
-      }
+    if(length(seg.tsbs[!seg.tsbs %in% tsb]) > 0){
+      message("CN data for following samples not found. Ignoring them ..")
+      print(seg.tsbs[!seg.tsbs %in% tsb])
+      seg.tsbs = seg.tsbs[seg.tsbs %in% tsb]
+    }
+
+    if(length(seg.tsbs) > 0){
+      seg.dat = seg.dat[Sample %in% seg.tsbs]
     }else{
-      message('Sample names from Segmentation file:')
-      print(seg.tsbs)
-      message('Sample names from MAF:')
-      print(as.character(maf@variants.per.sample[,Tumor_Sample_Barcode]))
-      stop('Sample names from segmentation file do not match to maf file.')
+      stop("None of the provided samples have copy number data.")
     }
   }
-
-  #If tsb is not specified, choose top n samples or all samples in segmentation file.
-  if(is.null(tsb)){
-    if(!is.null(segFile)){
-      tsb = seg.tsb
-    }else{
-      tsb = as.character(getSampleSummary(x = laml)[1:top, Tumor_Sample_Barcode])
-    }
-  }#else{
-  #   #tsb = gsub(pattern = '-', replacement = '.', x = as.character(tsb))
-  # }
 
   #empty df to store cluster info
   clust.dat = c()
 
-  #select only tsbs from main data
-  dat.tsb = dat[Tumor_Sample_Barcode %in% tsb]
-
-  if(nrow(dat.tsb) < 1){
-    stop(paste(tsb, 'not found in MAF'))
-  }
-
   #Select only required columns and sort
   dat.tsb = dat.tsb[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, t_vaf)]
-  dat.tsb = dat.tsb[order(Chromosome)]
   dat.tsb$Chromosome = as.character(dat.tsb$Chromosome)
   dat.tsb$t_vaf = as.numeric(as.character(dat.tsb$t_vaf))
+  dat.tsb = dat.tsb[order(Chromosome)]
   #setkey(x = dat.tsb, Chromosome, Start_Position, End_Position)
 
   #If VAF is in %, covert it to fractions.
@@ -125,8 +108,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
   }
 
   #Filter low and high vaf variants
-  dat.tsb = dat.tsb[t_vaf > minVaf]
-  dat.tsb = dat.tsb[t_vaf < maxVaf]
+  dat.tsb = dat.tsb[t_vaf > minVaf][t_vaf < maxVaf]
 
   #Change contig names 'chr' to numeric in maf (so it can match to copynumber data)
   dat.tsb$Chromosome = gsub(pattern = 'chr', replacement = '', x = dat.tsb$Chromosome, fixed = TRUE)
@@ -139,7 +121,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
 
     message(paste('Processing ', tsb[i],'..', sep=''))
 
-    tsb.dat = dat.tsb[Tumor_Sample_Barcode == tsb[i]]
+    tsb.dat = dat.tsb[Tumor_Sample_Barcode %in% tsb[i]]
     tsb.dat = tsb.dat[!is.na(tsb.dat$t_vaf),]
 
     if(nrow(tsb.dat) < 3){
@@ -150,7 +132,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
       tempCheck = 0
 
       if(!is.null(segFile)){
-        if(tsb[i] %in% seg.tsb){
+        if(tsb[i] %in% seg.tsbs){
           seg = seg.dat[Sample %in% tsb[i]]
           #Map copynumber and variants; filter variants on CN altered regions.
           seg.res = filterCopyNumber(seg, tsb.dat, tempCheck, tsb[i])
@@ -170,17 +152,22 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
         #Use finite mixture model
         tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7, verbose = FALSE)
         tsb.dat$cluster = as.character(tsb.cluster$classification)
+        abs.med.dev = abs(tsb.dat[,t_vaf] - median(tsb.dat[,t_vaf])) #absolute deviation from median vaf
+        pat.mad = median(abs.med.dev) * 100
+        pat.math = pat.mad * 1.4826 /median(tsb.dat[,t_vaf])
+        tsb.dat$MATH = pat.math
+        tsb.dat$MedianAbsoluteDeviation = pat.mad
       }
 
       #Refine cluster assignment (z score > 2; mark it as an outlier)
       tsb.dat = refineClusters(clusters = tsb.dat)
 
       if(tempCheck == 1){
-        tsb.dat = rbind(tsb.dat, tsb.dat.cn.vars)
+        tsb.dat = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE)
       }
 
       #Update result table
-      clust.dat = rbind(clust.dat, tsb.dat)
+      clust.dat = rbind(clust.dat, tsb.dat, fill = TRUE)
     }
   }
 

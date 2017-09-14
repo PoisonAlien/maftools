@@ -12,13 +12,13 @@ plotApobecDiff(tnm, maf)
 \item{maf}{an \code{\link{MAF}} object used to generate the matrix}
 }
 \value{
-table containing results
+list of table containing differenatially altered genes
 }
 \description{
 Plots differences between APOBEC enriched and non-APOBEC enriched samples
 }
 \details{
-Plots differences between APOBEC enriched and non-APOBEC enriched samples (TCW). Plot includes differences in mutations load, tCw motif distribution and genes mutated.
+Plots differences between APOBEC enriched and non-APOBEC enriched samples (TCW). Plot includes differences in mutations load, tCw motif distribution and top genes altered.
 }
 \examples{
 \dontrun{

@@ -1,6 +1,6 @@
 #--- Small function to read segments
 readSegs = function(seg){
-  seg = suppressWarnings(fread(input = seg, sep = '\t', stringsAsFactors = FALSE, header = TRUE))
+  seg = suppressWarnings(data.table::fread(input = seg, sep = '\t', stringsAsFactors = FALSE, header = TRUE))
   #seg$Sample = gsub(pattern = '-', replacement = '.', x = seg$Sample)
 
   #Replace chr x and y with numeric value (23 and 24) for better ordering

@@ -55,5 +55,5 @@ prefix = 'chr', add = TRUE, useSyn = TRUE)
 Roberts SA, Lawrence MS, Klimczak LJ, et al. An APOBEC Cytidine Deaminase Mutagenesis Pattern is Widespread in Human Cancers. Nature genetics. 2013;45(9):970-976. doi:10.1038/ng.2702.
 }
 \seealso{
-\code{\link{extractSignatures}}
+\code{\link{extractSignatures}} \code{\link{plotApobecDiff}}
 }

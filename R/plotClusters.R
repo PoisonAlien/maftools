@@ -50,8 +50,9 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
     tsb.dat = tsb.dat[!cluster == 'CN_altered']
     #Top density plot
     tsb.dat.dens = ggplot(tsb.dat, aes(t_vaf))+geom_density(data = tsb.dat[cluster != 'outlier'], size = 1, alpha = 0.3)+geom_point(aes(y = 0, x = t_vaf, color = cluster), size = 3, alpha = 0.6)+
-      cowplot::theme_cowplot()+theme(legend.position = 'bottom', plot.title = element_text(size = 12))+xlab('VAF')+xlim(0,1)+ylab('')+ggtitle(tsb[i])+cowplot::background_grid('xy')+
-      scale_colour_manual(values = colors)
+      cowplot::theme_cowplot()+theme(legend.position = 'bottom', plot.title = element_text(size = 12))+xlab('VAF')+xlim(0,1)+ylab('')+cowplot::background_grid('xy')+
+      scale_colour_manual(values = colors)+
+      ggtitle(tsb[i], subtitle = paste0("MATH: ", round(unique(tsb.dat[,MATH]), digits = 3)))
 
     #If any copy number altered variants, mark them with dark dots.
     if(nrow(tsb.dat.cn.vars) > 0){

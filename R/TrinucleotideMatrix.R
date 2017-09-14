@@ -34,7 +34,7 @@
 #' @importFrom VariantAnnotation getSeq seqlevels
 #' @importFrom Biostrings subseq
 #' @importFrom Rsamtools FaFile
-#' @seealso \code{\link{extractSignatures}}
+#' @seealso \code{\link{extractSignatures}} \code{\link{plotApobecDiff}}
 #' @export
 
 trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignoreChr = NULL, useSyn = TRUE, fn = NULL){
@@ -143,7 +143,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   complemented.triplets = paste(
   complement[
     substr(x = as.character(extract.tbl$trinucleotide), 3, 3)],
-  '[',extract.tbl$SubstitutionType, ']', 
+  '[',extract.tbl$SubstitutionType, ']',
   complement[substr(as.character(extract.tbl$trinucleotide), 1, 1)],
   sep='')
   #which ones need to be reverse-complemented

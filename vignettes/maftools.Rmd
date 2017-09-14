@@ -387,6 +387,8 @@ plotClusters(clusters = tcga.ab.2972.het)
 
 Above figure shows clear seperation of two clones clustered at mean variant allele frequencies of ~45% (major clone) and another minor clone at variant allele frequency of ~25%.
 
+Although clustering of variant allele frequencies gives us a fair idea on heterogeneity, it is also possible to measure the extent of heterogeneity in terms of a numerical value. MATH score (mentioned as a subtitile in above plot) is a simple quantitative measure of intra-tumor heterogeneity, which calculates the width of the vaf distribution. Higher MATH scores are found to be associated with poor outcome. MATH score can also be used a proxy variable for survival analysis [10](#references).
+
 ###Ignoring variants in copy number altered regions.
 We can use copy number information to ignore variants located on copynumber altered regions. Copy number alterations results in abnormally high/low variant allele frequencies, which tends to affect clustering. Removing such variants improves clustering and density estimation while retaining biologically meaningful results. Copy number information can be provided as a segmented file generated from segmentation programmes, such as Circular Binary Segmentation from "DNACopy" Bioconductor package [6](#references).
 
@@ -398,22 +400,6 @@ plotClusters(clusters = tcga.ab.3009.het, genes = 'CN_altered', showCNvars = TRU
 ```
 
 Above figure shows two genes NF1 and SUZ12 with high VAF's, which is due to copy number alteraions (deletion). Those two genes are ignored from analysis.
-
-
-###MATH (Mutant-Allele Tumor Heterogeneity) scores to infer extent of heterogeneity.
-Although clustering of variant allele frequencies gives us a fair idea on heterogeneity, it is also possible to measure the extent of heterogeneity in terms of a numerical value. MATH score is a simple quantitative measure of intra-tumor heterogeneity, which calculates the width of the vaf distribution. Higher MATH scores are found to be associated with poor outcome. MATH score can also be used a proxy variable for survival analysis [10](#references).
-
-```{r, results='hide', message=F, fig.align='left',fig.width=7, fig.height=5, eval = T}
-#we will specify for random 4 patients.
-laml.math = math.score(maf = laml, vafCol = 'i_TumorVAF_WU', 
-                       sampleName = c('TCGA-AB-3009', 'TCGA-AB-2849', 'TCGA-AB-3002', 'TCGA-AB-2972'))
-```
-
-```{r, eval=T}
-print(laml.math)
-```
-
-From the above results, sample TCGA.AB.2849 has highest of MATH score (20.58) compared to rest of the three samples. It is also evident from the density plot, that vaf distribution is wider for this sample, whereas rest of three samples have sharp peaks with relatively low MATH scores, suggesting more homogeneity and lesser heterogeneity. 
 
 ##Mutational Signatures.
 Every cancer, as it progresses leaves a signature characterised by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such mutational signatures, derived from over 7000 cancer samples [5](#references). Such signatures can be extracted by decomposiong matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases sorrouding the mutated base. Extracted signatures can also be compared to those [validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures). 
@@ -566,16 +552,18 @@ laml.tnm = list(nmf_matrix = NA, APOBEC_scores = APOBEC_scores)
 ```
 
 
-####Plotting differences betweeen APOBEC enriched and non-enriched samples
+###Differences betweeen APOBEC enriched and non-enriched samples
 
-We can also see the mutational pattern differnces between APOBEC enriched and non-APOBEC enriched samples. However LAML is not an ideal cohort for this sort of analysis and hence below plot is only for demonstration purposes. 
+We can also analyze the differences in mutational patterns between APOBEC enriched and non-APOBEC enriched samples. `plotApobecDiff` is a function which takes APOBEC enrichment scores estimated by `trinucleotideMatrix` and classifies samples into APOBEC enriched and non-APOBEC enriched. Once stratified, it compares these two groups to identify differentially altered genes.
+
+Note that, LAML with no APOBEC enrichments, is not an ideal cohort for this sort of analysis and hence below plot is only for demonstration purpose.
 
 ```{r, eval=TRUE}
-plotApobecDiff(laml.tnm)
+plotApobecDiff(tnm = laml.tnm, maf = laml)
 ```
 
 ###Signature analysis
-`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficients. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
+`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimesion matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficient. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
 
 
 ```{r, fig.height=5, fig.width=5, eval=F, message=FALSE}
@@ -584,8 +572,8 @@ require('NMF')
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
 # Warning : Found zero mutations for conversions A[T>G]C
 #Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)
-#Found Signature_1 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.939] 
-#Found Signature_2 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.888] 
+#Found Signature_1 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.767] 
+#Found Signature_2 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.757] 
 ```
 
 ```{r, echo=F}

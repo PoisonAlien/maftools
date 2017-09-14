@@ -21,83 +21,54 @@
 
 math.score = function(maf, plotFile = NULL, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075){
 
-  sampSum = getSampleSummary(maf)
+  if(is.null(sampleName)){
+    sampleName = as.character(getSampleSummary(maf)[,Tumor_Sample_Barcode])
+  }
 
-  maf = maf@data
+  dat = subsetMaf(maf, includeSyn = FALSE, tsb = sampleName)
 
-  #Get all samples
-  tsbs = levels(maf[,Tumor_Sample_Barcode])
-
-  math.df = data.frame()
-
-  if(!'t_vaf' %in% colnames(maf)){
+  if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
-      if(all(c('t_ref_count', 't_alt_count') %in% colnames(maf))){
+      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
         message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
-        maf[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
+        dat[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
       }else{
         print(colnames(maf))
         stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
       }
     }else{
-      colnames(maf)[which(colnames(maf) == vafCol)] = 't_vaf'
+      colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
     }
   }
 
-  if(!is.null(sampleName)){
-    maf = maf[Tumor_Sample_Barcode %in% sampleName]
+
+  if(max(dat[,t_vaf], na.rm = TRUE) > 1){
+    dat[,t_vaf:= as.numeric(as.character(t_vaf))/100]
   }
 
-  if(max(maf[,t_vaf], na.rm = TRUE) > 1){
-    maf[,t_vaf:= as.numeric(as.character(t_vaf))/100]
-  }
+  dat = dat[!t_vaf < vafCutOff]
+  dat = dat[,.(Tumor_Sample_Barcode, Hugo_Symbol, t_vaf)]
 
-  maf = maf[!t_vaf < vafCutOff]
+  dat.spl = split(dat, as.factor(as.character(dat$Tumor_Sample_Barcode)))
 
-  if(!is.null(plotFile)){
-    pdf(file = paste(plotFile, 'pdf', sep='.'),width = 6,height = 5,bg="white",pointsize = 9,paper = "special",onefile = TRUE)
-  }
+  math.dt = lapply(X = dat.spl, function(pat){
 
-  par(mfrow = c(2,2))
+    vaf = pat$t_vaf
+    vaf = vaf[!is.na(vaf)] #remove NA's
 
-  pb= txtProgressBar(min = 0, max = length(tsbs), style = 3)
-
-  for(i in 1:length(tsbs)){
-
-    setTxtProgressBar(pb = pb, value = i)
-    pat = maf[Tumor_Sample_Barcode == tsbs[i]]
-
-    if(nrow(pat)>1){
-      pid = tsbs[i]
-      #MATH score - for details see PMID:25668320
-      vaf = pat$t_vaf
-      vaf = vaf[!is.na(vaf)] #remove NA's
-      if(length(vaf) < 5){
-        message(paste('Not enough mutations in', pid, 'skipping..'), sep='')
-      }else{
-        abs.med.dev = abs(vaf - median(vaf)) #absolute deviation from median vaf
-        pat.mad = median(abs.med.dev) * 100
-        pat.math = pat.mad * 1.4826 /median(vaf)
-        muts = unique(as.character(pat$Hugo_Symbol))
-        pat.df = data.frame(pid = pid,math.score = pat.math,mad = pat.mad)
-        math.df = rbind(math.df,pat.df)
-
-        plot(x = vaf,y = rep(0,length(vaf)),xlab="vaf",ylab="density",xlim=c(0,1),pch=10,col="red",main = pid, ylim = c(0,round(max(density(vaf)$y))+0.1))
-        lines(density(vaf))
-        abline(v = median(vaf),lty=1)
-        text(x = 0.8, y = 2,labels = paste("math",round(pat.math, digits = 2),sep = "="))
-        text(x = 0.1, y= 1,labels = paste("median",round(median(vaf), digits = 2),sep = "="))
-      }
+    if(length(vaf) < 5){
+      message(paste('Not enough mutations in', unique(pat[,Tumor_Sample_Barcode]), '. Skipping..'), sep='')
+    }else{
+      abs.med.dev = abs(vaf - median(vaf)) #absolute deviation from median vaf
+      pat.mad = median(abs.med.dev) * 100
+      pat.math = pat.mad * 1.4826 /median(vaf)
+      d = data.table::data.table(Tumor_Sample_Barcode = as.character(unique(pat[,Tumor_Sample_Barcode])),
+                             MedianAbsoluteDeviation = pat.mad,
+                             MATH = pat.math)
+      return(d)
     }
-  }
+  })
 
-  if(!is.null(plotFile)){
-    dev.off()
-  }
-
-  colnames(math.df) = c('Tumor_Sample_Barcode', 'MATH', 'MedianAbsoluteDeviation')
-  math.df = data.table(math.df[order(math.df$MATH, decreasing = TRUE),])
-  math.df = merge(math.df, sampSum, by = 'Tumor_Sample_Barcode', all.X = TRUE)
-  #return(math.df[,1:2,with = F])
-  return(math.df)
+  math.dt = data.table::rbindlist(math.dt)
+  return(math.dt)
 }

@@ -69,8 +69,10 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
 
 
       for(i in 1:nsigs){
-        ae = aetiology[names(which(coSineMat[i,] == max(coSineMat[i,]))),]
-        ae = paste0("Aetiology: ", ae, " \n cosine-similarity: ", max(coSineMat[i,]))
+        ae.sig = names(which(coSineMat[i,] == max(coSineMat[i,])))
+        ae = as.character(aetiology[ae.sig,])
+        #ae = paste0("Aetiology: ", ae, " \n cosine-similarity: ", max(coSineMat[i,]))
+        ae = paste0(ae.sig, " like; cosine-similarity: ", round(max(coSineMat[i,]), digits = 3), " \n Aetiology: ", ae)
         d = as.matrix(plotData[i,])
         barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, 0.3),
                 cex.main = 1, border = NA, font.axis = 2, font.lab = 2,
