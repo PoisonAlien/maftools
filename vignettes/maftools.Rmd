@@ -17,7 +17,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<img src="maftools.svg" height="155" width="250" style="position:absolute;top:30px;right:0px;" />
+<img src="maftools.png" height="100" width="250" style="position:absolute;top:30px;right:0px;" />
 
 # Introduction.
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 

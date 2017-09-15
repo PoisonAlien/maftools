@@ -5,7 +5,8 @@
 \title{Plot gistic results.}
 \usage{
 gisticOncoPlot(gistic, top = NULL, showTumorSampleBarcodes = FALSE,
-  annotation = NULL, bandsToIgnore = NULL, removeNonAltered = FALSE,
+  annotation = NULL, annotationCols = NULL, sortByAnnotation = FALSE,
+  annotationColor = NULL, bandsToIgnore = NULL, removeNonAltered = FALSE,
   colors = NULL, fontSize = 10)
 }
 \arguments{
@@ -15,7 +16,13 @@ gisticOncoPlot(gistic, top = NULL, showTumorSampleBarcodes = FALSE,
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
 
-\item{annotation}{data.frame with first column containing Tumor_Sample_Barcodes and rest of columns with annotations.}
+\item{annotation}{data.frame with columns containing Tumor_Sample_Barcodes and rest of columns with annotations.}
+
+\item{annotationCols}{columns names from `annotation` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
+
+\item{sortByAnnotation}{logical sort oncomatrix (samples) by provided annotations. Defaults to FALSE. column-sort}
+
+\item{annotationColor}{list of colors to use for annotation. Default NULL.}
 
 \item{bandsToIgnore}{do not show these bands in the plot Default NULL.}
 
