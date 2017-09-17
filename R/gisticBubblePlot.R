@@ -52,8 +52,6 @@ gisticBubblePlot = function(gistic = NULL, color = NULL, markBands = NULL, fdrCu
     gist.gg = gist.gg+ggrepel::geom_text_repel(size = txtSize)
   }
 
-  print(gist.gg)
-
   if(!is.null(file)){
     cowplot::save_plot(filename = paste(file, 'pdf', sep='.'), plot = gist.gg, base_height = height, base_width = width)
   }else{

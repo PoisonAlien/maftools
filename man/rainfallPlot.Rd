@@ -30,11 +30,12 @@ rainfallPlot(maf, tsb = NULL, detectChangePoints = FALSE,
 \item{pointSize}{Default 2.}
 }
 \value{
-returns ggplot object of the plot which can be further modified.
+returns ggplot object of the plot which can be further modified. Results are written to an output file with suffix changePoints.tsv
 }
 \description{
 Plots inter variant distance as a function of genomic locus.
 }
 \details{
-Note that detected change points are only loci where the distribution of inter-event distance changes. Segments may have to be manually inferred by adjacent change-points.
+If `detectChangePoints`` is set to TRUE, this method will use Change-Point detection method to identify genomic loci where average inter-mutation distance changes from the backgorund.
+Segments detected with less than 6 mutations are filtered out.
 }

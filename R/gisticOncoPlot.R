@@ -76,45 +76,43 @@ gisticOncoPlot = function (gistic, top = NULL,
     numMat = numMat[,tsb.include, drop = FALSE]
   }
 
-  #annotation if given
-  if(!is.null(annotation)){
-    data.table::setDF(annotation)
-
-    if(is.null(annotationCols)){
-      annotationCols = colnames(annotation)[!colnames(annotation) %in% 'Tumor_Sample_Barcode']
-      if(length(annotationCols) > 1){
-        annotationCols = annotationCols[1:2]
-      }else{
-        annotationCols = annotationCols[1]
+  #Annotations
+  if(!is.null(annotationCols)){
+    if(is.null(annotation)){
+      stop("annotation data missing. Use argument annotation to provide one.")
+    }else{
+      data.table::setDF(annotation)
+      if(length(annotationCols[!annotationCols %in% colnames(annotation)]) > 0){
+        message('Following columns are missing from provided annotation data. Ignoring them..')
+        print(annotationCols[!annotationCols %in% colnames(annotation)])
+        annotationCols = annotationCols[annotationCols %in% colnames(annotation)]
+        if(length(annotationCols) == 0){
+          stop('Zero annotaions to add! Make sure at-least one of the provided annotationCols are present in annotationDat')
+        }
       }
+      annotation = annotation[,c('Tumor_Sample_Barcode', annotationCols)]
+      annotation = data.frame(row.names = annotation$Tumor_Sample_Barcode ,annotation[,annotationCols, drop = FALSE])
     }
-
-    if(length(annotationCols[!annotationCols %in% colnames(annotation)]) > 0){
-      message('Following columns are missing from provided annotation data. Ignoring them..')
-      print(annotationCols[!annotationCols %in% colnames(annotation)])
-      annotationCols = annotationCols[annotationCols %in% colnames(annotation)]
-      if(length(annotationCols) == 0){
-        stop('Zero annotaions to add! Make sure at-least one of the provided annotationCols are present in annotationDat')
-      }
-    }
-    annotation = annotation[,c('Tumor_Sample_Barcode', annotationCols)]
-    annotation = data.frame(row.names = annotation$Tumor_Sample_Barcode ,annotation[,annotationCols, drop = FALSE])
 
     if(sortByAnnotation){
       numMat = sortByAnnotation(numMat = numMat, anno = annotation)
       annotation = annotation[colnames(numMat), , drop = FALSE]
     }
+  }
 
+
+  mat = mat_origin[rownames(numMat), , drop = FALSE]
+  mat = mat[,colnames(numMat), drop = FALSE]
+  mat[mat == ''] = 'xxx'
+
+  #Bottom annotations
+  if(!is.null(annotationCols)){
     if(!is.null(annotationColor)){
       bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor)
     }else{
       bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation)
     }
   }
-
-  mat = mat_origin[rownames(numMat), , drop = FALSE]
-  mat = mat[,colnames(numMat), drop = FALSE]
-  mat[mat == ''] = 'xxx'
 
   #hard coded colors for variant classification if user doesnt provide any
   if(is.null(colors)){
@@ -163,22 +161,6 @@ gisticOncoPlot = function (gistic, top = NULL,
     }
   }
 
-#   add_oncoprint2 = function(type, x, y, width, height) {
-#     for (i in 1:length(variant.classes)) {
-#       if (any(type %in% variant.classes[i])) {
-#         grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-#                           grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
-#       } else if (any(type %in% 'Amp')) {
-#         grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-#                           unit(15, 'mm'), gp = grid::gpar(col = NA, fill = type_col['Amp']))
-#       } else if (any(type %in% 'Del')) {
-#
-#         grid::grid.rect(x, y, width - unit(0.5, "mm"), height - grid::unit(15, "mm")
-#                         , gp = grid::gpar(col = NA, fill = type_col['Del']))
-#       }
-#     }
-#   }
-
   #This is the main cel function which is passed to ComplexHeatmap::Hetamap()
   celFun = function(j, i, x, y, width, height, fill) {
     type = mat[i, j]
@@ -201,7 +183,7 @@ gisticOncoPlot = function (gistic, top = NULL,
 
   #---------------------------------------------------------------------------
 
-      if(is.null(annotation)){
+      if(is.null(annotationCols)){
         ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
           row_names_gp = grid::gpar(fontsize = fontSize),
           show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE)

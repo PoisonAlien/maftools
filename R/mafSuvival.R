@@ -43,6 +43,7 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   if(is.null(clinicalData)){
     message("Looking for clinical data in annoatation slot of MAF..")
     clinicalData = getAnnotations(x = maf)
+    clinicalData = data.table::setDT(clinicalData)
   }else{
     clinicalData = data.table::setDT(clinicalData)
   }
@@ -73,8 +74,9 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
 
   if(!is.null(genes)){
     #genesTSB = unique(as.character(subsetMaf(maf = maf, includeSyn = FALSE, genes = genes)[,Tumor_Sample_Barcode]))
-    genesTSB = lapply(X = genes, FUN = function(x) unique(as.character(subsetMaf(maf = maf, includeSyn = FALSE, genes = x)[,Tumor_Sample_Barcode])))
-    names(genesTSB) = genes
+    genesTSB = genesToBarcodes(maf = maf, genes = genes, justNames = TRUE)
+    #genesTSB = lapply(X = genes, FUN = function(x) unique(as.character(subsetMaf(maf = maf, includeSyn = FALSE, genes = x)[,Tumor_Sample_Barcode])))
+    #names(genesTSB) = genes
     genesTSB = genesTSB[sapply(genesTSB, FUN = function(x) length(x) != 0)]
     message("Number of mutated samples for given genes: ")
     print(sapply(genesTSB, FUN = length))
@@ -99,6 +101,7 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   }
 
   #clinicalData = clinicalData[!is.na(Time)]
+  data.table::setDT(clinicalData)
   clinicalData$Group = ifelse(test = clinicalData$Tumor_Sample_Barcode %in% genesTSB, yes = groupNames[1], no = groupNames[2])
   clin.mut.dat = clinicalData[,.(medianTime = median(Time, na.rm = TRUE),N = .N), Group][order(Group)]
   message("Median survival..")

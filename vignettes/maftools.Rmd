@@ -17,7 +17,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<img src="maftools.png" height="100" width="250" style="position:absolute;top:30px;right:0px;" />
+<img src="maftools.svg" height="100" width="250" style="position:absolute;top:30px;right:0px;" />
 
 # Introduction.
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 
@@ -51,8 +51,8 @@ maftools functions can be categorized into mainly Visualization and Analysis mod
 # Reading and summarizing maf files.
 ##Required input files
   * an MAF file - can be gz compressed. Required.
-  * an optional but recommended annotation data containing sample details. Usually clinical data.
-  * optional copy number data if available. Can be GISTIC output or a custom table containing sample names, gene names and copy-number status (`Amp` or `Del`).
+  * an optional but recommended annotation data containing sample details. Usually clinical data and other meta data.
+  * an optional copy number data if available. Can be GISTIC output or a custom table containing sample names, gene names and copy-number status (`Amp` or `Del`).
   
 ##Reading MAF files.
 `read.maf` function reads MAF files, summarizes it in various ways and stores it as an MAF object. Even though MAF file is alone enough, it is highly recommaneded to provide annotations associated with samples in MAF. One can also integrate copy number data if available.
@@ -204,7 +204,7 @@ plotCBSsegments(cbsFile = tcga.ab.009.seg, maf = laml, labelAll = TRUE)
 Above plot shows two genes NF1 and SUZ12 are located on a region which has a shallow deletion. Later we will also see how these variants on copy number altered regions affect variant allele frequencies and tumor heterogeneity estimation.
 
 ##Rainfall plots
-Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations [5](#references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. If `detectChangePoints` is set to TRUE, `rainfall` plot also highlights regions where potential changes in inter-event distances are located. But please be aware that detected change-points are only loci where the distribution of inter-event distance changes. Segments may have to be manually inferred by adjacent change-points. This will be improved in future updates.
+Cancer genomes, especially solid tumors are characterized by genomic loci with localized hypermutations [5](#references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. If `detectChangePoints` is set to TRUE, `rainfall` plot also highlights regions where potential changes in inter-event distances are located. 
 
 ```{r, results='hide', message=FALSE}
 coad <- system.file("extdata", "coad.maf.gz", package = "maftools")
@@ -222,20 +222,19 @@ TCGA contains over 30 different cancer cohrts and median mutation load across th
 laml.mutload = tcgaCompare(maf = laml, cohortName = 'Example-LAML')
 ```
 
+##Plotting VAF
+This function plots Variant Allele Frequecies as a boxplot which quickly helps to estimate clonal status of top mutated genes (clonal genes usually have mean allele frequncy around ~50% assuming pure sample)
+
+```{r, fig.align='left', fig.height=6, fig.width=8}
+vafPlot = plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU', flip = TRUE)
+```
+
 ##Genecloud
 We can plot word cloud plot for mutated genes with the function `geneCloud`. Size of each gene is proportional to the total number of samples in which it is mutated/altered.
 
 ```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
 geneCloud(input = laml, minMut = 3)
 ```
-
-##Plotting VAF
-This function plots Variant Allele Frequecies as a boxplot which quickly helps to estimate clonal status of top mutated genes (clonal genes usually have mean allele frequncy around ~50% assuming pure sample)
-
-```{r, fig.align='left', fig.width=7, fig.height=5}
-vafPlot = plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU', flip = TRUE)
-```
-
 
 #Processing copy-number data
 ##Reading and summarizing gistic output files.
@@ -257,6 +256,7 @@ Similar to MAF objects, there are methods available to access slots of GISTIC ob
 
 ##Visualizing gistic results.
 There are three types of plots available to visualize gistic results.
+
 ###genome plot
 ```{r, fig.width=8, fig.height=4, fig.align='left'}
 gcp = gisticChromPlot(gistic = laml.gistic)
@@ -268,10 +268,10 @@ gbp = gisticBubblePlot(gistic = laml.gistic)
 ```
 
 ###oncoplot
-This is similar to oncoplots except for CN.
+This is similar to oncoplots except for copy number data. One can again sort the matrix according to annotations, if any. Below plot is the gistic results for LAML, sorted according to FAB classification. Plot shows that 7q deletions are virtually absent in M4 subtype where as it is widespread in other subtypes.
 
 ```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
-gisticOncoPlot(gistic = laml.gistic)
+gisticOncoPlot(gistic = laml.gistic, annotation = getAnnotations(x = laml), annotationCols = 'FAB_classification', sortByAnnotation = TRUE, top = 10)
 ```
 
 
@@ -338,7 +338,7 @@ Our annotation data already contains survival information and in case you have s
 
 ```{r}
 #Survival analysis based on grouping of DNMT3A mutation status
-laml.dnmt3a.surv = mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status')
+laml.dnmt3a.surv = mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
 ```
 
 ##Comparing two cohorts (MAFs)

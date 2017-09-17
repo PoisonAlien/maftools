@@ -12,7 +12,7 @@ plotApobecDiff(tnm, maf)
 \item{maf}{an \code{\link{MAF}} object used to generate the matrix}
 }
 \value{
-list of table containing differenatially altered genes
+list of table containing differenatially altered genes. This can be passed to \code{\link{forestPlot}} to plot results.
 }
 \description{
 Plots differences between APOBEC enriched and non-APOBEC enriched samples
