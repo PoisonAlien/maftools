@@ -149,7 +149,7 @@ laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftoo
 oncoplot(maf = laml, colors = col, mutsig = laml.mutsig, mutsigQval = 0.01, annotationCols = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
 ```
 
-Also note that using `sortByAnnotation = TRUE` further sorts oncoplot according to annotations provided (here FAB_classification) and helps in clear representation of mutational patters. For example from below plots shows NPM1 is rarely mutated in M0 type of AML wheras RUNX1 is virtually absent in M5 subtype.
+Also note that using `sortByAnnotation = TRUE` further sorts oncoplot according to annotations provided (here FAB_classification) and helps in clear representation of mutational patters within subtypes. For example above plot shows NPM1 is rarely mutated in M0 type of AML wheras RUNX1 is virtually absent in M5 subtype.
 
 ##Oncostrip
 We can visualize any set of genes using `oncostrip` function, which draws mutations in each sample similar to [OncoPrinter tool](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do). `oncostrip` can be used to draw any number of genes using `top` or `genes` arguments.
@@ -225,7 +225,7 @@ laml.mutload = tcgaCompare(maf = laml, cohortName = 'Example-LAML')
 ##Plotting VAF
 This function plots Variant Allele Frequecies as a boxplot which quickly helps to estimate clonal status of top mutated genes (clonal genes usually have mean allele frequncy around ~50% assuming pure sample)
 
-```{r, fig.align='left', fig.height=6, fig.width=8}
+```{r, fig.align='left', fig.height=4, fig.width=7}
 vafPlot = plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU', flip = TRUE)
 ```
 
@@ -774,7 +774,7 @@ laml.mutsig.corrected = prepareMutSig(maf = laml)
 # Original symbols are preserved under column OG_Hugo_Symbol.
 ```
 
-#Other useful functions.
+#Set operations
 ##Subsetting MAF
 We can also subset MAF using function `subsetMaf`
 ```{r}
