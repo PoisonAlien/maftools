@@ -13,7 +13,7 @@
 #' @param ref.build Reference build for chromosome sizes. Can be hg18, hg19 or hg38. Default hg19.
 #' @param writeTable If true and if maf object is specified, writes plot data with each variant and its corresponding copynumber to an output file.
 #' @param removeXY don not plot sex chromosomes.
-#' @param color Manually specify color scheme for chromosomes. Default NULL.
+#' @param color Manually specify color scheme for chromosomes. Default NULL. i.e, aletrnating Gray70 and midnightblue
 #' @return ggplot object
 #' @export
 #' @examples
@@ -82,7 +82,7 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
         }
       }else{
         #Plot CBS segments for all chromosome
-        p = suppressWarnings(plotCBS(segData = seg, tsb = tsb[i], build = ref.build))
+        p = suppressWarnings(plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color))
         if(!labelAll){
 
           if(!is.null(genes)){
@@ -115,9 +115,9 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
     #Just plot segments
     for(i in 1:length(tsb)){
       if(!is.null(chr)){
-        p = suppressWarnings(plotCBSchr(segData = seg, tsb = tsb[i], chr = chr))
+        p = suppressWarnings(plotCBSchr(segData = seg, tsb = tsb[i], chr = chr, chr.colors = color))
       }else{
-        p = suppressWarnings(plotCBS(segData = seg, tsb = tsb[i], build = ref.build))
+        p = suppressWarnings(plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color))
       }
 
       if(savePlot){

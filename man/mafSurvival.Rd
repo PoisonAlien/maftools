@@ -40,6 +40,9 @@ mafSurvival(maf, genes = NULL, samples = NULL, clinicalData = NULL,
 
 \item{height}{height of plot to be saved. Default 6}
 }
+\value{
+Survival plot
+}
 \description{
 Performs survival analysis by grouping samples from maf based on mutation status of given gene(s) or manual grouping of samples.
 }

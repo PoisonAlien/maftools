@@ -24,17 +24,23 @@ detectCP = function(dat){
                       yoll = yol[,.N,.(con.class, Tumor_Sample_Barcode)]
                       ydat = rbind(ydat,
                                    cbind(ycp,
-                            data.table::dcast(data = yoll, Tumor_Sample_Barcode ~ con.class, value.var = 'N')))
+                            data.table::dcast(data = yoll, Tumor_Sample_Barcode ~ con.class, value.var = 'N')), fill = TRUE)
 
                     }
                   } #See if odd number of changes
                 }
                 ydat
               })
+
   cps = data.table::rbindlist(l = cps, fill = TRUE)
-  write.table(x = cps, file = paste(unique(cps[,Tumor_Sample_Barcode]), 'changePoints.tsv', sep='_'), sep='\t', quote = FALSE, row.names = FALSE)
-  cps[,Tumor_Sample_Barcode := NULL]
-  message('Change points detected at:')
-  print(cps)
-  cps
+
+  if(nrow(cps) > 0){
+    write.table(x = cps, file = paste(unique(cps[,Tumor_Sample_Barcode]), 'changePoints.tsv', sep='_'), sep='\t', quote = FALSE, row.names = FALSE)
+    cps[,Tumor_Sample_Barcode := NULL]
+    message('Change points detected at:')
+    print(cps)
+    return(cps)
+  } else{
+    return(NULL)
+  }
 }

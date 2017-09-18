@@ -27,6 +27,9 @@ tcgaCompare(maf, cohortName = NULL, primarySite = FALSE, col = c("gray70",
 
 \item{fontSize}{base fontsize. Default 10.}
 }
+\value{
+ggplot object
+}
 \description{
 Compares mutation load in input MAF against all of 33 TCGA cohorts
 }

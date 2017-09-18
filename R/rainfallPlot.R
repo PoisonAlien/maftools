@@ -80,7 +80,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build =
 
   if(detectChangePoints){
     maf.cpt = detectCP(dat = maf.snp)
-    if(nrow(maf.cpt) == 0){
+    if(is.null(maf.cpt)){
       message('No changepoints detected!')
     }else{
       maf.snp[,id := paste0(Chromosome, ':', Start_Position)]

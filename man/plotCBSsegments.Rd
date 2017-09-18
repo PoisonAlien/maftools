@@ -35,7 +35,7 @@ Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF
 
 \item{removeXY}{don not plot sex chromosomes.}
 
-\item{color}{Manually specify color scheme for chromosomes. Default NULL.}
+\item{color}{Manually specify color scheme for chromosomes. Default NULL. i.e, aletrnating Gray70 and midnightblue}
 }
 \value{
 ggplot object

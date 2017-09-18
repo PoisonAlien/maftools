@@ -1,103 +1,25 @@
 CHANGES IN VERSION 1.3.50
 -------------------------
+NEW FUNCTIONS
+    o plotApobecDiff - plots differences between APOBEC enriched and non APOBEC enriched samples
+    o gisticOncoplot, gisticBubblePlot and gisticChromPlot to visualize GISTIC results
+
 SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Changes to MAF object. It now includes annotation data similar to coldata of expressionset objects.
+    o Changes to MAF object. It now includes annotation data similar to PhenoData of expressionset objects.
     o Oncomatrix is built on the fly whenever required, its no longer stored in MAF object.
-    o New functions and plots to process GISTIC results
-    o Now you can include q values from mutsig (or any q-values) as a side barplot in oncoplot
-    o New function mutCountMatrix to generate count matrix
+    o rainfallPlot can detect hyper mutated genomic segments via ChangePoint detection method
+    o plotSignatures includes cosine similarity score and aetiology of detected signature
+    o readGistic has argument cnLevel to choose deep or shallow CN variants
+    o inferHeterogeneity includes MATH score in the plot
+    o One can include q values from mutsig (or any similar program) as a side barplot in oncoplot
     o Tumor_Sample_Barcodes remains as is; earlier '-' were converted to '.' in sample names
+    o New function mutCountMatrix to generate count matrix
 
 NON SIGNIFICANT CHANGES
     o mafCompare output includes adjusted p-values
-    o trinucleotideMatrix output includes adjusted p-values (APOBEC enrichment)
+    o trinucleotideMatrix output includes adjusted p-values for APOBEC enrichment
     o added plot arguments to control title size and point size in lollipopPlot
-    o minor bug fixes in plotGisticResults and oncostrip
 
 BUG FIX
     o Major bug fix in signature analysis
-
-
-CHANGES IN VERSION 1.2.30
--------------------------
-SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o APOBEC enrichment - trinucleotideMatrix function now calculates APOBEC enrichment scores in parallel. See details for more.
-    o APOBEC plot - plotSignatures function now plots APOBEC enrichment plot using output from trinucleotideMatrix
-    o Survival improvements - mafSurvival can perform survival analysis based on sample grouping
-    o GISTIC plot improvements - plotGisticResults can plot genomic segment plot using scores.gistic file
-
-NON SIGNIFICANT CHANGES
-    o Auto detects protein_change columns for functions requiring amino acid change information.
-    o Added colCode and labelSize arguments to plotOncodrive.
-    o Bug fixes and improvements.
-
-
-CHANGES IN VERSION 1.2.0
--------------------------
-NEW FUNCTIONS
-    o mafSurvival - Performs survival analysis.
-    o tcgaCompare - Compares mutation load from given MAF against all 33 TCGA cohorts.
-    o pancanComparision - Perform PacCancer analysis/comparision
-    o prepareMutSig - Prepares MAF file for MutSig analysis by fixing descrepencies in gene symbols.
-
-SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o plotmafSummary has argument titvRaw. You can set it to FALSE to plot TiTV fraction instead of raw counts.
-
-NON SIGNIFICANT CHANGES
-    o Bug fixes and improvements.
-
-CHANGES IN VERSION 1.0.55
--------------------------
-    o LollipopPlot axis improvements
-
-CHANGES IN VERSION 1.0.50
--------------------------
-SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Improvements to lollipop plot. Now domain size remains constant irrespectie of mutation load. Bubble size is defunct, instead everything will be of same size similar to cBioPortals mutationMapper. Added an argument to label domain within the plot, added fn argument to save plot.
-    o Default values for removeNonMutated argument in  `coOncoplot`, `oncoplot` and `oncostrip` is now set to TRUE.
-    o Added plotType argument to plotTiTv.
-
-CHANGES IN VERSION 1.0.40
--------------------------
-SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Updated validated signatures database. Earlier database contained 21 signatures. Updated table has 30 signatures as on http://cancer.sanger.ac.uk/cosmic/signatures.
-    o Updated protein domain database. Now includes ~1000 more protein structures/domains for both HGNC sybols and their synonyms.
-    o Added arguments `showMutationRate`, `cBioPortal`, `domainColor` to lollipopPlot. Better handling of labels by collapsing overlapping protein conversions into single string.
-    o Added argument `sortByAnnotation` to oncostrip and oncoplot for better sorting options. Thanks to Ryan Morin for sortByAnnotation code.
-    o Improvements to plotSignatures function.
-
-CHANGES IN VERSION 1.0.30
--------------------------
-Bug Fixes
-    o Bug fix in oncodrive while estimating background score for synonymous mutations
-    o Bug fix to lollipop plot and added argument legendTxtSize
-    o Oncoplot improvment
-    o Update oncotate API url
-    o Support data.table (v >= 1.10.00)
-    o Removed dplyr dependency
-
-SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Functions can be called via namespace w/o loading whole package
-
-CHANGES IN VERSION 1.0.20
--------------------------
-NON SIGNIFICANT CHANGES
-    o Major Bug fix in calculating gene summary
-    o Bug fix in tumor heterogeneity (character to numric conversion of vaf).
-
-SIGNIFICANT USER-LEVEL CHANGES
-    o Added verbose argument to read.maf
-    o Replaced cor-coef with cosine-similarity while comparing signatures against validated-signaturs
-
-CHANGES IN VERSION 1.0.10
--------------------------
-NON SIGNIFICANT CHANGES
-
-    o Major bug fix to readGistic which earlier caused to drop deep CNVs
-    o Replaced for-loop with vectorized code for gistic sample processing
-    o bug fix in coOncoplot
-    o bug fix in oncostrip which made annotations out of order
-    o bug fix in rainfallPlot
-    o Added reference build option to plotCBSsegments and rainfallPlot
-    o read.maf can accept data-frame as input
-    o Minor plot improvements.
+    o minor bug fixes in plotGisticResults and oncostrip

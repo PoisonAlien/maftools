@@ -818,3 +818,13 @@ subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classificati
 ```{r}
 sessionInfo()
 ```
+
+#Tool support and acknowledgements
+##Github
+If you have any issues or feature requests please feel free to raise an [issue](https://github.com/PoisonAlien/maftools/issues) on [GitHub](https://github.com/PoisonAlien/maftools) page.
+
+##acknowledgements
+
+  * Thanks to [Ryan Morin](https://github.com/rdmorin) for pull requests and many major bug fixes
+  * Thanks to [Ming Tang](https://github.com/crazyhottommy) for intial bug reports and feature requests
+  * Thanks to [Peter Ellis](https://twitter.com/ellis2013nz) for beautiful [markdown template](http://ellisp.github.io/blog/2017/09/09/rmarkdown)

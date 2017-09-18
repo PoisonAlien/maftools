@@ -16,6 +16,7 @@
 #' @param file basename for output file (both raw data and plot are saved)
 #' @param width width of the file to be saved.
 #' @param height height of the file to be saved.
+#' @return ggplot object
 #' @examples
 #' laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
 #' pancanComparision(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)

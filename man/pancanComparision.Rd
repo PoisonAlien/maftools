@@ -31,6 +31,9 @@ pancanComparision(mutsigResults, qval = 0.1, cohortName = "input",
 
 \item{labelSize}{label text size. Default 3}
 }
+\value{
+ggplot object
+}
 \description{
 Takes MutSig results and compares them against PanCancer results.
 }
