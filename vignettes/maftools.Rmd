@@ -17,7 +17,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<img src="maftools.svg" height="100" width="250" style="position:absolute;top:30px;right:0px;" />
+<img src="maftools.png" height="100" width="250" style="position:absolute;top:30px;right:0px;" />
 
 # Introduction.
 With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification) (MAF) is being widley accepted and used to store somatic variants detected. 
@@ -819,9 +819,9 @@ subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classificati
 sessionInfo()
 ```
 
-#Tool support and acknowledgements
+#Support and acknowledgements
 ##Github
-If you have any issues or feature requests please feel free to raise an [issue](https://github.com/PoisonAlien/maftools/issues) on [GitHub](https://github.com/PoisonAlien/maftools) page.
+If you have any issues, bug reports or feature requests please feel free to raise an [issue](https://github.com/PoisonAlien/maftools/issues) on [GitHub](https://github.com/PoisonAlien/maftools) page.
 
 ##acknowledgements
 
