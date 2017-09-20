@@ -56,6 +56,12 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
 
   if(!is.null(fields)){
     default.fields = unique(c(default.fields, fields))
+    
+    if(length(default.fields[!default.fields %in% colnames(maf.dat)]) > 0){
+      message("Missing fields. Ignoring them.. ")
+      print(default.fields[!default.fields %in% colnames(maf.dat)])
+      default.fields = default.fields[default.fields %in% colnames(maf.dat)]
+    }
 
     maf.dat = maf.dat[,default.fields, with = FALSE]
     maf.silent = maf.silent[,default.fields, with = FALSE]
