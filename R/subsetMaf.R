@@ -30,7 +30,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
   #Main data
   maf.dat <- maf@data
   #Annotations
-  maf.anno <- maf@sample.anno
+  maf.anno <- maf@clinical.data
 
 
   #Select
@@ -56,7 +56,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
 
   if(!is.null(fields)){
     default.fields = unique(c(default.fields, fields))
-    
+
     if(length(default.fields[!default.fields %in% colnames(maf.dat)]) > 0){
       message("Missing fields. Ignoring them.. ")
       print(default.fields[!default.fields %in% colnames(maf.dat)])
@@ -78,7 +78,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
 
     m = MAF(data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
               variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
-              summary = mafSummary$summary, maf.silent = maf.silent, sample.anno = mafSummary$sample.anno)
+              summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = mafSummary$sample.anno)
 
     return(m)
   }else{

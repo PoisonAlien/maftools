@@ -4,14 +4,14 @@
 #' @param genes draw oncoprint for these genes. default NULL. Plots top 5 genes.
 #' @param top how many top genes to be drawn. defaults to 5.
 #' @param colors named vector of colors for each Variant_Classification.
-#' @param sort logical sort oncomatrix for enhanced visualization. Defaults to TRUE.
-#' @param annotationCols columns names from `annotation` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
+#' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
 #' @param annotationDat If MAF file was read without annotations, provide a custom \code{data.frame} with a column containing Tumor_Sample_Barcodes along with rest of columns with annotations.
-#' You can specify which columns to be drawn using `annotationCols` argument.
-#' @param sortByAnnotation logical sort oncomatrix by provided annotations. Defaults to FALSE. This is mutually exclusive with \code{sort}.
+#' You can specify which columns to be drawn using `clinicalFeatures` argument.
+#' @param sort logical sort oncomatrix for enhanced visualization. Defaults to TRUE.
+#' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures` Defaults to FALSE. column-sort.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default TRUE.
 #' @param showTumorSampleBarcodes logical to include sample names.
-#' @param annotationColor list of colors to use for annotation. Default NULL.
+#' @param annotationColor list of colors to use for `clinicalFeatures` Default NULL.
 #' @return None.
 #' @seealso \code{\link{oncoplot}}
 #' @examples
@@ -23,7 +23,7 @@
 #' @export
 
 
-oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, annotationCols = NULL, annotationDat = NULL, sortByAnnotation = FALSE,
+oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, clinicalFeatures = NULL, annotationDat = NULL, sortByAnnotation = FALSE,
                      removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE, annotationColor = NULL){
 
 
@@ -76,38 +76,38 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, ann
   }
 
   #Annotations
-  if(!is.null(annotationCols)){
+  if(!is.null(clinicalFeatures)){
     if(!is.null(annotationDat)){
       data.table::setDF(annotationDat)
-      if(length(annotationCols[!annotationCols %in% colnames(annotationDat)]) > 0){
+      if(length(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)]) > 0){
         message('Following columns are missing from provided annotation data. Ignoring them..')
-        print(annotationCols[!annotationCols %in% colnames(annotationDat)])
-        annotationCols = annotationCols[annotationCols %in% colnames(annotationDat)]
-        if(length(annotationCols) == 0){
-          stop('Zero annotaions to add! Make at-least one of the provided annotationCols are present in annotationDat')
+        print(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)])
+        clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
+        if(length(clinicalFeatures) == 0){
+          stop('Zero annotaions to add! Make at-least one of the provided clinicalFeatures are present in annotationDat')
         }
       }
-      annotation = annotationDat[,c('Tumor_Sample_Barcode', annotationCols)]
-      annotation = data.frame(row.names = annotation$Tumor_Sample_Barcode ,annotation[,annotationCols, drop = FALSE])
+      annotation = annotationDat[,c('Tumor_Sample_Barcode', clinicalFeatures)]
+      annotation = data.frame(row.names = annotation$Tumor_Sample_Barcode ,annotation[,clinicalFeatures, drop = FALSE])
     } else{
-      annotationDat = getAnnotations(x = maf)
-      if(length(annotationCols[!annotationCols %in% colnames(annotationDat)]) > 0){
+      annotationDat = getClinicalData(x = maf)
+      if(length(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)]) > 0){
         message('Following columns are missing from annotation slot of MAF. Ignoring them..')
-        print(annotationCols[!annotationCols %in% colnames(annotationDat)])
-        annotationCols = annotationCols[annotationCols %in% colnames(annotationDat)]
-        if(length(annotationCols) == 0){
-          message('Make sure at-least one of the values from provided annotationCols are present in annotation slot of MAF. Here are available annotaions from MAF..')
-          print(head(getAnnotations(maf)))
+        print(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)])
+        clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
+        if(length(clinicalFeatures) == 0){
+          message('Make sure at-least one of the values from provided clinicalFeatures are present in annotation slot of MAF. Here are available annotaions from MAF..')
+          print(head(getClinicalData(maf)))
           stop('Zero annotaions to add! You can also provide custom annotations via annotationDat argument.')
         }
       }
-      annotation = data.frame(row.names = annotationDat$Tumor_Sample_Barcode ,annotationDat[,annotationCols, with = FALSE])
+      annotation = data.frame(row.names = annotationDat$Tumor_Sample_Barcode ,annotationDat[,clinicalFeatures, with = FALSE])
     }
   }
 
   if(sortByAnnotation){
-    if(is.null(annotationCols)){
-      stop("Missing annotation data. Use argument `annotationCols` to add annotations")
+    if(is.null(clinicalFeatures)){
+      stop("Missing annotation data. Use argument `clinicalFeatures` to add annotations")
     }
     mat = sortByAnnotation(mat, maf, annotation)
   }else{
@@ -154,7 +154,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, ann
   #variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
 
   #Make annotation
-  if(!is.null(annotationCols)){
+  if(!is.null(clinicalFeatures)){
     #needed such that the annotation order matches the sample order if any type of sort is used
     if(sort || sortByAnnotation){
       annotation = annotation[colnames(mat),, drop = FALSE]
@@ -244,7 +244,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, ann
 
   #----------------------------------------------------------------------------------------
 
-  if(is.null(annotationCols)){
+  if(is.null(clinicalFeatures)){
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                  row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
                                  show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"))

@@ -5,8 +5,9 @@ NEW FUNCTIONS
     o gisticOncoplot, gisticBubblePlot and gisticChromPlot to visualize GISTIC results
 
 SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Changes to MAF object. It now includes annotation data similar to PhenoData of expressionset objects.
+    o Changes to MAF object. It now includes clinical data similar to PhenoData of expressionset objects.
     o Oncomatrix is built on the fly whenever required, its no longer stored in MAF object.
+    o Many sorting options to oncplots.
     o rainfallPlot can detect hyper mutated genomic segments via ChangePoint detection method
     o plotSignatures includes cosine similarity score and aetiology of detected signature
     o readGistic has argument cnLevel to choose deep or shallow CN variants
@@ -20,6 +21,6 @@ NON SIGNIFICANT CHANGES
     o trinucleotideMatrix output includes adjusted p-values for APOBEC enrichment
     o added plot arguments to control title size and point size in lollipopPlot
 
-BUG FIX
+BUG FIXES
     o Major bug fix in signature analysis
     o minor bug fixes in plotGisticResults and oncostrip

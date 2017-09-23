@@ -22,8 +22,8 @@
 #' @return Survival plot
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml.annot <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
-#' laml <- read.maf(maf = laml.maf, sampleAnno = laml.annot)
+#' laml.clin <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
+#' laml <- read.maf(maf = laml.maf,  clinicalData = laml.clin)
 #' mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
 #'
 #'@export
@@ -43,7 +43,7 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
 
   if(is.null(clinicalData)){
     message("Looking for clinical data in annoatation slot of MAF..")
-    clinicalData = getAnnotations(x = maf)
+    clinicalData = getClinicalData(x = maf)
     clinicalData = data.table::setDT(clinicalData)
   }else{
     clinicalData = data.table::setDT(clinicalData)
@@ -103,6 +103,9 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
 
   #clinicalData = clinicalData[!is.na(Time)]
   data.table::setDT(clinicalData)
+
+  clinicalData$Time = suppressWarnings( as.numeric(as.character(clinicalData$Time)) )
+  clinicalData$Status = suppressWarnings( as.integer(as.character(clinicalData$Status)) )
   clinicalData$Group = ifelse(test = clinicalData$Tumor_Sample_Barcode %in% genesTSB, yes = groupNames[1], no = groupNames[2])
   clin.mut.dat = clinicalData[,.(medianTime = median(Time, na.rm = TRUE),N = .N), Group][order(Group)]
   message("Median survival..")

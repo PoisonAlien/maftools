@@ -52,8 +52,8 @@ Make sure sample names match to Tumor Sample Barcodes from MAF file.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml.annot <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
-laml <- read.maf(maf = laml.maf, sampleAnno = laml.annot)
+laml.clin <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
+laml <- read.maf(maf = laml.maf,  clinicalData = laml.clin)
 mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
 
 }

@@ -25,7 +25,7 @@ S4 class for storing summarized MAF.
 
 \item{\code{maf.silent}}{subset of main MAF containing only silent variants}
 
-\item{\code{sample.anno}}{annotations associated with each sample/Tumor_Sample_Barcode in MAF. Ideally annotation would contain clinical data, survival information and other features features associated with samples.}
+\item{\code{clinical.data}}{clinical data associated with each sample/Tumor_Sample_Barcode in MAF.}
 }}
 
 \seealso{

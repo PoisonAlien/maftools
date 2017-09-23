@@ -214,7 +214,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
 
       m = MAF(data = ann.maf, variants.per.sample = ann.maf.summary$variants.per.sample, variant.type.summary = ann.maf.summary$variant.type.summary,
               variant.classification.summary = ann.maf.summary$variant.classification.summary, gene.summary = ann.maf.summary$gene.summary,
-              summary = ann.maf.summary$summary, maf.silent = ann.maf.silent, sample.anno = ann.maf.summary$sample.anno)
+              summary = ann.maf.summary$summary, maf.silent = ann.maf.silent, clinical.data = ann.maf.summary$sample.anno)
 
       return(m)
     }

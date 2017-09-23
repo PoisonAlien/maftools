@@ -1,6 +1,10 @@
 <img src="https://github.com/PoisonAlien/maftools/blob/devel/vignettes/maftools.png" height="90" width="240" />
 
+#############################
+
 ## maftools - An R package to summarize, analyze and visualize MAF files.
+
+#############################
 
 ## Introduction. 
 With advances in Cancer Genomics, Mutation Annotation Format (MAF) is being widley accepted and used to store variants detected. 
@@ -24,7 +28,7 @@ NOTE: If you have variants stored as VCFs or as an MAF like tab seperated format
 
 
 ## Vignette and a case study.
-A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
+A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study can be found [here](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 <p align="center">
 <img src="https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/maftools.gif">
@@ -91,7 +95,7 @@ library("devtools")
 install_github(repo = "PoisonAlien/maftools")
 ```
 
-For full documentation please refer to [vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
+For full documentation please refer to [vignette](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 
 ### References.

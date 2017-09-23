@@ -51,7 +51,7 @@ maftools functions can be categorized into mainly Visualization and Analysis mod
 # Reading and summarizing maf files.
 ##Required input files
   * an MAF file - can be gz compressed. Required.
-  * an optional but recommended annotation data containing sample details. Usually clinical data and other meta data.
+  * an optional but recommended clinical data associated with each sample/Tumor_Sample_Barcode in MAF.
   * an optional copy number data if available. Can be GISTIC output or a custom table containing sample names, gene names and copy-number status (`Amp` or `Del`).
   
 ##Reading MAF files.
@@ -61,9 +61,9 @@ maftools functions can be categorized into mainly Visualization and Analysis mod
 require(maftools)
 
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools') #path to TCGA LAML MAF file
-laml.annot = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools') # clinical information containing survival information and histology. This is optional
+laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools') # clinical information containing survival information and histology. This is optional
 
-laml = read.maf(maf = laml.maf, sampleAnno = laml.annot)
+laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 ```
 
 ##MAF object
@@ -77,8 +77,8 @@ laml
 getSampleSummary(laml)
 #Shows gene summary.
 getGeneSummary(laml)
-#shows annotations associated with samples
-getAnnotations(laml)
+#shows clinical data associated with samples
+getClinicalData(laml)
 #Shows all fields in MAF
 getFields(laml)
 #Writes maf summary to an output file with basename laml.
@@ -92,7 +92,7 @@ We can use `plotmafSummary` to plot the summary of the maf file, which displays 
 plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
-## Oncoplots (aka waterfall plots)
+## Oncoplots
 ###Drawing oncoplots.
 Bettter representaion of maf file can be shown as oncoplots, also known as waterfall plots. Oncoplot function uses "ComplexHeatmap" to draw oncoplots[2](#references). To be specific,  `oncoplot` is a wrapper around ComplexHeatmap's `OncoPrint` function with little modification and automation which makes plotting easier. Side barplot and top barplots can be controlled by `drawRowBar` and `drawColBar` arguments respectivelly.
 
@@ -124,7 +124,7 @@ oncoplot(maf = laml.plus.gistic, top = 10, fontSize = 12)
 This plot shows frequent deletions in TP53 gene which is located on one of the significanlty deleted locus 17p13.2.
 
 ###Changing colors, including MutSig Q-Values, adding annotations and sorting.
-Oncoplots can be further improved by including annotations associated with samples, changing colors for variant calssifications and including q-values of significance (either generated from MutSig or similar program). Below plot includes,
+Oncoplots can be further improved by including annotations (clinical features) associated with samples, changing colors for variant calssifications and including q-values of significance (either generated from MutSig or similar program). Below plot includes,
 
   * list of significantly mutated genes (SMG) and their q-values as a side barplot, 
   * FAB classification of each sample as bottom annoatations.
@@ -146,7 +146,7 @@ fabcolors = list(FAB_classification = fabcolors)
 #MutSig reusults
 laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
 
-oncoplot(maf = laml, colors = col, mutsig = laml.mutsig, mutsigQval = 0.01, annotationCols = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
+oncoplot(maf = laml, colors = col, mutsig = laml.mutsig, mutsigQval = 0.01, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
 ```
 
 Also note that using `sortByAnnotation = TRUE` further sorts oncoplot according to annotations provided (here FAB_classification) and helps in clear representation of mutational patters within subtypes. For example above plot shows NPM1 is rarely mutated in M0 type of AML wheras RUNX1 is virtually absent in M5 subtype.
@@ -271,7 +271,7 @@ gbp = gisticBubblePlot(gistic = laml.gistic)
 This is similar to oncoplots except for copy number data. One can again sort the matrix according to annotations, if any. Below plot is the gistic results for LAML, sorted according to FAB classification. Plot shows that 7q deletions are virtually absent in M4 subtype where as it is widespread in other subtypes.
 
 ```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
-gisticOncoPlot(gistic = laml.gistic, annotation = getAnnotations(x = laml), annotationCols = 'FAB_classification', sortByAnnotation = TRUE, top = 10)
+gisticOncoPlot(gistic = laml.gistic, clinicalData = getClinicalData(x = laml), clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, top = 10)
 ```
 
 

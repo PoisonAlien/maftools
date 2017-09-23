@@ -5,7 +5,7 @@
 \title{draw an oncostrip similar to cBioportal oncoprinter output.}
 \usage{
 oncostrip(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE,
-  annotationCols = NULL, annotationDat = NULL, sortByAnnotation = FALSE,
+  clinicalFeatures = NULL, annotationDat = NULL, sortByAnnotation = FALSE,
   removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE,
   annotationColor = NULL)
 }
@@ -20,18 +20,18 @@ oncostrip(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE,
 
 \item{sort}{logical sort oncomatrix for enhanced visualization. Defaults to TRUE.}
 
-\item{annotationCols}{columns names from `annotation` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
+\item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
 
 \item{annotationDat}{If MAF file was read without annotations, provide a custom \code{data.frame} with a column containing Tumor_Sample_Barcodes along with rest of columns with annotations.
-You can specify which columns to be drawn using `annotationCols` argument.}
+You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
-\item{sortByAnnotation}{logical sort oncomatrix by provided annotations. Defaults to FALSE. This is mutually exclusive with \code{sort}.}
+\item{sortByAnnotation}{logical sort oncomatrix (samples) by provided `clinicalFeatures` Defaults to FALSE. column-sort.}
 
 \item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default TRUE.}
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
 
-\item{annotationColor}{list of colors to use for annotation. Default NULL.}
+\item{annotationColor}{list of colors to use for `clinicalFeatures` Default NULL.}
 }
 \value{
 None.

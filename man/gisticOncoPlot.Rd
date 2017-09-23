@@ -5,7 +5,7 @@
 \title{Plot gistic results.}
 \usage{
 gisticOncoPlot(gistic, top = NULL, showTumorSampleBarcodes = FALSE,
-  annotation = NULL, annotationCols = NULL, sortByAnnotation = FALSE,
+  clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE,
   annotationColor = NULL, bandsToIgnore = NULL, removeNonAltered = FALSE,
   colors = NULL, fontSize = 10)
 }
@@ -16,13 +16,13 @@ gisticOncoPlot(gistic, top = NULL, showTumorSampleBarcodes = FALSE,
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
 
-\item{annotation}{data.frame with columns containing Tumor_Sample_Barcodes and rest of columns with annotations.}
+\item{clinicalData}{data.frame with columns containing Tumor_Sample_Barcodes and rest of columns with annotations.}
 
-\item{annotationCols}{columns names from `annotation` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
+\item{clinicalFeatures}{columns names from `clinicalData` to be drawn in the plot. Dafault NULL.}
 
-\item{sortByAnnotation}{logical sort oncomatrix (samples) by provided annotations. Defaults to FALSE. column-sort}
+\item{sortByAnnotation}{logical sort oncomatrix (samples) by provided `clinicalFeatures`. Defaults to FALSE. column-sort}
 
-\item{annotationColor}{list of colors to use for annotation. Default NULL.}
+\item{annotationColor}{list of colors to use for clinicalFeatures. Default NULL.}
 
 \item{bandsToIgnore}{do not show these bands in the plot Default NULL.}
 
