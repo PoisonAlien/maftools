@@ -27,7 +27,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10, o
     if(is.null(vafCol)){
       if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
         message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
-        dat[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
+        dat[,t_vaf := as.numeric(as.character(t_alt_count))/(as.numeric(as.character(t_ref_count)) + as.numeric(as.character(t_alt_count)))]
       }else{
         print(colnames(dat))
         stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
