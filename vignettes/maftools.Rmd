@@ -793,6 +793,13 @@ subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classificati
 subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'", fields = 'i_transcript_name')
 ```
 
+#Precompiled TCGA MAF objects
+There is also an R data package containing pre-compiled TCGA MAF objects, particularly helpful for those working with TCGA mutation data. Every dataset is stored as an MAF object containing somatic mutations along with clinical information. Due to Bioconductor package size limits and other difficulties, this was not submitted to Bioconductor. However, you can still download [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) package from GitHub. 
+
+```{r, eval=FALSE}
+devtools::install_github(repo = "PoisonAlien/TCGAmutations")
+```
+
 
 #References
 1.	Cancer Genome Atlas Research, N. Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med 368, 2059-74 (2013).
