@@ -6,6 +6,7 @@
 #' @param gene HGNC symbol for which protein structure to be drawn.
 #' @param AACol manually specify column name for amino acid changes. Default looks for fields 'HGVSp_Short', 'AAChange' or 'Protein_Change'. Changes can be of any format i.e, can be a numeric value or HGVSp annotations (e.g; p.P459L, p.L2195Pfs*30 or p.Leu2195ProfsTer30)
 #' @param labelPos Amino acid positions to label. If 'all', labels all variants.
+#' @param labPosSize Text size for labels. Default 3
 #' @param showMutationRate Default TRUE
 #' @param fn basename for plot file to be saved. If provided a pdf will be generated. Default NULL.
 #' @param showDomainLabel Label domains within the plot. Default TRUE. If FALSE they will be annotated in legend.
@@ -15,7 +16,6 @@
 #' @param repel If points are too close to each other, use this option to repel them. Default FALSE. Warning: naive method, might make plot ugly in case of too many variants!
 #' @param collapsePosLabel Collapses overlapping labels at same position. Default TRUE
 #' @param legendTxtSize Text size for legend. Default 10
-#' @param labPosSize Text size for labels. Default 2
 #' @param labPosAngle angle for labels. Defaults to horizonal 0 degree labels. Set to 90 for vertical; 45 for diagonal labels.
 #' @param domainLabelSize text size for domain labels. Default 2.
 #' @param printCount If TRUE, prints number of summarized variants for the given protein.
@@ -34,9 +34,9 @@
 #'
 #' @export
 
-lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, showMutationRate = TRUE, fn = NULL,
+lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosSize = 3, showMutationRate = TRUE, fn = NULL,
                          showDomainLabel = TRUE, cBioPortal = FALSE, refSeqID = NULL, proteinID = NULL,
-                         repel = FALSE, collapsePosLabel = TRUE, legendTxtSize = 10, labPosSize = 2, labPosAngle = 0, domainLabelSize = 2.5,
+                         repel = FALSE, collapsePosLabel = TRUE, legendTxtSize = 10, labPosAngle = 0, domainLabelSize = 2.5,
                          printCount = FALSE, colors = NULL, domainColors = NULL, labelOnlyUniqueDoamins = TRUE, defaultYaxis = TRUE, titleSize = c(12, 10), pointSize = 1.5){
 
   if(is.null(gene)){

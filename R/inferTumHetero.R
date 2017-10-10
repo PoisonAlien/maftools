@@ -35,7 +35,7 @@
 inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, dirichlet = FALSE){
 
   if(is.null(tsb)){
-    tsb = as.character(getGeneSummary(x = maf)[1:top, Tumor_Sample_Barcode])
+    tsb = as.character(getSampleSummary(x = maf)[1:top, Tumor_Sample_Barcode])
   }
 
   dat.tsb = subsetMaf(maf = maf, tsb = tsb, includeSyn = FALSE)

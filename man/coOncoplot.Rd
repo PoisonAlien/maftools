@@ -4,9 +4,11 @@
 \alias{coOncoplot}
 \title{Draw two oncoplots side by side for cohort comparision.}
 \usage{
-coOncoplot(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE,
-  m1Name = NULL, m2Name = NULL, geneNamefont = 10,
-  showSampleNames = FALSE, SampleNamefont = 10)
+coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
+  clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
+  annotationColor1 = NULL, annotationColor2 = NULL, colors = NULL,
+  removeNonMutated = TRUE, geneNamefont = 10, showSampleNames = FALSE,
+  SampleNamefont = 10)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}
@@ -15,13 +17,21 @@ coOncoplot(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE,
 
 \item{genes}{draw these genes. Default plots top 5 mutated genes from two cohorts.}
 
-\item{colors}{named vector of colors for each Variant_Classification.}
-
-\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
-
 \item{m1Name}{optional name for first cohort}
 
 \item{m2Name}{optional name for second cohort}
+
+\item{clinicalFeatures1}{columns names from `clinical.data` slot of m1 \code{MAF} to be drawn in the plot. Dafault NULL.}
+
+\item{clinicalFeatures2}{columns names from `clinical.data` slot of m2 \code{MAF} to be drawn in the plot. Dafault NULL.}
+
+\item{annotationColor1}{list of colors to use for `clinicalFeatures1` Default NULL.}
+
+\item{annotationColor2}{list of colors to use for `clinicalFeatures2` Default NULL.}
+
+\item{colors}{named vector of colors for each Variant_Classification.}
+
+\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
 \item{geneNamefont}{font size for gene names. Default 10}
 

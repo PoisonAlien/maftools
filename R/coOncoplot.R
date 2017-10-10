@@ -4,6 +4,10 @@
 #' @param m1 first \code{\link{MAF}} object
 #' @param m2 second \code{\link{MAF}} object
 #' @param genes draw these genes. Default plots top 5 mutated genes from two cohorts.
+#' @param clinicalFeatures1 columns names from `clinical.data` slot of m1 \code{MAF} to be drawn in the plot. Dafault NULL.
+#' @param clinicalFeatures2 columns names from `clinical.data` slot of m2 \code{MAF} to be drawn in the plot. Dafault NULL.
+#' @param annotationColor1 list of colors to use for `clinicalFeatures1` Default NULL.
+#' @param annotationColor2 list of colors to use for `clinicalFeatures2` Default NULL.
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param m1Name optional name for first cohort
@@ -24,7 +28,10 @@
 #' dev.off()
 #' @return Returns nothing. Just draws plot.
 
-coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TRUE, m1Name = NULL, m2Name = NULL, geneNamefont = 10, showSampleNames = FALSE, SampleNamefont = 10){
+coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
+                      clinicalFeatures1 = NULL, clinicalFeatures2 = NULL, annotationColor1 = NULL, annotationColor2 = NULL,
+                      colors = NULL, removeNonMutated = TRUE, geneNamefont = 10, showSampleNames = FALSE, SampleNamefont = 10){
+
 
   if(is.null(genes)){
     m1.genes = getGeneSummary(m1)[1:5]
@@ -55,9 +62,13 @@ coOncoplot = function(m1, m2, genes = NULL, colors = NULL, removeNonMutated = TR
   m2Name = paste(m2Name, ' (n = ' , m2.sampleSize, ')',sep = '')
 
   m1.oc = getOncoPlot(maf = m1, genes = genes, removeNonMutated = removeNonMutated,
-                      colors = colors, showGenes = TRUE, left = TRUE, hmName = m1Name, showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont)
+                      colors = colors, showGenes = TRUE, left = TRUE, hmName = m1Name,
+                      showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont,
+                      clinicalFeatures = clinicalFeatures1, annotationColor = annotationColor1)
   m2.oc = getOncoPlot(maf = m2, genes = genes, removeNonMutated = removeNonMutated,
-                      colors = colors, showGenes = FALSE, left = FALSE, hmName = m2Name, showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont)
+                      colors = colors, showGenes = FALSE, left = FALSE, hmName = m2Name,
+                      showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont,
+                      clinicalFeatures = clinicalFeatures2, annotationColor = annotationColor2)
 
   oc.list = m1.oc[[1]] + m2.oc[[1]]
 

@@ -115,6 +115,10 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   if(nrow(numMat) < 2){
     stop('Cannot create oncoplot for single gene. Minimum two genes required ! ')
   }
+
+  totSamps = as.numeric(maf@summary[3,summary])
+  mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = genes, justNames = TRUE))))
+  altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
   #-----------------------
 
   #Annotations
@@ -140,7 +144,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
         clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
         if(length(clinicalFeatures) == 0){
           message('Make sure at-least one of the values from provided clinicalFeatures are present in annotation slot of MAF. Here are available annotaions from MAF..')
-          print(head(getClinicalData(maf)))
+          print(colnames(getClinicalData(maf)))
           stop('Zero annotaions to add! You can also provide custom annotations via annotationDat argument.')
         }
       }
@@ -444,13 +448,13 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
-                                   top_annotation_height = grid::unit(2, "cm"))
+                                   top_annotation_height = grid::unit(2, "cm"), column_title = altStat)
     } else{
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
-                                   top_annotation_height = grid::unit(2, "cm"), bottom_annotation = bot.anno)
+                                   top_annotation_height = grid::unit(2, "cm"), bottom_annotation = bot.anno, column_title = altStat)
     }
 
   } else{
@@ -458,10 +462,12 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     if(is.null(clinicalFeatures)){
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE)
+                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
+                                   show_heatmap_legend = FALSE, column_title = altStat)
     }else{
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE, bottom_annotation = bot.anno)
+                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
+                                   show_heatmap_legend = FALSE, bottom_annotation = bot.anno, column_title = altStat)
     }
   }
 

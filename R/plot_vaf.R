@@ -63,7 +63,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10, o
       geom_violin(draw_quantiles = TRUE, na.rm = TRUE, fill = 'gray70', alpha = 0.6)
   } else{
       gg = ggplot(data = datm, aes(x = Hugo_Symbol, y = value))+
-        geom_boxplot(outlier.color = 'gray70', outlier.size = 0.6, alpha = 0.6, fill = 'gray70')
+        geom_boxplot(outlier.color = 'gray70', outlier.size = 0.6, alpha = 0.6, fill = 'gray70')+geom_point(position = position_jitter(width = 0.2), size = 0.2, alpha = 0.8)
   }
 
   gg = gg+cowplot::theme_cowplot(font_size = 12)+ylim(0, 1)+

@@ -27,10 +27,13 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
                      removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE, annotationColor = NULL){
 
 
+  totSamps = as.numeric(maf@summary[3,summary])
+
   #if user doesnt provide a gene vector, use top 5.
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
     om = createOncoMatrix(m = maf, g = genes)
+    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = genes, justNames = TRUE))))
     #numeric matrix and char matrix
     mat_origin = om$numericMatrix
 
@@ -41,6 +44,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
     }
   } else{
     om = createOncoMatrix(m = maf, g = genes)
+    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = genes, justNames = TRUE))))
     #numeric matrix and char matrix
     mat_origin = om$numericMatrix
 
@@ -58,6 +62,8 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
 
     mat = mat_origin[genes,, drop = FALSE]
   }
+
+  altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
 
   if(ncol(mat_origin) < 2){
     stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
@@ -97,7 +103,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
         clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
         if(length(clinicalFeatures) == 0){
           message('Make sure at-least one of the values from provided clinicalFeatures are present in annotation slot of MAF. Here are available annotaions from MAF..')
-          print(head(getClinicalData(maf)))
+          print(colnames(getClinicalData(maf)))
           stop('Zero annotaions to add! You can also provide custom annotations via annotationDat argument.')
         }
       }
@@ -247,12 +253,12 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
   if(is.null(clinicalFeatures)){
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                  row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
-                                 show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"))
+                                 show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"), column_title = altStat)
   }else{
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                  row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
                                  show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"),
-                                 bottom_annotation = bot.anno)
+                                 bottom_annotation = bot.anno, column_title = altStat)
   }
 
   legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col), nrow = 2)

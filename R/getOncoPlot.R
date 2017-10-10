@@ -1,5 +1,6 @@
 
-getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE, left = FALSE, showTumorSampleBarcodes = FALSE, hmName = hmName, fs = 10, gfs = 10){
+getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE, left = FALSE,
+                       showTumorSampleBarcodes = FALSE, hmName = hmName, fs = 10, gfs = 10, clinicalFeatures = NULL, annotationColor = NULL){
 
   #-----preprocess matrix
   om = createOncoMatrix(m = maf, g = genes)
@@ -10,9 +11,9 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
   }
 
-  if(nrow(mat_origin) <2){
-    stop('Minimum two genes required !')
-  }
+  # if(nrow(mat_origin) <2){
+  #   stop('Minimum two genes required !')
+  # }
 
   genes.missing = genes[!genes %in% rownames(mat_origin)]
   genes.present = genes[genes %in% rownames(mat_origin)]
@@ -35,7 +36,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
 
     if(nrow(mat) == 1){
       g = rownames(mat)
-      mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = TRUE)), ])
+      mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = TRUE)), ,drop = FALSE])
       rownames(mat) = g
     }else{
       mat = t(tmat[do.call(order, c(as.list(as.data.frame(tmat)), decreasing = TRUE)), ])
@@ -65,6 +66,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     #final matrix for plotting
     mat = mat[genes , , drop = FALSE]
     mat_origin = mat_origin[genes , , drop = FALSE]
+    numMat = numMat[genes,,drop = FALSE]
 
 
   #New version of complexheatmap complains about '' , replacing them with random strinf xxx
@@ -98,6 +100,30 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   type_name = structure(variant.classes, names = variant.classes)
 
   variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
+
+
+  if(!is.null(clinicalFeatures)){
+    annotationDat = getClinicalData(x = maf)
+
+    if(length(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)]) > 0){
+      message('Following columns are missing from annotation slot of MAF. Ignoring them..')
+      print(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)])
+      clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
+      if(length(clinicalFeatures) == 0){
+        message('Make sure at-least one of the values from provided clinicalFeatures are present in clinical slot of MAF. Here are available clinical features from MAF..')
+        print(colnames(getClinicalData(maf)))
+        stop('Zero annotaions to add!')
+      }
+    }
+    annotation = data.frame(row.names = annotationDat$Tumor_Sample_Barcode ,annotationDat[,clinicalFeatures, with = FALSE])
+    annotation = annotation[colnames(mat),, drop = FALSE]
+
+    if(!is.null(annotationColor)){
+      bot.anno = HeatmapAnnotation(df = annotation, col = annotationColor)
+    }else{
+      bot.anno = HeatmapAnnotation(annotation)
+    }
+  }
 
 
   #------------------------------------Helper functions to add %, rowbar and colbar----------------------------------------------------
@@ -181,15 +207,32 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   #------Main Heatmap function
 
   if(showGenes){
-    ht = ComplexHeatmap::Heatmap(matrix = mat,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                 row_names_gp = grid::gpar(fontsize = gfs), show_column_names = showTumorSampleBarcodes,
-                                 show_heatmap_legend = FALSE,
-                                 column_title = hmName, column_names_gp = grid::gpar(fontsize = fs))
+    if(!is.null(clinicalFeatures)){
+      ht = ComplexHeatmap::Heatmap(matrix = mat,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
+                                   row_names_gp = grid::gpar(fontsize = gfs), show_column_names = showTumorSampleBarcodes,
+                                   show_heatmap_legend = FALSE,
+                                   column_title = hmName, column_names_gp = grid::gpar(fontsize = fs), bottom_annotation = bot.anno)
+
+    }else{
+      ht = ComplexHeatmap::Heatmap(matrix = mat,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
+                                   row_names_gp = grid::gpar(fontsize = gfs), show_column_names = showTumorSampleBarcodes,
+                                   show_heatmap_legend = FALSE,
+                                   column_title = hmName, column_names_gp = grid::gpar(fontsize = fs))
+    }
   }else{
-    ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                 show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-                                 top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
-                                 column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs))
+    if(!is.null(clinicalFeatures)){
+      ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
+                                   show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
+                                   top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
+                                   column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs), bottom_annotation = bot.anno)
+
+    }else{
+      ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
+                                   show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
+                                   top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
+                                   column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs))
+    }
+
   }
 
 
