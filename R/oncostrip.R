@@ -9,9 +9,10 @@
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param sort logical sort oncomatrix for enhanced visualization. Defaults to TRUE.
 #' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures` Defaults to FALSE. column-sort.
+#' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default TRUE.
 #' @param showTumorSampleBarcodes logical to include sample names.
-#' @param annotationColor list of colors to use for `clinicalFeatures` Default NULL.
+#' @param annotationColor list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.
 #' @return None.
 #' @seealso \code{\link{oncoplot}}
 #' @examples
@@ -23,8 +24,8 @@
 #' @export
 
 
-oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, clinicalFeatures = NULL, annotationDat = NULL, sortByAnnotation = FALSE,
-                     removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE, annotationColor = NULL){
+oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, clinicalFeatures = NULL, annotationDat = NULL,
+                     sortByAnnotation = FALSE, annotationOrder = NULL, removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE, annotationColor = NULL){
 
 
   totSamps = as.numeric(maf@summary[3,summary])
@@ -63,7 +64,6 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
     mat = mat_origin[genes,, drop = FALSE]
   }
 
-  altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
 
   if(ncol(mat_origin) < 2){
     stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
@@ -115,7 +115,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
     if(is.null(clinicalFeatures)){
       stop("Missing annotation data. Use argument `clinicalFeatures` to add annotations")
     }
-    mat = sortByAnnotation(mat, maf, annotation)
+    mat = sortByAnnotation(mat, maf, annotation, annotationOrder)
   }else{
     if(sort){
       mat = sortByMutation(numMat = mat, maf = maf)
@@ -129,6 +129,14 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
 
   #New version of complexheatmap complains about '' , replacing them with random strinf xxx
   mat[mat == ''] = 'xxx'
+
+  if(removeNonMutated){
+    #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
+    altStat = paste0("Altered in ", ncol(mat), " (", round(ncol(mat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
+  }else{
+    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
+    altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
+  }
 
   #---------------------------------------Colors and vcs-------------------------------------------------
 

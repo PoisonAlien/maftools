@@ -68,7 +68,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color
 
   gg.fp = ggplot(data = m.sigs, aes(x = Hugo_Symbol, y = log10OR, label = label, color = flow))+geom_point(size = 3)+
     geom_errorbar(aes(ymin = log10(ci.low), ymax = log10(ci.up)), size = 0.5, width = 0.20)+
-    coord_flip()+cowplot::theme_cowplot(font_size = 9)+cowplot::background_grid(major = 'x')+
+    coord_flip()+cowplot::theme_cowplot(font_size = 9, line_size = 1)+cowplot::background_grid(major = 'x')+
     geom_hline(yintercept = 0, linetype = 'dotted')+xlab('Gene')+ylab('log10 (Odds Ratio)')+
     theme(axis.line.y = element_blank(), legend.position = 'bottom', legend.title = element_blank())+ylim(-lim, lim)
 

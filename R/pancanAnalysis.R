@@ -92,7 +92,7 @@ pancanComparision = function(mutsigResults, qval = 0.1, cohortName = 'input', in
     }else{
       pancan.rest[,SampleFraction := nMut/inputSampleSize]
       pc.gg = ggplot(data = pancan.specific, aes(x = -log10(q), y = -log10(pancan), label = gene))+
-        geom_point(alpha = 0.8, size = pointSize)+cowplot::theme_cowplot(font_size = 12)+cowplot::background_grid(major = 'xy')+
+        geom_point(alpha = 0.8, size = pointSize)+cowplot::theme_cowplot(font_size = 12, line_size = 1)+cowplot::background_grid(major = 'xy')+
         geom_hline(yintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
         geom_vline(xintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
         xlab(xAxLab)+ylab('-log10(Pan-can q-value)')+ggtitle(gTitle)+
@@ -101,7 +101,7 @@ pancanComparision = function(mutsigResults, qval = 0.1, cohortName = 'input', in
     }
   }else{
     pc.gg = ggplot(data = pancan.specific, aes(x = -log10(q), y = -log10(pancan), label = gene))+
-      geom_point(alpha = 0.8, size = pointSize)+cowplot::theme_cowplot(font_size = 12)+cowplot::background_grid(major = 'xy')+
+      geom_point(alpha = 0.8, size = pointSize)+cowplot::theme_cowplot(font_size = 12, line_size = 1)+cowplot::background_grid(major = 'xy')+
       geom_hline(yintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
       geom_vline(xintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
       xlab(xAxLab)+ylab('-log10(Pan-cancer q-value)')+ggtitle(gTitle)+

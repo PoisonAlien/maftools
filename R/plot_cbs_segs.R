@@ -21,7 +21,8 @@
 #' plotCBSsegments(cbsFile = tcga.ab.009.seg)
 #'
 
-plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, savePlot = FALSE, width = 6, height = 3, labelAll = FALSE, genes = NULL, ref.build = 'hg19', writeTable = FALSE, removeXY = FALSE, color = NULL){
+plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, savePlot = FALSE,
+                           width = 6, height = 3, labelAll = FALSE, genes = NULL, ref.build = 'hg19', writeTable = FALSE, removeXY = FALSE, color = NULL){
 
   if(is.null(cbsFile)){
     stop('Missing segmentation file!')
@@ -100,6 +101,7 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
             label = Hugo_Symbol), force = 10, nudge_y = 0.20, size = 2.5, segment.alpha = 0.60)+theme(legend.position = 'none')
         }
       }
+
 
       if(savePlot){
         cowplot::save_plot(filename = paste(tsb[i], '_segPlot.pdf', sep = ''), plot = p, base_height = height, base_width = width)

@@ -40,11 +40,6 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   mut = maf@data
   gs = getGeneSummary(maf)
 
-  #in case user read maf without removing silent variants, remove theme here.
-  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
-  mut = mut[!Variant_Classification %in% silent]
-
   if(varClass == 'Syn'){
     mut = maf@maf.silent
   }else if(varClass == 'all'){
@@ -164,7 +159,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   domainSum = domainSum[order(nMuts, decreasing = TRUE)]
 
   #print(prot.sum)
-  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point()+cowplot::theme_cowplot()+
+  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point()+cowplot::theme_cowplot(line_size = 1)+
     ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = 3, fontface = 'bold', force = 20)+
     theme(legend.position = 'none')+cowplot::background_grid(major = 'xy')
 

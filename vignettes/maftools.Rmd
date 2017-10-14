@@ -215,6 +215,8 @@ coad = read.maf(maf = coad)
 coad.rf = rainfallPlot(maf = coad, detectChangePoints = TRUE, fontSize = 12, pointSize = 0.6)
 ```
 
+`Filter` column in the above results indicate whether the identified segment passes the definition of "Kataegis" which are defined as those genomic segments containing six or more consecutive mutations with an average intermutation distance of less than or equal to 1,00 bp [5](#references).
+
 ##Compare mutation load against TCGA cohorts
 TCGA contains over 30 different cancer cohrts and median mutation load across them varies from as low as 7 per exome (Pheochromocytoma and Paraganglioma arising from Adrenal Gland) to as high as 315 per exome (Skin Cutaneoys Melanoma). It is informative to see how mutation load in given maf stands against TCGA cohorts. This can can be achieved with the fuction `tcgaComapre` which draws distribution of variants compiled from over 10,000 WXS samples across 33 TCGA landmark cohorts. Plot generated is [similar](http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F1.html) to the one described in Alexandrov et al [5](#references). 
 
@@ -259,7 +261,7 @@ There are three types of plots available to visualize gistic results.
 
 ###genome plot
 ```{r, fig.width=8, fig.height=4, fig.align='left'}
-gcp = gisticChromPlot(gistic = laml.gistic)
+gcp = gisticChromPlot(gistic = laml.gistic, markBands = "all")
 ```
 
 ###Bubble plot

@@ -20,10 +20,21 @@
 plotApobecDiff = function(tnm, maf){
   sub.tbl <- tnm$APOBEC_scores
   sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no')) #Set levels
-  #yp = boxplot.stats(x = sub.tbl[,n_mutations])$stats #yaxis points and limits
-  yp = pretty(x = c(1: max(sub.tbl[,n_mutations], na.rm = TRUE)))
-  yp[length(yp)] = max(sub.tbl[,n_mutations], na.rm = TRUE)
-  yp[1] = 1
+  yp = c(min(boxplot.stats(x = sub.tbl[,n_mutations])$stats), max(boxplot.stats(x = sub.tbl[,n_mutations])$stats))
+
+  if(length(boxplot.stats(x = sub.tbl[,n_mutations])$out) > 0){
+    yp[2] = min(boxplot.stats(x = sub.tbl[,n_mutations])$out)+3
+  }else{
+    yp[2] = yp[2]+3
+  }
+
+  yp = seq(yp[1], yp[2], length.out = 5)
+  yp[1] = yp[1] - 3
+
+  # #yp = boxplot.stats(x = sub.tbl[,n_mutations])$stats #yaxis points and limits
+  # yp = pretty(x = c(1: max(sub.tbl[,n_mutations], na.rm = TRUE)))
+  # yp[length(yp)] = max(sub.tbl[,n_mutations], na.rm = TRUE)
+  # yp[1] = 1
 
   if(nrow(sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched][APOBEC_Enriched %in% 'yes']) == 0){
     stop('None of the samples are enriched for APOBEC. Nothing to plot.')
@@ -72,14 +83,25 @@ plotApobecDiff = function(tnm, maf){
 
   pieCol  = c("#084594", "#9ECAE1")
 
-  boxplot(n_mutations ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = TRUE, lty=1,
+  boxplot(at = 1:2, n_mutations ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = TRUE, lty=1,
           outwex=0, staplewex=0, frame.plot = FALSE, col = c('maroon', 'royalblue'), yaxt = 'n',
           ylim = c(min(yp), max(yp)),
-          outcol="gray70", outcex = 0.8, outpch  = 16)
+          outcol="gray70", outcex = 0.8, outpch  = 16, boxfill = NULL, border = c('maroon', 'royalblue'), lwd = 1.6)
+
   title(main = 'Mutation load between APOBEC enriched \n and non-APOBEC enriched samples', cex.main=0.9)
 
   axis(side = 1, at = c(1, 2), labels = na.omit(sub.tbl[,.N,APOBEC_Enriched])[,paste0('N=', N)], las = 1, tick = FALSE, font.axis = 2)
   axis(side = 2, at = yp, lwd = 1.8, las = 1)
+
+  p = wilcox.test(sub.tbl[APOBEC_Enriched %in% 'yes', n_mutations], sub.tbl[APOBEC_Enriched %in% 'no', n_mutations])$p.value
+  if(p < 0.001 ){
+    #lines(x = c(1.3, 1.8), y = rep(yp[length(yp)]-3, 2), lwd = 2)
+    text(x = 1.55, y = yp[length(yp)], labels = "***", cex = 3)
+  }else if(p < 0.01){
+    text(x = 1.55, y = yp[length(yp)], labels = "**", cex = 3)
+  }else if(p < 0.05){
+    text(x = 1.55, y = yp[length(yp)], labels = "*", cex = 3)
+  }
 
   pie(x = pieDat[APOBEC_Enriched %in% 'yes', value], col = pieCol,
       border="white", radius = 0.95, cex.main=0.6, labels =  pieDat[APOBEC_Enriched %in% 'yes', title], clockwise = TRUE)

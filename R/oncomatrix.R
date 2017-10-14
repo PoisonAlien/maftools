@@ -111,13 +111,30 @@ sortByMutation = function(numMat, maf){
 
 #Thanks to Ryan Morin for the suggestion (https://github.com/rdmorin)
 #original code has been changed with vectorized code, in-addition performs class-wise sorting.
-sortByAnnotation <-function(numMat,maf, anno){
+sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL){
   anno.spl = split(anno, as.factor(as.character(anno[,1]))) #sorting only first annotation
   anno.spl.sort = sapply(X = anno.spl, function(x){
     numMat[,colnames(numMat)[colnames(numMat) %in% rownames(x)], drop = FALSE]
   })
 
   anno.spl.sort = anno.spl.sort[names(sort(unlist(lapply(anno.spl.sort, ncol)), decreasing = TRUE))] #sort list according to number of elemnts in each classification
+
+  if(!is.null(annoOrder)){
+    annoSplOrder = names(anno.spl.sort)
+
+    if(length(annoOrder[annoOrder %in% annoSplOrder]) == 0){
+      message("Values in provided annotation order ", paste(annoOrder, collapse = ", ")," does not match values in clinical features. Here are the available features..")
+      print(annoSplOrder)
+      stop()
+    }
+    annoOrder = annoOrder[annoOrder %in% annoSplOrder]
+
+    anno.spl.sort = anno.spl.sort[annoOrder]
+
+    if(length(annoSplOrder[!annoSplOrder %in% annoOrder]) > 0){
+      warning("Following levels are missing from the provided annotation order: ", paste(annoSplOrder[!annoSplOrder %in% annoOrder], collapse = ", "))
+    }
+  }
 
   numMat.sorted = c()
   for(i in 1:length(anno.spl.sort)){

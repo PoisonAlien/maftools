@@ -54,7 +54,7 @@ tcgaCompare = function(maf, cohortName = NULL, primarySite = FALSE, col = c('gra
   tcga.cohort.gg = ggplot(data = tcga.cohort, aes(x = cohort, y = total, group = Tumor_Sample_Barcode, color = TCGA))+
     geom_point(position = position_jitter(width = 0.3), size = 0.2, alpha = 0.8)+
     geom_point(data = tcga.cohort.med, aes(y = Median_Mutations, x = Cohort), shape = 95, inherit.aes = FALSE, color = medianCol, size = 6)+
-    cowplot::theme_cowplot(font_size = fontSize)+
+    cowplot::theme_cowplot(font_size = fontSize, line_size = 1)+
     scale_y_log10(breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000))+
     cowplot::background_grid(major = 'x')+
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, face = "bold"), legend.position = 'none', axis.text.y = element_text(face="bold", size = 10))+

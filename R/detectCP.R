@@ -42,7 +42,7 @@ detectCP = function(dat){
                 x$distance = c(1, diff(as.numeric(as.character(x$Start_Position)))) #calculate distance between consecutive mutations; in log10 scale
 
                 #x_cpt = changepoint::cpt.mean(data = log10(x$distance), penalty = "Asymptotic", pen.value = 0.01,method = 'AMOC', class = TRUE) #Run change point analysis
-                x_cpt = changepoint::cpt.mean(data = log10(x$distance), method = 'PELT', class = TRUE) #Run change point analysis
+                x_cpt = changepoint::cpt.mean(data = log10(x$distance), method = 'PELT', class = TRUE, minseglen = 5) #Run change point analysis
 
                 ydat = c()
                 if(length(cpts(x_cpt)) > 0){
@@ -76,8 +76,7 @@ detectCP = function(dat){
     #Use Alexandrov's filters:
     #Putative regions of kataegis were identified as those segments containing six or more consecutive mutations
     #with an average intermutation distance of less than or equal to 1,000 bp.
-    print(cps)
-    cps = cps[nMuts >= 6 & Avg_intermutation_dist <= 1000]
+    cps$Filter = ifelse(test = cps$nMuts >= 6 & cps$Avg_intermutation_dist <= 1000, yes = "PASS", no = ".")
 
     if(nrow(cps) > 0){
       write.table(x = cps, file = paste(unique(cps[,Tumor_Sample_Barcode]), 'changePoints.tsv', sep='_'), sep='\t', quote = FALSE, row.names = FALSE)

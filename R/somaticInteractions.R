@@ -129,6 +129,9 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = 0.05, retur
 
       for(k in 3:kMax){
         sig.genes.combn = combn(x = sig.genes, m = k)
+
+        message(paste0("k = ", k, ": ", ncol(sig.genes.combn), " combinations.."))
+
         sps = lapply(seq_along(1:ncol(sig.genes.combn)), function(i){
           x = sig.genes.combn[,i]
           mm = mutMat[,x, drop = FALSE]

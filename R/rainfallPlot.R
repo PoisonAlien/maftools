@@ -73,9 +73,9 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build =
   chr.lens.sumsum = cumsum(chr.lens)
 
   gg.rf = ggplot(data = maf.snp, aes(x= Start_Position_updated, y = diff, col = con.class))+
-                geom_point(size = pointSize, alpha = 0.6)+cowplot::theme_cowplot(font_size = fontSize)+
+                geom_point(size = pointSize, alpha = 0.6)+cowplot::theme_cowplot(font_size = fontSize, line_size = 1)+
                 cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
-                theme(axis.line.x = element_blank())+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
+                theme(axis.line.x = element_blank(), axis.text.y = element_text(size = 12, face = "bold"))+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
                 geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+
                 theme(legend.position = 'bottom', legend.title = element_blank())+
                 scale_color_manual(values = col)+
