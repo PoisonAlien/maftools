@@ -39,7 +39,7 @@ A complete documentation of maftools using TCGA LAML<sup>1</sup> as a case study
 Simple usage: Just read maf file using `read.maf` and pass the resulting maf object to any one of the function for plotting or analysis or set operations.
 
 <p align="center">
-<img src="https://github.com/PoisonAlien/PoisonAlien.github.io/blob/master/images/overview.png">
+<img src="https://github.com/PoisonAlien/maftools/blob/master/vignettes/overview.png">
 </p>
 
 ### Stuffs maftools can do.
