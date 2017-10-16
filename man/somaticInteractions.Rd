@@ -22,6 +22,9 @@ somaticInteractions(maf, top = 25, genes = NULL, pvalue = 0.05,
 
 \item{kMax}{Default 3. maximum gene set size if findPathways is TRUE. This is time consuming for > 3 and might lead R to crash!}
 }
+\value{
+list of data.tables
+}
 \description{
 Performs Pair-wise Fisher's Exact test to detect mutually exclusive or co-occuring events. Also identifies gene sets mutated significantly.
 }

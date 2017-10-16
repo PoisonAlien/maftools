@@ -696,9 +696,9 @@ Once decomposed, signatures are compared against known and validated signatures 
 
 Full table of cosine similarities against validated signatures are also returned, which can be further analysed. Below plot shows comparision of similarities of detected signatures against validated signatures.
 
-```{r, fig.width=6, fig.height=2}
-require('corrplot')
-corrplot::corrplot(corr = laml.sign$coSineSimMat, col = RColorBrewer::brewer.pal(n = 9, name = 'Oranges'), is.corr = FALSE, tl.cex = 0.6, tl.col = 'black', cl.cex = 0.6)
+```{r, fig.width=7, fig.height=2.5, fig.align='center'}
+require('pheatmap')
+pheatmap::pheatmap(mat = laml.sign$coSineSimMat, cluster_rows = FALSE, main = "cosine similarity against validated signatures")
 ```
 
 NOTE: Should you recieve an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the "NMF" library and re-run.

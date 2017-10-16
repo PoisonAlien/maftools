@@ -14,6 +14,7 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' somaticInteractions(maf = laml, top = 5)
+#' @return list of data.tables
 #' @export
 
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = 0.05, returnAll = FALSE, findPathways = TRUE, kMax = 3){
