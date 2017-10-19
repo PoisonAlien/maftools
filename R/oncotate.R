@@ -1,13 +1,13 @@
 #' Annotates given variants using oncotator api.
 #'
-#' @description Takes variants as input and annotates them using Broad's oncotator api (http://www.broadinstitute.org/oncotator/). Output is a dataframe of annotated variants in maf format.
+#' @description Takes input variants and annotates them using Broad's oncotator api (http://www.broadinstitute.org/oncotator/). Output is a dataframe of annotated variants in maf format.
 #'
-#' Input should be a five column file with chr, start, end, ref_allele, alt_allele (and so on, but only first five will used, rest will be attached to resulting maf file). Note: Time consuming if input is huge.
-#' Try to include necessary columns such as Tumor_Sample_Barcode along with above 5 fields.
-#' @param maflite input tsv file with chr, start, end, ref_allele, alt_allele columns. (rest of the columns, if present will be attached to the output maf)
-#' @param header logical. Whether input has a header line. Default is FALSE.
+#' Input should be tsv file or a data.frame with first five columns in the order chr, start, end, ref_allele, alt_allele (and so on, but only first five will used, rest will be attached to resulting maf file). Note: Time consuming if input is huge.
+#' Try to include necessary columns such as Tumor_Sample_Barcode along with above 5 fields. Only supports hg19/GRCh37 build.
+#' @param maflite input tsv file or a data.frame with chr, start, end, ref_allele, alt_allele columns. (rest of the columns, if present will be attached to the output maf)
+#' @param header logical. Whether input has a header line. Default is FALSE. Only applicable when the input is a tsv file.
 #' @param basename NULL. if basename is given, annotations will be written to <basename>.maf file.
-#' @return returns a dataframe in maf format.
+#' @return returns a data.table in maf format.
 #' @examples
 #' sample.var = data.frame(chromsome = c('chr4', 'chr15'), Start = c(55589774, 41961117),
 #' end = c(55589774, 41961117), ref = c('A', 'TGGCTAA'), alt = c('G', '-'),
@@ -19,67 +19,88 @@
 
 oncotate = function(maflite, header = FALSE,basename = NULL){
 
-  #require(package = 'rjson', quietly = TRUE)
-
-  #create an empty data frame
-  anno.df = c()
-
-  counter = 0
-
   #read the file
-  m = read.delim(maflite,stringsAsFactors = FALSE,header = header, sep='\t')
-  #m = maflite
+  if(is.data.frame(x = maflite)){
+    m = data.table::setDT(maflite)
+  }else{
+    if(file.exists(maflite)){
+      m = data.table::fread(maflite, stringsAsFactors = FALSE, header = header, sep='\t')
+    }else{
+      stop(paste0("Input file ", maflite, " doesn not exists!"))
+    }
+  }
 
   if(length(colnames(m)[colnames(m) %in% 'Tumor_Sample_Barcode']) > 0){
     Tumor_Sample_Barcode = TRUE
   }
 
   #paste first five columns
-  anno = paste(m[,1],m[,2],m[,3],m[,4],m[,5],sep = "_")
+  anno = apply(m[,c(1:5)], 1, function(x) paste0(gsub(pattern = " ", replacement = "", x = x), collapse = "_"))
 
-  message("fetching annotation from Oncotator. This might take a while..")
-  pb = txtProgressBar(min = 0, max = length(anno), style = 3)
+  message("Fetching annotations from Oncotator. This might take a while..")
 
-  for(i in 1:length(anno)){
+  per_complete = as.integer(seq(1, length(anno), length.out = 4))
 
-    setTxtProgressBar(pb, value = i)
-    rec = anno[i]
+  pb <- txtProgressBar(min = 0, max = length(anno), style = 3)
 
-    #make an url for oncotator api.
-    #rec.url = paste('http://www.broadinstitute.org/oncotator/mutation',rec,sep = '/') #For some reason not working
-    rec.url = paste('http://portals.broadinstitute.org/oncotator/mutation',rec,sep = '/')
+  anno.dt = lapply(seq_along(anno), function(i){
+                  setTxtProgressBar(pb, i)
+                  x = anno[i]
+                  rec.url = paste('http://portals.broadinstitute.org/oncotator/mutation', x, sep = '/')
+                  annot = try(rjson::fromJSON(file = rec.url, unexpected.escape = "error"), silent = TRUE)
+                  if(class(annot) == "try-error"){
+                    annot = NA
+                  }else{
+                    data.table::setDT(annot, keep.rownames = TRUE)
+                  }
+                  annot
+                })
 
-    #use rjason to query oncotator.
-    annot = rjson::fromJSON(file = rec.url)
-    anno.df = rbind(anno.df,as.data.frame(annot))
-  }
+  # failed_rows = which(sapply(anno.dt, function(x) is.na(x)))
+  # if(length(failed_rows) > 0){
+  #   warning(paste0("Failed to fetch annotations for ", length(failed_rows), " variants."))
+  # }
+
+  #anno.dt = anno.dt[!failed_rows]
+  anno.dt = data.table::rbindlist(l = anno.dt, fill = TRUE)
 
 
   #Reformat the data according to MAF specification.
-  colnames(anno.df) = gsub(pattern = "^X",replacement = "",x = colnames(anno.df))
+  colnames(anno.dt) = gsub(pattern = "^X",replacement = "",x = colnames(anno.dt))
   colnames(m)[1:5] = c('Chromosome','Start_Position','End_Position','Reference_Allele','Tumor_Seq_Allele2')
-  anno.df = cbind(m,anno.df)
-  anno.df$Center = NA
-  anno.df$Tumor_Seq_Allele1 = anno.df$Reference_Allele
-  colnames(anno.df)[which(colnames(anno.df) == "gene")] = "Hugo_Symbol"
-  colnames(anno.df)[which(colnames(anno.df) == "variant_classification")] = "Variant_Classification"
-  colnames(anno.df)[which(colnames(anno.df) == "variant_type")] = "Variant_Type"
-  colnames(anno.df)[which(colnames(anno.df) == "HGNC_Entrez.Gene.ID.supplied.by.NCBI.")] = "Entrez_Gene_Id"
-  colnames(anno.df)[which(colnames(anno.df) == "strand")] = "Strand"
-  colnames(anno.df)[which(colnames(anno.df) == "build")] = "NCBI_Build"
-  colnames(anno.df)[which(colnames(anno.df) == "strand")] = "Strand"
+  anno.dt = cbind(m, anno.dt)
+  anno.dt$Center = NA
+  anno.dt$Tumor_Seq_Allele1 = anno.dt$Reference_Allele
+  colnames(anno.dt)[which(colnames(anno.dt) == "gene")] = "Hugo_Symbol"
+  colnames(anno.dt)[which(colnames(anno.dt) == "variant_classification")] = "Variant_Classification"
+  colnames(anno.dt)[which(colnames(anno.dt) == "variant_type")] = "Variant_Type"
+  colnames(anno.dt)[which(colnames(anno.dt) == "HGNC_Entrez.Gene.ID.supplied.by.NCBI.")] = "Entrez_Gene_Id"
+  colnames(anno.dt)[which(colnames(anno.dt) == "strand")] = "Strand"
+  colnames(anno.dt)[which(colnames(anno.dt) == "build")] = "NCBI_Build"
+  colnames(anno.dt)[which(colnames(anno.dt) == "strand")] = "Strand"
 
-  #get main columns
-  anno.df1 = anno.df[,c('Hugo_Symbol','Entrez_Gene_Id','Center','NCBI_Build','Chromosome','Start_Position',
-                        'End_Position','Strand','Variant_Classification','Variant_Type','Reference_Allele','Tumor_Seq_Allele1','Tumor_Seq_Allele2', 'dbSNP_RS', 'dbSNP_Val_Status')]
-  #get rest of the columns
-  anno.df2 = anno.df[,colnames(anno.df)[!colnames(anno.df) %in% colnames(anno.df1)]]
-  #join'em
-  anno.df = cbind(anno.df1,anno.df2)
+
+  col.order = c('Hugo_Symbol','Entrez_Gene_Id','Center','NCBI_Build','Chromosome','Start_Position',
+                'End_Position','Strand','Variant_Classification','Variant_Type','Reference_Allele',
+                'Tumor_Seq_Allele1','Tumor_Seq_Allele2', 'dbSNP_RS', 'dbSNP_Val_Status')
+
+  col.order = c(col.order, colnames(anno.dt)[!colnames(anno.dt) %in% col.order])
+
+  if(length(col.order[!col.order %in% colnames(anno.dt)]) > 0){
+    anno.dt = anno.dt[,col.order[col.order %in% colnames(anno.dt)], with = FALSE]
+    main.cols.missing = col.order[!col.order %in% colnames(anno.dt)]
+    for(i in 1:length(main.cols.missing)){
+      anno.dt[,main.cols.missing[1] := NA]
+    }
+    anno.dt = anno.dt[,col.order, with = FALSE]
+  }else{
+    anno.dt = anno.dt[,col.order, with = FALSE]
+  }
+
 
   if(!is.null(basename)){
     write.table(anno.df,paste(basename,'maf',sep = '.'),quote = FALSE,row.names = FALSE,sep= '\t')
   }
 
-  return(data.table::setDT(anno.df))
+  return(anno.dt)
 }

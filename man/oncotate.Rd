@@ -7,20 +7,20 @@
 oncotate(maflite, header = FALSE, basename = NULL)
 }
 \arguments{
-\item{maflite}{input tsv file with chr, start, end, ref_allele, alt_allele columns. (rest of the columns, if present will be attached to the output maf)}
+\item{maflite}{input tsv file or a data.frame with chr, start, end, ref_allele, alt_allele columns. (rest of the columns, if present will be attached to the output maf)}
 
-\item{header}{logical. Whether input has a header line. Default is FALSE.}
+\item{header}{logical. Whether input has a header line. Default is FALSE. Only applicable when the input is a tsv file.}
 
 \item{basename}{NULL. if basename is given, annotations will be written to <basename>.maf file.}
 }
 \value{
-returns a dataframe in maf format.
+returns a data.table in maf format.
 }
 \description{
-Takes variants as input and annotates them using Broad's oncotator api (http://www.broadinstitute.org/oncotator/). Output is a dataframe of annotated variants in maf format.
+Takes input variants and annotates them using Broad's oncotator api (http://www.broadinstitute.org/oncotator/). Output is a dataframe of annotated variants in maf format.
 
-Input should be a five column file with chr, start, end, ref_allele, alt_allele (and so on, but only first five will used, rest will be attached to resulting maf file). Note: Time consuming if input is huge.
-Try to include necessary columns such as Tumor_Sample_Barcode along with above 5 fields.
+Input should be tsv file or a data.frame with first five columns in the order chr, start, end, ref_allele, alt_allele (and so on, but only first five will used, rest will be attached to resulting maf file). Note: Time consuming if input is huge.
+Try to include necessary columns such as Tumor_Sample_Barcode along with above 5 fields. Only supports hg19/GRCh37 build.
 }
 \examples{
 sample.var = data.frame(chromsome = c('chr4', 'chr15'), Start = c(55589774, 41961117),
