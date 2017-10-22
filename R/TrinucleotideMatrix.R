@@ -42,18 +42,10 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   #suppressPackageStartupMessages(require('VariantAnnotation', quietly = TRUE))
   #suppressPackageStartupMessages(require('Biostrings', quietly = TRUE))
 
-  #Synonymous variants
-  maf.silent = maf@maf.silent
-  #Main data
-  maf = maf@data
+  maf.snp = subsetMaf(maf = maf, includeSyn = useSyn, fields = "Variant_Classification", query = "Variant_Type == 'SNP'")
 
-  #in case user read maf without removing silent variants, remove theme here.
-  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA")
-  maf = maf[!Variant_Classification %in% silent] #Remove silent variants from main table
-
-  if(useSyn){
-    maf = rbind(maf, maf.silent, fill = TRUE)
+  if(nrow(maf.snp) == 0){
+    stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
   }
 
   #one bp up and down.
@@ -64,22 +56,17 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
 
   #Remove unwanted contigs
   if(!is.null(ignoreChr)){
-    maf = maf[!maf$Chromosome %in% ignoreChr]
+    maf.snp = maf.snp[!maf.snp$Chromosome %in% ignoreChr]
   }
 
   if(!is.null(prefix)){
     if(add){
-      maf$Chromosome = paste(prefix,maf$Chromosome, sep = '')
+      maf.snp$Chromosome = paste(prefix, maf.snp$Chromosome, sep = '')
     }else{
-      maf$Chromosome = gsub(pattern = prefix, replacement = '', x = maf$Chromosome, fixed = TRUE)
+      maf.snp$Chromosome = gsub(pattern = prefix, replacement = '', x = maf.snp$Chromosome, fixed = TRUE)
     }
   }
 
-  #seperate snps and indels
-  maf.snp = maf[Variant_Type == 'SNP']
-  if(nrow(maf) == 0){
-    stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
-  }
   #maf.rest = maf[!maf$Variant_Type %in% 'SNP']
 
   #get unique Chromosome names from maf
@@ -96,13 +83,10 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
 
   #validation
   if(length(chrs.missing) > 0){
-    message("contigs in fasta file:")
-    print(seq.lvl)
-    message("contigs in maf:")
-    print(chrs)
-    message('missing reference contigs from fasta file.')
-    print(chrs.missing)
-    message(paste0("Contig names in MAF must match to contig names in reference fasta. Ignorinig ", nrow(maf.snp[Chromosome %in% chrs.missing]) ," single nucleotide variants from ", paste(chrs.missing, collapse = ', ')))
+    #warning(paste0("Chromosomes in fasta file: ", paste(seq.lvl, collapse = ", ")))
+    #warning(paste0("Chormosomes in input maf: ", paste(chrs, collapse = ", ")))
+    #warning(paste0('missing reference contigs from fasta file: ', paste(chrs.missing, collapse = ", ")))
+    warning(paste0("Chromosome names in MAF must match chromosome names in reference fasta. Ignorinig ", nrow(maf.snp[Chromosome %in% chrs.missing]) ," single nucleotide variants from missing chromosomes ", paste(chrs.missing, collapse = ', ')))
     maf.snp = maf.snp[!Chromosome %in% chrs.missing]
     if(nrow(maf.snp) == 0){
       stop('Zero mutations to analyze! Maybe add or remove prefix?')
@@ -118,7 +102,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   message("Extracting 5' and 3' adjacent bases..")
   ss = Biostrings::subseq(x = ref[extract.tbl[,Chromosome]], start = extract.tbl[,Start] , end = extract.tbl[,End])
 
-  message('Extracting +/- 20bp around mutated bases for background estimation..')
+  message('Extracting +/- 20bp around mutated bases for background C>T estimation..')
   updwn = Biostrings::subseq(x = ref[extract.tbl[,Chromosome]], start = extract.tbl[,upstream] , end = extract.tbl[,downstream])
   updwn.alphFreq = data.table::as.data.table( Biostrings::alphabetFrequency(x = updwn))[,.(A, C, G, T)] #Nucleotide frequency
   updwn.tnmFreq = data.table::as.data.table(Biostrings::trinucleotideFrequency(x = updwn, step = 1))

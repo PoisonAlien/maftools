@@ -13,6 +13,9 @@
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default TRUE.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param annotationColor list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.
+#' @param fontSize font size for gene names. Default 10.
+#' @param titleFontSize font size for title. Default 15
+#' @param legendFontSize font size for legend. Default 12
 #' @return None.
 #' @seealso \code{\link{oncoplot}}
 #' @examples
@@ -25,7 +28,8 @@
 
 
 oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, clinicalFeatures = NULL, annotationDat = NULL,
-                     sortByAnnotation = FALSE, annotationOrder = NULL, removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE, annotationColor = NULL){
+                     sortByAnnotation = FALSE, annotationOrder = NULL, removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE, annotationColor = NULL,
+                     fontSize = 10, titleFontSize = 15, legendFontSize = 12){
 
 
   totSamps = as.numeric(maf@summary[3,summary])
@@ -190,7 +194,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
-                    just = "right", gp = grid::gpar(fontsize = 10))
+                    just = "right", gp = grid::gpar(fontsize = fontSize))
     grid::upViewport()
   }
 
@@ -260,16 +264,18 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
 
   if(is.null(clinicalFeatures)){
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                 row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
-                                 show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"), column_title = altStat)
+                                 row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
+                                 show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"), column_title = altStat,
+                                 column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"))
   }else{
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                 row_names_gp = grid::gpar(fontsize = 10), show_column_names = showTumorSampleBarcodes,
+                                 row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
                                  show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"),
-                                 bottom_annotation = bot.anno, column_title = altStat)
+                                 bottom_annotation = bot.anno, column_title = altStat,
+                                 column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"))
   }
 
-  legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col), nrow = 2)
+  legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col, fontsize = legendFontSize), nrow = 2)
 
   ComplexHeatmap::draw(object = ht, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
 }

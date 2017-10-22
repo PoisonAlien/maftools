@@ -21,12 +21,15 @@
 #' @param annotationColor list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param colors named vector of colors for each Variant_Classification.
-#' @param fontSize font size for gene names. Default 10.
 #' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
 #' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
 #' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
+#' @param fontSize font size for gene names. Default 10.
+#' @param SampleNamefontSize font size for sample names. Default 10
+#' @param titleFontSize font size for title. Default 15
+#' @param legendFontSize font size for legend. Default 12
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file. This can be used as an input
 #' for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to customize the plot.
 #' @return None.
@@ -42,8 +45,9 @@
 
 oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
                      clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL, fontSize = 10,
-                     sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE, GeneOrderSort = TRUE, writeMatrix = FALSE) {
+                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
+                     sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE,
+                     GeneOrderSort = TRUE, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10, titleFontSize = 15, legendFontSize = 12) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -452,13 +456,15 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
-                                   top_annotation_height = grid::unit(2, "cm"), column_title = altStat)
+                                   top_annotation_height = grid::unit(2, "cm"),
+                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     } else{
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
-                                   top_annotation_height = grid::unit(2, "cm"), bottom_annotation = bot.anno, column_title = altStat)
+                                   top_annotation_height = grid::unit(2, "cm"), bottom_annotation = bot.anno,
+                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     }
 
   } else{
@@ -467,11 +473,13 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
-                                   show_heatmap_legend = FALSE, column_title = altStat)
+                                   show_heatmap_legend = FALSE,
+                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     }else{
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
-                                   show_heatmap_legend = FALSE, bottom_annotation = bot.anno, column_title = altStat)
+                                   show_heatmap_legend = FALSE, bottom_annotation = bot.anno,
+                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     }
   }
 
@@ -485,7 +493,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     ht_list =  ht_list + ha_row_bar
   }
 
-  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col), nrow = 3)
+  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col, fontsize = legendFontSize), nrow = 3)
 
   suppressWarnings( ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
 }

@@ -15,6 +15,8 @@
 #' @param geneNamefont font size for gene names. Default 10
 #' @param showSampleNames whether to show sample names. Defult FALSE.
 #' @param SampleNamefont font size for sample names. Default 10
+#' @param legendFontSize font size for legend. Default 10
+#' @param titleFontSize font size for title. Default 12
 #' @export
 #' @examples
 #' #' ##Primary and Relapse APL
@@ -30,7 +32,8 @@
 
 coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                       clinicalFeatures1 = NULL, clinicalFeatures2 = NULL, annotationColor1 = NULL, annotationColor2 = NULL,
-                      colors = NULL, removeNonMutated = TRUE, geneNamefont = 10, showSampleNames = FALSE, SampleNamefont = 10){
+                      colors = NULL, removeNonMutated = TRUE,
+                      geneNamefont = 10, showSampleNames = FALSE, SampleNamefont = 10, legendFontSize = 10, titleFontSize = 12){
 
 
   if(is.null(genes)){
@@ -63,11 +66,11 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
   m1.oc = getOncoPlot(maf = m1, genes = genes, removeNonMutated = removeNonMutated,
                       colors = colors, showGenes = TRUE, left = TRUE, hmName = m1Name,
-                      showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont,
+                      showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont, tfs = titleFontSize,
                       clinicalFeatures = clinicalFeatures1, annotationColor = annotationColor1)
   m2.oc = getOncoPlot(maf = m2, genes = genes, removeNonMutated = removeNonMutated,
                       colors = colors, showGenes = FALSE, left = FALSE, hmName = m2Name,
-                      showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont,
+                      showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont, tfs = titleFontSize,
                       clinicalFeatures = clinicalFeatures2, annotationColor = annotationColor2)
 
   oc.list = m1.oc[[1]] + m2.oc[[1]]
@@ -78,7 +81,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   tn = unique(unlist(strsplit(x = tn, split = ';', fixed = TRUE)))
   tc = c(m1.oc[[3]], m2.oc[[3]])
 
-  legend = grid::legendGrob(labels = tn,  pch = 15, gp = grid::gpar(col = tc[tn]), nrow = 2)
+  legend = grid::legendGrob(labels = tn,  pch = 15, gp = grid::gpar(col = tc[tn], fontsize = legendFontSize), nrow = 2)
 
   suppressWarnings( ComplexHeatmap::draw(oc.list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
 
