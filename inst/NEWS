@@ -1,4 +1,4 @@
-CHANGES IN VERSION 1.3.60
+CHANGES IN VERSION 1.4.00
 -------------------------
 NEW FUNCTIONS
     o plotApobecDiff - plots differences between APOBEC enriched and non APOBEC enriched samples
@@ -8,14 +8,16 @@ NEW FUNCTIONS
     o mutCountMatrix - generate count matrix
 
 SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Changes to MAF object. It now includes clinical data similar to PhenoData of expressionset objects.
-    o Oncomatrix is built on the fly whenever required, its no longer stored in MAF object.
-    o Many sorting options to oncplots.
+    o Changes to MAF object: It now includes clinical data slot similar to PhenoData of expressionset objects.
+    o Changes to MAF object: Silent variants will be stored seperately in MAF object and won't be mixed with non-syn variants.
+    o Changes to MAF object: Oncomatrix is built on the fly whenever required, its no longer stored in MAF object.
+    o Dropped mutExclusive function - Use somaticInteractions instead.
+    o Many sorting options and plotting improvements to oncplots.
+    o One can include q values from mutsig (or any similar program) as a side barplot in oncoplot
     o rainfallPlot can detect hyper mutated genomic segments via ChangePoint detection method
     o plotSignatures includes cosine similarity score and aetiology of detected signature
     o readGistic has argument cnLevel to choose deep or shallow CN variants
     o inferHeterogeneity includes MATH score in the plot
-    o One can include q values from mutsig (or any similar program) as a side barplot in oncoplot
     o Tumor_Sample_Barcodes remains as is; earlier '-' were converted to '.' in sample names
 
 NON SIGNIFICANT CHANGES
@@ -25,4 +27,4 @@ NON SIGNIFICANT CHANGES
 
 BUG FIXES
     o Major bug fix in signature analysis
-    o minor bug fixes in plotGisticResults and oncostrip
+    o minor bug fixes in oncostrip

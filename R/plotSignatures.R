@@ -31,8 +31,10 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       contrib.melt = data.table::melt(contrib)
 
       contrib.gg = ggplot(data = contrib.melt, aes(x = Var2, y = value, fill = Var1))+geom_bar(stat = 'identity')+
+        ylab('Fraction signature contribution')+xlab('Sample')+cowplot::theme_cowplot(line_size = 1)+
         theme(legend.position = 'bottom', axis.ticks = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-              legend.title = element_blank())+ylab('Signature contribution')+xlab('Sample')
+              legend.title = element_blank())+xlab("Samples")
+
 
       return(contrib.gg)
 
