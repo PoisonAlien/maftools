@@ -19,10 +19,10 @@
 #' @return ggplot object
 #' @examples
 #' laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
-#' pancanComparision(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
+#' pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
 #' @export
 
-pancanComparision = function(mutsigResults, qval = 0.1, cohortName = 'input', inputSampleSize = NULL, label = 1, normSampleSize = FALSE, file = NULL, width = 6, height = 6, pointSize = 3, labelSize = 3){
+pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inputSampleSize = NULL, label = 1, normSampleSize = FALSE, file = NULL, width = 6, height = 6, pointSize = 3, labelSize = 3){
 
   #Pancan results
   pancan = system.file('extdata', 'pancan.txt.gz', package = 'maftools')
