@@ -11,6 +11,7 @@ SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Changes to MAF object: It now includes clinical data slot similar to PhenoData of expressionset objects.
     o Changes to MAF object: Silent variants will be stored seperately in MAF object and won't be mixed with non-syn variants.
     o Changes to MAF object: Oncomatrix is built on the fly whenever required, its no longer stored in MAF object.
+    o You can specify a manual list of variant classifications to be considered as non-synonymous via argument vc_nonSyn in read.maf
     o Dropped mutExclusive function - Use somaticInteractions instead.
     o Many sorting options and plotting improvements to oncplots.
     o One can include q values from mutsig (or any similar program) as a side barplot in oncoplot

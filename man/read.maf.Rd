@@ -7,7 +7,7 @@
 read.maf(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE,
   useAll = TRUE, gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL,
   gisticDelGenesFile = NULL, gisticScoresFile = NULL, cnLevel = "all",
-  cnTable = NULL, isTCGA = FALSE, verbose = TRUE)
+  cnTable = NULL, isTCGA = FALSE, vc_nonSyn = NULL, verbose = TRUE)
 }
 \arguments{
 \item{maf}{tab delimited MAF file. File can also be gz compressed. Required. Alternatively, you can also provide already read MAF file as a dataframe.}
@@ -31,6 +31,8 @@ read.maf(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE,
 \item{cnTable}{Custom copynumber data if gistic results are not available. Input file or a data.frame should contain three columns with gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL.}
 
 \item{isTCGA}{Is input MAF file from TCGA source. If TRUE uses only first 12 characters from Tumor_Sample_Barcode.}
+
+\item{vc_nonSyn}{NULL. Provide manual list of variant classifications to be considered as non-synonymous. Rest will be considered as silent variants. Default uses Variant Classifications with High/Moderate variant consequences. http://asia.ensembl.org/Help/Glossary?id=535: "Frame_Shift_Del", "Frame_Shift_Ins", "Splice_Site", "Translation_Start_Site","Nonsense_Mutation", "Nonstop_Mutation", "In_Frame_Del","In_Frame_Ins", "Missense_Mutation"}
 
 \item{verbose}{TRUE logical. Default to be talkative and prints summary.}
 }
