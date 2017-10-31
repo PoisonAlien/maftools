@@ -9,6 +9,7 @@
 #' @param mafObj returns output as MAF class \code{\link{MAF-class}}. Default FALSE
 #' @param includeSyn Default TRUE, only applicable when mafObj = FALSE. If mafObj = TRUE, synonymous variants will be stored in a seperate slot of MAF object.
 #' @param isTCGA Is input MAF file from TCGA source.
+#' @param restrictTo restrict subset operations to these. Can be 'all', 'cnv', or 'mutations'. Default 'all'. If 'cnv' or 'mutations', subset operations will only be applied on copy-number or mutation data respectively, while retaining other parts as is.
 #' @return subset table or an object of class \code{\link{MAF-class}}
 #' @seealso \code{\link{getFields}}
 #' @examples
@@ -23,7 +24,17 @@
 #' subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), fields = 'i_TumorVAF_WU')
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE, includeSyn = TRUE, isTCGA = FALSE){
+subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE, includeSyn = TRUE, isTCGA = FALSE, restrictTo = 'all'){
+
+
+  if(length(restrictTo) > 1){
+    stop("restrictTo can only be 'all', 'cnv', or 'mutations'")
+  }
+
+  if(!restrictTo %in% c("all", "cnv", "mutations")){
+    stop("restrictTo can only be 'all', 'cnv', or 'mutations'")
+  }
+
 
   #Synonymous variants
   maf.silent <- maf@maf.silent
@@ -31,6 +42,21 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
   maf.dat <- maf@data
   #Annotations
   maf.anno <- maf@clinical.data
+
+
+  if(restrictTo == "cnv"){
+    maf.silent.rest = maf.silent[!Variant_Type %in% 'CNV']
+    maf.silent = maf.silent[Variant_Type %in% 'CNV']
+
+    maf.dat.rest = maf.dat[!Variant_Type %in% 'CNV']
+    maf.dat = maf.dat[Variant_Type %in% 'CNV']
+  }else if(restrictTo == "mutations"){
+    maf.silent.rest = maf.silent[Variant_Type %in% 'CNV']
+    maf.silent = maf.silent[!Variant_Type %in% 'CNV']
+
+    maf.dat.rest = maf.dat[Variant_Type %in% 'CNV']
+    maf.dat = maf.dat[!Variant_Type %in% 'CNV']
+  }
 
 
   #Select
@@ -65,6 +91,17 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
 
     maf.dat = maf.dat[,default.fields, with = FALSE]
     maf.silent = maf.silent[,default.fields, with = FALSE]
+
+    if(restrictTo != "all"){
+      maf.dat.rest = maf.dat.rest[,default.fields, with = FALSE]
+      maf.silent.rest = maf.silent.rest[,default.fields, with = FALSE]
+    }
+  }
+
+
+  if(restrictTo != "all"){
+    maf.dat = rbind(maf.dat, maf.dat.rest, fill = TRUE, use.names = TRUE)
+    maf.silent = rbind(maf.silent, maf.silent.rest, fill = TRUE, use.names = TRUE)
   }
 
 

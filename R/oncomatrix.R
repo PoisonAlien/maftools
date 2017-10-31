@@ -113,7 +113,7 @@ sortByMutation = function(numMat, maf){
 #original code has been changed with vectorized code, in-addition performs class-wise sorting.
 sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL){
   anno.spl = split(anno, as.factor(as.character(anno[,1]))) #sorting only first annotation
-  anno.spl.sort = sapply(X = anno.spl, function(x){
+  anno.spl.sort = lapply(X = anno.spl, function(x){
     numMat[,colnames(numMat)[colnames(numMat) %in% rownames(x)], drop = FALSE]
   })
 
