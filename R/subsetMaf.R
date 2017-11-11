@@ -98,8 +98,8 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
     }
   }
 
-
-  if(restrictTo != "all"){
+  ## (bug fix) if using "all", then merge maf.dat and maf.dat.rest
+  if(restrictTo == "all"){
     maf.dat = rbind(maf.dat, maf.dat.rest, fill = TRUE, use.names = TRUE)
     maf.silent = rbind(maf.silent, maf.silent.rest, fill = TRUE, use.names = TRUE)
   }
