@@ -29,7 +29,11 @@ plotApobecDiff = function(tnm, maf){
   }
 
   yp = seq(yp[1], yp[2], length.out = 5)
-  yp[1] = yp[1] - 3
+  if(yp[1] <= 3){
+    yp[1] = 0
+  }else{
+    yp[1] = yp[1] - 3
+  }
 
   # #yp = boxplot.stats(x = sub.tbl[,n_mutations])$stats #yaxis points and limits
   # yp = pretty(x = c(1: max(sub.tbl[,n_mutations], na.rm = TRUE)))
@@ -55,9 +59,9 @@ plotApobecDiff = function(tnm, maf){
     mcg = mcr[pval < 0.05, Hugo_Symbol][1:10]
   }
 
-  apobec.mcg.gs = getGeneSummary(x = apobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, AlteredSamples)]
+  apobec.mcg.gs = getGeneSummary(x = apobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, MutatedSamples)]
   colnames(apobec.mcg.gs)[2] = 'Enriched'
-  nonapobec.mcg.gs = getGeneSummary(x = nonapobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, AlteredSamples)]
+  nonapobec.mcg.gs = getGeneSummary(x = nonapobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, MutatedSamples)]
   colnames(nonapobec.mcg.gs)[2] = 'nonEnriched'
 
   mcg.gs = merge(apobec.mcg.gs, nonapobec.mcg.gs, all = TRUE)
@@ -68,6 +72,7 @@ plotApobecDiff = function(tnm, maf){
 
   data.table::setDF(mcg.gs, rownames = mcg.gs$Hugo_Symbol)
   mcg.gs = as.matrix(mcg.gs[,-1])
+  mcg.gs = mcg.gs[mcg,, drop = FALSE]
 
 
   pieDat = sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched]

@@ -26,6 +26,7 @@
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
 #' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
+#' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param fontSize font size for gene names. Default 10.
 #' @param SampleNamefontSize font size for sample names. Default 10
 #' @param titleFontSize font size for title. Default 15
@@ -47,7 +48,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
                      clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE,
-                     GeneOrderSort = TRUE, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10, titleFontSize = 15, legendFontSize = 12) {
+                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10, titleFontSize = 15, legendFontSize = 12) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -175,6 +176,10 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
       stop("Use argument `annotationCol` to provide at-least one of the annotations.")
     }
     numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation, annoOrder = annotationOrder)
+  }
+
+  if(!is.null(sampleOrder)){
+    numMat = numMat[,as.character(sampleOrder), drop = FALSE]
   }
 
   mat = mat_origin[rownames(numMat), , drop = FALSE]
