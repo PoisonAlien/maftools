@@ -33,7 +33,7 @@ genotypeMatrix = function(maf, genes = NULL, tsb = NULL, includeSyn = FALSE, vaf
     }
 
     if(max(mdat[,t_vaf], na.rm = TRUE) > 1){
-      mdat[,t_vaf := t_vaf/100]
+      mdat[,t_vaf := as.numeric(as.character(t_vaf))/100]
     }
 
     vafMin = vafCutoff[1]

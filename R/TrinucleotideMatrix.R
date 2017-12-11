@@ -78,6 +78,8 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
 
   #extract contigs from reference fasta
   seq.lvl = VariantAnnotation::seqlevels(ref)
+  seq.lvl = sapply(X = strsplit(x = seq.lvl, split = " ", fixed = TRUE), "[[", 1) #Split by space and choose first element
+  names(ref) = seq.lvl #Update chromosome names
 
   chrs.missing = chrs[!chrs %in% seq.lvl]
 

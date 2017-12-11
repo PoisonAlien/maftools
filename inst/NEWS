@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.4.05
+-------------------------
+BUG FIXES
+    o Bug fix in trinucleotideMatrix which caused error due to parsing of chromosome names in fasta file. Issue: #75
+    o Bug fix in plotApobecDiff which messed up the order of genes in bottom bar plot. Issue: #80
+
 CHANGES IN VERSION 1.4.00
 -------------------------
 NEW FUNCTIONS

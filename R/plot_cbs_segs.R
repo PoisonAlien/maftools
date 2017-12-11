@@ -117,9 +117,9 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL, s
     #Just plot segments
     for(i in 1:length(tsb)){
       if(!is.null(chr)){
-        p = suppressWarnings(plotCBSchr(segData = seg, tsb = tsb[i], chr = chr, chr.colors = color))
+        p = suppressWarnings(plotCBSchr(segData = seg, tsb = tsb[i], chr = chr))
       }else{
-        p = suppressWarnings(plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color))
+        p = suppressWarnings(plotCBS(segData = seg, tsb = tsb[i], build = ref.build))
       }
 
       if(savePlot){
