@@ -1,4 +1,4 @@
-<img src="https://github.com/PoisonAlien/maftools/blob/devel/vignettes/maftools.png" height="90" width="240" />
+<img src="https://github.com/PoisonAlien/maftools/blob/master/vignettes/maftools.png" height="90" width="240" />
 
 ------------------------------------------------------------------------
 

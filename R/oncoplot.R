@@ -75,9 +75,9 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     }
 
     ms$q = as.numeric(gsub(pattern = "^<", replacement = "", x = as.character(ms$q)))
-    ms[,FDR := -log10(as.numeric(as.character(q)))]
     mach.epsi = .Machine$double.eps
     ms$q = ifelse(test = ms$q == 0, yes = mach.epsi, no = ms$q)
+    ms[,FDR := -log10(as.numeric(as.character(q)))]
     ms.smg = ms[q < mutsigQval]
     genes = as.character(ms[q < mutsigQval, gene])
 

@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.4.06
+-------------------------
+BUG FIXES
+    o Bug fix in Oncoplot which caused plotting error while parsing mutsig results. Issue: #93
+
 CHANGES IN VERSION 1.4.05
 -------------------------
 BUG FIXES
