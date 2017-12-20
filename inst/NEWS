@@ -1,7 +1,8 @@
-CHANGES IN VERSION 1.4.06
+CHANGES IN VERSION 1.4.10
 -------------------------
 BUG FIXES
     o Bug fix in Oncoplot which caused plotting error while parsing mutsig results. Issue: #93
+    o Enhancement to oncoplot. Added arguments annotationFontSize and annotationTitleFontSize to control annotations. Issue: #94
 
 CHANGES IN VERSION 1.4.05
 -------------------------

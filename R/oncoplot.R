@@ -31,6 +31,8 @@
 #' @param SampleNamefontSize font size for sample names. Default 10
 #' @param titleFontSize font size for title. Default 15
 #' @param legendFontSize font size for legend. Default 12
+#' @param annotationFontSize font size for annotations. Default 12
+#' @param annotationTitleFontSize font size for annotation title. Default 12
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file. This can be used as an input
 #' for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to customize the plot.
 #' @return None.
@@ -48,7 +50,8 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
                      clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE,
-                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10, titleFontSize = 15, legendFontSize = 12) {
+                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10,
+                     titleFontSize = 15, legendFontSize = 12, annotationFontSize = 12, annotationTitleFontSize = 12) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -267,9 +270,11 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   #Bottom annotations
   if(!is.null(clinicalFeatures)){
     if(!is.null(annotationColor)){
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor, annotation_legend_param = list(title_gp = gpar(fontsize = annotationTitleFontSize, fontface = "bold"),
+                                                   labels_gp = gpar(fontsize = annotationFontSize)))
     }else{
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation, annotation_legend_param = list(title_gp = gpar(fontsize = annotationTitleFontSize, fontface = "bold"),
+                                                   labels_gp = gpar(fontsize = annotationFontSize)))
     }
   }
 
