@@ -1,6 +1,7 @@
 CHANGES IN VERSION 1.4.10
 -------------------------
 BUG FIXES
+    o Bug fix in read.maf which caused error when MAF contained single sample. Issue: #91
     o Bug fix in Oncoplot which caused plotting error while parsing mutsig results. Issue: #93
     o Enhancement to oncoplot. Added arguments annotationFontSize and annotationTitleFontSize to control annotations. Issue: #94
 
