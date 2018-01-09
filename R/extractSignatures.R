@@ -70,9 +70,9 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     }
 
     if(!is.null(parallel)){
-      conv.mat.nmf = NMF::nmf(x = mat, rank = n, .opt = parallel)
+      conv.mat.nmf = NMF::nmf(x = mat, rank = n, .opt = parallel, seed = 123456)
     }else{
-      conv.mat.nmf = NMF::nmf(x = mat, rank = n)
+      conv.mat.nmf = NMF::nmf(x = mat, rank = n, seed = 123456)
     }
 
     #Signatures

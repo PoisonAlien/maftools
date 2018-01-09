@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.4.15
+-------------------------
+BUG FIXES
+    o Set fixed seed value for extractSignature so that runs are reproducible. Issue: #101
+
 CHANGES IN VERSION 1.4.10
 -------------------------
 BUG FIXES
