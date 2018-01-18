@@ -20,7 +20,7 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
                                 x = gsub(pattern = ';$', replacement = '', x = x)
                                 x = gsub(pattern = '^;', replacement = '', x = x)
                                 return(x)
-                              } , value.var = 'Variant_Classification', fill = '', drop = TRUE)
+                              } , value.var = 'Variant_Classification', fill = '', drop = FALSE)
 
   #convert to matrix
   data.table::setDF(oncomat)
@@ -100,7 +100,7 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
 sortByMutation = function(numMat, maf){
 
   geneOrder = getGeneSummary(x = maf)[order(MutatedSamples, decreasing = TRUE), Hugo_Symbol]
-  numMat = numMat[geneOrder[geneOrder %in% rownames(numMat)],, drop = FALSE]
+  numMat = numMat[as.character(geneOrder[geneOrder %in% rownames(numMat)]),, drop = FALSE]
 
   numMat[numMat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
   tnumMat = t(numMat) #transposematrix

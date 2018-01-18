@@ -122,8 +122,11 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
     return(m)
   }else{
     if(includeSyn){
-      return(rbind(maf.dat, maf.silent, use.names = TRUE, fill = TRUE))
+      maf.dat = rbind(maf.dat, maf.silent, use.names = TRUE, fill = TRUE)
+      maf.dat = droplevels.data.frame(x = maf.dat)
+      return(maf.dat)
     }else{
+      maf.dat = droplevels.data.frame(x = maf.dat)
       return(maf.dat)
     }
   }
