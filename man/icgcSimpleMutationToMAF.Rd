@@ -5,7 +5,8 @@
 \title{Converts ICGC Simple Somatic Mutation format file to MAF}
 \usage{
 icgcSimpleMutationToMAF(icgc, basename = NA, MAFobj = FALSE,
-  removeDuplicatedVariants = TRUE, addHugoSymbol = FALSE)
+  clinicalData = NULL, removeDuplicatedVariants = TRUE,
+  addHugoSymbol = FALSE)
 }
 \arguments{
 \item{icgc}{Input data in ICGC Simple Somatic Mutation format. Can be gz compressed.}
@@ -13,6 +14,8 @@ icgcSimpleMutationToMAF(icgc, basename = NA, MAFobj = FALSE,
 \item{basename}{If given writes to output file with basename.}
 
 \item{MAFobj}{If TRUE returns results as an \code{\link{MAF}} object.}
+
+\item{clinicalData}{Clinical data associated with each sample/Tumor_Sample_Barcode in MAF. Could be a text file or a data.frame. Default NULL.}
 
 \item{removeDuplicatedVariants}{removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
 

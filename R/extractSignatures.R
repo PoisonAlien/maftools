@@ -82,6 +82,7 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
 
     #Contribution
     h = NMF::coef(conv.mat.nmf)
+    colnames(h) = colnames(mat) #correct colnames (seems to be mssing with low mutation load)
     #For single signature, contribution will be 100% per sample
     if(n == 1){
       h = h/h

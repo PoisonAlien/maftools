@@ -9,6 +9,7 @@
 #' @param icgc Input data in ICGC Simple Somatic Mutation format. Can be gz compressed.
 #' @param basename If given writes to output file with basename.
 #' @param MAFobj If TRUE returns results as an \code{\link{MAF}} object.
+#' @param clinicalData Clinical data associated with each sample/Tumor_Sample_Barcode in MAF. Could be a text file or a data.frame. Default NULL.
 #' @param removeDuplicatedVariants removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.
 #' @param addHugoSymbol If TRUE replaces ensemble gene IDs with Hugo_Symbols. Default FALSE.
 #' @return tab delimited MAF file.
@@ -17,7 +18,7 @@
 #' esca.maf <- icgcSimpleMutationToMAF(icgc = esca.icgc)
 #' @export
 
-icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDuplicatedVariants = TRUE, addHugoSymbol = FALSE){
+icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, clinicalData = NULL, removeDuplicatedVariants = TRUE, addHugoSymbol = FALSE){
 
   if(as.logical(length(grep(pattern = 'gz$', x = icgc, fixed = FALSE)))){
 
@@ -144,23 +145,22 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, removeDu
       return(icgc.maf)
     }else{
       #Convert to factors.
-      icgc.maf$Tumor_Sample_Barcode = as.factor(x = as.character(icgc.maf$Hugo_Symbol))
+      icgc.maf$Tumor_Sample_Barcode = as.factor(x = as.character(icgc.maf$Tumor_Sample_Barcode))
       icgc.maf$Variant_Classification = as.factor(x = as.character(icgc.maf$Variant_Classification))
       icgc.maf$Variant_Type = as.factor(x = as.character(icgc.maf$Variant_Type))
 
       message('Summarizing..')
-      maf.summary = summarizeMaf(maf = icgc.maf)
-
-      maf.oncomat = createOncoMatrix(maf = icgc.maf)
 
       silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
                  "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
+
       maf.silent = icgc.maf[Variant_Classification %in% silent]
+      icgc.maf = icgc.maf[!Variant_Classification %in% silent]
+      maf.summary = summarizeMaf(maf = icgc.maf, anno = clinicalData)
 
       icgc.maf = MAF(data = icgc.maf, variants.per.sample = maf.summary$variants.per.sample, variant.type.summary = maf.summary$variant.type.summary,
               variant.classification.summary = maf.summary$variant.classification.summary, gene.summary = maf.summary$gene.summary,
-              oncoMatrix = maf.oncomat$oncomat, numericMatrix = maf.oncomat$nummat, summary = maf.summary$summary,
-              classCode = maf.oncomat$vc, maf.silent = maf.silent)
+              summary = maf.summary$summary, maf.silent = maf.silent, clinical.data = maf.summary$sample.anno)
     }
   }
 

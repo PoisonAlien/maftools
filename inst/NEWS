@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.4.20
+-------------------------
+BUG FIXES
+    o Bug fix in icgcSimpleMutationToMAF while converting ICGC maf to MAF object in. Issue: #105
+
 CHANGES IN VERSION 1.4.15
 -------------------------
 BUG FIXES
