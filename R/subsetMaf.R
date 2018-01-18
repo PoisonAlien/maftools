@@ -61,6 +61,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
 
   #Select
   if(!is.null(tsb)){
+    tsb = as.character(tsb)
     if(isTCGA){
       tsb = substr(x = tsb, start = 1, stop = 12)
     }
@@ -69,6 +70,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
   }
 
   if(!is.null(genes)){
+    genes = as.character(genes)
     maf.dat = maf.dat[Hugo_Symbol %in% genes, ]
     maf.silent = maf.silent[Hugo_Symbol %in% genes, ]
   }

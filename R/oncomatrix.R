@@ -4,9 +4,9 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
     stop("Please provde atleast two genes!")
   }
 
-  maf = subsetMaf(maf = m, genes = g, includeSyn = FALSE)
+  subMaf = subsetMaf(maf = m, genes = g, includeSyn = FALSE)
 
-  oncomat = data.table::dcast(data = maf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
+  oncomat = data.table::dcast(data = subMaf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
                               fun.aggregate = function(x){
                                 x = unique(as.character(x))
                                 xad = x[x %in% c('Amp', 'Del')]
@@ -20,14 +20,14 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
                                 x = gsub(pattern = ';$', replacement = '', x = x)
                                 x = gsub(pattern = '^;', replacement = '', x = x)
                                 return(x)
-                              } , value.var = 'Variant_Classification', fill = '', drop = FALSE)
+                              } , value.var = 'Variant_Classification', fill = '', drop = TRUE)
 
   #convert to matrix
   data.table::setDF(oncomat)
   rownames(oncomat) = oncomat$Hugo_Symbol
   oncomat = as.matrix(oncomat[,-1, drop = FALSE])
 
-  variant.classes = as.character(unique(maf[,Variant_Classification]))
+  variant.classes = as.character(unique(subMaf[,Variant_Classification]))
   variant.classes = c('',variant.classes, 'Multi_Hit')
   names(variant.classes) = 0:(length(variant.classes)-1)
 
