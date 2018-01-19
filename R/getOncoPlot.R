@@ -4,16 +4,26 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
 
   #-----preprocess matrix
   om = createOncoMatrix(m = maf, g = genes)
+  if(is.null(om)){
+    nsamps = as.numeric(maf@summary[ID %in% 'Samples', summary])
+    oncoMatrix = matrix(data = "", nrow = length(genes), ncol = nsamps)
+    numericMatrix = matrix(data = 0, nrow = length(genes), ncol = nsamps)
+    colnames(oncoMatrix) = as.character(getSampleSummary(maf)[,Tumor_Sample_Barcode])
+    rownames(oncoMatrix) = as.character(genes)
+
+    colnames(numericMatrix) = as.character(getSampleSummary(maf)[,Tumor_Sample_Barcode])
+    rownames(numericMatrix) = as.character(genes)
+
+    om = list(numericMatrix = numericMatrix, oncoMatrix =oncoMatrix)
+  }
+
   mat_origin = om$numericMatrix
   numMat = om$numericMatrix
+
 
   if(ncol(mat_origin) < 2){
     stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
   }
-
-  # if(nrow(mat_origin) <2){
-  #   stop('Minimum two genes required !')
-  # }
 
   genes.missing = genes[!genes %in% rownames(mat_origin)]
   genes.present = genes[genes %in% rownames(mat_origin)]

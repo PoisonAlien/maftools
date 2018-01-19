@@ -6,6 +6,10 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
 
   subMaf = subsetMaf(maf = m, genes = g, includeSyn = FALSE)
 
+  if(nrow(subMaf) == 0){
+    return(NULL)
+  }
+
   oncomat = data.table::dcast(data = subMaf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
                               fun.aggregate = function(x){
                                 x = unique(as.character(x))

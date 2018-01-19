@@ -2,7 +2,7 @@ CHANGES IN VERSION 1.4.20
 -------------------------
 BUG FIXES
     o Bug fix in icgcSimpleMutationToMAF while converting ICGC maf to MAF object in. Issue: #105
-    o Bug fix in oncomatrix function which earlier failed drop missing factor. Issue: #96
+    o Bug fix in oncomatrix function which earlier failed drop missing factors as well as resulted in error with zero samples. Issue: #96
 
 CHANGES IN VERSION 1.4.15
 -------------------------
