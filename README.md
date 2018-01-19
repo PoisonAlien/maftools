@@ -9,6 +9,10 @@
 [![bioc](http://www.bioconductor.org/shields/downloads/maftools.svg)](https://bioconductor.org/packages/stats/bioc/maftools/) 
 [![bioc](http://www.bioconductor.org/shields/years-in-bioc/maftools.svg)](http://bioconductor.org/packages/devel/bioc/html/maftools.html)
 [![bioc](http://www.bioconductor.org/shields/build/devel/bioc/maftools.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/maftools/)
+[![GitHub issues](https://img.shields.io/github/issues-raw/poisonalien/maftools.svg)](https://github.com/poisonalien/maftools/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/poisonalien/maftools.svg)](https://github.com/poisonalien/maftools/issues)
+[![Github Stars](https://img.shields.io/github/stars/poisonalien/maftools.svg?style=social&label=Github)](https://github.com/poisonalien/maftools)
+
 
 ## Introduction. 
 With advances in Cancer Genomics, Mutation Annotation Format (MAF) is being widley accepted and used to store variants detected. 
