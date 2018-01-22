@@ -2,7 +2,7 @@
 % Please edit documentation in R/somaticInteractions.R
 \name{somaticInteractions}
 \alias{somaticInteractions}
-\title{Exatc tests to detect mutually exclusive, co-occuring and altered genesets.}
+\title{Exact tests to detect mutually exclusive, co-occuring and altered genesets.}
 \usage{
 somaticInteractions(maf, top = 25, genes = NULL, pvalue = 0.05,
   returnAll = FALSE, findPathways = TRUE, kMax = 3)
