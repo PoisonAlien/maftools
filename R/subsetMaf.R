@@ -115,8 +115,8 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
 
     mafSummary = summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)
 
-    m = MAF(data = maf.dat, variants.per.sample = droplevels(mafSummary$variants.per.sample), variant.type.summary = droplevels(mafSummary$variant.type.summary),
-              variant.classification.summary = droplevels(mafSummary$variant.classification.summary), gene.summary = mafSummary$gene.summary,
+    m = MAF(data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+              variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
               summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = droplevels(mafSummary$sample.anno))
 
     return(m)

@@ -1,4 +1,4 @@
-#' Exatc tests to detect mutually exclusive, co-occuring and altered genesets.
+#' Exact tests to detect mutually exclusive, co-occuring and altered genesets.
 #'
 #' @description Performs Pair-wise Fisher's Exact test to detect mutually exclusive or co-occuring events. Also identifies gene sets mutated significantly.
 #' @details This function and plotting is inspired from genetic interaction analysis performed in the published study combining gene expression and mutation data in MDS. See reference for details.

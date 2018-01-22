@@ -4,6 +4,9 @@ BUG FIXES
     o Bug fix in icgcSimpleMutationToMAF while converting ICGC maf to MAF object in. Issue: #105
     o Bug fix in oncomatrix function which earlier failed drop missing factors as well as resulted in error with zero samples. Issue: #96
 
+IMPROVEMENTS
+    o Add keepGeneOrder argument to coOncoplot. PR: #107
+
 CHANGES IN VERSION 1.4.15
 -------------------------
 BUG FIXES
