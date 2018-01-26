@@ -1,5 +1,3 @@
-
-
 getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE,
                        left = FALSE,
                        showTumorSampleBarcodes = FALSE, hmName = hmName, fs = 10, gfs = 10, tfs = 12,
@@ -7,6 +5,8 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
                        includeSyn=FALSE){
 
   #-----preprocess matrix
+
+  tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
 
    om = createOncoMatrix(m = maf, g = genes)
   if(is.null(om)){
@@ -118,6 +118,14 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   #New version of complexheatmap complains about '' , replacing them with random strinf xxx
 
   mat[mat == ''] = 'xxx'
+
+  #By default oncomatrix excludes non-mutated samples. Add rest here if user requests
+  if(!removeNonMutated){
+    tsb.include = matrix(data = '', nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(mat)]))
+    colnames(tsb.include) =tsbs[!tsbs %in% colnames(mat)]
+    rownames(tsb.include) = rownames(mat)
+    mat = cbind(mat, tsb.include)
+  }
 
   #---------------------------------------Colors and vcs-------------------------------------------------
 

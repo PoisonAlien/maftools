@@ -33,6 +33,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
 
 
   totSamps = as.numeric(maf@summary[3,summary])
+  tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
 
   #if user doesnt provide a gene vector, use top 5.
   if(is.null(genes)){
@@ -65,7 +66,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
       stop('Provide at least 2 genes.')
     }
 
-    mat = mat_origin[genes,, drop = FALSE]
+    mat = mat_origin[as.character(genes),, drop = FALSE]
   }
 
 
@@ -77,12 +78,12 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
     stop('Minimum two genes required !')
   }
 
-  #remove nonmutated samples to improve visualization
-  if(removeNonMutated){
-    tsb = colnames(mat)
-    tsb.exclude = colnames(mat[,colSums(mat) == 0])
-    tsb.include = tsb[!tsb %in% tsb.exclude]
-    mat = mat[,tsb.include]
+  #By default oncomatrix excludes non-mutated samples. Add rest here if user requests
+  if(!removeNonMutated){
+    tsb.include = matrix(data = 0, nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(mat)]))
+    colnames(tsb.include) =tsbs[!tsbs %in% colnames(mat)]
+    rownames(tsb.include) = rownames(mat)
+    mat = cbind(mat, tsb.include)
   }
 
   #Annotations
@@ -127,12 +128,29 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
   }
 
   mat_origin = om$oncoMatrix
+
+  #Do the same thing for character matrix
+  if(!removeNonMutated){
+    tsb.include = matrix(data = '', nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(mat_origin)]))
+    colnames(tsb.include) =tsbs[!tsbs %in% colnames(mat_origin)]
+    rownames(tsb.include) = rownames(mat_origin)
+    mat_origin = cbind(mat_origin, tsb.include)
+  }
+
   mat_origin = mat_origin[rownames(mat),]
   mat_origin = mat_origin[,colnames(mat)]
   mat = mat_origin
 
   #New version of complexheatmap complains about '' , replacing them with random strinf xxx
   mat[mat == ''] = 'xxx'
+
+  #By default oncomatrix excludes non-mutated samples. Add rest here if user requests
+  if(!removeNonMutated){
+    tsb.include = matrix(data = 'xxx', nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(mat)]))
+    colnames(tsb.include) =tsbs[!tsbs %in% colnames(mat)]
+    rownames(tsb.include) = rownames(mat)
+    mat = cbind(mat, tsb.include)
+  }
 
   if(removeNonMutated){
     #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))

@@ -124,6 +124,8 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   }
 
   totSamps = as.numeric(maf@summary[3,summary])
+  tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
+
   #-----------------------
 
   #Annotations
@@ -170,6 +172,14 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     }
   }
 
+  #By default oncomatrix excludes non-mutated samples. Add rest here if user requests
+  if(!removeNonMutated){
+    tsb.include = matrix(data = '', nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(numMat)]))
+    colnames(tsb.include) =tsbs[!tsbs %in% colnames(numMat)]
+    rownames(tsb.include) = rownames(numMat)
+    numMat = cbind(numMat, tsb.include)
+  }
+
   if(sortByMutation){
     numMat = sortByMutation(numMat = numMat, maf = maf)
   }
@@ -185,18 +195,16 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     numMat = numMat[,as.character(sampleOrder), drop = FALSE]
   }
 
+  #Do the same thing for character matrix
+  if(!removeNonMutated){
+    tsb.include = matrix(data = '', nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(mat_origin)]))
+    colnames(tsb.include) = tsbs[!tsbs %in% colnames(mat_origin)]
+    rownames(tsb.include) = rownames(mat_origin)
+    mat_origin = cbind(mat_origin, tsb.include)
+  }
+
   mat = mat_origin[rownames(numMat), , drop = FALSE]
   mat = mat[,colnames(numMat), drop = FALSE]
-
-  #To remove samples with no mutations in top n genes, if user says removeNonMutated
-  if(removeNonMutated){
-    numMat = numMat[rownames(mat), , drop = FALSE]
-    numMat = numMat[,colnames(mat), drop = FALSE]
-    tsb = colnames(numMat)
-    tsb.exclude = colnames(numMat[,colSums(numMat) == 0, drop = FALSE])
-    tsb.include = tsb[!tsb %in% tsb.exclude]
-    mat = mat[,tsb.include, drop = FALSE]
-  }
 
   #If user wannts to keep given gene order
   if(keepGeneOrder){
