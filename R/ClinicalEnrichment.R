@@ -11,6 +11,7 @@
 #' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
 #' laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 #' clinicalEnrichment(laml, FAB_classification)
+#' @export
 
 
 
