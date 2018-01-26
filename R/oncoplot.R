@@ -174,7 +174,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   #By default oncomatrix excludes non-mutated samples. Add rest here if user requests
   if(!removeNonMutated){
-    tsb.include = matrix(data = '', nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(numMat)]))
+    tsb.include = matrix(data = 0, nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(numMat)]))
     colnames(tsb.include) =tsbs[!tsbs %in% colnames(numMat)]
     rownames(tsb.include) = rownames(numMat)
     numMat = cbind(numMat, tsb.include)
@@ -307,8 +307,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   anno_pct = function(index) {
     n = length(index)
-    pct = apply(numMat[rev(index),], 1, function(x) length(x[x != 0]))/as.numeric(maf@summary[3, summary]) * 100
-    #pct = apply(mat[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
+    pct = apply(numMat[rev(index),], 1, function(x) length(x[x != 0]))/totSamps * 100
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
