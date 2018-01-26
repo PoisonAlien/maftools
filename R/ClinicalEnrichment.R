@@ -10,7 +10,7 @@
 #' laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 #' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
 #' laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
-#' clinicalEnrichment(laml, FAB_classification)
+#' clinicalEnrichment(laml, 'FAB_classification')
 #' @export
 
 
@@ -65,7 +65,7 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, minMut = 5, useCNV = 
           #Perform groupwise comparision for given gene
           ft = lapply(X = names(cf.tbl), FUN = function(y){
             cd$Group = ifelse(test = cd$cf %in% y, yes = y, no = "Other")
-            ft = fisher.test(x = with(cd, table(Genotype, Group)))
+            ft = fisher.test(x = with(cd, table(Genotype, Group)), alternative = 'g')
             ft.tbl = data.table::data.table(Group1 = y, Group2 = "Rest",
                                             n_mutated_group1 = paste0(nrow(cd[Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[Group %in% y])),
                                             n_mutated_group2 = paste0(nrow(cd[!Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[!Group %in% y])),

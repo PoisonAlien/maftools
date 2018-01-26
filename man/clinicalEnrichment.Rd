@@ -28,5 +28,5 @@ Performs paiwise and groupwise fisher exact tests to find differentially enriche
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
 laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
-clinicalEnrichment(laml, FAB_classification)
+clinicalEnrichment(laml, 'FAB_classification')
 }
