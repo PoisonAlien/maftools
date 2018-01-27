@@ -33,12 +33,12 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
    }
 
   if(useCNV){
-    m1.genes = m1.gs[AlteredSamples >= minMut,Hugo_Symbol]
-    m2.genes = m2.gs[AlteredSamples >= minMut,Hugo_Symbol]
+    m1.genes = as.character(m1.gs[AlteredSamples >= minMut,Hugo_Symbol])
+    m2.genes = as.character(m2.gs[AlteredSamples >= minMut,Hugo_Symbol])
     uniqueGenes = unique(c(m1.genes, m2.genes))
   }else{
-    m1.genes = m1.gs[MutatedSamples >= minMut, Hugo_Symbol]
-    m2.genes = m2.gs[MutatedSamples >= minMut, Hugo_Symbol]
+    m1.genes = as.character(m1.gs[MutatedSamples >= minMut, Hugo_Symbol])
+    m2.genes = as.character(m2.gs[MutatedSamples >= minMut, Hugo_Symbol])
     uniqueGenes = unique(c(m1.genes, m2.genes))
   }
 

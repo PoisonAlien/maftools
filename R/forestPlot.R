@@ -58,7 +58,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color
     if(show == 'pval'){
       m.sigs$label = paste('pval: ',round(m.sigs$pval, digits = 5), sep = '')
     }else if(show == 'stat'){
-      m.sigs$label = apply(m.sigs[,11:12, with =FALSE], 1, paste, collapse = ' ; ')
+      m.sigs$label = apply(m.sigs[,.(statLeft, statRight)], 1, paste, collapse = ' ; ')
     }else{
       stop('show can only be pval or stat!')
     }
@@ -79,7 +79,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color
   }
 
   if(!is.null(show)){
-    gg.fp = gg.fp+ggrepel::geom_label_repel(nudge_x = 0.2, force = 10, show.legend = FALSE, label.size = 0.2)
+    gg.fp = gg.fp+ggrepel::geom_label_repel(size = 2.5, nudge_x = 0.2, force = 10, show.legend = FALSE, label.size = 0.2)
   }
 
   title = paste(m2Name, ' (n = ', m2.sampleSize, ')', ' v/s ' , m1Name, ' (n = ' ,m1.sampleSize, ')', sep='')
