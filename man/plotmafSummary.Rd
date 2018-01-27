@@ -5,7 +5,7 @@
 \title{Plots maf summary.}
 \usage{
 plotmafSummary(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE,
-  titvRaw = TRUE, width = 6, height = 5, addStat = NULL,
+  titvRaw = TRUE, width = 10, height = 7, addStat = NULL,
   showBarcodes = FALSE, fs = 10, textSize = 2, color = NULL,
   statFontSize = 3, titvColor = NULL, top = 10)
 }

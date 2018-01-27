@@ -27,18 +27,30 @@
 #' @export
 
 plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE,
-                          width = 6, height = 5, addStat = NULL, showBarcodes = FALSE, fs = 10,
+                          width = 10, height = 7, addStat = NULL, showBarcodes = FALSE, fs = 10,
                           textSize = 2, color = NULL, statFontSize = 3, titvColor = NULL, top = 10){
+
+
+  addStat.opts = c('mean', 'median')
+  if(!is.null(addStat)){
+    if(length(addStat) > 1){
+      stop('addStat can only be either mean or median.')
+    }
+
+    if(! addStat %in% addStat.opts){
+      stop('addStat can only be either mean or median.')
+    }
+  }
 
 
   if(dashboard){
     #Plot in dashboard style
     pie = FALSE
-    gg.summary= dashboard(maf = maf, color = color, rmOutlier = TRUE, titv.color = titvColor, fontSize = fs, sfs = statFontSize, n = top, donut = pie, rawcount = titvRaw)
+    gg.summary= dashboard(maf = maf, color = color, rmOutlier = TRUE,
+                          titv.color = titvColor, fontSize = fs, sfs = statFontSize,
+                          n = top, donut = pie, rawcount = titvRaw, stat = addStat)
 
   }else{
-
-    addStat.opts = c('mean', 'median')
 
     if(is.null(color)){
       #hard coded color scheme if user doesnt provide any
@@ -68,13 +80,6 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, 
     #top ggplot
 
     if(!is.null(addStat)){
-      if(length(addStat) > 1){
-        stop('addStat can only be either mean or median.')
-      }
-
-      if(! addStat %in% addStat.opts){
-        stop('addStat can only be either mean or median.')
-      }
 
       if(addStat == 'mean'){
         mean.line = round(max(maf@summary[,Mean], na.rm = TRUE), 2)

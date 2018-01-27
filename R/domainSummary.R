@@ -37,13 +37,14 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
     stop('varClas can only be either nonSyn, Syn or all')
   }
 
-  mut = maf@data
   gs = getGeneSummary(maf)
 
   if(varClass == 'Syn'){
     mut = maf@maf.silent
   }else if(varClass == 'all'){
-    mut = rbind(mut, maf@maf.silent, fill = TRUE)
+    mut = subsetMaf(maf = maf, fields = AACol, includeSyn = TRUE)
+  }else{
+    mut = subsetMaf(maf = maf, fields = AACol, includeSyn = FALSE)
   }
 
   mut = mut[!Variant_Type %in% 'CNV']
@@ -159,8 +160,8 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   domainSum = domainSum[order(nMuts, decreasing = TRUE)]
 
   #print(prot.sum)
-  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point()+cowplot::theme_cowplot(line_size = 1)+
-    ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = 3, fontface = 'bold', force = 20)+
+  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point(color = 'gray70', alpha = 0.4)+cowplot::theme_cowplot(line_size = 1, font_size = 14)+
+    geom_point(data = domainSum[1:top], color = 'red', alpha = 0.9)+ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = 3, fontface = 'bold', force = 20)+
     theme(legend.position = 'none')+cowplot::background_grid(major = 'xy')
 
   print(p)

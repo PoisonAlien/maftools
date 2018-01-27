@@ -6,6 +6,7 @@ BUG FIXES
 
 IMPROVEMENTS
     o Add keepGeneOrder argument to coOncoplot. PR: #107
+    o Changed order of plots in plotmafSummary for better visualization
 
 CHANGES IN VERSION 1.4.15
 -------------------------
