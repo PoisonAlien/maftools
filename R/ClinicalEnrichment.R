@@ -65,7 +65,7 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, minMut = 5, useCNV = 
           #Perform groupwise comparision for given gene
           ft = lapply(X = names(cf.tbl), FUN = function(y){
             cd$Group = ifelse(test = cd$cf %in% y, yes = y, no = "Other")
-            ft = fisher.test(x = with(cd, table(Genotype, Group)), alternative = 'g')
+            ft = fisher.test(x = with(cd, table(Genotype, Group)))
             ft.tbl = data.table::data.table(Group1 = y, Group2 = "Rest",
                                             n_mutated_group1 = paste0(nrow(cd[Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[Group %in% y])),
                                             n_mutated_group2 = paste0(nrow(cd[!Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[!Group %in% y])),
