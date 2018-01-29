@@ -1,12 +1,12 @@
-dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie, rawcount = TRUE, stat = NULL){
+dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie, rawcount = TRUE, stat = NULL, titleSize = NULL){
 
   #--------------------------- Color code VC and gg theme -----------------
 
   db_theme = cowplot::theme_cowplot(font_size = fontSize, line_size = 0.75)+cowplot::background_grid(major = 'xy', minor = 'none')+
     theme(axis.text.x = element_text(face = 'bold', angle = 90, hjust = 1), axis.title.x = element_blank(), axis.text.y = element_text(face = 'bold'), axis.title.y = element_blank())+
     theme(legend.position = 'none')+
-    theme(plot.title = element_text(color="black", face="bold", size = 9, hjust=0))+
-    theme(plot.subtitle = element_text(color="#252525", face="bold", size = 8, hjust=0))
+    theme(plot.title = element_text(color="black", face="bold", size = titleSize[1], hjust=0))+
+    theme(plot.subtitle = element_text(color="#252525", face="bold", size = titleSize[2], hjust=0))
 
 
 

@@ -3,10 +3,12 @@ CHANGES IN VERSION 1.4.20
 BUG FIXES
     o Bug fix in icgcSimpleMutationToMAF while converting ICGC maf to MAF object in. Issue: #105
     o Bug fix in oncomatrix function which earlier failed drop missing factors as well as resulted in error with zero samples. Issue: #96
+    o Bug fix in mafCompare and forestPlot
 
 IMPROVEMENTS
     o Add keepGeneOrder argument to coOncoplot. PR: #107
     o Changed order of plots in plotmafSummary for better visualization
+    o Improved axis thickness and other plotting paramters for better pub-ready visualization
 
 CHANGES IN VERSION 1.4.15
 -------------------------

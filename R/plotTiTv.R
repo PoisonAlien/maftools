@@ -9,6 +9,8 @@
 #' @param color named vector of colors for each coversion class.
 #' @param showBarcodes Whether to include sample names for barplot
 #' @param textSize fontsize if showBarcodes is TRUE. Deafult 2.
+#' @param baseFontSize font size. Deafult 12.
+#' @param axisTextSize text size x and y tick labels. Default c(9,9).
 #' @return None.
 #' @seealso \code{\link{titv}}
 #' @examples
@@ -20,7 +22,8 @@
 #' @export
 
 
-plotTiTv = function(res = NULL, plotType = 'both', file = NULL, width = 6, height = 5, color = NULL, showBarcodes = FALSE, textSize = 2){
+plotTiTv = function(res = NULL, plotType = 'both', file = NULL, width = 6, height = 5,
+                    color = NULL, showBarcodes = FALSE, textSize = 2, baseFontSize = 12, axisTextSize = c(9, 9)){
 
   if(is.null(color)){
     #col = RColorBrewer::brewer.pal(n = 6, name = 'Set2')
@@ -46,16 +49,25 @@ plotTiTv = function(res = NULL, plotType = 'both', file = NULL, width = 6, heigh
   titv.frac.melt$variable = factor(x = titv.frac.melt$variable,
                                    levels = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G"))
 
-  p1 = ggplot(data = titv.frac.melt, aes(x = variable, y = value, color = variable)) +
-    geom_boxplot(outlier.alpha = 0.6, outlier.size = 1) + ylim(0, 100) + cowplot::theme_cowplot(font_size = 12) +
-    xlab("") + theme(axis.line = element_line(colour = "black"), legend.position = 'none') +
-    ylab("% Mutations")+scale_colour_manual(values = col)+cowplot::background_grid(major = 'xy', minor = 'none')
+  titv_theme = cowplot::theme_cowplot(font_size = baseFontSize, line_size = 1)+cowplot::background_grid(major = 'xy', minor = 'none')+
+    theme(axis.title.x = element_blank(), axis.text.x = element_text(face = "bold", size = axisTextSize[1]),
+          axis.title.y = element_text(face = "bold"), axis.text.y = element_text(face = "bold", size = axisTextSize[2]),
+          legend.title = element_blank(), legend.text = element_text(face = "bold"))
+
+
+  p1 = ggplot(data = titv.frac.melt, aes(x = variable, y = value, fill = variable, color = variable)) +
+    geom_boxplot(outlier.alpha = 0.6, outlier.size = 1, outlier.color = 'gray70') + ylim(0, 100)+
+    ylab("% Mutations")+scale_fill_manual(values = col)+scale_color_manual(values = col)+
+    titv_theme+theme(legend.position = 'none')+
+    stat_summary(geom = "crossbar", width=0.65, fatten=0, color="black", fun.data = function(x){ return(c(y=median(x), ymin=median(x), ymax=median(x))) })
     #scale_color_manual(values = c('Ti' = 'maroon', 'Tv' = 'royalblue'))+cowplot::background_grid(major = 'xy', minor = 'none')
 
-  p2 = ggplot(data = titv.contrib, aes(x = variable, y = value, color = variable)) +
-    geom_boxplot(outlier.alpha = 0.6, outlier.size = 1) + ylim(0, 100) + cowplot::theme_cowplot(font_size = 12) +
-    xlab('')+theme(axis.line = element_line(colour = "black"), legend.title = element_blank(), axis.title.y = element_blank(), legend.position = 'none') +
-    scale_color_manual(values = c('Ti' = 'burlywood4', 'Tv' = 'burlywood4'))+cowplot::background_grid(major = 'xy', minor = 'none')
+  p2 = ggplot(data = titv.contrib, aes(x = variable, y = value, fill = variable, color = variable))+
+    geom_boxplot(outlier.alpha = 0.6, outlier.size = 1, fatten = NULL)+ylim(0, 100)+titv_theme+
+    theme(legend.position = 'none', axis.title.y = element_blank())+
+    scale_fill_manual(values = c('Ti' = '#969696', 'Tv' = '#737373'))+
+    scale_color_manual(values = c('Ti' = '#969696', 'Tv' = '#737373'))+
+    stat_summary(geom = "crossbar", width=0.65, fatten=0, color="black", fun.data = function(x){ return(c(y=median(x), ymin=median(x), ymax=median(x))) })
 
   top = suppressWarnings(cowplot::plot_grid(p1, p2, rel_widths = c(2,1)))
 
@@ -64,8 +76,8 @@ plotTiTv = function(res = NULL, plotType = 'both', file = NULL, width = 6, heigh
   orderlvl = as.character(titv.order$variable)
   titv.frac.melt$variable = factor(x = titv.frac.melt$variable, levels = orderlvl)
 
-  p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value))+geom_bar(aes(fill =variable) ,stat = 'identity', alpha = 0.8)+ cowplot::theme_cowplot(font_size = 12) +
-    theme(legend.position = 'bottom', legend.title = element_blank(),  axis.ticks.x = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = textSize),
+  p3 = ggplot(data = titv.frac.melt, aes(x = Tumor_Sample_Barcode, y = value))+geom_bar(aes(fill =variable) ,stat = 'identity', alpha = 0.8)+
+    titv_theme+theme(legend.position = 'bottom', axis.ticks.x = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = textSize),
           axis.line.y = element_blank(), axis.line.x = element_blank())+
             ylab('% Mutations')+xlab('Samples')+scale_fill_manual(values = col)
 

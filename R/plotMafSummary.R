@@ -13,6 +13,7 @@
 #' @param color named vector of colors for each Variant_Classification.
 #' @param textSize font size if showBarcodes is TRUE. Default 2.
 #' @param statFontSize font size if addStat is used. Default 3.
+#' @param titleSize font size for title and subtitle. Default c(10, 8)
 #' @param fs base size for text. Default 10.
 #' @param top include top n genes dashboard plot. Default 10.
 #' @param titvColor colors for SNV classifications.
@@ -28,7 +29,7 @@
 
 plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE,
                           width = 10, height = 7, addStat = NULL, showBarcodes = FALSE, fs = 10,
-                          textSize = 2, color = NULL, statFontSize = 3, titvColor = NULL, top = 10){
+                          textSize = 2, color = NULL, statFontSize = 3, titleSize = c(10, 8), titvColor = NULL, top = 10){
 
 
   addStat.opts = c('mean', 'median')
@@ -47,7 +48,7 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, 
     #Plot in dashboard style
     pie = FALSE
     gg.summary= dashboard(maf = maf, color = color, rmOutlier = TRUE,
-                          titv.color = titvColor, fontSize = fs, sfs = statFontSize,
+                          titv.color = titvColor, fontSize = fs, titleSize = titleSize, sfs = statFontSize,
                           n = top, donut = pie, rawcount = titvRaw, stat = addStat)
 
   }else{
@@ -133,7 +134,9 @@ plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, 
 
   #print to file if specified.
   if(!is.null(file)){
-    cowplot::save_plot(filename = paste(file, 'pdf', sep = '.'), plot = gg.summary, base_width = width, base_height = height, base_aspect_ratio = 1.5)
+    cowplot::save_plot(filename = paste(file, 'pdf', sep = '.'),
+                       plot = gg.summary, base_width = width, base_height = height,
+                       base_aspect_ratio = 1.5, bg = "white", paper = "special")
   }
 
   print(gg.summary)
