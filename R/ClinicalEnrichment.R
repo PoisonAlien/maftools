@@ -1,10 +1,11 @@
-#' Perform mutational enrichment analysis for a given clinical feature (MAF).
+#' Performs mutational enrichment analysis for a given clinical feature (MAF).
 #' @details Performs paiwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
 #'
 #' @param maf \code{\link{MAF}} object
 #' @param clinicalFeature columns names from `clinical.data` slot of \code{MAF} to be analysed for.
 #' @param minMut Consider only genes with minimum this number of samples mutated. Default 5.
 #' @param useCNV whether to include copy number events. Only applicable when MAF is read along with copy number data. Default TRUE if available.
+#' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} or a tsv file with a column containing Tumor_Sample_Barcodes along with clinical features. Default NULL.
 #' @return result list containing p-values
 #' @examples
 #' laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
@@ -13,15 +14,25 @@
 #' clinicalEnrichment(laml, 'FAB_classification')
 #' @export
 
-
-
-clinicalEnrichment = function(maf, clinicalFeature = NULL, minMut = 5, useCNV = TRUE){
+clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL, minMut = 5, useCNV = TRUE){
 
   if(is.null(clinicalFeature)){
     stop("Missing clinicalFeature. Use getClinicalData() to see available features.")
   }
 
-  cd = getClinicalData(x = maf)[,c("Tumor_Sample_Barcode", clinicalFeature), with = FALSE]
+  if(is.null(annotationDat)){
+    cd = getClinicalData(x = maf)[,c("Tumor_Sample_Barcode", clinicalFeature), with = FALSE]
+  }else{
+    if(is.data.frame(annotationDat)){
+      cd = data.table::as.data.table(annotationDat)
+      cd = cd[,c("Tumor_Sample_Barcode", clinicalFeature), with = FALSE]
+    }else if(file.exists(annotationDat)){
+      cd = data.table::fread(input = annotationDat)
+      cd = cd[,c("Tumor_Sample_Barcode", clinicalFeature), with = FALSE]
+    }
+  }
+
+
   colnames(cd)[2] = 'cf'
   cf.tbl = table(cd$cf)
   message(paste0("Sample size per factor in ", clinicalFeature, ":"))
@@ -65,7 +76,9 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, minMut = 5, useCNV = 
           #Perform groupwise comparision for given gene
           ft = lapply(X = names(cf.tbl), FUN = function(y){
             cd$Group = ifelse(test = cd$cf %in% y, yes = y, no = "Other")
-            ft = fisher.test(x = with(cd, table(Genotype, Group)))
+            cd.tbl = with(cd, table(Genotype, Group))
+            cd.tbl = cd.tbl[c("WT", "Mutant") ,c(y, "Other")]
+            ft = fisher.test(cd.tbl, alternative = 'l')
             ft.tbl = data.table::data.table(Group1 = y, Group2 = "Rest",
                                             n_mutated_group1 = paste0(nrow(cd[Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[Group %in% y])),
                                             n_mutated_group2 = paste0(nrow(cd[!Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[!Group %in% y])),

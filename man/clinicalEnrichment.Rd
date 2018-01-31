@@ -4,12 +4,15 @@
 \alias{clinicalEnrichment}
 \title{Perform mutational enrichment analysis for a given clinical feature (MAF).}
 \usage{
-clinicalEnrichment(maf, clinicalFeature = NULL, minMut = 5, useCNV = TRUE)
+clinicalEnrichment(maf, clinicalFeature = NULL, annotationDat = NULL,
+  minMut = 5, useCNV = TRUE)
 }
 \arguments{
 \item{maf}{\code{\link{MAF}} object}
 
 \item{clinicalFeature}{columns names from `clinical.data` slot of \code{MAF} to be analysed for.}
+
+\item{annotationDat}{If MAF file was read without clinical data, provide a custom \code{data.frame} or a tsv file with a column containing Tumor_Sample_Barcodes along with clinical features. Default NULL.}
 
 \item{minMut}{Consider only genes with minimum this number of samples mutated. Default 5.}
 
