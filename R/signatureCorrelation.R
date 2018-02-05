@@ -1,6 +1,6 @@
-#' Performs sample stratification based on signature contribution and performs enrichment.
+#' Performs sample stratification based on signature contribution and enrichment analysis.
 #'
-#' @details Performs k-means clustering to assign signature to samples and performs enrichment analysis.
+#' @description Performs k-means clustering to assign signature to samples and performs enrichment analysis.
 #'
 #' @param maf an \code{\link{MAF}} object used for signature analysis.
 #' @param sig_res Signature results from \code{\link{extractSignatures}}
@@ -9,6 +9,7 @@
 #' @param fn basename for output file. Default NULL.
 #' @return result list containing p-values
 #' @export
+#' @seealso \code{\link{plotEnrichmentResults}}
 
 signatureEnrichment = function(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NULL){
 

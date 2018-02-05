@@ -2,7 +2,7 @@
 % Please edit documentation in R/ClinicalEnrichment.R
 \name{clinicalEnrichment}
 \alias{clinicalEnrichment}
-\title{Perform mutational enrichment analysis for a given clinical feature (MAF).}
+\title{Performs mutational enrichment analysis for a given clinical feature.}
 \usage{
 clinicalEnrichment(maf, clinicalFeature = NULL, annotationDat = NULL,
   minMut = 5, useCNV = TRUE)
@@ -22,9 +22,6 @@ clinicalEnrichment(maf, clinicalFeature = NULL, annotationDat = NULL,
 result list containing p-values
 }
 \description{
-Perform mutational enrichment analysis for a given clinical feature (MAF).
-}
-\details{
 Performs paiwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
 }
 \examples{
@@ -32,4 +29,7 @@ laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
 laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 clinicalEnrichment(laml, 'FAB_classification')
+}
+\seealso{
+\code{\link{plotEnrichmentResults}}
 }

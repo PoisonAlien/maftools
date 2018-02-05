@@ -283,7 +283,7 @@ Many disease causing genes in cancer are co-occurring or show strong exclusivene
 
 ```{r, message=FALSE}
 #We will run mutExclusive on top 10 mutated genes. 
-somaticInteractions(maf = laml, top = 25, pvalue = 0.1)
+somaticInteractions(maf = laml, top = 25, pvalue = c(0.05, 0.1))
 ```
 
 We can visualize the above results using `oncostrip`. For example, in above analysis, gene set TP53, FLT3 and RUNX1 show a strong exclusiveness with each other a p-value of 4.8e-5. 
@@ -374,6 +374,21 @@ genes = c("PML", "RARA", "RUNX1", "ARID1B", "FLT3")
 coOncoplot(m1 = primary.apl, m2 = relapse.apl, m1Name = 'PrimaryAPL', m2Name = 'RelapseAPL', genes = genes, removeNonMutated = TRUE)
 ```
 
+##Clinical enrichment analysis
+`clinicalEnrichment` is another function which takes any clinical feature associated with the samples and performs enrichment analysis. It performs various groupwise and pairwise comparisions to see enriched mutations for every factor within a clincila feature. For example, below are the results using FAB_classification as a clincial feature.
+
+```{r}
+fab.ce = clinicalEnrichment(maf = laml, clinicalFeature = 'FAB_classification')
+
+#Using p-value < 0.05
+fab.ce$groupwise_comparision[p_value < 0.05]
+```
+
+Above results shows IDH1 mutations are enriched in M1 subtype of leukemia compared to rest of the cohort. Similarly DNMT3A is in M5, RUNX1 is in M0, and so on. These are well known results and this function effectively recaptures them. One can use any sort of clincial feature to perform such an analysis. There is also a small function - `plotEnrichmentResults` which can be used to plot these results.
+
+```{r, fig.width=8, fig.height=4}
+plotEnrichmentResults(enrich_res = fab.ce, pVal = 0.05)
+```
 
 ##Tumor heterogeneity and MATH scores
 ###Heterogeneity in tumor samples
@@ -432,7 +447,9 @@ Above function performs two steps:
 ###APOBEC Enrichment estimation.
 APOBEC induced mutations are more frequent in solid tumors and are mainly associated with C>T transition events occurring in TCW motif. APOBEC enrichment scores in the above command are estimated using the method described by Roberts et al [12](#references). Briefly, enrichment of C>T mutations occurring within TCW motif over all of the C>T mutations in a given sample is compared to background Cytosines and TCWs occurring within 20bp of mutated bases. 
 
+
 $$\frac{n_{tCw} * background_C}{n_C * background_{TCW}}$$
+
                                               
                                               
 One-sided fishers exact test is also performed to statistically evaluate the enrichment score, as described in original study by Roberts et al.
@@ -560,7 +577,7 @@ We can also analyze the differences in mutational patterns between APOBEC enrich
 
 Note that, LAML with no APOBEC enrichments, is not an ideal cohort for this sort of analysis and hence below plot is only for demonstration purpose.
 
-```{r, eval=TRUE}
+```{r, eval=TRUE, fig.height=4, fig.width=7}
 plotApobecDiff(tnm = laml.tnm, maf = laml)
 ```
 
@@ -784,8 +801,8 @@ laml.sign = structure(list(signatures = structure(c(1.08748973712201e-18,
 "coSineSimMat", "nmfObj", "contributions"))
 ```
 
-```{r, fig.width=8, fig.height=5, fig.align='center', eval = T}
-plotSignatures(laml.sign)
+```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
+plotSignatures(laml.sign, title_size = 1)
 ```
 
 
@@ -802,25 +819,32 @@ pheatmap::pheatmap(mat = laml.sign$coSineSimMat, cluster_rows = FALSE, main = "c
 
 NOTE: Should you receive an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the "NMF" library and re-run.
 
-###Plotting Signature contributions and sample stratification
+###Plotting Signature contributions
 `plotSignatures` also plots signature contribution as a barplot. 
 
-```{r, fig.width=7, fig.height=4, fig.align='center'}
-plotSignatures(nmfRes = laml.sign, contributions = TRUE)
+```{r, fig.width=5, fig.height=4, fig.align='center'}
+plotSignatures(nmfRes = laml.sign, contributions = TRUE, title_size = 1)
 ```
 
-Alternatively, you can perform PCA to stratify samples based on signature contribution. 
-Once again note that, AML is not an ideal cohort for signature analysis, and this should be interpreted carefully.
 
-```{r, fig.width=7, fig.height=4, fig.align='center'}
-nsig = ncol(laml.sign$signatures) #number of signatures identified
-contrib = t(laml.sign$contributions) #contribution of signatures in every sample
+###Signature enrichment analysis
+Signatures can further be assigned to samples and enrichment analysis can be performd using `signatureEnrichment` funtion, which identifies mutations enriched in every signature identified. 
 
-require('ggfortify')
+```{r, echo=FALSE}
+colnames(laml.sign$contributions) = as.character(getSampleSummary(x = laml)[,Tumor_Sample_Barcode])[1:187]
+```
 
-contrib.gg = autoplot(kmeans(contrib, nsig), data = contrib, frame = TRUE, frame.type = 'norm', loadings = TRUE, loadings.label = TRUE, loadings.label.size = 4, loadings.colour = 'blue')+cowplot::theme_cowplot(line_size = 1)+cowplot::background_grid(major = 'xy')
 
-print(contrib.gg)
+```{r, fig.height=4, fig.width=5, warning=FALSE}
+laml.se = signatureEnrichment(maf = laml, sig_res = laml.sign)
+
+```
+
+Above results can be visualzied similar to clinical enrichments.
+
+```{r, fig.height=4, fig.width=7}
+#Note: pvalue < 0.5 is only plotting purpose since AML has no interesting differences in signatures.
+plotEnrichmentResults(enrich_res = laml.se, pVal = 0.5)
 ```
 
 

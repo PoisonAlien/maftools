@@ -2,7 +2,7 @@
 % Please edit documentation in R/signatureCorrelation.R
 \name{signatureEnrichment}
 \alias{signatureEnrichment}
-\title{Performs sample stratification based on signature contribution and performs enrichment.}
+\title{Performs sample stratification based on signature contribution and enrichment analysis.}
 \usage{
 signatureEnrichment(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NULL)
 }
@@ -21,8 +21,8 @@ signatureEnrichment(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NULL)
 result list containing p-values
 }
 \description{
-Performs sample stratification based on signature contribution and performs enrichment.
-}
-\details{
 Performs k-means clustering to assign signature to samples and performs enrichment analysis.
+}
+\seealso{
+\code{\link{plotEnrichmentResults}}
 }

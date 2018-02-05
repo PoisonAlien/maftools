@@ -1,5 +1,5 @@
-#' Performs mutational enrichment analysis for a given clinical feature (MAF).
-#' @details Performs paiwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
+#' Performs mutational enrichment analysis for a given clinical feature.
+#' @description Performs paiwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
 #'
 #' @param maf \code{\link{MAF}} object
 #' @param clinicalFeature columns names from `clinical.data` slot of \code{MAF} to be analysed for.
@@ -12,6 +12,7 @@
 #' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
 #' laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 #' clinicalEnrichment(laml, 'FAB_classification')
+#' @seealso \code{\link{plotEnrichmentResults}}
 #' @export
 
 clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL, minMut = 5, useCNV = TRUE){
@@ -122,5 +123,5 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
   gw.pvals = plist[Analysis %in% "Group",.(Hugo_Symbol, Group1, Group2, n_mutated_group1, n_mutated_group2, p_value, OR_low, OR_high)][order(p_value)]
   gw.pvals[,fdr := p.adjust(p_value, method = "fdr")]
 
-  return(list(pairwise_comparision = pw.pvals, groupwise_comparision = gw.pvals, cf_sizes = cd[,.N,cf]))
+  return(list(pairwise_comparision = pw.pvals, groupwise_comparision = gw.pvals, cf_sizes = cd[,.N,cf], clinicalFeature = clinicalFeature))
 }
