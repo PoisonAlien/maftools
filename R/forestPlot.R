@@ -6,6 +6,7 @@
 #' @param fdr fdr threshold. Default NULL. If provided uses adjusted pvalues (fdr).
 #' @param show can be either \code{stat} or \code{pval}
 #' @param color vector of colors for cohorts. Default NULL.
+#' @param geneFontSize Font size for gene symbols. Default 12
 #' @param file basename for output file. Plot will saved to an output pdf.
 #' @param width width of plot to be generated
 #' @param height height of plot to be generated
@@ -24,7 +25,7 @@
 #' m2Name = 'Relapse', minMut = 5)
 #' forestPlot(mafCompareRes = pt.vs.rt, show = 'stat')
 
-forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color = NULL, file = NULL, width = 5, height = 6){
+forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color = NULL, geneFontSize = 12, file = NULL, width = 5, height = 6){
 
   res = mafCompareRes$results
 
@@ -70,7 +71,11 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color
     geom_errorbar(aes(ymin = log10(ci.low), ymax = log10(ci.up)), size = 0.5, width = 0.20)+
     coord_flip()+cowplot::theme_cowplot(font_size = 9, line_size = 1)+cowplot::background_grid(major = 'x')+
     geom_hline(yintercept = 0, linetype = 'dotted')+xlab('Gene')+ylab('log10 (Odds Ratio)')+
-    theme(axis.line.y = element_blank(), legend.position = 'bottom', legend.title = element_blank())+ylim(-lim, lim)
+    theme(axis.line.y = element_blank(), axis.text.y = element_text(face = "bold", size = geneFontSize), axis.text.x = element_text(face = "bold", size = 12),
+          axis.title.x = element_text(face = "bold", size = 12), axis.title.y = element_blank(),
+          legend.position = 'bottom', legend.title = element_blank(), legend.text = element_text(face = "bold", size = 12),
+          plot.title = element_text(face = "bold", size = 14))+
+    ylim(-lim, lim)
 
   if(!is.null(color)){
     color = color
@@ -88,7 +93,9 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color
   print(gg.fp)
 
   if(!is.null(file)){
-    cowplot::save_plot(filename = paste(file, 'pdf', sep='.'), plot = gg.fp, base_height = height, base_width = width)
+    cowplot::save_plot(filename = paste(file, 'pdf', sep='.'),
+                       plot = gg.fp, base_height = height, base_width = width,
+                       paper = "special", bg  = "white")
   }
 
   return(gg.fp)

@@ -6,12 +6,13 @@
 #' @param contributions If TRUE plots contribution of signatures in each sample.
 #' @param color colors for each Ti/Tv conversion class. Default NULL
 #' @param patient_order User defined ordering of samples. Default NULL.
+#' @param title_size size of title. Default 1.3
 #' @param ... further plot options passed to \code{\link{barplot}}
 #' @return ggplot object if contributions is TRUE
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'
-plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL, ...){
+plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL, title_size = 1.2, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
   contrib = nmfRes$contributions
@@ -67,8 +68,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
     }
     colors = rep(color, each=16)
 
-    par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1,mar = c(0,0,1,1) + 0.1, las=1, tcl=-.25, font.main=4, xpd = NA)
-
+    par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1, mar = c(0,0,2.5,0) + 0.1, las=1, tcl=-.25, font.main=4, xpd = NA)
 
     for(i in 1:nsigs){
       ae.sig = names(which(coSineMat[i,] == max(coSineMat[i,])))
@@ -79,12 +79,18 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, 0.3),
               cex.main = 1, border = NA, font.axis = 2, font.lab = 2,
               adj = 0.25, ...)
-      title(main = ae, cex.main=0.9, line = -0.3)
+      title(main = ae, cex.main = title_size, line = 0)
       #mtext(text = ae, side = 1, line = 2, font = 1, cex = 0.5, at = 0.3)
-      axis(side = 2,at = seq(0, 0.3, 0.1),labels = seq(0, 0.3, 0.1), pos = seq(0, 0.3, 0.1), las = 2, lwd = 2, hadj = 0.4)
+      axis(side = 2, at = seq(0, 0.3, 0.1), labels = seq(0, 0.3, 0.1),
+           pos = -2, las = 2, lwd = 3, hadj = 0.8,
+           font = 2, cex.axis = 1.4)
       #abline(h = seq(0, 0.3, 0.1),lty=2,lwd=0.3, col = 'gray70')
       rect(xleft = seq(0, 192, 32), ybottom = -0.05, xright = 192, ytop = -0.02, col = color, border = 'gray70')
-      text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),y = rep(-0.08,6),x = seq(0, 192, 32)[2:7]-16, cex = 1)
+      if(i == nsigs){
+        text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),
+             y = rep(-0.1,6),x = seq(0, 192, 32)[2:7]-16, cex = 1.4,
+             font = 2, font.lab = 2)
+      }
     }
   }
 }

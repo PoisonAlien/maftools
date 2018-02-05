@@ -4,8 +4,12 @@
 #' @param AACol manually specify column name for amino acid changes. Default looks for field 'AAChange'
 #' @param summarizeBy Summarize domains by amino acid position or conversions. Can be "AAPos" or "AAChange"
 #' @param top How many top mutated domains to label in the scatter plot. Defaults to 5.
+#' @param domainsToLabel Default NULL. Exclusive with top argument.
 #' @param varClass which variants to consider for summarization. Can be nonSyn, Syn or all. Default nonSyn.
 #' @param baseName If given writes the results to output file. Default NULL.
+#' @param width width of the file to be saved.
+#' @param height height of the file to be saved.
+#' @param labelSize font size for labels. Default 3.
 #' @return returns a list two tables summarized by amino acid positions and domains respectively. Also plots top 5 most mutated domains as scatter plot.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -14,7 +18,7 @@
 #' @export
 
 
-pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5, baseName = NULL, varClass = 'nonSyn'){
+pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5, domainsToLabel = NULL, baseName = NULL, varClass = 'nonSyn', width = 5, height = 5, labelSize = 3){
 
 
   summarizeBy.opts = c('AAPos', 'AAChange')
@@ -159,17 +163,29 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   domainSum = domainSum[order(nMuts, decreasing = TRUE)]
 
-  #print(prot.sum)
-  p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point(color = 'gray70', alpha = 0.4)+cowplot::theme_cowplot(line_size = 1, font_size = 14)+
-    geom_point(data = domainSum[1:top], color = 'red', alpha = 0.9)+ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = 3, fontface = 'bold', force = 20)+
-    theme(legend.position = 'none')+cowplot::background_grid(major = 'xy')
+  if(!is.null(domainsToLabel)){
+    p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point(color = 'gray70', alpha = 0.4)+cowplot::theme_cowplot(line_size = 1, font_size = 14)+
+      geom_point(data = domainSum[DomainLabel %in% domainsToLabel], color = 'red', alpha = 0.9)+
+      ggrepel::geom_text_repel(data = domainSum[DomainLabel %in% domainsToLabel], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = labelSize, fontface = 'bold', force = 20)+
+      theme(legend.position = 'none', axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))+
+      cowplot::background_grid(major = 'xy')+
+      xlab("# mutations")+ylab("# genes")
+  }else{
+    p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point(color = 'gray70', alpha = 0.4)+cowplot::theme_cowplot(line_size = 1, font_size = 14)+
+      geom_point(data = domainSum[1:top], color = 'red', alpha = 0.9)+
+      ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = labelSize, fontface = 'bold', force = 20)+
+      theme(legend.position = 'none', axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))+
+      cowplot::background_grid(major = 'xy')+
+      xlab("# mutations")+ylab("# genes")
+  }
+
 
   print(p)
 
   if(!is.null(baseName)){
     write.table(x = prot.sum, file = paste(baseName, '_AAPos_summary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
     write.table(x = domainSum, file = paste(baseName, '_domainSummary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
-    cowplot::save_plot(filename = paste(baseName, '_domainSummary.pdf',sep= ''), plot = p, base_height = 6, base_width = 6)
+    cowplot::save_plot(filename = paste(baseName, '_domainSummary.pdf',sep= ''), plot = p, base_height = height, base_width = width)
   }
 
   return(list(proteinSummary = prot.sum, domainSummary = domainSum))

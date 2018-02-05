@@ -10,6 +10,7 @@
 #' @param cohortName Input cohort name.
 #' @param inputSampleSize Sample size from MAF file used to generate mutSig results. Optional.
 #' @param label Default 1. Can be 1, 2 or 3.
+#' @param genesToLabel Default NULL. Exclusive with label argument.
 #' @param normSampleSize normalizes gene sizes to draw bubble plot. Requires inputSampleSize. i.e, bubble sizes proportional to fraction of samples in which the gene is mutated.
 #' @param pointSize size for scatter plot. Default 1.
 #' @param labelSize label text size. Default 3
@@ -22,7 +23,7 @@
 #' pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
 #' @export
 
-pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inputSampleSize = NULL, label = 1, normSampleSize = FALSE, file = NULL, width = 6, height = 6, pointSize = 3, labelSize = 3){
+pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inputSampleSize = NULL, label = 1, genesToLabel = NULL, normSampleSize = FALSE, file = NULL, width = 6, height = 6, pointSize = 3, labelSize = 3){
 
   #Pancan results
   pancan = system.file('extdata', 'pancan.txt.gz', package = 'maftools')
@@ -85,6 +86,11 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
   gTitle = paste0(cohortName, ' v/s Pan-cancer')
   xAxLab = paste0('-log10(', cohortName, ' q-value)')
 
+  th = theme(legend.position = 'bottom', axis.text.x = element_text(face = "bold", size = 12),
+             axis.title.x = element_text(face = "bold", size = 12), axis.text.y = element_text(face = "bold", size = 12),
+             axis.title.y = element_text(face = "bold", size = 12),
+             legend.title = element_text(face = "bold"), legend.text = element_text(size = 12, face = "bold"))
+
 
   if(normSampleSize){
     if(is.null(inputSampleSize)){
@@ -96,8 +102,8 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
         geom_hline(yintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
         geom_vline(xintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
         xlab(xAxLab)+ylab('-log10(Pan-can q-value)')+ggtitle(gTitle)+
-        geom_point(data = pancan.rest, aes(x = -log10(q), y = -log10(pancan), size = SampleFraction), alpha  = 0.8)+
-        theme(legend.position = 'bottom')
+        geom_point(data = pancan.rest, aes(x = -log10(q), y = -log10(pancan), size = SampleFraction), alpha  = 0.8)+th
+
     }
   }else{
     pc.gg = ggplot(data = pancan.specific, aes(x = -log10(q), y = -log10(pancan), label = gene))+
@@ -106,24 +112,30 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
       geom_vline(xintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
       xlab(xAxLab)+ylab('-log10(Pan-cancer q-value)')+ggtitle(gTitle)+
       geom_point(data = pancan.rest, aes(x = -log10(q), y = -log10(pancan)), size = pointSize)+
-      theme(legend.position = 'bottom')
+      th
   }
 
   message(paste0('Significantly mutated genes exclusive to ', cohortName, ' (q < ', qval, '): '))
   print(pancan.input.q[pancan > qval & q < qval])
 
-  if(label == 1){
-    pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[q < qval & pancan > qval], size = labelSize, color = 'red')
-  }else if(label == 2){
-    pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[q < qval & pancan < qval], size = labelSize, color = 'red')
-  }else if(label == 3){
-    pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest, size = labelSize, color = 'red')
+  if(!is.null(genesToLabel)){
+    pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[gene %in% genesToLabel], size = labelSize, color = 'red')
   }else{
-    stop('label can be 1, 2 or 3
+    if(label == 1){
+      pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[q < qval & pancan > qval], size = labelSize, color = 'red')
+    }else if(label == 2){
+      pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[q < qval & pancan < qval], size = labelSize, color = 'red')
+    }else if(label == 3){
+      pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest, size = labelSize, color = 'red')
+    }else{
+      stop('label can be 1, 2 or 3
          1: Labels genes mutated only in input cohort (Default)
          2: Labels genes mutated in both input and PanCancer cohort
          3: Labels all genes')
+    }
+
   }
+
 
   print(pc.gg)
 

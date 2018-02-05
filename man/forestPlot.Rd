@@ -5,7 +5,7 @@
 \title{Draw forest plot for differences betweeen cohorts.}
 \usage{
 forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL,
-  color = NULL, file = NULL, width = 5, height = 6)
+  color = NULL, geneFontSize = 12, file = NULL, width = 5, height = 6)
 }
 \arguments{
 \item{mafCompareRes}{results from \code{\link{mafCompare}}}
@@ -17,6 +17,8 @@ forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL,
 \item{show}{can be either \code{stat} or \code{pval}}
 
 \item{color}{vector of colors for cohorts. Default NULL.}
+
+\item{geneFontSize}{Font size for gene symbols. Default 12}
 
 \item{file}{basename for output file. Plot will saved to an output pdf.}
 

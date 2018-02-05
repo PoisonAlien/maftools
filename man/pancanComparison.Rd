@@ -5,8 +5,9 @@
 \title{Perform PacCancer analysis}
 \usage{
 pancanComparison(mutsigResults, qval = 0.1, cohortName = "input",
-  inputSampleSize = NULL, label = 1, normSampleSize = FALSE,
-  file = NULL, width = 6, height = 6, pointSize = 3, labelSize = 3)
+  inputSampleSize = NULL, label = 1, genesToLabel = NULL,
+  normSampleSize = FALSE, file = NULL, width = 6, height = 6,
+  pointSize = 3, labelSize = 3)
 }
 \arguments{
 \item{mutsigResults}{MutSig results (usually sig_genes.txt). Can be gz compressed.}
@@ -18,6 +19,8 @@ pancanComparison(mutsigResults, qval = 0.1, cohortName = "input",
 \item{inputSampleSize}{Sample size from MAF file used to generate mutSig results. Optional.}
 
 \item{label}{Default 1. Can be 1, 2 or 3.}
+
+\item{genesToLabel}{Default NULL. Exclusive with label argument.}
 
 \item{normSampleSize}{normalizes gene sizes to draw bubble plot. Requires inputSampleSize. i.e, bubble sizes proportional to fraction of samples in which the gene is mutated.}
 

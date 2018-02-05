@@ -5,7 +5,7 @@
 \title{Plots decomposed mutational signatures}
 \usage{
 plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
-  patient_order = NULL, ...)
+  patient_order = NULL, title_size = 1.2, ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
@@ -15,6 +15,8 @@ plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
 \item{color}{colors for each Ti/Tv conversion class. Default NULL}
 
 \item{patient_order}{User defined ordering of samples. Default NULL.}
+
+\item{title_size}{size of title. Default 1.3}
 
 \item{...}{further plot options passed to \code{\link{barplot}}}
 }
