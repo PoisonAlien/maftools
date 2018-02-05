@@ -65,9 +65,9 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
   }
 
   if(useCNV){
-    genes = getGeneSummary(x = maf)[AlteredSamples > minMut, Hugo_Symbol]
+    genes = as.character(getGeneSummary(x = maf)[AlteredSamples > minMut, Hugo_Symbol])
   }else{
-    genes = getGeneSummary(x = maf)[MutatedSamples > minMut, Hugo_Symbol]
+    genes = as.character(getGeneSummary(x = maf)[MutatedSamples > minMut, Hugo_Symbol])
   }
 
   plist = lapply(genes, function(x){
