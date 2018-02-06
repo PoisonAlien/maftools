@@ -93,8 +93,8 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
       message('Following genes from MutSig results are not available in MAF:')
       print(genes[!genes %in% rownames(numMat)])
       message('Ignoring them.')
-      genes = genes[ms.smg.genes %in% rownames(numMat)]
-      ms.smg = ms.smg[gene %in% ms.smg.genes]
+      genes = genes[genes %in% rownames(numMat)]
+      ms.smg = ms.smg[gene %in% genes]
     }
 
     ms.smg = ms.smg[,.(gene, FDR)]
