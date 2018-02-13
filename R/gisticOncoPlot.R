@@ -108,9 +108,11 @@ gisticOncoPlot = function (gistic, top = NULL,
   #Bottom annotations
   if(!is.null(clinicalFeatures)){
     if(!is.null(annotationColor)){
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor, annotation_legend_param = list(title_gp = gpar(fontface = "bold"),
+                                                                                                                          labels_gp = gpar(fontface = "bold")))
     }else{
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation)
+      bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation, annotation_legend_param = list(title_gp = gpar(fontface = "bold"),
+                                                                                              labels_gp = gpar(fontface = "bold")))
     }
   }
 
@@ -141,12 +143,12 @@ gisticOncoPlot = function (gistic, top = NULL,
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
-                    just = "right", gp = grid::gpar(fontsize = fontSize))
+                    just = "right", gp = grid::gpar(fontsize = fontSize, fontface = "bold"))
     grid::upViewport()
   }
 
   ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct,
-                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10))), which = "row")
+                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10, fontface = "bold"))), which = "row")
 
   ##Following two funcs add grids
   add_oncoprint = function(type, x, y, width, height) {
@@ -185,11 +187,11 @@ gisticOncoPlot = function (gistic, top = NULL,
 
       if(is.null(clinicalFeatures)){
         ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-          row_names_gp = grid::gpar(fontsize = fontSize),
+          row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"),
           show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE)
       }else{
         ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-          row_names_gp = grid::gpar(fontsize = fontSize),
+          row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"),
           show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
           bottom_annotation = bot.anno)
       }
@@ -197,7 +199,7 @@ gisticOncoPlot = function (gistic, top = NULL,
 
     ht_list = ha_pct + ht
 
-    legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col), nrow = 2)
+    legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col, fontface = "bold"), nrow = 2)
 
     ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
 }

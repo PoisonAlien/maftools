@@ -50,7 +50,8 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
     tsb.dat = tsb.dat[!cluster == 'CN_altered']
     #Top density plot
     tsb.dat.dens = ggplot(tsb.dat, aes(t_vaf))+geom_density(data = tsb.dat[cluster != 'outlier'], size = 1, alpha = 0.3)+geom_point(aes(y = 0, x = t_vaf, color = cluster), size = 3, alpha = 0.6)+
-      cowplot::theme_cowplot(line_size = 1)+theme(legend.position = 'bottom', plot.title = element_text(size = 12))+xlab('VAF')+xlim(0,1)+ylab('')+cowplot::background_grid('xy')+
+      cowplot::theme_cowplot(line_size = 1)+theme(legend.position = 'bottom', plot.title = element_text(size = 12), axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_blank())+xlab('VAF')+xlim(0,1)+ylab('')+
+      cowplot::background_grid('xy')+
       scale_colour_manual(values = colors)+
       ggtitle(tsb[i], subtitle = paste0("MATH: ", round(unique(tsb.dat[,MATH]), digits = 3)))
 

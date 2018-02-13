@@ -279,10 +279,10 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   if(!is.null(clinicalFeatures)){
     if(!is.null(annotationColor)){
       bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor, annotation_legend_param = list(title_gp = gpar(fontsize = annotationTitleFontSize, fontface = "bold"),
-                                                   labels_gp = gpar(fontsize = annotationFontSize)))
+                                                   labels_gp = gpar(fontsize = annotationFontSize, fontface = "bold")))
     }else{
       bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation, annotation_legend_param = list(title_gp = gpar(fontsize = annotationTitleFontSize, fontface = "bold"),
-                                                   labels_gp = gpar(fontsize = annotationFontSize)))
+                                                   labels_gp = gpar(fontsize = annotationFontSize, fontface = "bold")))
     }
   }
 
@@ -311,7 +311,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     pct = paste0(round(pct), "%")
     grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
     grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
-                    just = "right", gp = grid::gpar(fontsize = fontSize))
+                    just = "right", gp = grid::gpar(fontsize = fontSize, fontface = "bold"))
     grid::upViewport()
   }
 
@@ -471,17 +471,17 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     if(is.null(clinicalFeatures)){
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
+                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
                                    top_annotation_height = grid::unit(2, "cm"),
-                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
+                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     } else{
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
+                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
                                    top_annotation_height = grid::unit(2, "cm"), bottom_annotation = bot.anno,
-                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
+                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     }
 
   } else{
@@ -489,19 +489,19 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     if(is.null(clinicalFeatures)){
 
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
+                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE,
-                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
+                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     }else{
       ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize), show_column_names = showTumorSampleBarcodes,
+                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE, bottom_annotation = bot.anno,
-                                   column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
+                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
     }
   }
 
   ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct,
-                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10))),
+                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10, fontface = "bold"))),
                                              which = "row")
   ht_list = ha_pct + ht
 
@@ -510,7 +510,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     ht_list =  ht_list + ha_row_bar
   }
 
-  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col, fontsize = legendFontSize), nrow = 3)
+  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col, fontsize = legendFontSize, fontface = "bold"), nrow = 3)
 
   suppressWarnings( ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
 }

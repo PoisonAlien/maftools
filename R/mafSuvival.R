@@ -127,8 +127,9 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   surv.gg = ggplot(data = surv.dat, aes(x = Time, y = survProb, group = Group))+geom_line(aes(color = Group))+
     geom_point(aes(color = Group))+
     cowplot::theme_cowplot(font_size = 12, line_size = 1)+
-    theme(legend.position = 'bottom', plot.title = element_text(size = 14, face = "bold"),
-          plot.subtitle = element_text(size = 12, face = "bold", colour = ifelse(surv.diff.pval < 0.05, yes = 'red', no = 'black')), legend.title = element_blank())+
+    theme(legend.position = 'bottom', plot.title = element_text(size = 14, face = "bold"), axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"),
+          plot.subtitle = element_text(size = 12, face = "bold", colour = ifelse(surv.diff.pval < 0.05, yes = 'red', no = 'black')),
+          legend.title = element_blank())+
     ggtitle(label = paste0(groupNames[1], " v/s ", groupNames[2]), subtitle = paste0("P-value: ", surv.diff.pval))+
     xlab('Time')+ylab('Survival')+
     scale_color_manual(values = col)

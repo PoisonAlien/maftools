@@ -57,7 +57,7 @@ tcgaCompare = function(maf, cohortName = NULL, primarySite = FALSE, col = c('gra
     cowplot::theme_cowplot(font_size = fontSize, line_size = 1)+
     scale_y_log10(breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000))+
     cowplot::background_grid(major = 'x')+
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, face = "bold"), legend.position = 'none', axis.text.y = element_text(face="bold", size = 10))+
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, face = "bold"), legend.position = 'none', axis.text.y = element_text(face="bold", size = 10), axis.title.y = element_text(face="bold", size = 12))+
     scale_color_manual(values = rev(col))+
     ylab('log10 (Mutations per sample)')+xlab('')
 

@@ -174,9 +174,11 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     annotation = annotation[colnames(mat),, drop = FALSE]
 
     if(!is.null(annotationColor)){
-      bot.anno = HeatmapAnnotation(df = annotation, col = annotationColor)
+      bot.anno = HeatmapAnnotation(df = annotation, col = annotationColor, annotation_legend_param = list(title_gp = gpar(fontface = "bold"),
+                                                                                                          labels_gp = gpar(fontface = "bold")))
     }else{
-      bot.anno = HeatmapAnnotation(annotation)
+      bot.anno = HeatmapAnnotation(annotation, annotation_legend_param = list(title_gp = gpar(fontface = "bold"),
+                                                                              labels_gp = gpar(fontface = "bold")))
     }
   }
 
@@ -195,7 +197,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   }
 
   ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct,
-                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10))), which = "row")
+                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10, fontface = "bold"))), which = "row")
 
   ##Following two funcs add grids
   add_oncoprint = function(type, x, y, width, height) {
@@ -264,17 +266,17 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   if(showGenes){
     if(!is.null(clinicalFeatures)){
       ht = ComplexHeatmap::Heatmap(matrix = mat,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = gfs), show_column_names = showTumorSampleBarcodes,
+                                   row_names_gp = grid::gpar(fontsize = gfs, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE,
                                    column_title = hmName, column_names_gp = grid::gpar(fontsize = fs), bottom_annotation = bot.anno,
-                                   column_title_gp = gpar(fontsize = tfs, fontface = "bold"))
+                                   column_title_gp = grid::gpar(fontsize = tfs, fontface = "bold"))
 
     }else{
       ht = ComplexHeatmap::Heatmap(matrix = mat,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = gfs), show_column_names = showTumorSampleBarcodes,
+                                   row_names_gp = grid::gpar(fontsize = gfs, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
                                    show_heatmap_legend = FALSE,
                                    column_title = hmName, column_names_gp = grid::gpar(fontsize = fs),
-                                   column_title_gp = gpar(fontsize = tfs, fontface = "bold"))
+                                   column_title_gp = grid::gpar(fontsize = tfs, fontface = "bold"))
     }
   }else{
     if(!is.null(clinicalFeatures)){
@@ -282,14 +284,14 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
                                    show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
                                    top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
                                    column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs), bottom_annotation = bot.anno,
-                                   column_title_gp = gpar(fontsize = tfs, fontface = "bold"))
+                                   column_title_gp = grid::gpar(fontsize = tfs, fontface = "bold"))
 
     }else{
       ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
                                    top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
                                    column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs),
-                                   column_title_gp = gpar(fontsize = tfs, fontface = "bold"))
+                                   column_title_gp = grid::gpar(fontsize = tfs, fontface = "bold"))
     }
 
   }
