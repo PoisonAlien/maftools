@@ -18,7 +18,8 @@
 #' @export
 
 
-rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 1){
+rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, seg_len = 5,
+                        ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 1, ...){
 
   if(is.null(tsb)){
     tsb = as.character(getSampleSummary(maf)[1,Tumor_Sample_Barcode])
@@ -75,14 +76,14 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build =
   gg.rf = ggplot(data = maf.snp, aes(x= Start_Position_updated, y = diff, col = con.class))+
                 geom_point(size = pointSize, alpha = 0.6)+cowplot::theme_cowplot(font_size = fontSize, line_size = 1)+
                 cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
-                theme(axis.line.x = element_blank(), axis.text.y = element_text(size = 12, face = "bold"))+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
+                theme(axis.line.x = element_blank(), axis.title.y = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), axis.text.y = element_text(size = 12, face = "bold"))+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
                 geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+
                 theme(legend.position = 'bottom', legend.title = element_blank())+
                 scale_color_manual(values = col)+
                 ggtitle(tsb)+guides(colour = guide_legend(override.aes = list(size=3)))
 
   if(detectChangePoints){
-    maf.cpt = detectCP(dat = maf.snp)
+    maf.cpt = detectCP(dat = maf.snp, segLen = seg_len, ...)
     if(is.null(maf.cpt)){
       message('No changepoints detected!')
     }else{
@@ -104,6 +105,5 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, ref.build =
                        plot = gg.rf, base_height = height, base_width = width)
   }
 
-  print(gg.rf)
-  return(gg.rf)
+  gg.rf
 }

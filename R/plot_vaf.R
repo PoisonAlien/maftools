@@ -21,7 +21,11 @@
 
 plotVaf = function(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10, orderByMedian = TRUE, flip = FALSE, fn = NULL, width = 6, height = 5){
 
-  dat = maf@data
+  if(is.null(genes)){
+    genes = as.character(maf@gene.summary[1:top, Hugo_Symbol])
+  }
+
+  dat = subsetMaf(maf = maf, genes = genes, includeSyn = FALSE)
 
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){
@@ -35,10 +39,6 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10, o
     }else{
       colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
     }
-  }
-
-  if(is.null(genes)){
-    genes = maf@gene.summary[1:top, Hugo_Symbol]
   }
 
   #dat.genes = data.frame(dat[dat$Hugo_Symbol %in% genes])
@@ -67,9 +67,10 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, violin = FALSE, top = 10, o
         geom_point(position = position_jitter(width = 0.2), size = 0.2, alpha = 0.8)
   }
 
-  gg = gg+cowplot::theme_cowplot(font_size = 12, line_size = 1)+ylim(0, 1)+
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),legend.position = 'none')+
-    ylab('VAF')+xlab('')+cowplot::background_grid(major = 'xy')
+  gg = gg+cowplot::theme_cowplot(font_size = 12, line_size = 1.2)+ylim(0, 1)+
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, face = "bold"),legend.position = 'none',
+          axis.text.y = element_text(face = "bold"), axis.title.x = element_blank(), axis.title.y = element_text(face = "bold"))+
+    ylab('VAF')+cowplot::background_grid(major = 'xy')
 
   if(flip){
     gg = gg+coord_flip()+theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5))

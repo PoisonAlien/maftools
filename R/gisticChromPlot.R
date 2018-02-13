@@ -70,7 +70,8 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL, mar
   gist.gg = ggplot(data = gis.scores[Variant_Classification %in% 'neutral'], aes(x = Start_Position_updated, xend = End_Position_updated, y= ystart , yend = amp, color = Variant_Classification))+
     geom_segment(alpha = 0.6)+geom_segment(data = gis.scores[!Variant_Classification %in% 'neutral'], alpha = 0.6)+cowplot::theme_cowplot(line_size = 1, font_size = 12)+theme(legend.position = 'none')+
     scale_color_manual(values = c('Amp'  ='red', 'Del' = 'blue', 'neutral' = 'gray70'))+ylab('G Score')+
-    theme(axis.line.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank())+xlab("")+
+    theme(axis.line.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank(),
+          axis.title.y = element_text(face = "bold"), axis.text.y = element_text(face = "bold"))+
     geom_rect(data = chr.tbl, aes(xmin = start, xmax = end, ymin = -cytobandOffset, ymax = cytobandOffset), fill = chr.tbl$color, inherit.aes = FALSE, alpha = 0.9)
 
   if(!is.null(markBands)){
@@ -92,7 +93,7 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL, mar
     mb$labPos =ifelse(test = mb$Variant_Classification == 'Amp', yes = mb$ybig, no = mb$ysmall)
 
     gist.gg = gist.gg+
-      ggrepel::geom_text_repel(data = mb, aes(x = Start_Position_updated, y = labPos, label = Cytoband), inherit.aes = FALSE, size = 4)+
+      ggrepel::geom_text_repel(data = mb, aes(x = Start_Position_updated, y = labPos, label = Cytoband), inherit.aes = FALSE, size = 4, fontface = 'bold')+
       geom_segment(data = mb, aes(x = Start_Position_updated, xend = End_Position_updated,
                                    y = ysmall, yend = ybig, label = Cytoband), color = markBandsCol, alpha = 0.25)
   }

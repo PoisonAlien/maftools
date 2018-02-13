@@ -38,13 +38,15 @@ plotOncodrive = function(res = NULL, fdrCutOff = 0.05, useFraction = FALSE, colC
 
   if(useFraction){
     p = ggplot(data = res, aes(x = fract_muts_in_clusters, y = -log10(fdr), size = clusters, color = significant))+
-      geom_point(alpha = 0.9)+cowplot::theme_cowplot(line_size = 1)+theme(legend.position = 'NONE')+scale_color_manual(values = colCode)+
-      ggrepel::geom_text_repel(data = res[fdr < fdrCutOff], aes(x = fract_muts_in_clusters, y = -log10(fdr), label = label, size = labelSize), color = 'black')+
+      geom_point(alpha = 0.9)+cowplot::theme_cowplot(line_size = 1)+theme(legend.position = 'NONE', axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))+
+      scale_color_manual(values = colCode)+
+      ggrepel::geom_text_repel(data = res[fdr < fdrCutOff], aes(x = fract_muts_in_clusters, y = -log10(fdr), label = label, size = labelSize), color = 'black', fontface = 'bold')+
       xlab('Fraction of mutations in clusters')+cowplot::background_grid(major = 'xy')
   }else{
     p = ggplot(data = res, aes(x = muts_in_clusters, y = -log10(fdr), size = clusters, color = significant))+
-      geom_point()+cowplot::theme_cowplot(line_size = 1)+theme(legend.position = 'NONE')+scale_color_manual(values = colCode)+
-      ggrepel::geom_text_repel(data = res[fdr < fdrCutOff], aes(x = muts_in_clusters, y = -log10(fdr), label = label, size = labelSize), color = 'black')+
+      geom_point()+cowplot::theme_cowplot(line_size = 1.2)+theme(legend.position = 'NONE', axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))+
+      scale_color_manual(values = colCode)+
+      ggrepel::geom_text_repel(data = res[fdr < fdrCutOff], aes(x = muts_in_clusters, y = -log10(fdr), label = label, size = labelSize), color = 'black', fontface = 'bold')+
       xlab('Number of mutations in clusters')+cowplot::background_grid(major = 'xy')
   }
 

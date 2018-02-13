@@ -39,17 +39,21 @@ gisticBubblePlot = function(gistic = NULL, color = NULL, markBands = NULL, fdrCu
   gist.gg = ggplot(data = g, aes(x = nSamples, y = pos, size = -log10(qvalues), color = Variant_Classification, label = lab))+
     geom_point(alpha = 0.6)+xlab('nSamples')+ylab('nGenes')+
     scale_colour_manual(values = color, name = c('CNV', ''))+
-    cowplot::theme_cowplot(font_size = 12, line_size = 1)+cowplot::background_grid(major = 'xy')+theme(legend.position = 'bottom')
+    cowplot::theme_cowplot(font_size = 12, line_size = 1)+
+    cowplot::background_grid(major = 'xy')+
+    theme(legend.position = 'bottom', axis.title.x = element_text(face = "bold"), axis.text.x = element_text(face = "bold"),
+          axis.title.y = element_text(face = "bold"), axis.text.y = element_text(face = "bold"),
+          legend.text = element_text(face = "bold"), legend.title = element_text(face = "bold"))
 
   if(!is.null(markBands)){
     g.labs = g[Cytoband %in% markBands]
     if(nrow(g.labs) == 0){
       message("Nothing to label!")
     }else{
-      gist.gg = gist.gg+ggrepel::geom_text_repel(data = g.labs, size = txtSize)
+      gist.gg = gist.gg+ggrepel::geom_text_repel(data = g.labs, size = txtSize, fontface = 'bold', force = 10)
     }
   }else{
-    gist.gg = gist.gg+ggrepel::geom_text_repel(size = txtSize)
+    gist.gg = gist.gg+ggrepel::geom_text_repel(size = txtSize, fontface = 'bold', force = 10)
   }
 
   if(!is.null(file)){
