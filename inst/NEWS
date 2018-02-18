@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.4.25
+-------------------------
+    o Fix messed up vignette for real
+    o fix gistic plotting bug
+    o Corrects an issue wherein MAFtools accidentally renamed columns with names that contained a required column as a substring of their name. PR: #123
+
 CHANGES IN VERSION 1.4.21
 -------------------------
     o Fix messed up vignette
