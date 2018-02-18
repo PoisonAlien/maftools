@@ -6,7 +6,7 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
 
   #Change column names to standard names; i.e, camel case
   for(i in 1:length(required.fields)){
-    colId = suppressWarnings(grep(pattern = required.fields[i], x = colnames(maf), ignore.case = TRUE))
+    colId = suppressWarnings(grep(pattern = paste("^",required.fields[i],"$",sep=""), x = colnames(maf), ignore.case = TRUE))
     if(length(colId) > 0){
       colnames(maf)[colId] = required.fields[i]
     }
