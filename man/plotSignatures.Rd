@@ -5,7 +5,8 @@
 \title{Plots decomposed mutational signatures}
 \usage{
 plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
-  patient_order = NULL, title_size = 1.2, ...)
+  patient_order = NULL, font_size = 1.2, axis_lwd = 2, title_size = 0.9,
+  ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
@@ -15,6 +16,10 @@ plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
 \item{color}{colors for each Ti/Tv conversion class. Default NULL}
 
 \item{patient_order}{User defined ordering of samples. Default NULL.}
+
+\item{font_size}{font size. Default 1.2}
+
+\item{axis_lwd}{axis width. Default 2.}
 
 \item{title_size}{size of title. Default 1.3}
 

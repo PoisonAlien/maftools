@@ -7,12 +7,14 @@
 #' @param color colors for each Ti/Tv conversion class. Default NULL
 #' @param patient_order User defined ordering of samples. Default NULL.
 #' @param title_size size of title. Default 1.3
+#' @param axis_lwd axis width. Default 2.
+#' @param font_size font size. Default 1.2
 #' @param ... further plot options passed to \code{\link{barplot}}
 #' @return ggplot object if contributions is TRUE
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'
-plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL, title_size = 1.2, ...){
+plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL, font_size = 1.2, axis_lwd = 2, title_size = 0.9, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
   contrib = nmfRes$contributions
@@ -82,14 +84,14 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       title(main = ae, cex.main = title_size, line = 0)
       #mtext(text = ae, side = 1, line = 2, font = 1, cex = 0.5, at = 0.3)
       axis(side = 2, at = seq(0, 0.3, 0.1), labels = seq(0, 0.3, 0.1),
-           pos = -2, las = 2, lwd = 3, hadj = 0.8,
-           font = 2, cex.axis = 1.4)
+           pos = -2, las = 2, lwd = axis_lwd, hadj = 1.1,
+           font = 2, cex.axis = font_size)
       #abline(h = seq(0, 0.3, 0.1),lty=2,lwd=0.3, col = 'gray70')
       rect(xleft = seq(0, 192, 32), ybottom = -0.05, xright = 192, ytop = -0.02, col = color, border = 'gray70')
       if(i == nsigs){
         text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),
-             y = rep(-0.1,6),x = seq(0, 192, 32)[2:7]-16, cex = 1.4,
-             font = 2, font.lab = 2)
+             y = rep(-0.1,6),x = seq(0, 192, 32)[2:7]-16, cex = font_size,
+             font = 2, font.lab = 2, pos = 1.2)
       }
     }
   }
