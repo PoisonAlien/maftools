@@ -134,7 +134,7 @@ plotApobecDiff = function(tnm, maf, title_size = 1, axis_lwd = 2, font_size = 1.
           font.lab = 2, col = c('maroon', 'royalblue'),
           ylim = c(0, yl = max(apply(mcg.gs, 2, max))), yaxt = "n", cex.names = font_size)
   axis(side = 2, at = seq(0, max(apply(mcg.gs, 2, max)), length.out = 4), lwd = axis_lwd, font.axis = 2, cex = 1.5,
-        label = paste0(as.integer((seq(0, max(apply(mcg.gs, 2, max)), length.out = 4))*100, digits = 2), '%'), cex.axis = font_size)
+        labels = paste0(as.integer((seq(0, max(apply(mcg.gs, 2, max)), length.out = 4))*100, digits = 2), '%'), cex.axis = font_size)
 
   return(mc)
 }

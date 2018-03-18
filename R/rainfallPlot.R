@@ -18,7 +18,7 @@
 #' @export
 
 
-rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, seg_len = 5,
+rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
                         ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 1, ...){
 
   if(is.null(tsb)){
@@ -83,6 +83,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE, seg_len = 5
                 ggtitle(tsb)+guides(colour = guide_legend(override.aes = list(size=3)))
 
   if(detectChangePoints){
+    seg_len = 5
     maf.cpt = detectCP(dat = maf.snp, segLen = seg_len, ...)
     if(is.null(maf.cpt)){
       message('No changepoints detected!')

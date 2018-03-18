@@ -4,7 +4,7 @@
 \alias{rainfallPlot}
 \title{Rainfall plot to display hyper mutated genomic regions.}
 \usage{
-rainfallPlot(maf, tsb = NULL, detectChangePoints = FALSE, seg_len = 5,
+rainfallPlot(maf, tsb = NULL, detectChangePoints = FALSE,
   ref.build = "hg19", color = NULL, savePlot = FALSE, width = 6,
   height = 3, fontSize = 12, pointSize = 1, ...)
 }

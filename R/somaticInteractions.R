@@ -119,7 +119,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     image(y = seq(0.5*nrow(interactions), 0.9*nrow(interactions), length.out = 8), x=rep(n,2)+c(2,2.5)+1, z=matrix(c(1:8), nrow=1), col = RColorBrewer::brewer.pal(8,"PiYG"), add=TRUE)
     #axis(side = 4, at = seq(1,7) + 6.5,  tcl=-.15, label=seq(-3, 3), las=1, lwd=.5)
     atLims = seq(0.5*nrow(interactions), 0.9*nrow(interactions), length.out = 7)
-    axis(side = 4, at = atLims,  tcl=-.15, label=seq(-3, 3), las=1, lwd=.5)
+    axis(side = 4, at = atLims,  tcl=-.15, labels =seq(-3, 3), las=1, lwd=.5)
     mtext(side=4, at = median(atLims), "log10 (p-value)", las=3, cex = 0.9, line = 3, font = 2)
 
     par(xpd=NA)
