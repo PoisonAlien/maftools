@@ -1,4 +1,4 @@
-detectCP = function(dat, segLen = 5, ...){
+detectCP = function(dat, segLen = 5){
 
   # x_cpt = changepoint::cpt.mean(data = dat$diff, method = 'PELT', class = TRUE, minseglen = 1) #Run change point analysis
   # xchanges = dat[changepoint::cpts(object = x_cpt)]
