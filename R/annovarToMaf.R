@@ -9,7 +9,7 @@
 #' table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (\code{refGene}),cytoBand,dbnsfp30a -operation (\code{g}),r,f -nastring NA
 #'
 #' This function mainly uses gene based annotations for processing, rest of the annotation columns from input file will be attached to the end of the resulting MAF.
-#' @param annovar input annovar annotation file.
+#' @param annovar input annovar annotation file. Can be vector of multiple files.
 #' @param Center Center field in MAF file will be filled with this value. Default NA.
 #' @param refBuild NCBI_Build field in MAF file will be filled with this value. Default hg19.
 #' @param tsbCol column name containing Tumor_Sample_Barcode or sample names in input file.
@@ -28,14 +28,16 @@
 
 annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL , sep = '\t', MAFobj = FALSE, sampleAnno = NULL){
 
-  ann = data.table::fread(input = annovar, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, header = TRUE)
+
+  ann = lapply(annovar, data.table::fread, colClasses = 'character', sep = sep, stringsAsFactors = FALSE)
+  names(ann) = gsub(pattern = ".hg19_multianno.txt", replacement = "", x = basename(path = annovar))
+  ann = data.table::rbindlist(l = ann, fill = TRUE, idcol = "sample_id")
 
   #Check to see if input file contains sample names
   if(is.null(tsbCol)){
     if(! 'Tumor_Sample_Barcode' %in% colnames(ann)){
-      message('Available fields:')
-      print(colnames(ann))
-      stop('Tumor_Sample_Barcode field not found in input file. Use argument tsbCol to manually specifiy field name containing sample names/Tumor_Sample_Barcodes.')
+      colnames(ann)[which(colnames(ann) == "sample_id")] = 'Tumor_Sample_Barcode'
+      message("Tumor_Sample_Barcode field not found in input file. Using file names as Tumor_Sample_Barcode\nYou can manually specify column containing sample ids with argument `tsbCol`")
     }
   }else{
     colnames(ann)[which(colnames(ann) == tsbCol)] = 'Tumor_Sample_Barcode'

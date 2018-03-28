@@ -166,7 +166,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   sample.anno[sample.anno == ""] = NA #Replace blanks with NA
   sample.anno = as.data.frame(apply(sample.anno, 2, function(y) gsub(pattern = " ", replacement = "_", x = y))) #replace spaces with _
   data.table::setDT(x = sample.anno)
-  #colnames(sample.anno)[1] = c("Tumor_Sample_Barcode")
+  colnames(sample.anno)[1] = c("Tumor_Sample_Barcode")
 
   maf.tsbs = levels(tsb[,Tumor_Sample_Barcode])
   sample.anno = sample.anno[Tumor_Sample_Barcode %in% maf.tsbs][!duplicated(Tumor_Sample_Barcode)]

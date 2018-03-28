@@ -9,7 +9,7 @@ annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
   sampleAnno = NULL)
 }
 \arguments{
-\item{annovar}{input annovar annotation file.}
+\item{annovar}{input annovar annotation file. Can be vector of multiple files.}
 
 \item{Center}{Center field in MAF file will be filled with this value. Default NA.}
 

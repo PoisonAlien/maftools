@@ -101,6 +101,10 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
     }
   }
 
+  if(nrow(maf) == 0){
+    stop("No non-synonymous mutations found\nCheck `vc_nonSyn`` argumet in `read.maf` for details")
+  }
+
   #5. Process CN data if available.
   if(!is.null(gisticAllLesionsFile)){
     gisticIp = readGistic(gisticAllLesionsFile = gisticAllLesionsFile, gisticAmpGenesFile = gisticAmpGenesFile,
