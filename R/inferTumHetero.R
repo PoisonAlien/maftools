@@ -22,6 +22,7 @@
 #' @param ignChr ignore these chromosomes from analysis. e.g, sex chromsomes chrX, chrY. Default NULL.
 #' @param top if \code{tsb} is NULL, uses top n number of most mutated samples. Defaults to 5.
 #' @param segFile path to CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).
+#' @param useSyn Use synonymous variants. Default FALSE.
 #' @return list of clustering tables.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -32,13 +33,13 @@
 #' @export
 #' @seealso \code{\link{plotClusters}}
 
-inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, dirichlet = FALSE){
+inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, useSyn = FALSE,dirichlet = FALSE){
 
   if(is.null(tsb)){
     tsb = as.character(getSampleSummary(x = maf)[1:top, Tumor_Sample_Barcode])
   }
 
-  dat.tsb = subsetMaf(maf = maf, tsb = tsb, includeSyn = FALSE)
+  dat.tsb = subsetMaf(maf = maf, tsb = tsb, includeSyn = useSyn)
 
   if(nrow(dat.tsb) == 0){
     stop(paste(tsb, 'not found in MAF'))

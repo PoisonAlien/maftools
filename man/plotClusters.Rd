@@ -5,7 +5,8 @@
 \title{Plot density plots from clutering results.}
 \usage{
 plotClusters(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE,
-  savePlot = FALSE, width = 6, height = 5, colors = NULL)
+  savePlot = FALSE, width = 6, height = 5, colors = NULL,
+  titleSize = 1.2, labelSize = 0.8, pointSize = 1.2)
 }
 \arguments{
 \item{clusters}{clustering results from \code{\link{inferHeterogeneity}}}
@@ -24,6 +25,12 @@ or \code{all} to label all genes. Default NULL.}
 \item{height}{plot height. Default 5.}
 
 \item{colors}{manual colors for clusters. Default NULL.}
+
+\item{titleSize}{font size for titles. Default 1.2}
+
+\item{labelSize}{Font size for gene symbols. Default 0.8}
+
+\item{pointSize}{font size for titles. Default 1.2}
 }
 \value{
 returns nothing.

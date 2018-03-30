@@ -5,8 +5,8 @@
 \title{Plots decomposed mutational signatures}
 \usage{
 plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
-  patient_order = NULL, font_size = 1.2, axis_lwd = 2, title_size = 0.9,
-  ...)
+  patient_order = NULL, font_size = 1.2, show_title = TRUE,
+  axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
@@ -19,9 +19,13 @@ plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
 
 \item{font_size}{font size. Default 1.2}
 
+\item{show_title}{Default TRUE}
+
 \item{axis_lwd}{axis width. Default 2.}
 
 \item{title_size}{size of title. Default 1.3}
+
+\item{show_barcodes}{Default FALSE}
 
 \item{...}{further plot options passed to \code{\link{barplot}}}
 }

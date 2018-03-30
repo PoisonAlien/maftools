@@ -4,8 +4,9 @@
 \alias{forestPlot}
 \title{Draw forest plot for differences betweeen cohorts.}
 \usage{
-forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL,
-  color = NULL, geneFontSize = 12, file = NULL, width = 5, height = 6)
+forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, color = NULL,
+  geneFontSize = 1.2, titleSize = 1.2, lineWidth = 2.2, file = NULL,
+  width = 5, height = 6)
 }
 \arguments{
 \item{mafCompareRes}{results from \code{\link{mafCompare}}}
@@ -14,11 +15,13 @@ forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL,
 
 \item{fdr}{fdr threshold. Default NULL. If provided uses adjusted pvalues (fdr).}
 
-\item{show}{can be either \code{stat} or \code{pval}}
-
 \item{color}{vector of colors for cohorts. Default NULL.}
 
-\item{geneFontSize}{Font size for gene symbols. Default 12}
+\item{geneFontSize}{Font size for gene symbols. Default 1.2}
+
+\item{titleSize}{font size for titles. Default 1.2}
+
+\item{lineWidth}{line width for CI bars. Default 2.2}
 
 \item{file}{basename for output file. Plot will saved to an output pdf.}
 
@@ -45,7 +48,7 @@ relapse.apl <- read.maf(maf = relapse.apl)
 ##Perform analysis and draw forest plot.
 pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary',
 m2Name = 'Relapse', minMut = 5)
-forestPlot(mafCompareRes = pt.vs.rt, show = 'stat')
+forestPlot(mafCompareRes = pt.vs.rt)
 }
 \seealso{
 \code{\link{mafCompare}}

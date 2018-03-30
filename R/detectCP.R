@@ -42,7 +42,7 @@ detectCP = function(dat, segLen = 5){
                 x$distance = c(1, diff(as.numeric(as.character(x$Start_Position)))) #calculate distance between consecutive mutations; in log10 scale
 
                 #x_cpt = changepoint::cpt.mean(data = log10(x$distance), penalty = "Asymptotic", pen.value = 0.01,method = 'AMOC', class = TRUE) #Run change point analysis
-                x_cpt = try(expr = changepoint::cpt.mean(data = log10(x$distance), method = 'PELT', class = TRUE, minseglen = segLen, ...), silent = TRUE) #Run change point analysis
+                x_cpt = try(expr = changepoint::cpt.mean(data = log10(x$distance), method = 'PELT', class = TRUE, minseglen = segLen), silent = TRUE) #Run change point analysis
 
                 ydat = c()
                 if(class(x_cpt) != "try-error"){

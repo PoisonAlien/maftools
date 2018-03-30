@@ -1,7 +1,33 @@
-CHANGES IN VERSION 1.4.25
+CHANGES IN VERSION 1.5.00
 -------------------------
+NEW FUNCTIONS
+    o clinicalEnrichment - Performs mutational enrichment analysis for a given clinical feature.
+    o signatureEnrichment - Performs sample stratification based on signature exposures and enrichment analysis.
+    o plotEnrichmentResults - Plots results from clinicalEnrichment and signatureEnrichment analysis
+    o annovarToMaf can take multiple annovar annotation files and converts them to a single MAF cohort.
+
+SIGNIFICANT USER-LEVEL IMPROVEMENT
+    o Plots (most of them) are moved from ggplot to base graphics to avoid frequent breaks in ggplot aesthetics and themes. They are now fast and stable.
+    o Forstplot now includes summary table within the plot.
+
+CHANGES IN VERSION 1.4.27
+ -------------------------
+    o Bioconductor minor build warning fix
+    o Bug fix in somatic interactions plot. Issue: #135
+
+CHANGES IN VERSION 1.4.26
+ -------------------------
+    o Bioconductor minor build warning fix
+
+CHANGES IN VERSION 1.4.26
+ -------------------------
+    o Bioconductor minor build warning fix
+
+CHANGES IN VERSION 1.4.25
+ -------------------------
     o Fix messed up vignette for real
     o fix gistic plotting bug
+    o bold font faces for plots
     o Corrects an issue wherein MAFtools accidentally renamed columns with names that contained a required column as a substring of their name. PR: #123
 
 CHANGES IN VERSION 1.4.21
@@ -14,6 +40,7 @@ BUG FIXES
     o Bug fix in icgcSimpleMutationToMAF while converting ICGC maf to MAF object in. Issue: #105
     o Bug fix in oncomatrix function which earlier failed drop missing factors as well as resulted in error with zero samples. Issue: #96
     o Bug fix in mafCompare and forestPlot
+    o Bug fix in mutSig file parsing. Issue: #120
 
 IMPROVEMENTS
     o Add keepGeneOrder argument to coOncoplot. PR: #107

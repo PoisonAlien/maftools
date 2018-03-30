@@ -23,6 +23,9 @@ plotEnrichmentResults(enrich_res, pVal = 0.05, cols = NULL,
 
 \item{showTitle}{Default TRUE}
 }
+\value{
+returns nothing.
+}
 \description{
 Plots results from clinicalEnrichment analysis
 }

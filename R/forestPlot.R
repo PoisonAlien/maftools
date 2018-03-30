@@ -4,9 +4,10 @@
 #' @param mafCompareRes results from \code{\link{mafCompare}}
 #' @param pVal p-value threshold. Default 0.05.
 #' @param fdr fdr threshold. Default NULL. If provided uses adjusted pvalues (fdr).
-#' @param show can be either \code{stat} or \code{pval}
 #' @param color vector of colors for cohorts. Default NULL.
-#' @param geneFontSize Font size for gene symbols. Default 12
+#' @param geneFontSize Font size for gene symbols. Default 1.2
+#' @param titleSize font size for titles. Default 1.2
+#' @param lineWidth line width for CI bars. Default 2.2
 #' @param file basename for output file. Plot will saved to an output pdf.
 #' @param width width of plot to be generated
 #' @param height height of plot to be generated
@@ -23,9 +24,10 @@
 #' ##Perform analysis and draw forest plot.
 #' pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary',
 #' m2Name = 'Relapse', minMut = 5)
-#' forestPlot(mafCompareRes = pt.vs.rt, show = 'stat')
+#' forestPlot(mafCompareRes = pt.vs.rt)
 
-forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color = NULL, geneFontSize = 12, file = NULL, width = 5, height = 6){
+forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, color = NULL,
+                      geneFontSize = 1.2, titleSize = 1.2, lineWidth = 2.2, file = NULL, width = 5, height = 6){
 
   res = mafCompareRes$results
 
@@ -49,48 +51,81 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color
 
   m.sigs$Hugo_Symbol = factor(x = m.sigs$Hugo_Symbol, levels = rev(m.sigs$Hugo_Symbol))
   m.sigs[,log10OR := log10(or)]
-  m.sigs$label = paste('pval: ',round(m.sigs$pval, digits = 5), sep = '')
+  m.sigs[,log10OR_high := log10(ci.up)]
+  m.sigs[,log10OR_low := log10(ci.low)]
+  #m.sigs$label = paste('pval: ',round(m.sigs$pval, digits = 5), sep = '')
   m.sigs$flow = ifelse(test = m.sigs$log10OR < 0, yes = m2Name, no = m1Name)
   m.sigs$statRight = paste(m2Name,':' , m.sigs[,3,with =FALSE][[1]], sep = '')
   m.sigs$statLeft = paste(m1Name,':' , m.sigs[,2,with =FALSE][[1]], sep = '')
+  m.sigs = m.sigs[order(pval, decreasing = TRUE)]
 
 
-  if(!is.null(show)){
-    if(show == 'pval'){
-      m.sigs$label = paste('pval: ',round(m.sigs$pval, digits = 5), sep = '')
-    }else if(show == 'stat'){
-      m.sigs$label = apply(m.sigs[,.(statLeft, statRight)], 1, paste, collapse = ' ; ')
-    }else{
-      stop('show can only be pval or stat!')
-    }
-  }
+  # if(!is.null(show)){
+  #   if(show == 'pval'){
+  #     m.sigs$label = paste('pval: ',round(m.sigs$pval, digits = 5), sep = '')
+  #   }else if(show == 'stat'){
+  #     m.sigs$label = apply(m.sigs[,.(statLeft, statRight)], 1, paste, collapse = ' ; ')
+  #   }else{
+  #     stop('show can only be pval or stat!')
+  #   }
+  # }
 
   lim = max(abs(c(log10(m.sigs$ci.up), log10(m.sigs$ci.low))))+1
-
-  gg.fp = ggplot(data = m.sigs, aes(x = Hugo_Symbol, y = log10OR, label = label, color = flow))+geom_point(size = 3)+
-    geom_errorbar(aes(ymin = log10(ci.low), ymax = log10(ci.up)), size = 0.5, width = 0.20)+
-    coord_flip()+cowplot::theme_cowplot(font_size = 9, line_size = 1)+cowplot::background_grid(major = 'x')+
-    geom_hline(yintercept = 0, linetype = 'dotted')+xlab('Gene')+ylab('log10 (Odds Ratio)')+
-    theme(axis.line.y = element_blank(), axis.text.y = element_text(face = "bold", size = geneFontSize), axis.text.x = element_text(face = "bold", size = 12),
-          axis.title.x = element_text(face = "bold", size = 12), axis.title.y = element_blank(),
-          legend.position = 'bottom', legend.title = element_blank(), legend.text = element_text(face = "bold", size = 12),
-          plot.title = element_text(face = "bold", size = 14))+
-    ylim(-lim, lim)
+  lim = round(lim, digits = 2)
 
   if(!is.null(color)){
     color = color
     names(color) = c(m1Name, m2Name)
-    gg.fp = gg.fp+scale_colour_manual(values = color)
+  }else{
+    color = c("royalblue", "maroon")
+    names(color) = c(m1Name, m2Name)
   }
 
-  if(!is.null(show)){
-    gg.fp = gg.fp+ggrepel::geom_label_repel(size = 2.5, nudge_x = 0.2, force = 10, show.legend = FALSE, label.size = 0.2)
-  }
+  layout(mat = matrix(c(1, 2, 3, 4, 5, 5, 5, 5), byrow = TRUE, ncol = 4, nrow = 2), widths = c(4, 1, 1), heights = c(6, 1.2))
+  par(mar = c(3, 1, 3, 5))
+  plot(rep(0, nrow(m.sigs)), 1:nrow(m.sigs), xlim = c(-lim, lim), axes = FALSE, pch = NA, xlab = "", ylab = "", ylim = c(0.5, nrow(m.sigs)))
+  segments(x0 = m.sigs$log10OR_low, y0 = 1:nrow(m.sigs), x1 = m.sigs$log10OR_high, y1 = 1:nrow(m.sigs), lwd = lineWidth, color[m.sigs$flow])
+  points(m.sigs$log10OR, 1:nrow(m.sigs), pch = 16, cex = 0.5*(lineWidth))
+  axis(side = 1, at = c(-lim, 0, lim), lwd = 2.2, font = 2, pos = 0.5, cex.axis = 1.3)
+  segments(x0 = 0, y0 = 0.5, x1 = 0, y1 = nrow(m.sigs)+0.2, col = "gray70", lwd = 2, lty = 2)
+  mtext(text = m.sigs$Hugo_Symbol, side = 4, line = 0.2, at = 1:nrow(m.sigs),
+        font = 4, las= 2, cex = geneFontSize, adj = 0)
+  mtitle = paste(m2Name, ' (n = ', m2.sampleSize, ')', ' v/s ' , m1Name, ' (n = ' ,m1.sampleSize, ')', sep='')
+  title(main = mtitle, font = 2, adj = 0, cex.main = titleSize)
+  mtext(text = "Log odds ratio", side = 1, line = 2, font = 2, cex = 0.7*(titleSize))
 
-  title = paste(m2Name, ' (n = ', m2.sampleSize, ')', ' v/s ' , m1Name, ' (n = ' ,m1.sampleSize, ')', sep='')
-  #gg.fp = gg.fp+annotate(geom = 'text', y = c(-2, 2), x = c(nrow(m.sigs)+2, nrow(m.sigs)+2), label = c(m1Name, m2Name))
-  gg.fp = gg.fp+ggtitle(label = title)
-  print(gg.fp)
+  par(mar = c(3, 0, 3, 0))
+  plot(rep(0, nrow(m.sigs)), 1:nrow(m.sigs), xlim = c(0, 1), axes = FALSE,
+       pch = NA, xlab = "", ylab = "", ylim = c(0.5, nrow(m.sigs)))
+  text(x = 0.5, y = 1:nrow(m.sigs), labels = as.numeric(unlist(m.sigs[,2])),
+       adj = 0, font = 2, cex = 1.4*(geneFontSize))
+  title(main = m1Name, cex.main = titleSize)
+
+  par(mar = c(3, 0, 3, 0))
+  plot(rep(0, nrow(m.sigs)), 1:nrow(m.sigs), xlim = c(0, 1), axes = FALSE,
+       pch = NA, xlab = "", ylab = "", ylim = c(0.5, nrow(m.sigs)))
+  text(x = 0.5, y = 1:nrow(m.sigs), labels = as.numeric(unlist(m.sigs[,3])),
+       adj = 0, font = 2, cex = 1.4*(geneFontSize))
+  title(main = m2Name, cex.main = titleSize)
+
+  m.sigs$significance = ifelse(test =  as.numeric(m.sigs$pval) < 0.001, yes = "***", no =
+                                 ifelse(test = as.numeric(m.sigs$pval) < 0.01, yes = "**", no =
+                                          ifelse(test = as.numeric(m.sigs$pval) < 0.05, yes = "*", no = "NS")))
+
+  par(mar = c(3, 0, 3, 0))
+  plot(rep(0, nrow(m.sigs)), 1:nrow(m.sigs), xlim = c(0, 1), axes = FALSE,
+       pch = NA, xlab = "", ylab = "", ylim = c(0.5, nrow(m.sigs)))
+  text(x = 0.5, y = 1:nrow(m.sigs), labels = m.sigs$significance,
+       adj = 0, font = 2, cex = 1.4*(geneFontSize))
+  title(main = "p-value", cex.main = titleSize)
+
+
+  plot.new()
+  par(mar = c(0, 0, 0, 0))
+  legend(x = "top", legend = names(color), lwd = lineWidth,
+         col = color[c(m1Name, m2Name)], border = NA, bty = "n",
+         cex = 1.1*(titleSize), horiz = TRUE, text.font = 2, xpd = TRUE, pch = 16)
+
 
   if(!is.null(file)){
     cowplot::save_plot(filename = paste(file, 'pdf', sep='.'),
@@ -98,5 +133,4 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, show = NULL, color
                        paper = "special", bg  = "white")
   }
 
-  return(gg.fp)
 }

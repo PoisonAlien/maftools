@@ -54,15 +54,9 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   mut = mut[!Variant_Type %in% 'CNV']
 
   #Protein domain source.
-  gff = system.file('extdata', 'protein_domains.txt.gz', package = 'maftools')
-
-  if(Sys.info()[['sysname']] == 'Windows'){
-    gff.gz = gzfile(description = gff, open = 'r')
-    gff <- suppressWarnings( data.table::data.table(read.csv( file = gff.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-    close(gff.gz)
-  } else{
-    gff = data.table::fread(input = paste('zcat <', gff), sep = '\t', stringsAsFactors = FALSE)
-  }
+  gff = system.file('extdata', 'protein_domains.rds', package = 'maftools')
+  gff = readRDS(file = gff)
+  data.table::setDT(x = gff)
 
   if(is.null(AACol)){
     pchange = c('HGVSp_Short', 'Protein_Change', 'AAChange')

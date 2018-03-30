@@ -9,12 +9,15 @@
 #' @param title_size size of title. Default 1.3
 #' @param axis_lwd axis width. Default 2.
 #' @param font_size font size. Default 1.2
+#' @param show_title Default TRUE
+#' @param show_barcodes Default FALSE
 #' @param ... further plot options passed to \code{\link{barplot}}
 #' @return ggplot object if contributions is TRUE
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'
-plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL, font_size = 1.2, axis_lwd = 2, title_size = 0.9, ...){
+plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL,
+                          font_size = 1.2, show_title = TRUE, axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
   contrib = nmfRes$contributions
@@ -31,16 +34,34 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
 
     #contrib = t(contribt[,1:(ncol(contribt)-1)])
     contrib = t(contribt[,1:(ncol(contribt))])
-    contrib.melt = data.table::melt(contrib)
 
-    contrib.gg = ggplot(data = contrib.melt, aes(x = Var2, y = value, fill = Var1))+geom_bar(stat = 'identity')+
-      ylab('Fraction signature contribution')+xlab('Sample')+cowplot::theme_cowplot(line_size = 1)+
-      theme(legend.position = 'bottom', axis.ticks = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-            legend.title = element_blank())+xlab("Samples")
+    cols = RColorBrewer::brewer.pal(n = 8, name = 'Set2')
 
-
-    return(contrib.gg)
-
+    if(show_barcodes){
+      lo = layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
+      par(mar = c(6, 4, 2, 1))
+      b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
+      axis(side = 1, at = b, labels = colnames(contrib), lwd = 2, cex.axis = font_size,
+           las = 2, line = 0.2, hadj = 0.8, font = 2, tick = FALSE)
+      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 2, las = 2, cex.axis = 0.9)
+      mtext(text = "Signature exposures", side = 2, font = 2, cex = 1, line = 2.8)
+      plot.new()
+      par(mar = c(2, 3, 0, 0))
+      legend(x = "left", legend = rownames(contrib), col = cols[1:nrow(contrib)],
+             border = NA, bty = "n", pch = 15, xpd = TRUE, ncol = 1,
+             cex = 1.2, pt.cex = 1.5, horiz = TRUE)
+    }else{
+      lo = layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
+      par(mar = c(3, 4, 2, 1))
+      b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
+      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 2, las = 2, cex.axis = 0.9)
+      mtext(text = "Signature exposure", side = 2, font = 2, cex = 1, line = 2.8)
+      plot.new()
+      par(mar = c(2, 3, 0, 0))
+      legend(x = "left", legend = rownames(contrib), col = cols[1:nrow(contrib)],
+             border = NA, bty = "n", pch = 15, xpd = TRUE, ncol = 1,
+             cex = 1.2, pt.cex = 1.5, horiz = TRUE)
+    }
   }else{
     aetiology = structure(list(aetiology = c("spontaneous deamination of 5-methylcytosine",
                                              "APOBEC Cytidine Deaminase (C>T)", "defects in DNA-DSB repair by HR",
@@ -81,7 +102,10 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, 0.3),
               cex.main = 1, border = NA, font.axis = 2, font.lab = 2,
               adj = 0.25, ...)
-      title(main = ae, cex.main = title_size, line = 0)
+      if(show_title){
+        title(main = ae, cex.main = title_size, line = 0)
+      }
+
       #mtext(text = ae, side = 1, line = 2, font = 1, cex = 0.5, at = 0.3)
       axis(side = 2, at = seq(0, 0.3, 0.1), labels = seq(0, 0.3, 0.1),
            pos = -2, las = 2, lwd = axis_lwd, hadj = 1.1,

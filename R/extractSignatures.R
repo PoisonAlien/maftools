@@ -1,4 +1,4 @@
-#' Extract mutational signatures from trinucletide context.
+#' Extract mutational signatures from trinucleotide context.
 #'
 #' @description Decompose a matrix of 96 substitution classes into \code{n} signatures.
 #'

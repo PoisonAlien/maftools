@@ -2,7 +2,7 @@
 % Please edit documentation in R/extractSignatures.R
 \name{extractSignatures}
 \alias{extractSignatures}
-\title{Extract mutational signatures from trinucletide context.}
+\title{Extract mutational signatures from trinucleotide context.}
 \usage{
 extractSignatures(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE,
   parallel = NULL)

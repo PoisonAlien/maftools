@@ -7,6 +7,6 @@ fisherCorrection = function(fc){
   fc$ci.up = ifelse(test = fc$ci.up == 0, yes = fc$or, no = fc$ci.up)
   fc$ci.low = ifelse(test = is.infinite(fc$ci.low), yes = fc$ci.up, no = fc$ci.low)
 
-  return(data.table(fc))
+  return(data.table::data.table(fc))
 
 }

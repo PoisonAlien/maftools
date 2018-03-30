@@ -6,6 +6,7 @@
 #' @param geneFontSize cex for gene font size. Default 0.8
 #' @param legendFontSize cex for legend font size. Default 0.8
 #' @param showTitle Default TRUE
+#' @return returns nothing.
 #' @export
 #' @seealso \code{\link{clinicalEnrichment}} \code{\link{signatureEnrichment}}
 #'
