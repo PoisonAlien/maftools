@@ -23,8 +23,8 @@
 #' @seealso \code{\link{read.maf}} \code{\link{MAF}}
 #' @export
 
-plotmafSummary = function(maf, file = NULL, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE,
-                          width = 10, height = 7, addStat = NULL, showBarcodes = FALSE, fs = 1,
+plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE,
+                          addStat = NULL, showBarcodes = FALSE, fs = 1,
                           textSize = 0.8, color = NULL, titleSize = c(1, 0.8), titvColor = NULL, top = 10){
 
 

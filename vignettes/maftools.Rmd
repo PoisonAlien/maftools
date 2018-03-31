@@ -801,7 +801,7 @@ laml.sign = structure(list(signatures = structure(c(1.08748973712201e-18,
 ```
 
 ```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
-plotSignatures(laml.sign, title_size = 1)
+plotSignatures(laml.sign, title_size = 0.8)
 ```
 
 
@@ -821,8 +821,8 @@ NOTE: Should you receive an error while running `extractSignatures` complaining 
 ### Plotting Signature contributions
 `plotSignatures` also plots signature contribution as a barplot. 
 
-```{r, fig.width=5, fig.height=4, fig.align='left'}
-plotSignatures(nmfRes = laml.sign, contributions = TRUE, title_size = 0.8)
+```{r, fig.width=6, fig.height=5, fig.align='left'}
+plotSignatures(nmfRes = laml.sign, contributions = TRUE)
 ```
 
 
@@ -923,7 +923,7 @@ laml.mutsig.corrected = prepareMutSig(maf = laml)
 ## Subsetting MAF
 We can also subset MAF using function `subsetMaf`
 ```{r}
-##Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933'  (Printing just 5 rows for display convenience)
+#Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933'  (Printing just 5 rows for display convenience)
 subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'))[1:5]
 ##Same as above but return output as an MAF object
 subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), mafObj = TRUE)
@@ -931,10 +931,10 @@ subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), mafObj = TRUE)
 
 ### Specifying queries and controlling output fields.
 ```{r}
-##Select all Splice_Site mutations from DNMT3A and NPM1
+#Select all Splice_Site mutations from DNMT3A and NPM1
 subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'")
 
-##Same as above but include only 'i_transcript_name' column in the output
+#Same as above but include only 'i_transcript_name' column in the output
 subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'", fields = 'i_transcript_name')
 ```
 
