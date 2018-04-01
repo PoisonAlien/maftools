@@ -39,4 +39,6 @@ m2Name = 'Relapse', minMut = 5)
 }
 \seealso{
 \code{\link{forestPlot}}
+
+\code{\link{lollipopPlot2}}
 }

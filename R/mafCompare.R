@@ -17,6 +17,7 @@
 #' m2Name = 'Relapse', minMut = 5)
 #' @export
 #' @seealso \code{\link{forestPlot}}
+#' @seealso \code{\link{lollipopPlot2}}
 
 mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE){
 

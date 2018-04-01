@@ -4,6 +4,7 @@ NEW FUNCTIONS
     o clinicalEnrichment - Performs mutational enrichment analysis for a given clinical feature.
     o signatureEnrichment - Performs sample stratification based on signature exposures and enrichment analysis.
     o plotEnrichmentResults - Plots results from clinicalEnrichment and signatureEnrichment analysis
+    o lollipopPlot2 - Compare two lollipop plots
     o annovarToMaf can take multiple annovar annotation files and converts them to a single MAF cohort.
 
 SIGNIFICANT USER-LEVEL IMPROVEMENT
