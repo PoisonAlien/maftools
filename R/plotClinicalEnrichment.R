@@ -23,17 +23,23 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontS
     P_value = res$p_value, Group1 = res$Group1, Group2 = "Res"
   )
 
+  plot.dat = plot.dat[P_value < pVal]
+  if(nrow(plot.dat) < 1){
+    stop(paste0("No significant associations found at p-value < ", pVal))
+  }
+
   plot.dat$g1_muts_fract = apply(plot.dat, 1, function(x) round(as.numeric(x[2])/as.numeric(x[3]), digits = 3))
   plot.dat$g2_muts_fract = apply(plot.dat, 1, function(x) round(as.numeric(x[4])/as.numeric(x[5]), digits = 3))
 
   plot.dat[,g1_title := paste0(g1_muts, "/", g1_tot)]
   plot.dat[,g2_title := paste0(g2_muts, "/", g2_tot)]
 
-  plot.dat = plot.dat[P_value < pVal]
-
   if(is.null(cols)){
-    cols = RColorBrewer::brewer.pal(n = 9,name = 'Spectral')
-    names(cols) = as.character(enrich_res$cf_sizes$cf)
+    cols = c(RColorBrewer::brewer.pal(n = 9,name = 'Set1'),
+             RColorBrewer::brewer.pal(n = 8,name = 'Dark2'),
+             RColorBrewer::brewer.pal(n = 8,name = 'Accent'))
+    cols = cols[1:length(unique(plot.dat$Group1))]
+    names(cols) = as.character(unique(plot.dat$Group1))
   }else{
     names(cols) = as.character(enrich_res$cf_sizes$cf)
   }
