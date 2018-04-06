@@ -100,9 +100,7 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL, mar
 
   if(!is.null(file)){
     cowplot::save_plot(filename = paste(file, 'pdf', sep='.'), plot = gist.gg, base_height = height, base_width = width)
-  }else{
-    print(gist.gg)
   }
 
-  return(gist.gg)
+  gist.gg
 }

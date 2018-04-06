@@ -34,6 +34,8 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontS
   if(is.null(cols)){
     cols = RColorBrewer::brewer.pal(n = 9,name = 'Spectral')
     names(cols) = as.character(enrich_res$cf_sizes$cf)
+  }else{
+    names(cols) = as.character(enrich_res$cf_sizes$cf)
   }
 
   bar.cols = cols[plot.dat[,Group1]]

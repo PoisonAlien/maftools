@@ -1,4 +1,4 @@
-CHANGES IN VERSION 1.5.00
+CHANGES IN VERSION 1.6.00
 -------------------------
 NEW FUNCTIONS
     o clinicalEnrichment - Performs mutational enrichment analysis for a given clinical feature.
@@ -10,6 +10,7 @@ NEW FUNCTIONS
 SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Plots (most of them) are moved from ggplot to base graphics to avoid frequent breaks in ggplot aesthetics and themes. They are now fast and stable.
     o Forstplot now includes summary table within the plot.
+    o Included capture_size argument in tcgaCompare.
 
 CHANGES IN VERSION 1.4.27
  -------------------------

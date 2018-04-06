@@ -149,12 +149,9 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
     surv.gg = surv.gg+geom_ribbon(aes(ymin = survLower, ymax = survUp), alpha = 0.2, fill = "grey70")
   }
 
-  print(surv.gg)
-
   if(!is.null(fn)){
     cowplot::save_plot(filename = paste0(fn, '.pdf'), plot = surv.gg, base_height = height, base_width = width, bg = 'white')
   }
 
-  return(surv.gg)
-
+  surv.gg
 }

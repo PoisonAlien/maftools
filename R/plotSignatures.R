@@ -99,7 +99,8 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       #ae = paste0("Aetiology: ", ae, " \n cosine-similarity: ", max(coSineMat[i,]))
       ae = paste0(ae.sig, " like; cosine-similarity: ", round(max(coSineMat[i,]), digits = 3), " \n Aetiology: ", ae)
       d = as.matrix(plotData[i,])
-      barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, 0.3),
+      bh = ceiling(max(d, na.rm = TRUE) * 10)/10 #Bar height
+      barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, bh),
               cex.main = 1, border = NA, font.axis = 2, font.lab = 2,
               adj = 0.25, ...)
       if(show_title){
@@ -107,7 +108,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       }
 
       #mtext(text = ae, side = 1, line = 2, font = 1, cex = 0.5, at = 0.3)
-      axis(side = 2, at = seq(0, 0.3, 0.1), labels = seq(0, 0.3, 0.1),
+      axis(side = 2, at = seq(0, bh, 0.1),
            pos = -2, las = 2, lwd = axis_lwd, hadj = 1.1,
            font = 2, cex.axis = font_size)
       #abline(h = seq(0, 0.3, 0.1),lty=2,lwd=0.3, col = 'gray70')

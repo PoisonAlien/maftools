@@ -137,8 +137,6 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
   }
 
 
-  print(pc.gg)
-
   if(!is.null(file)){
     cowplot::save_plot(filename = paste0(file, '_pancan.pdf'), plot = pc.gg, base_height = height, base_width = width)
     pancan.input.q = pancan.input.q[order(q, pancan)]
@@ -146,5 +144,5 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
     write.table(x = pancan.input.q, file = paste0(file, '_pancan.txt'), sep = '\t', quote = FALSE, row.names = FALSE)
   }
 
-  return(pc.gg)
+  pc.gg
 }

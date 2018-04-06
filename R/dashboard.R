@@ -136,7 +136,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   gs.dat = gs.dat[names(sort(rowSums(gs.dat), decreasing = TRUE)),, drop = FALSE]
   gs.dat = gs.dat[,names(sort(colSums(gs.dat))), drop = FALSE]
 
-  xt = seq(0, max(colSums(gs.dat)), length.out = 4)
+  xt = as.integer(seq(0, max(colSums(gs.dat)), length.out = 4))
 
   par(mar = c(3, 4, 3, 1))
   b = barplot(gs.dat, axes = FALSE, horiz = TRUE, col = col[rownames(gs.dat)], border = NA, xlim = c(0, max(xt)), names.arg = rep("", ncol(gs.dat)))

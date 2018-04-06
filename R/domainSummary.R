@@ -54,7 +54,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   mut = mut[!Variant_Type %in% 'CNV']
 
   #Protein domain source.
-  gff = system.file('extdata', 'protein_domains.rds', package = 'maftools')
+  gff = system.file('extdata', 'protein_domains.RDs', package = 'maftools')
   gff = readRDS(file = gff)
   data.table::setDT(x = gff)
 

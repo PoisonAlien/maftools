@@ -46,7 +46,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
   geneID = gene
   #Protein domain source.
-  gff = system.file('extdata', 'protein_domains.rds', package = 'maftools')
+  gff = system.file('extdata', 'protein_domains.RDs', package = 'maftools')
   gff = readRDS(file = gff)
   data.table::setDT(x = gff)
 

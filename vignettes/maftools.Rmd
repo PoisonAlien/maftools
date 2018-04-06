@@ -31,12 +31,19 @@ Mayakonda, A. & Koeffler, H.P. Maftools: Efficient analysis, visualization and s
 from large-scale cohort based cancer studies. bioRxiv (2016). doi: http://dx.doi.org/10.1101/052662
 ```
 
+# Generating MAF files
+There are two ways of generating MAF files, depending on type of data. 
+
+  * For VCF files or simple tabular files, easy option is to use [vcf2maf](https://github.com/mskcc/vcf2maf) utility which will annotate VCFs, prioritize transcripts, and generates an MAF.
+  
+  * If you're using [ANNOVAR](http://annovar.openbioinformatics.org/en/latest/) for variant annotations, maftools has a handy function `annovarToMaf` for converting tabular annovar outputs to MAF.
+
 # MAF field requirements
 MAF files contain many fields ranging from chromosome names to cosmic annotations. However most of the analysis in maftools uses following fields.
 
   * Mandatory fields: __Hugo_Symbol, Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Classification, Variant_Type and Tumor_Sample_Barcode__. 
   
-  * Recommended optional fields: non MAF specific fields containing vaf and amino acid change information. 
+  * Recommended optional fields: non MAF specific fields containing VAF (Variant Allele Frequecy) and amino acid change information. 
 
 Complete specification of MAF files can be found on [NCI TCGA page](https://wiki.nci.nih.gov/display/TCGA/Mutation+Annotation+Format+(MAF)+Specification).
 
@@ -259,13 +266,13 @@ Similar to MAF objects, there are methods available to access slots of GISTIC ob
 There are three types of plots available to visualize gistic results.
 
 ### genome plot
-```{r, fig.width=8, fig.height=4, fig.align='left'}
-gcp = gisticChromPlot(gistic = laml.gistic, markBands = "all")
+```{r, fig.width=6, fig.height=4, fig.align='left'}
+gisticChromPlot(gistic = laml.gistic, markBands = "all")
 ```
 
 ### Bubble plot
-```{r, fig.width=6, fig.height=4.5, fig.align='left'}
-gbp = gisticBubblePlot(gistic = laml.gistic)
+```{r, fig.width=5, fig.height=4, fig.align='left'}
+gisticBubblePlot(gistic = laml.gistic)
 ```
 
 ### oncoplot
@@ -339,7 +346,7 @@ Our annotation data already contains survival information and in case you have s
 
 ```{r, fig.width=5, fig.height=5}
 #Survival analysis based on grouping of DNMT3A mutation status
-laml.dnmt3a.surv = mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
+mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
 ```
 
 ## Comparing two cohorts (MAFs)
@@ -827,14 +834,6 @@ pheatmap::pheatmap(mat = laml.sign$coSineSimMat, cluster_rows = FALSE, main = "c
 
 NOTE: Should you receive an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the "NMF" library and re-run.
 
-### Plotting Signature contributions
-`plotSignatures` also plots signature contribution as a barplot. 
-
-```{r, fig.width=6, fig.height=5, fig.align='left'}
-plotSignatures(nmfRes = laml.sign, contributions = TRUE)
-```
-
-
 ### Signature enrichment analysis
 Signatures can further be assigned to samples and enrichment analysis can be performd using `signatureEnrichment` funtion, which identifies mutations enriched in every signature identified. 
 
@@ -843,7 +842,7 @@ colnames(laml.sign$contributions) = as.character(getSampleSummary(x = laml)[,Tum
 ```
 
 
-```{r, fig.height=3, fig.width=4, warning=FALSE}
+```{r, fig.height=3.5, fig.width=5, warning=FALSE}
 laml.se = signatureEnrichment(maf = laml, sig_res = laml.sign)
 ```
 
@@ -882,7 +881,9 @@ NOTE: This is quite time consuming if input is big.
 Annovar is one of the most widely used Variant Annotation tool in Genomics [14](#references). Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
 
 e.g, 
-`table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (refGene),cytoBand,dbnsfp30a -operation (g),r,f -nastring NA`
+```{r, engine='perl', eval=FALSE}
+table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol (refGene),cytoBand,dbnsfp30a -operation (g),r,f -nastring NA
+```
 
 `annovarToMaf` mainly uses gene based annotations for processing, rest of the annotation columns from input file will be attached to the end of the resulting MAF.
 

@@ -50,6 +50,5 @@ plotOncodrive = function(res = NULL, fdrCutOff = 0.05, useFraction = FALSE, colC
       xlab('Number of mutations in clusters')+cowplot::background_grid(major = 'xy')
   }
 
-  print(p)
-  #return(p)
+  p
 }
