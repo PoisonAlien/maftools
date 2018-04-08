@@ -5,8 +5,7 @@
 \title{Plot density plots from clutering results.}
 \usage{
 plotClusters(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE,
-  savePlot = FALSE, width = 6, height = 5, colors = NULL,
-  titleSize = 1.2, labelSize = 0.8, pointSize = 1.2)
+  savePlot = FALSE, width = 6, height = 5, colors = NULL)
 }
 \arguments{
 \item{clusters}{clustering results from \code{\link{inferHeterogeneity}}}
@@ -25,12 +24,6 @@ or \code{all} to label all genes. Default NULL.}
 \item{height}{plot height. Default 5.}
 
 \item{colors}{manual colors for clusters. Default NULL.}
-
-\item{titleSize}{font size for titles. Default 1.2}
-
-\item{labelSize}{Font size for gene symbols. Default 0.8}
-
-\item{pointSize}{font size for titles. Default 1.2}
 }
 \value{
 returns nothing.
@@ -39,14 +32,12 @@ returns nothing.
 Plots results from inferHeterogeneity.
 }
 \examples{
-\dontrun{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf)
 seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
 TCGA.AB.3009.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-3009',
 segFile = seg, vafCol = 'i_TumorVAF_WU')
-plotClusters(TCGA.AB.3009.clust)
-}
+plotClusters(TCGA.AB.3009.clust, genes = c('NF1', 'SUZ12'), showCNvars = TRUE)
 }
 \seealso{
 \code{\link{inferHeterogeneity}}

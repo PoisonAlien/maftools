@@ -5,7 +5,7 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
   }
 
   #Protein domain source.
-  gff = system.file('extdata', 'protein_domains.rds', package = 'maftools')
+  gff = system.file('extdata', 'protein_domains.RDs', package = 'maftools')
   gff = readRDS(file = gff)
   data.table::setDT(x = gff)
 

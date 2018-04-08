@@ -334,7 +334,7 @@ Lawrence et al performed MutSigCV analysis on 21 cancer cohorts and identified o
 ```{r, fig.width=5, fig.height=4}
 #MutsigCV results for TCGA-AML
 laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
-laml.pancan = pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
+pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
 ```
 
 Above results show genes such as CEBPa, TET2 and WT1 are specifically mutated in Leukemia.
