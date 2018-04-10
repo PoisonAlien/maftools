@@ -32,7 +32,6 @@ from large-scale cohort based cancer studies. bioRxiv (2016). doi: http://dx.doi
 ```
 
 # Generating MAF files
-There are two ways of generating MAF files, depending on type of data. 
 
   * For VCF files or simple tabular files, easy option is to use [vcf2maf](https://github.com/mskcc/vcf2maf) utility which will annotate VCFs, prioritize transcripts, and generates an MAF.
   
@@ -50,7 +49,7 @@ Complete specification of MAF files can be found on [NCI TCGA page](https://wiki
 This vignette demonstrates the usage and application of maftools on an example MAF file from TCGA LAML cohort [1](#references).
 
 # Overview of the package
-maftools functions can be categorized into mainly Visualization and Analysis modules. Each of these functions and a short description is summarized as shown below. Usage is simple, just read your MAF file with `read.maf` (along with copy-number data available) and pass the resulting MAF object to the desired function for plotting or analysis.
+maftools functions can be categorized into mainly Visualization and Analysis modules. Each of these functions and a short description is summarized as shown below. Usage is simple, just read your MAF file with `read.maf` (along with copy-number data if available) and pass the resulting MAF object to the desired function for plotting or analysis.
 
 ![](overview.png)
 
@@ -62,7 +61,7 @@ maftools functions can be categorized into mainly Visualization and Analysis mod
   * an optional copy number data if available. Can be GISTIC output or a custom table containing sample names, gene names and copy-number status (`Amp` or `Del`).
   
 ## Reading MAF files.
-`read.maf` function reads MAF files, summarizes it in various ways and stores it as an MAF object. Even though MAF file is alone enough, it is highly recommended to provide annotations associated with samples in MAF. One can also integrate copy number data if available.
+`read.maf` function reads MAF files, summarizes it in various ways and stores it as an MAF object. Even though MAF file is alone enough, it is recommended to provide annotations associated with samples in MAF. One can also integrate copy number data if available.
 
 ```{r results='hide', message=FALSE}
 require(maftools)
