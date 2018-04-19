@@ -11,13 +11,14 @@
 #' @param font_size font size. Default 1.2
 #' @param show_title Default TRUE
 #' @param show_barcodes Default FALSE
+#' @param yaxisLim Default 0.3. If NA autoscales.
 #' @param ... further plot options passed to \code{\link{barplot}}
 #' @return ggplot object if contributions is TRUE
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'
 plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL,
-                          font_size = 1.2, show_title = TRUE, axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, ...){
+                          font_size = 1.2, show_title = TRUE, axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, yaxisLim = 0.3, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
   contrib = nmfRes$contributions
@@ -99,7 +100,12 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       #ae = paste0("Aetiology: ", ae, " \n cosine-similarity: ", max(coSineMat[i,]))
       ae = paste0(ae.sig, " like; cosine-similarity: ", round(max(coSineMat[i,]), digits = 3), " \n Aetiology: ", ae)
       d = as.matrix(plotData[i,])
-      bh = ceiling(max(d, na.rm = TRUE) * 10)/10 #Bar height
+      if(is.na(yaxisLim)){
+        bh = ceiling(max(d, na.rm = TRUE) * 10)/10 #Bar height
+      }else{
+        bh = 0.3
+      }
+
       barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, bh),
               cex.main = 1, border = NA, font.axis = 2, font.lab = 2,
               adj = 0.25, ...)
