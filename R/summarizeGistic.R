@@ -106,7 +106,7 @@ gisticMap = function(gistic){
     }))
     #Sort by total variants
     mdf = mdf[order(mdf[, ncol(mdf)], decreasing = TRUE), ]
-    colnames(mdf) = gsub(pattern = "^X", replacement = "", colnames(mdf))
+    #colnames(mdf) = gsub(pattern = "^X", replacement = "", colnames(mdf))
     nMut = mdf[, ncol(mdf)]
 
     mdf = mdf[, -ncol(mdf)]

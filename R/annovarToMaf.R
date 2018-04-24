@@ -123,9 +123,14 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
 
   ann.lvls = c('synonymous', 'nonsynonymous', 'stopgain', 'stoploss', 'frameshift insertion', 'frameshift deletion', 'nonframeshift insertion',
                'nonframeshift deletion', 'Intron', 'IGR', 'Splice_Site', "3'UTR", "3'Flank", "5'UTR", "5'Flank", "unknown", "UNKNOWN", 'RNA')
+               # "intronic", "intergenic", "downstream", "upstream", "splicing", "UTR3", "UTR5",
+               # 'ncRNA_exonic', 'ncRNA_intronic', 'ncRNA_UTR3', 'ncRNA_UTR5', 'ncRNA')
   ann.lbls = c('Silent', 'Missense_Mutation', 'Nonsense_Mutation', 'Nonstop_Mutation', 'Frame_Shift_Ins', 'Frame_Shift_Del', 'In_Frame_Ins',
                'In_Frame_Del', 'Intron', 'IGR', 'Splice_Site', "3'UTR", "3'Flank", "5'UTR", "5'Flank", "UNKNOWN", "UNKNOWN", 'RNA')
+               # "Intron", "'IGR", "3'Flank", "5'Flank", "Splice_Site", "3'UTR", "5'UTR",
+               # 'RNA', 'RNA', 'RNA', 'RNA', 'RNA')
   names(ann.lbls) = ann.lvls
+
   ann$ExonicFunc.refGene = as.character(ann.lbls[as.character(ann$ExonicFunc.refGene)])
 
   #ann$ExonicFunc.refGene = suppressWarnings(as.character( factor(x = ann$ExonicFunc.refGene, levels = ann.lvls, labels = ann.lbls)))

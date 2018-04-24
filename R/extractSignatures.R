@@ -52,7 +52,7 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
       }
 
       if(plotBestFitRes){
-        pdf('nmf_consensus.pdf', bg = 'white', pointsize = 9)
+        pdf('nmf_consensus.pdf', bg = 'white', pointsize = 9, width = 12, height = 12, paper = "special")
         NMF::consensusmap(nmfTry)
         dev.off()
         message('created nmf_consensus.pdf')
@@ -64,6 +64,16 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
       print(nmf.sum)
       nmf.sum$diff = c(0, diff(nmf.sum$cophenetic))
       bestFit = nmf.sum[diff < 0, rank][1] #First point where cophenetic correlation coefficient starts decreasing
+
+      plot(nmf.sum$rank, nmf.sum$cophenetic, axes = FALSE, pch = 16, col = "#D8B365", cex = 1.2, xlab = NA, ylab = NA)
+      axis(side = 1, at = nmf.sum$rank, labels = nmf.sum$rank, lwd = 3, font = 2, cex.axis = 1.2)
+      lines(x = nmf.sum$rank, y = round(nmf.sum$cophenetic, digits = 4), lwd = 3)
+      points(nmf.sum$rank, nmf.sum$cophenetic, pch = 16, col = "#D8B365", cex = 1.6)
+      axis(side = 2, at = round(nmf.sum$cophenetic, digits = 4), lwd = 3, font = 2, las = 2, cex = 1.4, cex.axis = 1.2)
+      segments(x0 = bestFit, y0 = 0, x1 = bestFit, y1 = nmf.sum[rank == bestFit, cophenetic], lwd= 3, lty = 2, col = "maroon")
+      title(main = "cophenetic metric", adj = 0, font.main = 4)
+
+
       #bestFit = nmf.sum[which(nmf.sum$cophenetic == max(nmf.sum$)),'rank'] #Get the best rank based on highest cophenetic correlation coefficient
       message(paste('Using ',bestFit, ' as a best-fit rank based on decreasing cophenetic correlation coefficient.', sep=''))
       n = as.numeric(bestFit)
