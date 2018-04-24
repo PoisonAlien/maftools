@@ -29,7 +29,7 @@
 annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL , sep = '\t', MAFobj = FALSE, sampleAnno = NULL){
 
 
-  ann = lapply(annovar, data.table::fread, colClasses = 'character', sep = sep, stringsAsFactors = FALSE)
+  ann = lapply(annovar, data.table::fread, colClasses = 'character', sep = sep, stringsAsFactors = FALSE, fill = TRUE)
   names(ann) = gsub(pattern = ".hg19_multianno.txt", replacement = "", x = basename(path = annovar))
   ann = data.table::rbindlist(l = ann, fill = TRUE, idcol = "sample_id")
 

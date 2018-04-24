@@ -27,10 +27,10 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, clinical
       icgc <- suppressWarnings( data.table(read.csv( file = icgc.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
       close(icgc.gz)
     }else{
-      icgc = suppressWarnings(data.table::fread(input = paste('zcat <', icgc), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
+      icgc = suppressWarnings(data.table::fread(input = paste('zcat <', icgc), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE))
     }
   }else{
-    icgc = data.table::fread(input = icgc, sep = '\t', stringsAsFactors = FALSE, header = TRUE, showProgress = TRUE, data.table = TRUE, verbose = FALSE)
+    icgc = data.table::fread(input = icgc, sep = '\t', stringsAsFactors = FALSE, header = TRUE, showProgress = TRUE, data.table = TRUE, verbose = FALSE, fill = TRUE)
   }
 
   icgc.indels = icgc[consequence_type %in% 'frameshift_variant']
