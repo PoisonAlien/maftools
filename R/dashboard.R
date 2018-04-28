@@ -86,16 +86,16 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
   if(!is.null(stat)){
     if(stat == 'mean'){
-      med.line = round(maf@summary[nrow(maf@summary),Mean], 2)
+      med.line = round(maf@summary[ID %in% "total", Mean], 2)
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Mean: ', med.line, sep='')))
       title(main = paste0("Mean: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 2, line = 1)
     }else if(stat == 'median'){
-      med.line = round(maf@summary[nrow(maf@summary),Median], 2)
+      med.line = round(maf@summary[ID %in% "total", Median], 2)
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
       title(main = paste0("Median: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 2, line = 1)
     }
   }else{
-    med.line = round(max(maf@summary[,Median], na.rm = TRUE), 2)
+    med.line = round(maf@summary[ID %in% "total", Median], 2)
     title(main = paste0("Median: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 2, line = 1)
   }
 
