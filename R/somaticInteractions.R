@@ -89,11 +89,11 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
     interactions[interactions < -4] = -4
     interactions[interactions > 4] = 4
-    r = interactions
-    rd = hclust(dist(r))$order
-    cd = hclust(dist(t(r)))$order
-    interactions = interactions[rd, , drop = FALSE]
-    interactions = interactions[,rd, drop = FALSE]
+    # r = interactions
+    # rd = hclust(dist(r))$order
+    # cd = hclust(dist(t(r)))$order
+    # interactions = interactions[rd, , drop = FALSE]
+    # interactions = interactions[,rd, drop = FALSE]
 
     interactions[lower.tri(x = interactions)] = NA
 
