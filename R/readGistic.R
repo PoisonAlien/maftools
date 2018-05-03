@@ -163,7 +163,7 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
   cnDt.mat = gisticMap(gistic = cnDT)
 
   cnDt.summary$cytoband.summary = merge(cnDt.summary$cytoband.summary, qval, by.x = 'Cytoband', by.y = 'Unique_Name', all.x = TRUE)
-  colnames(cnDt.summary$cytoband.summary)[1] = 'Unique_Name'
+  colnames(cnDt.summary$cytoband.summary)[c(1, 5)] = c('Unique_Name', 'Cytoband')
   cnDt.summary$cytoband.summary = cnDt.summary$cytoband.summary[order(qvalues)]
 
   g = GISTIC(data = cnDT, cnv.summary = cnDt.summary$cnv.summary,

@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.6.05
+-------------------------
+BUG FIX
+    o Fix breaks due to changes in data.table 1.11.0. Issue: #143
+    o SomaticInteraction bug fix due to hclust. Issue: #142
+
 CHANGES IN VERSION 1.6.00
 -------------------------
 NEW FUNCTIONS
