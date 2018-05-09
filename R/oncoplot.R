@@ -81,8 +81,8 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     mach.epsi = .Machine$double.eps
     ms$q = ifelse(test = ms$q == 0, yes = mach.epsi, no = ms$q)
     ms[,FDR := -log10(as.numeric(as.character(q)))]
-    ms.smg = ms[q < mutsigQval]
-    genes = as.character(ms[q < mutsigQval, gene])
+    ms.smg = ms[q < as.numeric(as.character(mutsigQval))]
+    genes = as.character(ms[as.numeric(as.character(q)) < mutsigQval, gene])
 
     om = createOncoMatrix(m = maf, g = genes)
     numMat = om$numericMatrix
@@ -320,9 +320,9 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   ##This function adds rowbar
   if(!is.null(mutsig)){
+    ms.smg = ms.smg[rownames(mat), , drop = FALSE]
     anno_row_bar = function(index){
       n = length(index)
-
       max_count = max(as.numeric(as.character(ms.smg$FDR)))
       tb = rev(as.list(ms.smg$FDR))
       grid::pushViewport(grid::viewport(xscale = c(0, max_count * 1.1), yscale = c(0.5, n + 0.5)))
