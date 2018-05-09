@@ -25,10 +25,11 @@
 #' @param useSyn Use synonymous variants. Default FALSE.
 #' @return list of clustering tables.
 #' @examples
+#' \dontrun{
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
-#'
+#'}
 #' @importFrom mclust densityMclust
 #' @export
 #' @seealso \code{\link{plotClusters}}

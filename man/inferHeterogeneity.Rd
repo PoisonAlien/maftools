@@ -42,10 +42,11 @@ This function clusters variants based on VAF to estimate univariate density and 
 for clustering. Default using parametric finite mixture models and another method using nonparametric inifinite mixture models (Dirichlet process).
 }
 \examples{
+\dontrun{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf)
 TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
-
+}
 }
 \references{
 Chris Fraley and Adrian E. Raftery (2002) Model-based Clustering, Discriminant Analysis and Density Estimation Journal of the American

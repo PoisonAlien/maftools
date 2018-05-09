@@ -25,10 +25,12 @@ result list containing p-values
 Performs paiwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
 }
 \examples{
+\dontrun{
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
 laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 clinicalEnrichment(laml, 'FAB_classification')
+}
 }
 \seealso{
 \code{\link{plotEnrichmentResults}}

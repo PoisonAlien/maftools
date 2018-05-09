@@ -32,12 +32,14 @@ returns nothing.
 Plots results from inferHeterogeneity.
 }
 \examples{
+\dontrun{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf)
 seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
 TCGA.AB.3009.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-3009',
 segFile = seg, vafCol = 'i_TumorVAF_WU')
 plotClusters(TCGA.AB.3009.clust, genes = c('NF1', 'SUZ12'), showCNvars = TRUE)
+}
 }
 \seealso{
 \code{\link{inferHeterogeneity}}

@@ -8,10 +8,12 @@
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} or a tsv file with a column containing Tumor_Sample_Barcodes along with clinical features. Default NULL.
 #' @return result list containing p-values
 #' @examples
+#' \dontrun{
 #' laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 #' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
 #' laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 #' clinicalEnrichment(laml, 'FAB_classification')
+#' }
 #' @seealso \code{\link{plotEnrichmentResults}}
 #' @export
 
