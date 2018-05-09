@@ -230,7 +230,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     # For reasons returned data.table doesn't print in first attempt.
     # Discussion here: https://github.com/Rdatatable/data.table/issues/939
     # As a solution try to print before returning.
-    print(ann.maf)
+    #print(ann.maf)
     return(ann.maf)
   }
 
