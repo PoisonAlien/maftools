@@ -13,10 +13,6 @@
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/poisonalien/maftools.svg)](https://github.com/poisonalien/maftools/issues)
 [![Github Stars](https://img.shields.io/github/stars/poisonalien/maftools.svg?style=social&label=Github)](https://github.com/poisonalien/maftools)
 
-## Note
-
-This packaege forked from **PoisonAlien/maftools** is used to do some modification for fitting my usage.
-
 
 ## Introduction. 
 With advances in Cancer Genomics, Mutation Annotation Format (MAF) is being widley accepted and used to store variants detected. 
