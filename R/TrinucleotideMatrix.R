@@ -237,7 +237,7 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   sub.tbl = merge(sub.tbl, apobecSummary, by = 'Tumor_Sample_Barcode')
 
   ###Estimate APOBEC enrichment
-  sub.tbl[,APOBEC_Enrichment := (`tCw_to_G+tCw_to_T`/`n_C>G_and_C>T`)/(tcw/C)]
+  sub.tbl[,APOBEC_Enrichment := (`tCw_to_G+tCw_to_T`/`n_C>G_and_C>T`)/((tcw+wga)/(C+G))]
   sub.tbl[,non_APOBEC_mutations := n_mutations - `tCw_to_G+tCw_to_T`]
   sub.tbl[,fraction_APOBEC_mutations := round((n_mutations-non_APOBEC_mutations)/n_mutations, digits = 3)]
   data.table::setDF(sub.tbl)
