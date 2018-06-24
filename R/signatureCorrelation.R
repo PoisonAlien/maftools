@@ -89,7 +89,7 @@ signatureEnrichment = function(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NU
   #layout(matrix(1:1, ncol=2, byrow = TRUE), heights=c(1,1,1,0.2))
   title_size = 1
   par(mar = c(3.5,2.5,2,2))
-  b = barplot(as.matrix(sig.mean.stat), ylim = c(0, 1 + max(sig.sd.stat)), col = cols,
+  b = barplot(as.matrix(sig.mean.stat), ylim = c(0, 1 + max(sig.sd.stat, na.rm = TRUE)), col = cols,
               axes = FALSE, border = 0.1, xaxt = "n")
   for(i in 1:ncol(sig.sd.stat)){
     segments(x0 = b[i], y0 = cumsum(sig.mean.stat[,i]) - sig.sd.stat[,i],

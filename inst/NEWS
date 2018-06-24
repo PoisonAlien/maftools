@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.6.10
+-------------------------
+BUG FIX
+    o APOBEC enrichment estimation, denominator fix. Issue: #160
+    o Total sample estimation bug fix. Issue: #159
+    o fix plot error caused by NAs in signatureEnrichment. PR: #158
+
 CHANGES IN VERSION 1.6.07
 -------------------------
 BUG FIX
