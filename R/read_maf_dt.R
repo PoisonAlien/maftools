@@ -41,7 +41,9 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
   if(is.data.frame(x = maf)){
     maf  = data.table::setDT(maf)
   } else{
-    message('reading maf..')
+    if(verbose){
+      message('reading maf..')
+    }
 
     if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = FALSE)))){
       #If system is Linux use fread, else use gz connection to read gz file.
@@ -116,6 +118,9 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
     gisticIp[,id := NULL]
 
     maf = rbind(maf, gisticIp, fill =TRUE)
+    maf$Tumor_Sample_barcode = factor(x = maf$Tumor_Sample_barcode,
+                                      levels = unique(c(levels(maf$Tumor_Sample_barcode), unique(as.character(gisticIp$Tumor_Sample_barcode)))))
+
     #oncomat = createOncoMatrix(maf, chatty = verbose)
   }else if(!is.null(cnTable)){
     if(verbose){
@@ -135,13 +140,13 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
     cnDat = cnDat[!duplicated(id)]
     cnDat[,id := NULL]
     maf = rbind(maf, cnDat, fill =TRUE)
-    #oncomat = createOncoMatrix(maf, chatty = verbose)
+    maf$Tumor_Sample_barcode = factor(x = maf$Tumor_Sample_barcode,
+                                      levels = unique(c(levels(maf$Tumor_Sample_barcode), unique(as.character(cnDat$Tumor_Sample_barcode)))))
   }
 
-  #6. Summarize MAF
-  maf$Variant_Type = as.factor(as.character(maf$Variant_Type))
+  #Set factors
   maf$Variant_Classification = as.factor(as.character(maf$Variant_Classification))
-  maf$Tumor_Sample_Barcode = as.factor(as.character(maf$Tumor_Sample_Barcode))
+  maf$Variant_Type = as.factor(as.character(maf$Variant_Type))
 
   if(verbose){
     message('Summarizing..')
@@ -155,6 +160,9 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
           summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = mafSummary$sample.anno)
 
 
-  message('Done !')
+  if(verbose){
+    message('Done !')
+  }
+
   return(m)
 }

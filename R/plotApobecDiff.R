@@ -71,7 +71,7 @@ plotApobecDiff = function(tnm, maf, title_size = 1, axis_lwd = 2, font_size = 1.
   mcg.gs$Enriched = round(mcg.gs$Enriched / mc$SampleSummary[Cohort %in% colnames(mcg.gs)[2], SampleSize], digits = 3)
   mcg.gs$nonEnriched = round(mcg.gs$nonEnriched / mc$SampleSummary[Cohort %in% colnames(mcg.gs)[3], SampleSize], digits = 3)
 
-  data.table::setDF(mcg.gs, rownames = mcg.gs$Hugo_Symbol)
+  data.table::setDF(mcg.gs, rownames = as.character(mcg.gs$Hugo_Symbol))
   mcg.gs = as.matrix(mcg.gs[,-1])
   mcg.gs = mcg.gs[mcg,, drop = FALSE]
 

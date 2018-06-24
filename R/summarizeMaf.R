@@ -31,6 +31,8 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
 
   #nGenes
   nGenes = length(unique(maf[,Hugo_Symbol]))
+  maf.tsbs = levels(maf[,Tumor_Sample_Barcode])
+  nSamples = length(levels(maf$Tumor_Sample_Barcode))
 
   #Top 20 FLAGS - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267152/
   flags = c("TTN", "MUC16", "OBSCN", "AHNAK2", "SYNE1", "FLG", "MUC5B",
@@ -109,7 +111,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   hs.cast$MutatedSamples = ifelse(test = is.na(x = hs.cast$MutatedSamples), yes = 0, no = hs.cast$MutatedSamples)
   #Make a summarized table
   summary = data.table::data.table(ID = c('NCBI_Build', 'Center','Samples', 'nGenes',colnames(vc.cast)[2:ncol(vc.cast)]),
-                       summary = c(NCBI_Build, Center, nrow(vc.cast), nGenes, colSums(vc.cast[,2:ncol(vc.cast), with =FALSE])))
+                       summary = c(NCBI_Build, Center, nSamples, nGenes, colSums(vc.cast[,2:ncol(vc.cast), with =FALSE])))
   summary[,Mean := vc.mean]
   summary[,Median := vc.median]
 
@@ -141,7 +143,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     if(chatty){
       message("NOTE: Missing clinical data! It is strongly recommended to provide clinical data associated with samples if available.")
     }
-    sample.anno = tsb[,.(Tumor_Sample_Barcode)]
+    sample.anno = data.table::data.table(Tumor_Sample_Barcode = maf.tsbs)
   }else if(is.data.frame(x = anno)){
       sample.anno  = data.table::setDT(anno)
       if(!'Tumor_Sample_Barcode' %in% colnames(sample.anno)){
@@ -170,9 +172,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     colnames(sample.anno)[1] = c("Tumor_Sample_Barcode")
   }
 
-
-  maf.tsbs = levels(tsb[,Tumor_Sample_Barcode])
-  sample.anno = sample.anno[Tumor_Sample_Barcode %in% maf.tsbs][!duplicated(Tumor_Sample_Barcode)]
+  sample.anno = sample.anno[!duplicated(Tumor_Sample_Barcode)] #sample.anno[Tumor_Sample_Barcode %in% maf.tsbs]
   anno.tsbs = sample.anno[,Tumor_Sample_Barcode]
 
   if(!length(maf.tsbs[!maf.tsbs %in% anno.tsbs]) == 0){
