@@ -77,5 +77,8 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
     print(maf.vts[!maf.vts %in% vt])
   }
 
+  # Set Factors
+  maf$Tumor_Sample_Barcode = as.factor(maf$Tumor_Sample_Barcode)
+
   return(maf)
 }
