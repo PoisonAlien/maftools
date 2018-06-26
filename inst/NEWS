@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.6.15
+-------------------------
+BUG FIX
+    o Fixed error due to multiple header lines from TCGA MAF files. Issue: #162
+
 CHANGES IN VERSION 1.6.10
 -------------------------
 BUG FIX
