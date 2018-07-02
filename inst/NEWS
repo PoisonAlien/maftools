@@ -1,13 +1,22 @@
-CHANGES IN VERSION 1.6.05
+CHANGES IN VERSION 1.6.15
+-------------------------
+BUG FIX
+    o Fixed error due to multiple header lines from TCGA MAF files. Issue: #162
+ENHANCEMENTS:
+    o Added argument bgCol and borderCol to oncoplots for better background representation. Issue: #164
+
+CHANGES IN VERSION 1.6.10
+-------------------------
+BUG FIX
+    o APOBEC enrichment estimation, denominator fix. Issue: #160
+    o Total sample estimation bug fix. Issue: #159
+    o fix plot error caused by NAs in signatureEnrichment. PR: #158
+
+CHANGES IN VERSION 1.6.07
 -------------------------
 BUG FIX
     o Correct ordering of mutsigCV q-values in oncoplot. Issue: #144
-
-CHANGES IN VERSION 1.6.05
--------------------------
-BUG FIX
-    o Fix breaks due to changes in data.table 1.11.0. Issue: #143
-    o SomaticInteraction bug fix due to hclust. Issue: #142
+    o Bioconductor windows error fix
 
 CHANGES IN VERSION 1.6.05
 -------------------------

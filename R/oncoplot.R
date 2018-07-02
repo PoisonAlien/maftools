@@ -21,6 +21,8 @@
 #' @param annotationColor list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param colors named vector of colors for each Variant_Classification.
+#' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
+#' @param borderCol border grid color for wild-type (not-mutated) samples. Default NA.
 #' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
 #' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
@@ -51,7 +53,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10,
-                     titleFontSize = 15, legendFontSize = 12, annotationFontSize = 12, annotationTitleFontSize = 12) {
+                     titleFontSize = 15, legendFontSize = 12, annotationFontSize = 12, annotationTitleFontSize = 12, bgCol = "#CCCCCC", borderCol = NA) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -250,7 +252,8 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     col = colors
   }
 
-  bg = "#CCCCCC" #Default gray background
+  bg = bgCol
+
   col = c(col, 'xxx' = bg)
 
   #Variant classes available in matrix
@@ -407,7 +410,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   ##Following two funcs add grids
   add_oncoprint = function(type, x, y, width, height) {
     grid::grid.rect(x, y, width - unit(0.5, "mm"),
-                    height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
+                    height - grid::unit(1, "mm"), gp = grid::gpar(col = borderCol, fill = bg))
 
     for (i in 1:length(variant.classes)) {
       if (any(type %in% variant.classes[i])) {

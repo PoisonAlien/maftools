@@ -16,6 +16,8 @@
 #' @param fontSize font size for gene names. Default 10.
 #' @param titleFontSize font size for title. Default 15
 #' @param legendFontSize font size for legend. Default 12
+#' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
+#' @param borderCol border grid color for wild-type (not-mutated) samples. Default NA.
 #' @return None.
 #' @seealso \code{\link{oncoplot}}
 #' @examples
@@ -29,7 +31,7 @@
 
 oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, clinicalFeatures = NULL, annotationDat = NULL,
                      sortByAnnotation = FALSE, annotationOrder = NULL, removeNonMutated = TRUE, showTumorSampleBarcodes = FALSE, annotationColor = NULL,
-                     fontSize = 10, titleFontSize = 15, legendFontSize = 12){
+                     fontSize = 10, titleFontSize = 15, legendFontSize = 12, bgCol = "#CCCCCC", borderCol = NA){
 
 
   totSamps = as.numeric(maf@summary[3,summary])
@@ -172,7 +174,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
   }
 
   #Default background gray color.
-  bg = "#CCCCCC"
+  bg = bgCol
   #New version of complexheatmap complains about '', will replace them with random tesx, xxx
   col = c(col, 'xxx' = bg)
 
@@ -222,7 +224,7 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
   ##Following two funcs add grids
   add_oncoprint = function(type, x, y, width, height) {
     grid::grid.rect(x, y, width - unit(0.5, "mm"),
-                    height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
+                    height - grid::unit(1, "mm"), gp = grid::gpar(col = borderCol, fill = bg))
 
     for (i in 1:length(variant.classes)) {
       if (any(type %in% variant.classes[i])) {
