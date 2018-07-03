@@ -202,8 +202,8 @@ trinucleotideMatrix = function(maf, ref_genome, prefix = NULL, add = TRUE, ignor
   extract.tbl$SubstitutionTypeMotif = factor(x = extract.tbl$SubstitutionTypeMotif, levels = subtype.levels)
 
   #Compile data
-  ##This is nucleotide frequcny and motif frequency across 41 bp.
-  apobecSummary = extract.tbl[,.(A = sum(A), T= sum(T), G = sum(G), C = sum(C), tcw = sum(tcw), wga = sum(wga), bases = sum(A,T,G,C)), Tumor_Sample_Barcode]
+  ##This is nucleotide frequcny and motif frequency across 41 bp in C>T and C>G context.
+  apobecSummary = extract.tbl[as.character(SubstitutionType) %in% c("C>T", "C>G") ,.(A = sum(A), T= sum(T), G = sum(G), C = sum(C), tcw = sum(tcw), wga = sum(wga), bases = sum(A,T,G,C)), Tumor_Sample_Barcode]
 
   ##This is per sample conversion events
   sub.tbl = extract.tbl[,.N,.(Tumor_Sample_Barcode, Substitution)]
