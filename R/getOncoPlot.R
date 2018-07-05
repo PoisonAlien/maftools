@@ -2,7 +2,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
                        left = FALSE,
                        showTumorSampleBarcodes = FALSE, hmName = hmName, fs = 10, gfs = 10, tfs = 12,
                        clinicalFeatures = NULL, annotationColor = NULL, keepGeneOrder = FALSE,
-                       includeSyn=FALSE){
+                       includeSyn=FALSE, bCol = NULL, borCol = NULL){
 
   #-----preprocess matrix
 
@@ -139,7 +139,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   }
 
   #Default background gray color.
-  bg = "#CCCCCC"
+  bg = bCol
   #New version of complexheatmap complains about '', will replace them with random tesx, xxx
   col = c(col, 'xxx' = bg)
 
@@ -202,7 +202,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
   ##Following two funcs add grids
   add_oncoprint = function(type, x, y, width, height) {
     grid::grid.rect(x, y, width - unit(0.5, "mm"),
-                    height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
+                    height - grid::unit(1, "mm"), gp = grid::gpar(col = borCol, fill = bg))
 
     for (i in 1:length(variant.classes)) {
       if (any(type %in% variant.classes[i])) {

@@ -21,9 +21,9 @@ plotmafSummary(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE,
 
 \item{showBarcodes}{include sample names in the top bar plot.}
 
-\item{fs}{base size for text. Default 10.}
+\item{fs}{base size for text. Default 1}
 
-\item{textSize}{font size if showBarcodes is TRUE. Default 2.}
+\item{textSize}{font size if showBarcodes is TRUE. Default 0.8}
 
 \item{color}{named vector of colors for each Variant_Classification.}
 

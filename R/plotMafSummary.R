@@ -8,9 +8,9 @@
 #' @param addStat Can be either mean or median. Default NULL.
 #' @param showBarcodes include sample names in the top bar plot.
 #' @param color named vector of colors for each Variant_Classification.
-#' @param textSize font size if showBarcodes is TRUE. Default 2.
+#' @param textSize font size if showBarcodes is TRUE. Default 0.8
 #' @param titleSize font size for title and subtitle. Default c(10, 8)
-#' @param fs base size for text. Default 10.
+#' @param fs base size for text. Default 1
 #' @param top include top n genes dashboard plot. Default 10.
 #' @param titvColor colors for SNV classifications.
 #' @examples
@@ -45,7 +45,7 @@ plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRU
     pie = FALSE
     dashboard(maf = maf, color = color, rmOutlier = TRUE,
                           titv.color = titvColor, fontSize = fs, titleSize = titleSize, sfs = statFontSize,
-                          n = top, donut = pie, rawcount = titvRaw, stat = addStat)
+                          n = top, donut = pie, rawcount = titvRaw, stat = addStat, barcodes = showBarcodes, barcodeSize = textSize)
 
   }else{
 
@@ -70,7 +70,7 @@ plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRU
 
     #--------------------------- variant per sample plot -----------------
 
-    layout(mat = matrix(c(1, 1, 2, 2), ncol = 2, byrow = TRUE))
+    layout(mat = matrix(c(1, 1, 2, 2, 3, 3), nrow = 3, byrow = TRUE), heights = c(4, 4, 3))
     if(showBarcodes){
       par(mar = c(7, 2, 3, 1))
       b = barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg =  rep("", ncol(vcs)))
@@ -101,13 +101,19 @@ plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRU
     lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 2, lty = 2)
 
     #--------------------------- vc summary plot -----------------
-    par(mar = c(3, 2, 2, 1))
+    par(mar = c(2, 2, 2, 1))
     boxH = vcs.m[,boxplot.stats(N)$stat[5], by = .(Variant_Classification)]
     colnames(boxH)[ncol(boxH)] = 'boxStat'
-    boxplot(N ~ Variant_Classification, data = vcs.m, col = col[levels(vcs.m$Variant_Classification)],
+    b = boxplot(N ~ Variant_Classification, data = vcs.m, col = col[levels(vcs.m$Variant_Classification)],
             axes = FALSE, outline = FALSE, lwd = 1, border = grDevices::adjustcolor(col = "black", alpha.f = 0.6))
     axis(side = 2, at = as.integer(seq(0, max(boxH[,boxStat], na.rm = TRUE), length.out = 4)),
          lwd = 2, font = 2, cex.axis = fs, las = 2)
     title(main = "Variant Classification summary", adj = 0, cex.main = fs, font = 2, line = 1)
+
+    plot.new()
+    par(mar = c(4, 2.5, 0.5, 2))
+    legend(x = "top", legend = names(col[levels(vcs.m$Variant_Classification)]),
+           fill = col[levels(vcs.m$Variant_Classification)],
+           bty = "n", ncol = 3, cex = fs)
   }
 }

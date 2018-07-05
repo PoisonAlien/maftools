@@ -9,7 +9,8 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   annotationColor1 = NULL, annotationColor2 = NULL, colors = NULL,
   removeNonMutated = TRUE, geneNamefont = 10, showSampleNames = FALSE,
   SampleNamefont = 10, legendFontSize = 10, titleFontSize = 12,
-  keepGeneOrder = FALSE, includeSyn = FALSE)
+  keepGeneOrder = FALSE, includeSyn = FALSE, bgCol = "#CCCCCC",
+  borderCol = NA)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}
@@ -47,6 +48,10 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 \item{keepGeneOrder}{force the resulting plot to use the order of the genes as specified. Default FALSE}
 
 \item{includeSyn}{Set to TRUE to include silent variants. Default FALSE.}
+
+\item{bgCol}{Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"}
+
+\item{borderCol}{border grid color for wild-type (not-mutated) samples. Default NA.}
 }
 \value{
 Returns nothing. Just draws plot.

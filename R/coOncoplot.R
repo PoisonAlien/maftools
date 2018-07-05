@@ -19,6 +19,8 @@
 #' @param titleFontSize font size for title. Default 12
 #' @param keepGeneOrder force the resulting plot to use the order of the genes as specified. Default FALSE
 #' @param includeSyn Set to TRUE to include silent variants. Default FALSE.
+#' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
+#' @param borderCol border grid color for wild-type (not-mutated) samples. Default NA.
 #' @export
 #' @examples
 #' #' ##Primary and Relapse APL
@@ -38,7 +40,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                       colors = NULL, removeNonMutated = TRUE,
                       geneNamefont = 10, showSampleNames = FALSE, SampleNamefont = 10,
                       legendFontSize = 10, titleFontSize = 12, keepGeneOrder=FALSE,
-                      includeSyn = FALSE){
+                      includeSyn = FALSE, bgCol = "#CCCCCC", borderCol = NA){
 
 
   if(is.null(genes)){
@@ -75,12 +77,12 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                       colors = colors, showGenes = TRUE, left = TRUE, hmName = m1Name,
                       showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont, tfs = titleFontSize,
                       clinicalFeatures = clinicalFeatures1, annotationColor = annotationColor1,
-                      keepGeneOrder= keepGeneOrder, includeSyn = includeSyn)
+                      keepGeneOrder= keepGeneOrder, includeSyn = includeSyn, bCol = bgCol, borCol = borderCol)
   m2.oc = getOncoPlot(maf = m2, genes = genes, removeNonMutated = removeNonMutated,
                       colors = colors, showGenes = FALSE, left = FALSE, hmName = m2Name,
                       showTumorSampleBarcodes = showSampleNames, fs = SampleNamefont, gfs = geneNamefont, tfs = titleFontSize,
                       clinicalFeatures = clinicalFeatures2, annotationColor = annotationColor2,
-                      keepGeneOrder= keepGeneOrder, includeSyn = includeSyn)
+                      keepGeneOrder= keepGeneOrder, includeSyn = includeSyn, bCol = bgCol, borCol = borderCol)
 
   oc.list = m1.oc[[1]] + m2.oc[[1]]
 
