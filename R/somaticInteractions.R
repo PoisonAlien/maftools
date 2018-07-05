@@ -188,7 +188,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     }
   }
 
-  sigPairsTblSig = sigPairsTblSig[,pair := NULL]
+  sigPairsTblSig[,pair := NULL]
 
   return(list(pairs = sigPairsTblSig, gene_sets = sig.genes.pvals))
 }

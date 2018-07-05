@@ -37,6 +37,7 @@
 #' @param annotationTitleFontSize font size for annotation title. Default 12
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file. This can be used as an input
 #' for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to customize the plot.
+#' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -53,7 +54,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10,
-                     titleFontSize = 15, legendFontSize = 12, annotationFontSize = 12, annotationTitleFontSize = 12, bgCol = "#CCCCCC", borderCol = NA) {
+                     titleFontSize = 15, legendFontSize = 12, annotationFontSize = 12, annotationTitleFontSize = 12, bgCol = "#CCCCCC", borderCol = NA, colbar_pathway = FALSE) {
 
   #set seed for consistancy.
   set.seed(seed = 1024)
@@ -244,10 +245,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   #hard coded colors for variant classification if user doesnt provide any
   if(is.null(colors)){
-    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue')
-    names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
-                           'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins',
-                           'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del')
+    col = get_vcColors()
   }else{
     col = colors
   }
@@ -405,7 +403,36 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     grid::upViewport()
   }
 
-  ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar, which = "column")
+  #Adds column bar for only samples displayed in oncoplot
+  anno_column_bar2 = function(index) {
+    n = length(index)
+    tb = apply(mat_origin[, index], 2, function(x) {
+      x = unlist(strsplit(x, ";"))
+      x = x[!grepl("^\\s*$", x)]
+      x = sort(x)
+      table(x)
+    })
+    max_count = max(sapply(tb, sum))
+    grid::pushViewport(grid::viewport(yscale = c(0, max_count * 1.1),
+                                      xscale = c(0.5, n + 0.5)))
+    for (i in seq_along(tb)) {
+      if (length(tb[[i]])) {
+        y = cumsum(tb[[i]])
+        grid::grid.rect(i, y, height = tb[[i]], width = 0.8,
+                        default.units = "native", just = "top", gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
+      }
+    }
+    breaks = grid::grid.pretty(c(0, max_count))
+    grid::grid.yaxis(at = breaks, label = breaks, gp = grid::gpar(fontsize = 10))
+    grid::upViewport()
+  }
+
+  if(colbar_pathway){
+    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar2, which = "column")
+  }else{
+    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar, which = "column")
+  }
+
 
   ##Following two funcs add grids
   add_oncoprint = function(type, x, y, width, height) {

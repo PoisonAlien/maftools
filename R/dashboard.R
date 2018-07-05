@@ -1,4 +1,4 @@
-dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie, rawcount = TRUE, stat = NULL, titleSize = NULL){
+dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie, rawcount = TRUE, stat = NULL, titleSize = NULL, barcodes = NULL, barcodeSize = NULL){
 
   if(is.null(color)){
     #hard coded color scheme if user doesnt provide any
@@ -58,6 +58,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   titv.sums = data.table::melt(colSums(titv.counts[,2:7, with =FALSE]))
   titv.sums$class = rownames(titv.sums)
   if(!rawcount){
+    titv.sums$raw_value = titv.sums$value
     titv.sums$value = titv.sums$value/sum(titv.sums$value)
     xt = seq(0, 1, 0.25)
   }else{
@@ -75,14 +76,27 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
        las = 2, line = 0.2, hadj = 0.8, font = 2, tick = FALSE)
   axis(side = 1, at = xt, lwd = 2, font = 2, las = 2, cex.axis = fontSize*0.9)
   title(main = "SNV Class", adj = 0, cex.main = titleSize[1], font = 2)
+  if(!rawcount){
+    text(x = titv.sums$value+0.03, y = b, labels = titv.sums$raw_value,
+         font = 4, col = "gray70", cex = fontSize, adj = 0)
+  }
 
   #--------------------------- variant per sample plot -----------------
 
-  par(mar = c(3, 2, 3, 1))
+  if(barcodes){
+    par(mar = c(6, 2, 3, 1))
+  } else{
+    par(mar = c(3, 2, 3, 1))
+  }
+
   b = barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg =  rep("", ncol(vcs)))
   axis(side = 2, at = as.integer(seq(0, max(colSums(vcs)), length.out = 4)), lwd = 2, font = 2, las = 2,
        line = -0.3, hadj = 0.6, cex.axis = fontSize)
   title(main = "Variants per sample", adj = 0, cex.main = titleSize[1], font = 2, line = 2)
+
+  if(barcodes){
+    mtext(text = colnames(vcs), side = 1, line = 0.2, outer = FALSE, las = 2, at = b, cex = barcodeSize)
+  }
 
   if(!is.null(stat)){
     if(stat == 'mean'){
@@ -121,6 +135,10 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
   #--------------------------- hugo-symbol plot -----------------
   gs = getGeneSummary(maf)
+  nsamps = as.numeric(laml@summary[ID %in% "Samples", summary])
+  gs.load = gs[,.(Hugo_Symbol, AlteredSamples)]
+  gs.load[,AlteredSamples := round(AlteredSamples/nsamps, digits = 2) * 100]
+  data.table::setDF(x = gs.load, rownames = gs.load$Hugo_Symbol)
   gs = gs[,colnames(gs)[!colnames(x = gs) %in% c('total', 'Amp', 'Del', 'CNV_total', 'MutatedSamples', 'AlteredSamples')], with = FALSE]
 
   if(nrow(gs) < n){
@@ -136,15 +154,18 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   gs.dat = gs.dat[names(sort(rowSums(gs.dat), decreasing = TRUE)),, drop = FALSE]
   gs.dat = gs.dat[,names(sort(colSums(gs.dat))), drop = FALSE]
 
-  xt = as.integer(seq(0, max(colSums(gs.dat)), length.out = 4))
+  xt = as.integer(seq(0, max(colSums(gs.dat))+2, length.out = 4))
 
   par(mar = c(3, 4, 3, 1))
-  b = barplot(gs.dat, axes = FALSE, horiz = TRUE, col = col[rownames(gs.dat)], border = NA, xlim = c(0, max(xt)), names.arg = rep("", ncol(gs.dat)))
+  gs.load = gs.load[rev(colnames(gs.dat)),,]
+  b = barplot(gs.dat, axes = FALSE, horiz = TRUE, col = col[rownames(gs.dat)], border = NA,
+              xlim = c(0, max(xt)+8), names.arg = rep("", ncol(gs.dat)))
   axis(side = 2, at = b, labels = colnames(gs.dat), lwd = 2, cex.axis = fontSize,
        las = 2, line = 0.2, hadj = 0.8, font = 2, tick = FALSE)
   axis(side = 1, at = xt, lwd = 2, font = 2, las = 2, cex.axis = fontSize*0.9)
   title(main = paste0('Top ',  n, '\nmutated genes'), adj = 0, cex.main = titleSize[1], font = 2)
-
+  text(x = colSums(gs.dat)+1, y = b, labels = rev(paste0(gs.load$AlteredSamples, "%")),
+       font = 4, col = "gray70", cex = fontSize*0.9, adj = 0)
 }
 
 #   #--------------------------- oncoplot via ggplot -----------------
