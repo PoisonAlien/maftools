@@ -135,7 +135,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
   #--------------------------- hugo-symbol plot -----------------
   gs = getGeneSummary(maf)
-  nsamps = as.numeric(laml@summary[ID %in% "Samples", summary])
+  nsamps = as.numeric(maf@summary[ID %in% "Samples", summary])
   gs.load = gs[,.(Hugo_Symbol, AlteredSamples)]
   gs.load[,AlteredSamples := round(AlteredSamples/nsamps, digits = 2) * 100]
   data.table::setDF(x = gs.load, rownames = gs.load$Hugo_Symbol)
