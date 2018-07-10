@@ -195,6 +195,12 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   }
 
   if(!is.null(sampleOrder)){
+    if(length(sampleOrder) != length(sampleOrder[sampleOrder %in% colnames(numMat)])){
+      if(removeNonMutated){
+        message("Consider setting removeNonMutated = FALSE while working with manual sample ordering")
+      }
+    }
+    sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
     numMat = numMat[,as.character(sampleOrder), drop = FALSE]
   }
 
@@ -406,7 +412,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   #Adds column bar for only samples displayed in oncoplot
   anno_column_bar2 = function(index) {
     n = length(index)
-    tb = apply(mat_origin[, index], 2, function(x) {
+    tb = apply(mat[, index], 2, function(x) {
       x = unlist(strsplit(x, ";"))
       x = x[!grepl("^\\s*$", x)]
       x = sort(x)
