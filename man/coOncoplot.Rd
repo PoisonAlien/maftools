@@ -6,7 +6,8 @@
 \usage{
 coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
-  annotationColor1 = NULL, annotationColor2 = NULL, colors = NULL,
+  annotationColor1 = NULL, annotationColor2 = NULL,
+  sortByAnnotation1 = FALSE, sortByAnnotation2 = FALSE, colors = NULL,
   removeNonMutated = TRUE, geneNamefont = 10, showSampleNames = FALSE,
   SampleNamefont = 10, legendFontSize = 10, titleFontSize = 12,
   keepGeneOrder = FALSE, includeSyn = FALSE, bgCol = "#CCCCCC",
@@ -30,6 +31,10 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 \item{annotationColor1}{list of colors to use for `clinicalFeatures1` Default NULL.}
 
 \item{annotationColor2}{list of colors to use for `clinicalFeatures2` Default NULL.}
+
+\item{sortByAnnotation1}{logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort}
+
+\item{sortByAnnotation2}{same as above but for m2}
 
 \item{colors}{named vector of colors for each Variant_Classification.}
 
