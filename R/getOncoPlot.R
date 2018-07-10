@@ -1,7 +1,7 @@
 getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, showGenes = TRUE,
                        left = FALSE,
                        showTumorSampleBarcodes = FALSE, hmName = hmName, fs = 10, gfs = 10, tfs = 12,
-                       clinicalFeatures = NULL, annotationColor = NULL, keepGeneOrder = FALSE,
+                       clinicalFeatures = NULL, anno_sort = FALSE, annotationColor = NULL, keepGeneOrder = FALSE,
                        includeSyn=FALSE, bCol = NULL, borCol = NULL){
 
   #-----preprocess matrix
@@ -24,7 +24,7 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
 
 
 
-   mat_origin = om$numericMatrix
+  mat_origin = om$numericMatrix
   numMat = om$numericMatrix
 
 
@@ -125,6 +125,39 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     colnames(tsb.include) =tsbs[!tsbs %in% colnames(mat)]
     rownames(tsb.include) = rownames(mat)
     mat = cbind(mat, tsb.include)
+  }
+
+  #Annotations
+  if(!is.null(clinicalFeatures)){
+      annotationDat = getClinicalData(x = maf)
+      #data.table::setDF(annotationDat)
+      if(length(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)]) > 0){
+        message('Following columns are missing from annotation slot of MAF. Ignoring them..')
+        print(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)])
+        clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
+        if(length(clinicalFeatures) == 0){
+          message('Make sure at-least one of the values from provided clinicalFeatures are present in annotation slot of MAF. Here are available annotaions from MAF..')
+          print(colnames(getClinicalData(maf)))
+          stop('Zero annotaions to add! You can also provide custom annotations via annotationDat argument.')
+        }
+      }
+      annotation = data.frame(row.names = annotationDat$Tumor_Sample_Barcode ,annotationDat[,clinicalFeatures, with = FALSE])
+  }
+
+  if(anno_sort){
+    if(is.null(clinicalFeatures)){
+      stop("Use argument `annotationCol` to provide at-least one of the annotations.")
+    }
+    numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation, annoOrder = NULL)
+  }
+
+  mat = mat_origin[rownames(numMat), , drop = FALSE]
+  mat = mat[,colnames(numMat), drop = FALSE]
+
+  #finally sort annotation data in same order as plot matrix
+  if(!is.null(clinicalFeatures)){
+    annotation = annotation[rownames(annotation) %in% colnames(mat),, drop = FALSE]
+    annotation = annotation[colnames(mat), , drop = FALSE]
   }
 
   #---------------------------------------Colors and vcs-------------------------------------------------
