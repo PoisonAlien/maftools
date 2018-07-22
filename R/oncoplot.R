@@ -416,8 +416,10 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
       x = unlist(strsplit(x, ";"))
       x = x[!grepl("^\\s*$", x)]
       x = sort(x)
+      x = x[!x %in% "xxx"]
       table(x)
     })
+
     max_count = max(sapply(tb, sum))
     grid::pushViewport(grid::viewport(yscale = c(0, max_count * 1.1),
                                       xscale = c(0.5, n + 0.5)))
