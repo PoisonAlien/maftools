@@ -380,14 +380,22 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     n = length(index)
     ss = getSampleSummary(x = maf)
     tb = ss[Tumor_Sample_Barcode %in% colnames(mat)]
-    tb = tb[,colnames(tb)[!colnames(tb) %in% c('total', 'Amp', 'Del', 'CNV_total')], with = FALSE]
+    tb = tb[,colnames(tb)[!colnames(tb) %in% c('total', 'Amp', 'Del', 'CNV_total', 'Fusion')], with = FALSE]
     tb = split(tb, as.factor(as.character(tb$Tumor_Sample_Barcode)))
     tb = lapply(X = tb, function(x) unlist(x)[-1])
     tb = tb[colnames(mat)]
 
     max_count = max(sapply(tb, sum))
+    
+    #log this number such to graph hyper-mutaters on a better scale
+    log_count = log2(max(sapply(tb, sum)))
 
-    grid::pushViewport(grid::viewport(yscale = c(0, max_count * 1.1),
+
+    #grid::pushViewport(grid::viewport(yscale = c(0, log_count * 1.1),
+     #                                 xscale = c(0.5, n + 0.5)))
+                
+    #to get all of my separate plots on the same scale, make yscale the same          
+    grid::pushViewport(grid::viewport(yscale = c(0, 15),
                                       xscale = c(0.5, n + 0.5)))
     for (i in seq_along(tb)) {
       if (length(tb[[i]])) {
@@ -397,7 +405,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
                         gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
       }
     }
-    breaks = grid::grid.pretty(c(0, max_count))
+    breaks = grid::grid.pretty(c(0, log_count))
     grid::grid.yaxis(at = breaks, label = breaks, gp = grid::gpar(fontsize = 10))
     grid::upViewport()
   }
