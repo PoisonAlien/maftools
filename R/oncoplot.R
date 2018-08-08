@@ -388,15 +388,15 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     max_count = max(sapply(tb, sum))
     
     #log this number such to graph hyper-mutaters on a better scale
-    log_count = log2(max(sapply(tb, sum)))
+    log_count = log10(max(sapply(tb, sum)))
 
 
-    #grid::pushViewport(grid::viewport(yscale = c(0, log_count * 1.1),
-     #                                 xscale = c(0.5, n + 0.5)))
+    grid::pushViewport(grid::viewport(yscale = c(0, log_count * 1.1),
+                                      xscale = c(0.5, n + 0.5)))
                 
     #to get all of my separate plots on the same scale, make yscale the same          
-    grid::pushViewport(grid::viewport(yscale = c(0, 15),
-                                      xscale = c(0.5, n + 0.5)))
+    #grid::pushViewport(grid::viewport(yscale = c(0, 15),
+     #                                 xscale = c(0.5, n + 0.5)))
     for (i in seq_along(tb)) {
       if (length(tb[[i]])) {
         y = cumsum(tb[[i]])
