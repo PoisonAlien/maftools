@@ -391,12 +391,12 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     log_count = log10(max(sapply(tb, sum)))
 
 
-    grid::pushViewport(grid::viewport(yscale = c(0, log_count * 1.1),
-                                      xscale = c(0.5, n + 0.5)))
+    #grid::pushViewport(grid::viewport(yscale = c(0, log_count * 1.1),
+     #                                 xscale = c(0.5, n + 0.5)))
                 
     #to get all of my separate plots on the same scale, make yscale the same          
-    #grid::pushViewport(grid::viewport(yscale = c(0, 15),
-     #                                 xscale = c(0.5, n + 0.5)))
+    grid::pushViewport(grid::viewport(yscale = c(0, 30),
+                                      xscale = c(0.5, n + 0.5)))
     for (i in seq_along(tb)) {
       if (length(tb[[i]])) {
         y = cumsum(tb[[i]])
@@ -405,7 +405,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
                         gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
       }
     }
-    breaks = grid::grid.pretty(c(0, max_count))
+    breaks = grid::grid.pretty(c(0, log_count))
     grid::grid.yaxis(at = breaks, label = breaks, gp = grid::gpar(fontsize = 10))
     grid::upViewport()
   }
