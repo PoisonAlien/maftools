@@ -242,10 +242,10 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
   #hard coded colors for variant classification if user doesnt provide any
   if(is.null(colors)){
-    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue')
+    col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3], 'darkviolet', 'black', 'violet', 'royalblue')
     names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
                            'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins',
-                           'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del')
+                           'Translation_Start_Site', "Fusion", "Multi_Hit", 'Amp', 'Del')
   }else{
     col = colors
   }
