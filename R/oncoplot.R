@@ -405,7 +405,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
                         gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
       }
     }
-    breaks = grid::grid.pretty(c(0, log_count))
+    breaks = grid::grid.pretty(c(0, max_count))
     grid::grid.yaxis(at = breaks, label = breaks, gp = grid::gpar(fontsize = 10))
     grid::upViewport()
   }
