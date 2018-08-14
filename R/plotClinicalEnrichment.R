@@ -28,6 +28,18 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontS
     stop(paste0("No significant associations found at p-value < ", pVal))
   }
 
+  conf_int_g1 = lapply(1:nrow(plot.dat), function(i){
+    #estimate_binconf(X = plot.dat[i,g1_muts], n = plot.dat[i, g1_tot], alpha = pVal)
+    as.data.frame(binconf(x = plot.dat[i,g1_muts], n = plot.dat[i, g1_tot], alpha = pVal))
+  })
+  conf_int_g1 = data.table::rbindlist(l = conf_int_g1)
+
+  conf_int_g2 = lapply(1:nrow(plot.dat), function(i){
+    #estimate_binconf(X = plot.dat[i,g2_muts], n = plot.dat[i, g2_tot], alpha = pVal)
+    as.data.frame(binconf(x = plot.dat[i,g2_muts], n = plot.dat[i, g2_tot], alpha = pVal))
+  })
+  conf_int_g2 = data.table::rbindlist(l = conf_int_g2)
+
   plot.dat$g1_muts_fract = apply(plot.dat, 1, function(x) round(as.numeric(x[2])/as.numeric(x[3]), digits = 3))
   plot.dat$g2_muts_fract = apply(plot.dat, 1, function(x) round(as.numeric(x[4])/as.numeric(x[5]), digits = 3))
 
@@ -56,14 +68,35 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontS
     legend(...)
   }
 
+  yl_max = max(rbind(conf_int_g1, conf_int_g2), na.rm = TRUE)
+  if(yl_max <= 1){
+    yl_max = 1
+  }
+  data.table::setDF(x = conf_int_g1)
+  data.table::setDF(x = conf_int_g2)
+
   par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=TRUE, mar = c(4,3,3.5,5)) #
   #plot(c(0, nrow(plot.dat)+15),c(0,0),xlim=c(0.5,33),las=2, ylim=c(-1,1),xlab="", xaxt="n", type="l")
-  b = barplot(height = plot.dat$g1_muts_fract, ylim = c(-1, 1), axes = FALSE, border = 0.1, col = bar.cols)
-  text(b, plot.dat$g1_muts_fract+0.03 , plot.dat$g1_title ,cex = annoFontSize, las = 2, srt=90, adj=0, xpd=TRUE, font = 2)
+  b = barplot(height = plot.dat$g1_muts_fract, ylim = c(-yl_max, yl_max), axes = FALSE, border = 0.1, col = bar.cols)
+  #text(b, plot.dat$g1_muts_fract+0.03 , plot.dat$g1_title ,cex = annoFontSize, las = 2, srt=90, adj=0, xpd=TRUE, font = 2)
   axis(side = 2, at = seq(-1, 1, 0.25), labels = c(rev(seq(0, 1, 0.25)), seq(0, 1, 0.25)[2:5]),
        lwd = 3, font.axis = 2, cex = 1.5, font = 2)
+
+  for(i in 1:nrow(conf_int_g1)){
+    segments(x0 = b[i, 1], y0 = conf_int_g1[i,2],
+             x1 = b[i, 1], y1 = conf_int_g1[i,3],
+             lwd = 1.5)
+  }
+  text(b, conf_int_g1$Upper+0.03 , plot.dat$g1_title ,cex = annoFontSize, las = 2, srt=90, adj=0, xpd=TRUE, font = 2)
+
   b2 = barplot(height = -plot.dat$g2_muts_fract, add = TRUE, axes = FALSE, border = 0.1)
-  text(b, -plot.dat$g2_muts_fract-0.03 , plot.dat$g2_title ,cex = annoFontSize, las = 2, srt=90, adj=1, xpd=TRUE, font = 2)
+  for(i in 1:nrow(conf_int_g2)){
+    segments(x0 = b2[i, 1], y0 = -conf_int_g2[i,2],
+             x1 = b2[i, 1], y1 = -conf_int_g2[i,3],
+             lwd = 1.5)
+  }
+  text(b, -conf_int_g2$Upper-0.03 , plot.dat$g2_title ,cex = annoFontSize, las = 2, srt=90, adj=1, xpd=TRUE, font = 2)
+
   text(b, -1 , plot.dat$Hugo_Symbol ,cex = geneFontSize, las = 2, srt=45, adj=1, xpd=TRUE, font = 4)
   #par(xpd = T, mar = par()$mar + c(0,0,0,7))
   add_legend("topright", pt.lwd = 2,
