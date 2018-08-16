@@ -66,7 +66,7 @@ gisticOncoPlot = function (gistic, top = NULL,
   }
 
   oncoPlot = TRUE #Change later
-  bg = "#CCCCCC" #Default gray background
+  bg = "gray93" #Default gray background
 
   #To remove samples with no mutations in top n genes, if user says removeNonAltered
   if(removeNonAltered){
