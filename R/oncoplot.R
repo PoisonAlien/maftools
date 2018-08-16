@@ -250,7 +250,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     col = colors
   }
 
-  bg = "#gray93" #Default gray background
+  bg = "#F5F5F5" #Default white smoke background
   col = c(col, 'xxx' = bg)
 
   #Variant classes available in matrix
