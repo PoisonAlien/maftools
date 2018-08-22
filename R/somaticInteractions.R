@@ -58,6 +58,10 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     sigPairs = which(x = 10^-abs(interactions) < max(pvalue), arr.ind = TRUE)
   }
 
+  if(nrow(sigPairs) < 1){
+    stop("No meaningful interactions found.")
+  }
+
   sigPairsTbl = data.table::rbindlist(
                           lapply(X = seq_along(1:nrow(sigPairs)), function(i) {
                                   x = sigPairs[i,]
