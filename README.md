@@ -85,18 +85,20 @@ Easy way: Install from [Bioconductor](http://bioconductor.org/packages/release/b
 
 ```{r}
 ## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("maftools")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("maftools")
 ```
 
 Install from Github for updated features (some of functions from here may not be available on Bioconductor release branch).
 
 ```{r results='hide'}
 #Install Bioconductor dependencies.
-source("http://bioconductor.org/biocLite.R")
-biocLite("ComplexHeatmap")
-biocLite("VariantAnnotation")
-biocLite("Biostrings")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ComplexHeatmap")
+BiocManager::install("VariantAnnotation")
+BiocManager::install("Biostrings")
 
 #Install maftools from github repository.
 library("devtools")
