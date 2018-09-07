@@ -93,10 +93,11 @@ Install from Github for updated features (some of functions from here may not be
 
 ```{r results='hide'}
 #Install Bioconductor dependencies.
-source("http://bioconductor.org/biocLite.R")
-biocLite("ComplexHeatmap")
-biocLite("VariantAnnotation")
-biocLite("Biostrings")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ComplexHeatmap")
+BiocManager::install("VariantAnnotation")
+BiocManager::install("Biostrings")
 
 #Install maftools from github repository.
 library("devtools")
