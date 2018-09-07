@@ -6,8 +6,8 @@
 \usage{
 plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
   patient_order = NULL, font_size = 1.2, show_title = TRUE,
-  axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, yaxisLim = 0.3,
-  ...)
+  axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE,
+  yaxisLim = 0.3, ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}

@@ -7,11 +7,11 @@
 coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
   annotationColor1 = NULL, annotationColor2 = NULL,
-  sortByAnnotation1 = FALSE, sortByAnnotation2 = FALSE, colors = NULL,
-  removeNonMutated = TRUE, geneNamefont = 10, showSampleNames = FALSE,
-  SampleNamefont = 10, legendFontSize = 10, titleFontSize = 12,
-  keepGeneOrder = FALSE, includeSyn = FALSE, bgCol = "#CCCCCC",
-  borderCol = NA)
+  sortByAnnotation1 = FALSE, sortByAnnotation2 = FALSE,
+  colors = NULL, removeNonMutated = TRUE, geneNamefont = 10,
+  showSampleNames = FALSE, SampleNamefont = 10, legendFontSize = 10,
+  titleFontSize = 12, keepGeneOrder = FALSE, includeSyn = FALSE,
+  bgCol = "#CCCCCC", borderCol = NA)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}

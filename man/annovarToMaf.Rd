@@ -4,9 +4,9 @@
 \alias{annovarToMaf}
 \title{Converts annovar annotations into MAF.}
 \usage{
-annovarToMaf(annovar, Center = NULL, refBuild = "hg19", tsbCol = NULL,
-  table = "refGene", basename = NULL, sep = "\\t", MAFobj = FALSE,
-  sampleAnno = NULL)
+annovarToMaf(annovar, Center = NULL, refBuild = "hg19",
+  tsbCol = NULL, table = "refGene", basename = NULL, sep = "\\t",
+  MAFobj = FALSE, sampleAnno = NULL)
 }
 \arguments{
 \item{annovar}{input annovar annotation file. Can be vector of multiple files.}

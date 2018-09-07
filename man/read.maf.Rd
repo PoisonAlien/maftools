@@ -5,9 +5,10 @@
 \title{Read MAF files.}
 \usage{
 read.maf(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE,
-  useAll = TRUE, gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL,
-  gisticDelGenesFile = NULL, gisticScoresFile = NULL, cnLevel = "all",
-  cnTable = NULL, isTCGA = FALSE, vc_nonSyn = NULL, verbose = TRUE)
+  useAll = TRUE, gisticAllLesionsFile = NULL,
+  gisticAmpGenesFile = NULL, gisticDelGenesFile = NULL,
+  gisticScoresFile = NULL, cnLevel = "all", cnTable = NULL,
+  isTCGA = FALSE, vc_nonSyn = NULL, verbose = TRUE)
 }
 \arguments{
 \item{maf}{tab delimited MAF file. File can also be gz compressed. Required. Alternatively, you can also provide already read MAF file as a dataframe.}
@@ -28,7 +29,7 @@ read.maf(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE,
 
 \item{cnLevel}{level of CN changes to use. Can be 'all', 'deep' or 'shallow'. Default uses all i.e, genes with both 'shallow' or 'deep' CN changes}
 
-\item{cnTable}{Custom copynumber data if gistic results are not available. Input file or a data.frame should contain three columns with gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL.}
+\item{cnTable}{Custom copynumber data if gistic results are not available. Input file or a data.frame should contain three columns in aforementioned order with gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL.}
 
 \item{isTCGA}{Is input MAF file from TCGA source. If TRUE uses only first 12 characters from Tumor_Sample_Barcode.}
 

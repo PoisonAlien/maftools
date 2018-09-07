@@ -4,9 +4,7 @@
 \name{getGeneSummary}
 \alias{getGeneSummary}
 \alias{getGeneSummary,MAF-method}
-\alias{getGeneSummary}
 \alias{getGeneSummary,GISTIC-method}
-\alias{getGeneSummary}
 \title{extract gene summary from MAF or GISTIC object}
 \usage{
 getGeneSummary(x)

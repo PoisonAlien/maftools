@@ -9,6 +9,7 @@
 #' @param mafObj returns output as MAF class \code{\link{MAF-class}}. Default FALSE
 #' @param includeSyn Default TRUE, only applicable when mafObj = FALSE. If mafObj = TRUE, synonymous variants will be stored in a seperate slot of MAF object.
 #' @param isTCGA Is input MAF file from TCGA source.
+#' @param dropLevels Default TRUE.
 #' @param restrictTo restrict subset operations to these. Can be 'all', 'cnv', or 'mutations'. Default 'all'. If 'cnv' or 'mutations', subset operations will only be applied on copy-number or mutation data respectively, while retaining other parts as is.
 #' @return subset table or an object of class \code{\link{MAF-class}}
 #' @seealso \code{\link{getFields}}
@@ -24,7 +25,7 @@
 #' subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), fields = 'i_TumorVAF_WU')
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE, includeSyn = TRUE, isTCGA = FALSE, restrictTo = 'all'){
+subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
 
 
   if(length(restrictTo) > 1){
@@ -123,10 +124,14 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
   }else{
     if(includeSyn){
       maf.dat = rbind(maf.dat, maf.silent, use.names = TRUE, fill = TRUE)
-      maf.dat = droplevels.data.frame(x = maf.dat)
+      if(dropLevels){
+        maf.dat = droplevels.data.frame(x = maf.dat)
+      }
       return(maf.dat)
     }else{
-      maf.dat = droplevels.data.frame(x = maf.dat)
+      if(dropLevels){
+        maf.dat = droplevels.data.frame(x = maf.dat)
+      }
       return(maf.dat)
     }
   }

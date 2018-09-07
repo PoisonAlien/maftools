@@ -4,9 +4,7 @@
 \name{getSampleSummary}
 \alias{getSampleSummary}
 \alias{getSampleSummary,MAF-method}
-\alias{getSampleSummary}
 \alias{getSampleSummary,GISTIC-method}
-\alias{getSampleSummary}
 \title{extract sample summary from MAF or GISTIC object}
 \usage{
 getSampleSummary(x)

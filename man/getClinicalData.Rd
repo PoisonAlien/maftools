@@ -4,7 +4,6 @@
 \name{getClinicalData}
 \alias{getClinicalData}
 \alias{getClinicalData,MAF-method}
-\alias{getClinicalData}
 \title{extract annotations from MAF object}
 \usage{
 getClinicalData(x)

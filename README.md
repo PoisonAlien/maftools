@@ -84,9 +84,9 @@ Simple usage: Just read maf file using `read.maf` and pass the resulting maf obj
 Easy way: Install from [Bioconductor](http://bioconductor.org/packages/release/bioc/html/maftools.html).
 
 ```{r}
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("maftools")
+if (!require("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install("maftools")
 ```
 
 Install from Github for updated features (some of functions from here may not be available on Bioconductor release branch).

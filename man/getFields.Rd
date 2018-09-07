@@ -4,7 +4,6 @@
 \name{getFields}
 \alias{getFields}
 \alias{getFields,MAF-method}
-\alias{getFields}
 \title{extract available fields from MAF object}
 \usage{
 getFields(x)

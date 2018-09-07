@@ -5,6 +5,8 @@ BUG FIX
     o Fixed error due to multiple header lines from TCGA MAF files. Issue: #162
     o APOBEC enrichment estimation, context fix. Issue: #160
 ENHANCEMENTS:
+    o Update warning and error messages. Issue: #181, #178
+    o Added argument dropLevels to subsetMaf. Issue: #186
     o Added argument sortByAnnotation1 to coOncoplot for sorting by clinical annotation. Issue: #168
     o Added argument colbar_pathway to oncoplot for controlling mutation burden display. Issue: #167, #169
     o Fixed showBarcodes in plotmafSummary. Summary plot now includes annotations (% or raw number) on the barplot. Issue: #165

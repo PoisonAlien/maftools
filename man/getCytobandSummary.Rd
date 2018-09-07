@@ -4,7 +4,6 @@
 \name{getCytobandSummary}
 \alias{getCytobandSummary}
 \alias{getCytobandSummary,GISTIC-method}
-\alias{getCytobandSummary}
 \title{extract cytoband summary from GISTIC object}
 \usage{
 getCytobandSummary(x)
