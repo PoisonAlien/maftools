@@ -110,9 +110,11 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL,
 
   if(mafObj){
 
-    maf.silent = droplevels.data.frame(maf.silent)
-    maf.dat = droplevels.data.frame(maf.dat)
-    maf.anno = droplevels.data.frame(maf.anno)
+    if(dropLevels){
+      maf.silent = droplevels.data.frame(maf.silent)
+      maf.dat = droplevels.data.frame(maf.dat)
+      maf.anno = droplevels.data.frame(maf.anno)
+    }
 
     mafSummary = summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)
 
