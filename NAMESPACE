@@ -3,6 +3,7 @@
 export(annovarToMaf)
 export(clinicalEnrichment)
 export(coOncoplot)
+export(drugInteractions)
 export(extractSignatures)
 export(forestPlot)
 export(geneCloud)

@@ -412,6 +412,26 @@ Above results shows IDH1 mutations are enriched in M1 subtype of leukemia compar
 plotEnrichmentResults(enrich_res = fab.ce, pVal = 0.05)
 ```
 
+## Drug-Gene Interactions
+`drugInteractions` function checks for drug–gene interactions and gene druggability information compiled from [Drug Gene Interaction database](http://www.dgidb.org). 
+
+```{r, fig.height=4, fig.width=8}
+dgi = drugInteractions(maf = laml, fontSize = 0.75)
+```
+
+Above plot shows potential druggable gene categories along with upto top 5 genes involved in them. 
+One can also extract information on drug-gene interactions. For example below is the results for known/reported drugs to interact with DNMT3A. 
+
+```{r}
+dnmt3a.dgi = drugInteractions(genes = "DNMT3A", drugs = TRUE)
+#Printing selected columns.
+dnmt3a.dgi[,.(Gene, interaction_types, drug_name, drug_claim_name)]
+```
+
+Please cite [DGIdb article](https://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&retmode=ref&cmd=prlinks&id=24122041) if you find this function useful [10](#references). 
+
+*Disclaimer: Resources used in this function are intended for purely research purposes. It should not be used for emergencies or medical or professional advice.*
+
 ## Tumor heterogeneity and MATH scores
 ### Heterogeneity in tumor samples
 Tumors are generally heterogeneous i.e, consist of multiple clones. This heterogeneity can be inferred by clustering variant allele frequencies. `inferHeterogeneity` function uses vaf information to cluster variants (using `mclust`), to infer clonality. By default, `inferHeterogeneity` function looks for column *t_vaf* containing vaf information. However, if the field name is different from *t_vaf*, we can manually specify it using argument `vafCol`. For example, in this case study vaf is stored under the field name *i_TumorVAF_WU*.
@@ -426,10 +446,10 @@ plotClusters(clusters = tcga.ab.2972.het)
 
 Above figure shows clear separation of two clones clustered at mean variant allele frequencies of ~45% (major clone) and another minor clone at variant allele frequency of ~25%.
 
-Although clustering of variant allele frequencies gives us a fair idea on heterogeneity, it is also possible to measure the extent of heterogeneity in terms of a numerical value. MATH score (mentioned as a subtitle in above plot) is a simple quantitative measure of intra-tumor heterogeneity, which calculates the width of the vaf distribution. Higher MATH scores are found to be associated with poor outcome. MATH score can also be used a proxy variable for survival analysis [10](#references).
+Although clustering of variant allele frequencies gives us a fair idea on heterogeneity, it is also possible to measure the extent of heterogeneity in terms of a numerical value. MATH score (mentioned as a subtitle in above plot) is a simple quantitative measure of intra-tumor heterogeneity, which calculates the width of the vaf distribution. Higher MATH scores are found to be associated with poor outcome. MATH score can also be used a proxy variable for survival analysis [11](#references).
 
 ### Ignoring variants in copy number altered regions
-We can use copy number information to ignore variants located on copynumber altered regions. Copy number alterations results in abnormally high/low variant allele frequencies, which tends to affect clustering. Removing such variants improves clustering and density estimation while retaining biologically meaningful results. Copy number information can be provided as a segmented file generated from segmentation programmes, such as Circular Binary Segmentation from "DNACopy" Bioconductor package [6](#references).
+We can use copy number information to ignore variants located on copy-number altered regions. Copy number alterations results in abnormally high/low variant allele frequencies, which tends to affect clustering. Removing such variants improves clustering and density estimation while retaining biologically meaningful results. Copy number information can be provided as a segmented file generated from segmentation programmes, such as Circular Binary Segmentation from "DNACopy" Bioconductor package [6](#references).
 
 ```{r, fig.align='left', fig.height=4, fig.width=6, eval=T}
 seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
@@ -467,7 +487,7 @@ Above function performs two steps:
   * Prepares a mutational matrix for signature analysis.
 
 ### APOBEC Enrichment estimation.
-APOBEC induced mutations are more frequent in solid tumors and are mainly associated with C>T transition events occurring in TCW motif. APOBEC enrichment scores in the above command are estimated using the method described by Roberts et al [12](#references). Briefly, enrichment of C>T mutations occurring within TCW motif over all of the C>T mutations in a given sample is compared to background Cytosines and TCWs occurring within 20bp of mutated bases. 
+APOBEC induced mutations are more frequent in solid tumors and are mainly associated with C>T transition events occurring in TCW motif. APOBEC enrichment scores in the above command are estimated using the method described by Roberts et al [13](#references). Briefly, enrichment of C>T mutations occurring within TCW motif over all of the C>T mutations in a given sample is compared to background Cytosines and TCWs occurring within 20bp of mutated bases. 
 
 
 $$\frac{n_{tCw} * background_C}{n_C * background_{TCW}}$$
@@ -863,7 +883,7 @@ plotEnrichmentResults(enrich_res = laml.se, pVal = 0.5)
 
 # Variant Annotations
 ## Annotating variants using Oncotator
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API [13](#references). `oncotate` function quires oncotator web api to annotate given set of variants and converts them into MAF format. Input should be a five column file with chr, start, end, ref_allele, alt_allele. However, it can contain other information such as sample names (Tumor_Sample_Barcode), read counts, vaf information and so on, but only first five columns will be used, rest of the columns will be attached at the end of the table.
+We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API [14](#references). `oncotate` function quires oncotator web api to annotate given set of variants and converts them into MAF format. Input should be a five column file with chr, start, end, ref_allele, alt_allele. However, it can contain other information such as sample names (Tumor_Sample_Barcode), read counts, vaf information and so on, but only first five columns will be used, rest of the columns will be attached at the end of the table.
 
 ```{r}
 var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
@@ -885,7 +905,7 @@ var.maf[1:10, 1:20, with = FALSE]
 NOTE: This is quite time consuming if input is big.
 
 ## Converting annovar output to MAF
-Annovar is one of the most widely used Variant Annotation tool in Genomics [14](#references). Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
+Annovar is one of the most widely used Variant Annotation tool in Genomics [17](#references). Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
 
 e.g, 
 ```{r, engine='perl', eval=FALSE}
@@ -926,7 +946,7 @@ print(esca.maf[1:5,1:16, with = FALSE])
 Note that by default Simple Somatic Mutation format contains all affected transcripts of a variant resulting in multiple entries of the same variant in same sample. It is hard to choose a single affected transcript based on annotations alone and by default this program removes repeated variants as duplicated entries. If you wish to keep all of them, set `removeDuplicatedVariants` to FALSE. Another option is to convert input file to MAF by removing duplicates and then use scripts like [vcf2maf](https://github.com/mskcc/vcf2maf) to re-annotate and prioritize affected transcripts.
 
 ## Prepare MAF file for MutSigCV analysis
-MutSig/MutSigCV is most widely used program for detecting driver genes [16](#references). However, we have observed that covariates files (gene.covariates.txt and exome_full192.coverage.txt) which are bundled with MutSig have non-standard gene names (non Hugo_Symbols). This discrepancy between Hugo_Symbols in MAF and non-Hugo_symbols in covariates file causes MutSig program to ignore such genes. For example, KMT2D - a well known driver gene in Esophageal Carcinoma is represented as MLL2 in MutSig covariates. This causes KMT2D to be ignored from analysis and is represented as an insignificant gene in MutSig results. This function attempts to correct such gene symbols with a manually curated list of gene names compatible with MutSig covariates list.
+MutSig/MutSigCV is most widely used program for detecting driver genes [18](#references). However, we have observed that covariates files (gene.covariates.txt and exome_full192.coverage.txt) which are bundled with MutSig have non-standard gene names (non Hugo_Symbols). This discrepancy between Hugo_Symbols in MAF and non-Hugo_symbols in covariates file causes MutSig program to ignore such genes. For example, KMT2D - a well known driver gene in Esophageal Carcinoma is represented as MLL2 in MutSig covariates. This causes KMT2D to be ignored from analysis and is represented as an insignificant gene in MutSig results. This function attempts to correct such gene symbols with a manually curated list of gene names compatible with MutSig covariates list.
 
 ```{r, eval=FALSE}
 laml.mutsig.corrected = prepareMutSig(maf = laml)
@@ -973,14 +993,15 @@ devtools::install_github(repo = "PoisonAlien/TCGAmutations")
 7.	Tamborero, D., Gonzalez-Perez, A. & Lopez-Bigas, N. OncodriveCLUST: exploiting the positional clustering of somatic mutations to identify cancer genes. Bioinformatics 29, 2238-44 (2013).
 8.	Dees, N.D. et al. MuSiC: identifying mutational significance in cancer genomes. Genome Res 22, 1589-98 (2012).
 9. Lawrence MS, Stojanov P, Mermel CH, Robinson JT, Garraway LA, Golub TR, Meyerson M, Gabriel SB, Lander ES, Getz G: Discovery and saturation analysis of cancer genes across 21 tumour types. Nature 2014, 505:495-501.
-10.	Madan, V. et al. Comprehensive mutational analysis of primary and relapse acute promyelocytic leukemia. Leukemia 30, 1672-81 (2016).
-11.	Mroz, E.A. & Rocco, J.W. MATH, a novel measure of intratumor genetic heterogeneity, is high in poor-outcome classes of head and neck squamous cell carcinoma. Oral Oncol 49, 211-5 (2013).
-12. Roberts SA, Lawrence MS, Klimczak LJ, et al. An APOBEC Cytidine Deaminase Mutagenesis Pattern is Widespread in Human Cancers. Nature genetics. 2013;45(9):970-976. 
-13.	Gaujoux, R. & Seoighe, C. A flexible R package for nonnegative matrix factorization. BMC Bioinformatics 11, 367 (2010).
-14.	Welch, J.S. et al. The origin and evolution of mutations in acute myeloid leukemia. Cell 150, 264-78 (2012).
-15.	Ramos, A.H. et al. Oncotator: cancer variant annotation tool. Hum Mutat 36, E2423-9 (2015).
-16.	Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
-17. Lawrence MS, Stojanov P, Polak P, Kryukov GV, Cibulskis K, Sivachenko A, Carter SL, Stewart C, Mermel CH, Roberts SA, et al: Mutational heterogeneity in cancer and the search for new cancer-associated genes. Nature 2013, 499:214-218.
+10. Griffith, M., Griffith, O. L., Coffman, A. C., Weible, J. V., McMichael, J. F., Spies, N. C., … Wilson, R. K. (2013). DGIdb - Mining the druggable genome. Nature Methods, 10(12), 1209–1210. http://doi.org/10.1038/nmeth.2689
+11.	Madan, V. et al. Comprehensive mutational analysis of primary and relapse acute promyelocytic leukemia. Leukemia 30, 1672-81 (2016).
+12.	Mroz, E.A. & Rocco, J.W. MATH, a novel measure of intratumor genetic heterogeneity, is high in poor-outcome classes of head and neck squamous cell carcinoma. Oral Oncol 49, 211-5 (2013).
+13. Roberts SA, Lawrence MS, Klimczak LJ, et al. An APOBEC Cytidine Deaminase Mutagenesis Pattern is Widespread in Human Cancers. Nature genetics. 2013;45(9):970-976. 
+14.	Gaujoux, R. & Seoighe, C. A flexible R package for nonnegative matrix factorization. BMC Bioinformatics 11, 367 (2010).
+15.	Welch, J.S. et al. The origin and evolution of mutations in acute myeloid leukemia. Cell 150, 264-78 (2012).
+16.	Ramos, A.H. et al. Oncotator: cancer variant annotation tool. Hum Mutat 36, E2423-9 (2015).
+17.	Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
+18. Lawrence MS, Stojanov P, Polak P, Kryukov GV, Cibulskis K, Sivachenko A, Carter SL, Stewart C, Mermel CH, Roberts SA, et al: Mutational heterogeneity in cancer and the search for new cancer-associated genes. Nature 2013, 499:214-218.
 
 
 # Session Info
