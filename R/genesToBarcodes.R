@@ -26,7 +26,8 @@ genesToBarcodes = function(maf, genes = NULL, justNames = FALSE){
     genes = genes[genes %in% rownames(dat)]
 
     if(length(genes) == 0){
-      stop('\nNo genes left !')
+      message('\nNo genes left !')
+      return(NULL)
     }
   }
 
