@@ -74,7 +74,7 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
         suppressWarnings(ms <- data.table::as.data.table(read.csv(file = mutsigResults.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = '#')))
         close(mutsigResults.gz)
       } else{
-        ms = suppressWarnings(data.table::fread(input = paste('zcat <', mutsig), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
+        ms = suppressWarnings(data.table::fread(cmd = paste('zcat <', mutsig), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
       }
     } else{
       ms = data.table::fread(input = mutsig, sep = '\t', stringsAsFactors = FALSE, header = TRUE)

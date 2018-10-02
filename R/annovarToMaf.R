@@ -189,7 +189,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
       close(ens.gz)
     } else{
-      ens = data.table::fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
+      ens = data.table::fread(cmd = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
     }
 
     ann.maf = merge(ann.maf, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)

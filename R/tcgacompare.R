@@ -26,7 +26,7 @@ tcgaCompare = function(maf, capture_size = NULL, cohortName = NULL, primarySite 
     tcga.cohort <- suppressWarnings( data.table(read.csv( file = tcga.cohort.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(tcga.cohort.gz)
   } else{
-    tcga.cohort = data.table::fread(input = paste('zcat <', tcga.cohort), sep = '\t', stringsAsFactors = FALSE)
+    tcga.cohort = data.table::fread(cmd = paste('zcat <', tcga.cohort), sep = '\t', stringsAsFactors = FALSE)
   }
 
   if(primarySite){

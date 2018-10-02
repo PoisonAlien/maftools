@@ -21,7 +21,7 @@ prepareMutSig = function(maf, fn = NULL){
     hugo.to.ms <- suppressWarnings( data.table(read.csv( file = hugo.to.ms.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(hugo.to.ms.gz)
   } else{
-    hugo.to.ms = data.table::fread(input = paste('zcat <', hugo.to.ms), sep = '\t', stringsAsFactors = FALSE)
+    hugo.to.ms = data.table::fread(cmd = paste('zcat <', hugo.to.ms), sep = '\t', stringsAsFactors = FALSE)
   }
 
   mut = maf@data

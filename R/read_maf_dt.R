@@ -52,7 +52,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
         suppressWarnings(maf <- data.table::as.data.table(read.csv(file = maf.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = "#")))
         close(maf.gz)
       } else{
-        maf = suppressWarnings(data.table::fread(input = paste('zcat <', maf), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol"))
+        maf = suppressWarnings(data.table::fread(cmd = paste('zcat <', maf), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol"))
       }
     } else{
       suppressWarnings(maf <- data.table::fread(input = maf, sep = "\t", stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol"))

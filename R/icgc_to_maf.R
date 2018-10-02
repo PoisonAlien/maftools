@@ -27,7 +27,7 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, clinical
       icgc <- suppressWarnings( data.table(read.csv( file = icgc.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
       close(icgc.gz)
     }else{
-      icgc = suppressWarnings(data.table::fread(input = paste('zcat <', icgc), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE))
+      icgc = suppressWarnings(data.table::fread(cmd = paste('zcat <', icgc), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE))
     }
   }else{
     icgc = data.table::fread(input = icgc, sep = '\t', stringsAsFactors = FALSE, header = TRUE, showProgress = TRUE, data.table = TRUE, verbose = FALSE, fill = TRUE)
@@ -113,7 +113,7 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, clinical
       ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
       close(ens.gz)
     } else{
-      ens = data.table::fread(input = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
+      ens = data.table::fread(cmd = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
     }
 
     icgc.maf[,ens_id := Hugo_Symbol]

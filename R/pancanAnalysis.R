@@ -33,7 +33,7 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
     pancan <- suppressWarnings( data.table::data.table(read.csv( file = pancan.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(pancan.gz)
   } else{
-    pancan = data.table::fread(input = paste('zcat <', pancan), sep = '\t', stringsAsFactors = FALSE)
+    pancan = data.table::fread(cmd = paste('zcat <', pancan), sep = '\t', stringsAsFactors = FALSE)
   }
 
   #Input mutsig results
@@ -44,7 +44,7 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
       suppressWarnings(mutsig <- data.table(read.csv(file = mutsigResults.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = '#')))
       close(mutsigResults.gz)
     } else{
-      mutsig = suppressWarnings(data.table::fread(input = paste('zcat <', mutsigResults), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
+      mutsig = suppressWarnings(data.table::fread(cmd = paste('zcat <', mutsigResults), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
     }
   } else{
     mutsig = data.table::fread(input = mutsigResults, sep = '\t', stringsAsFactors = FALSE, header = TRUE)

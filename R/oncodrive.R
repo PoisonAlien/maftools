@@ -32,7 +32,7 @@ oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGe
     gl <- suppressWarnings( data.table(read.csv( file = gl.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
     close(gl.gz)
   } else{
-    gl = data.table::fread(input = paste('zcat <', gl), sep = '\t', stringsAsFactors = FALSE)
+    gl = data.table::fread(cmd = paste('zcat <', gl), sep = '\t', stringsAsFactors = FALSE)
   }
 
   pval.options = c('zscore', 'poisson', 'combined')
