@@ -36,6 +36,10 @@ returns ggplot object of the plot which can be further modified. Results are wri
 Plots inter variant distance as a function of genomic locus.
 }
 \details{
-If `detectChangePoints`` is set to TRUE, this method will use Change-Point detection method to identify genomic loci where average inter-mutation distance changes from the backgorund.
-Segments detected with less than 6 mutations are filtered out.
+If `detectChangePoints`` is set to TRUE, this function will identify Kataegis loci.
+Kategis detection algorithm by Moritz Goretzky at WWU Munster, which exploits the definition of Kategis (six consecutive mutations with an avg. distance of 1000bp ) to idetify hyper mutated genomic loci.
+Algorithm starts with a double-ended queue to which six consecutive mutations are added and their average intermutation distance is calculated.
+If the average intermutation distance is larger than 1000, one element is added at the back of the queue and one is removed from the front.
+If the average intermutation distance is less or equal to 1000, further mutations are added until the average intermutation distance is larger than 1000.
+After that all mutations in the double-ended queue are written into output as one kataegis and the double-ended queue is reinitialized with six mutations.
 }

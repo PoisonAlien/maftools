@@ -220,15 +220,15 @@ Above plot shows two genes NF1 and SUZ12 are located on a region which has a sha
 Cancer genomes, especially solid tumors are characterized by genomic loci with localized hyper-mutations [5](#references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. If `detectChangePoints` is set to TRUE, `rainfall` plot also highlights regions where potential changes in inter-event distances are located. 
 
 ```{r, results='hide', message=FALSE}
-coad <- system.file("extdata", "coad.maf.gz", package = "maftools")
-coad = read.maf(maf = coad)
+brca <- system.file("extdata", "brca.maf.gz", package = "maftools")
+brca = read.maf(maf = brca, verbose = FALSE)
 ```
 
 ```{r, fig.height=5,fig.width=12,fig.align='center'}
-rainfallPlot(maf = coad, detectChangePoints = TRUE, fontSize = 12, pointSize = 0.6)
+rainfallPlot(maf = brca, detectChangePoints = TRUE, fontSize = 12, pointSize = 0.6)
 ```
 
-`Filter` column in the above results indicate whether the identified segment passes the definition of "Kataegis" which are defined as those genomic segments containing six or more consecutive mutations with an average inter-mutation distance of less than or equal to 1,00 bp [5](#references).
+"Kataegis" are defined as those genomic segments containing six or more consecutive mutations with an average inter-mutation distance of less than or equal to 1,00 bp [5](#references).
 
 ## Compare mutation load against TCGA cohorts
 TCGA contains over 30 different cancer cohorts and median mutation load across them varies from as low as 7 per exome (Pheochromocytoma and Paraganglioma arising from Adrenal Gland) to as high as 315 per exome (Skin Cutaneoys Melanoma). It is informative to see how mutation load in given maf stands against TCGA cohorts. This can can be achieved with the function `tcgaComapre` which draws distribution of variants compiled from over 10,000 WXS samples across 33 TCGA landmark cohorts. Plot generated is [similar](http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F1.html) to the one described in Alexandrov et al [5](#references). 
@@ -479,20 +479,12 @@ Above figure shows two genes NF1 and SUZ12 with high VAF's, which is due to copy
 Every cancer, as it progresses leaves a signature characterized by specific pattern of nucleotide substitutions. [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html) have shown such mutational signatures, derived from over 7000 cancer samples [5](#references). Such signatures can be extracted by decomposing matrix of nucleotide substitutions, classified into 96 substitution classes based on immediate bases surrounding the mutated base. Extracted signatures can also be compared to those [validated signatures](http://cancer.sanger.ac.uk/cosmic/signatures). 
 
 First step in signature analysis is to obtain the adjacent bases surrounding the mutated base and form a mutation matrix. 
-NOTE: Even-though reading fasta and extracting bases is fairly fast, it is a memory consuming process as it occupies ~3gb of memory while running.
+NOTE: Earlier versions of maftools required a fasta file as an input. But starting from 1.8.0, BSgenome objects are used for faster sequence extraction.
 
-```{r, eval=FALSE}
-#First we extract adjacent bases to the mutated locus and clssify them into 96 substitution classes. This also estimates APOBEC enrichment per sample.
-laml.tnm = trinucleotideMatrix(maf = laml, ref_genome = '/path/to/hg19.fa', 
-                               prefix = 'chr', add = TRUE, ignoreChr = 'chr23', useSyn = TRUE)
-# reading /path/to/hg19.fa (this might take few minutes)..
-# Extracting 5' and 3' adjacent bases..
-# Extracting +/- 20bp around mutated bases for background estimation..
-# Estimating APOBEC enrichment scores.. 
-# Performing one-way Fisher's test for APOBEC enrichment..
-# APOBEC related mutations are enriched in 2.674% of samples (APOBEC enrichment score > 2 ; 5 of 187 samples)
-# Creating mutation matrix..
-# matrix of dimension 193x96
+```{r, eval=TRUE}
+#Requires BSgenome object
+library(BSgenome.Hsapiens.UCSC.hg19, quietly = TRUE)
+laml.tnm = trinucleotideMatrix(maf = laml, prefix = 'chr', add = TRUE, ref_genome = "BSgenome.Hsapiens.UCSC.hg19")
 ```
 
 
@@ -507,125 +499,7 @@ APOBEC induced mutations are more frequent in solid tumors and are mainly associ
 
 $$\frac{n_{tCw} * background_C}{n_C * background_{TCW}}$$
 
-                                              
-                                              
 One-sided fishers exact test is also performed to statistically evaluate the enrichment score, as described in original study by Roberts et al.
-
-
-```{r, echo=FALSE}
-APOBEC_scores = structure(list(Tumor_Sample_Barcode = structure(c(136L, 10L, 
-132L, 90L, 192L, 101L, 189L, 39L, 188L, 140L, 72L, 94L, 110L, 
-180L, 70L, 176L, 61L, 69L, 129L, 80L, 96L, 112L, 1L, 64L, 85L, 
-128L, 117L, 92L, 179L, 160L, 134L, 11L, 53L, 139L, 111L, 18L, 
-43L, 177L, 9L, 81L, 106L, 35L, 17L, 120L, 159L, 147L, 152L, 143L, 
-76L, 95L, 59L, 19L, 148L, 99L, 97L, 103L, 24L, 146L, 55L, 118L, 
-71L, 6L, 2L, 3L, 4L, 5L, 7L, 8L, 12L, 13L, 14L, 15L, 16L, 21L, 
-22L, 23L, 25L, 26L, 27L, 28L, 29L, 30L, 31L, 32L, 33L, 34L, 37L, 
-38L, 40L, 41L, 42L, 45L, 46L, 47L, 48L, 49L, 50L, 51L, 52L, 54L, 
-56L, 57L, 58L, 60L, 62L, 63L, 65L, 66L, 67L, 68L, 73L, 74L, 75L, 
-78L, 79L, 82L, 83L, 84L, 86L, 87L, 88L, 89L, 91L, 93L, 98L, 102L, 
-104L, 105L, 107L, 108L, 109L, 113L, 114L, 115L, 116L, 119L, 121L, 
-122L, 123L, 124L, 125L, 126L, 127L, 130L, 131L, 135L, 137L, 138L, 
-141L, 142L, 144L, 145L, 149L, 150L, 151L, 153L, 154L, 155L, 156L, 
-157L, 158L, 161L, 162L, 163L, 164L, 165L, 166L, 167L, 168L, 169L, 
-170L, 171L, 172L, 173L, 174L, 175L, 178L, 181L, 182L, 183L, 184L, 
-185L, 186L, 187L, 190L, 191L, 193L), .Label = c("TCGA-AB-2802", 
-"TCGA-AB-2803", "TCGA-AB-2804", "TCGA-AB-2805", "TCGA-AB-2806", 
-"TCGA-AB-2807", "TCGA-AB-2808", "TCGA-AB-2809", "TCGA-AB-2810", 
-"TCGA-AB-2812", "TCGA-AB-2813", "TCGA-AB-2814", "TCGA-AB-2816", 
-"TCGA-AB-2817", "TCGA-AB-2818", "TCGA-AB-2819", "TCGA-AB-2820", 
-"TCGA-AB-2821", "TCGA-AB-2822", "TCGA-AB-2823", "TCGA-AB-2824", 
-"TCGA-AB-2825", "TCGA-AB-2826", "TCGA-AB-2827", "TCGA-AB-2828", 
-"TCGA-AB-2829", "TCGA-AB-2830", "TCGA-AB-2831", "TCGA-AB-2832", 
-"TCGA-AB-2833", "TCGA-AB-2834", "TCGA-AB-2835", "TCGA-AB-2836", 
-"TCGA-AB-2838", "TCGA-AB-2839", "TCGA-AB-2840", "TCGA-AB-2841", 
-"TCGA-AB-2842", "TCGA-AB-2843", "TCGA-AB-2844", "TCGA-AB-2845", 
-"TCGA-AB-2846", "TCGA-AB-2847", "TCGA-AB-2848", "TCGA-AB-2849", 
-"TCGA-AB-2850", "TCGA-AB-2851", "TCGA-AB-2853", "TCGA-AB-2854", 
-"TCGA-AB-2855", "TCGA-AB-2857", "TCGA-AB-2858", "TCGA-AB-2859", 
-"TCGA-AB-2860", "TCGA-AB-2861", "TCGA-AB-2862", "TCGA-AB-2863", 
-"TCGA-AB-2864", "TCGA-AB-2865", "TCGA-AB-2866", "TCGA-AB-2867", 
-"TCGA-AB-2868", "TCGA-AB-2869", "TCGA-AB-2870", "TCGA-AB-2871", 
-"TCGA-AB-2872", "TCGA-AB-2873", "TCGA-AB-2874", "TCGA-AB-2875", 
-"TCGA-AB-2876", "TCGA-AB-2877", "TCGA-AB-2878", "TCGA-AB-2879", 
-"TCGA-AB-2880", "TCGA-AB-2881", "TCGA-AB-2882", "TCGA-AB-2883", 
-"TCGA-AB-2884", "TCGA-AB-2885", "TCGA-AB-2886", "TCGA-AB-2887", 
-"TCGA-AB-2888", "TCGA-AB-2889", "TCGA-AB-2890", "TCGA-AB-2891", 
-"TCGA-AB-2892", "TCGA-AB-2894", "TCGA-AB-2895", "TCGA-AB-2896", 
-"TCGA-AB-2897", "TCGA-AB-2898", "TCGA-AB-2899", "TCGA-AB-2900", 
-"TCGA-AB-2901", "TCGA-AB-2904", "TCGA-AB-2905", "TCGA-AB-2906", 
-"TCGA-AB-2907", "TCGA-AB-2908", "TCGA-AB-2909", "TCGA-AB-2910", 
-"TCGA-AB-2911", "TCGA-AB-2912", "TCGA-AB-2913", "TCGA-AB-2914", 
-"TCGA-AB-2915", "TCGA-AB-2916", "TCGA-AB-2917", "TCGA-AB-2918", 
-"TCGA-AB-2919", "TCGA-AB-2920", "TCGA-AB-2921", "TCGA-AB-2922", 
-"TCGA-AB-2923", "TCGA-AB-2924", "TCGA-AB-2925", "TCGA-AB-2926", 
-"TCGA-AB-2927", "TCGA-AB-2928", "TCGA-AB-2929", "TCGA-AB-2930", 
-"TCGA-AB-2931", "TCGA-AB-2932", "TCGA-AB-2933", "TCGA-AB-2934", 
-"TCGA-AB-2935", "TCGA-AB-2936", "TCGA-AB-2937", "TCGA-AB-2938", 
-"TCGA-AB-2939", "TCGA-AB-2940", "TCGA-AB-2941", "TCGA-AB-2942", 
-"TCGA-AB-2943", "TCGA-AB-2945", "TCGA-AB-2946", "TCGA-AB-2947", 
-"TCGA-AB-2948", "TCGA-AB-2949", "TCGA-AB-2950", "TCGA-AB-2952", 
-"TCGA-AB-2954", "TCGA-AB-2955", "TCGA-AB-2956", "TCGA-AB-2957", 
-"TCGA-AB-2959", "TCGA-AB-2963", "TCGA-AB-2964", "TCGA-AB-2965", 
-"TCGA-AB-2966", "TCGA-AB-2967", "TCGA-AB-2968", "TCGA-AB-2970", 
-"TCGA-AB-2971", "TCGA-AB-2972", "TCGA-AB-2973", "TCGA-AB-2974", 
-"TCGA-AB-2975", "TCGA-AB-2976", "TCGA-AB-2977", "TCGA-AB-2978", 
-"TCGA-AB-2979", "TCGA-AB-2980", "TCGA-AB-2981", "TCGA-AB-2982", 
-"TCGA-AB-2983", "TCGA-AB-2984", "TCGA-AB-2985", "TCGA-AB-2986", 
-"TCGA-AB-2987", "TCGA-AB-2988", "TCGA-AB-2989", "TCGA-AB-2990", 
-"TCGA-AB-2991", "TCGA-AB-2992", "TCGA-AB-2993", "TCGA-AB-2994", 
-"TCGA-AB-2995", "TCGA-AB-2996", "TCGA-AB-2997", "TCGA-AB-2998", 
-"TCGA-AB-2999", "TCGA-AB-3000", "TCGA-AB-3001", "TCGA-AB-3002", 
-"TCGA-AB-3005", "TCGA-AB-3006", "TCGA-AB-3007", "TCGA-AB-3008", 
-"TCGA-AB-3009", "TCGA-AB-3011", "TCGA-AB-3012", "TCGA-AB-2903"
-), class = "factor"), n_mutations = c(3, 8, 4, 6, 6, 10, 4, 11, 
-7, 11, 12, 8, 10, 11, 10, 9, 10, 9, 18, 11, 20, 8, 10, 10, 15, 
-9, 12, 13, 17, 9, 15, 14, 10, 13, 9, 14, 10, 11, 13, 14, 19, 
-18, 14, 13, 16, 15, 16, 15, 16, 22, 17, 19, 14, 18, 14, 20, 14, 
-25, 19, 23, 17, 26, 14, 5, 14, 13, 9, 4, 8, 7, 10, 10, 14, 3, 
-1, 4, 12, 10, 9, 2, 10, 8, 1, 2, 2, 20, 4, 2, 11, 3, 11, 24, 
-3, 6, 8, 11, 2, 14, 12, 10, 10, 17, 15, 1, 13, 10, 12, 10, 1, 
-15, 2, 1, 9, 4, 11, 6, 4, 7, 1, 5, 15, 1, 17, 17, 16, 2, 13, 
-16, 11, 14, 1, 12, 20, 9, 14, 9, 5, 10, 5, 1, 8, 9, 8, 14, 2, 
-11, 2, 1, 13, 1, 4, 2, 7, 15, 7, 6, 9, 21, 4, 7, 2, 14, 6, 5, 
-4, 2, 14, 10, 5, 9, 6, 13, 9, 8, 8, 7, 6, 8, 11, 3, 10, 26, 17, 
-17, 35, 5, 1), APOBEC_Enriched = c("yes", "yes", "yes", "no", 
-"no", "yes", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "yes", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", NA, "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", NA, "no", "no", "no", "no", "no", "no", NA, NA, "no", 
-"no", "no", "no", "no", "no", NA, "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", NA, "no", "no", "no", "no", 
-"no", "no", "no", "no", NA, "no", "no", "no", "no", "no", "no", 
-"no", NA, "no", NA, "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-NA, "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", 
-"no", "no", "no", "no", "no", "no", "no", "no"), fraction_APOBEC_mutations = c(0.333, 
-0.125, 0.25, 0.167, 0.167, 0.2, 0.25, 0.182, 0.143, 0.182, 0.167, 
-0.125, 0.2, 0.091, 0.1, 0.111, 0.1, 0.111, 0.111, 0.091, 0.2, 
-0.125, 0.1, 0.1, 0.067, 0.111, 0.083, 0.077, 0.118, 0.111, 0.067, 
-0.071, 0.1, 0.077, 0.111, 0.071, 0.1, 0.091, 0.077, 0.071, 0.105, 
-0.056, 0.071, 0.077, 0.125, 0.067, 0.062, 0.067, 0.062, 0.091, 
-0.118, 0.105, 0.071, 0.056, 0.071, 0.1, 0.071, 0.04, 0.053, 0.043, 
-0.059, 0.038, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0)), .Names = c("Tumor_Sample_Barcode", "n_mutations", 
-"APOBEC_Enriched", "fraction_APOBEC_mutations"), row.names = c(NA, 
--187L), class = c("data.table", "data.frame"))
-
-laml.tnm = list(nmf_matrix = NA, APOBEC_scores = APOBEC_scores)
-    
-```
 
 
 ### Differences between APOBEC enriched and non-enriched samples
@@ -642,235 +516,34 @@ plotApobecDiff(tnm = laml.tnm, maf = laml)
 `extractSignatures` uses non-negative matrix factorization to decompose nx96 dimension matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficient. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
 
 
-```{r, fig.height=5, fig.width=5, eval=F, message=FALSE}
+```{r, fig.height=5, fig.width=5, eval=FALSE, message=FALSE}
 #Run main function with maximum 6 signatures. 
-require('NMF')
+library('NMF')
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
-# Warning : Found zero mutations for conversions A[T>G]C
-#Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)
-#Found Signature_1 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.767] 
-#Found Signature_2 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.757] 
+
+# Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)
+# Found Signature_1 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.919] 
+# Found Signature_2 most similar to validated Signature_5. Aetiology: Unknown [cosine-similarity: 0.82] 
 ```
 
-```{r, echo=F}
-laml.sign = structure(list(signatures = structure(c(1.08748973712201e-18, 
-0.00839574301030403, 1.08748973712201e-18, 1.08748973712201e-18, 
-0.00240385240062567, 0.0077139799108362, 1.08748973712201e-18, 
-1.08748973712201e-18, 0.0162307404236774, 1.08748973712201e-18, 
-1.08748973712201e-18, 0.00375682293486133, 0.0149882188409168, 
-0.0166193873319139, 1.08748973712201e-18, 0.0340641337293563, 
-0.0177133495392653, 1.08748973712201e-18, 1.08748973712201e-18, 
-0.010900522793394, 1.08748973712201e-18, 1.08748973712201e-18, 
-0.0204384802376138, 1.08748973712201e-18, 0.016350784190091, 
-0.00817539209504552, 0.00817539209504552, 0.00510268819463668, 
-4.64672034428952e-06, 1.08748973712201e-18, 0.00226222985404151, 
-0.0136256534917425, 0.0305962431704599, 1.08748973712201e-18, 
-0.0644710774331736, 0.00640610796992356, 0.0940170090930234, 
-0.0580805923991668, 0.0849820094561238, 1.08748973712201e-18, 
-0.0397128561572591, 0.0074963059243485, 0.0626642796173211, 0.0351236523951451, 
-0.0201728180626018, 0.014196017550947, 0.0643882909888946, 1.08748973712201e-18, 
-1.08748973712201e-18, 0.00455330562748865, 0.00408769604752276, 
-1.08748973712201e-18, 0.00272513069834851, 0.00650167581744194, 
-0.016350784190091, 1.08748973712201e-18, 1.08748973712201e-18, 
-0.0122630881425683, 1.08748973712201e-18, 0.00334016875229922, 
-0.00136256534917425, 1.08748973712201e-18, 0.00545026139669701, 
-0.00545026139669701, 4.42324620317284e-15, 1.08748973712201e-18, 
-0.00737413388604955, 0.0269789492628818, 0.00988463958213221, 
-0.0100520699314415, 1.08748973712201e-18, 0.00316631020385699, 
-1.08748973712201e-18, 0.010900522793394, 1.08748973712201e-18, 
-0.010900522793394, 0.00272513069834851, 1.08748973712201e-18, 
-0.00394072268462079, 0.00852966039575841, 7.59566702198884e-17, 
-0.0115340943434354, 1.08748973712201e-18, 0.00237636221356833, 
-1.08748973712201e-18, 1.08748973712201e-18, 0.0136256534917425, 
-0.00181567829546557, 0.00408769604752276, 1.08748973712201e-18, 
-1.08748973712201e-18, 0.00545026139669701, 0.00408769604752276, 
-0.00499540259887787, 0.00272513069834851, 0.00353514720450814, 
-0.0134931114940269, 0.0108267734159331, 0.00758987521539011, 
-0.00674655574701343, 0.0094753598393619, 0.0070321331529894, 
-0.0109631530888968, 0.0109631530888968, 0.00344757540744538, 
-0.00674655574701343, 0.00505991681026007, 0.0128545761394095, 
-9.04499029878464e-19, 0.00742363125585919, 0.0101198336205201, 
-9.04499029878464e-19, 9.04499029878464e-19, 0.00505991681026007, 
-0.00505991681026007, 9.04499029878464e-19, 0.0118064725572735, 
-0.00421659734188339, 9.04499029878464e-19, 0.00758987521539011, 
-9.04499029878464e-19, 9.04499029878464e-19, 9.04499029878464e-19, 
-0.00190175907624695, 0.00421372139194615, 0.00590323627863675, 
-0.00703305451506787, 9.04499029878464e-19, 0.0131095012433463, 
-0.0480692096974707, 0.0857521368222207, 0.0171181159082965, 9.04499029878464e-19, 
-0.0526012816612792, 0.103417003771369, 0.108788211420591, 0.00746704363785783, 
-0.0358397179449789, 0.051450983147391, 0.0119940343267555, 0.020404090976265, 
-0.0173566988936855, 0.0225544149118068, 0.0312028203299371, 0.00337327787350671, 
-0.00645838048724634, 9.04499029878464e-19, 0.00252995840513004, 
-9.04499029878464e-19, 0.00187921658868539, 9.04499029878464e-19, 
-0.00590323627863675, 0.00337327787350671, 9.04499029878464e-19, 
-0.00421659734188339, 0.002149298816947, 9.04499029878464e-19, 
-0.00168663893675336, 9.04499029878464e-19, 9.04499029878464e-19, 
-0.0227696256461676, 0.0118064725572735, 0.0123023875952219, 0.00691512349188281, 
-0.00147207029502386, 0.00642836104928948, 0.0160230698991569, 
-0.0132200565053105, 0.00758987521539011, 9.04499029878464e-19, 
-0.0109631530888968, 9.04499029878464e-19, 9.04499029878464e-19, 
-0.00337327787350671, 0.00430756215200655, 0.0115872086847547, 
-0.00337327787350667, 0.0086313879649405, 0.00168663893675336, 
-0.00105917939270956, 0.000843319468376679, 0.00758987521539011, 
-9.04499029878464e-19, 0.00309283703504524, 9.04499029878464e-19, 
-0.00252995840513004, 0.00421659734188339, 9.04499029878464e-19, 
-9.04499029878464e-19, 0.00112484084993519, 9.04499029878464e-19, 
-0.00287194214691947), .Dim = c(96L, 2L), .Dimnames = list(c("A[C>A]A", 
-"A[C>A]C", "A[C>A]G", "A[C>A]T", "C[C>A]A", "C[C>A]C", "C[C>A]G", 
-"C[C>A]T", "G[C>A]A", "G[C>A]C", "G[C>A]G", "G[C>A]T", "T[C>A]A", 
-"T[C>A]C", "T[C>A]G", "T[C>A]T", "A[C>G]A", "A[C>G]C", "A[C>G]G", 
-"A[C>G]T", "C[C>G]A", "C[C>G]C", "C[C>G]G", "C[C>G]T", "G[C>G]A", 
-"G[C>G]C", "G[C>G]G", "G[C>G]T", "T[C>G]A", "T[C>G]C", "T[C>G]G", 
-"T[C>G]T", "A[C>T]A", "A[C>T]C", "A[C>T]G", "A[C>T]T", "C[C>T]A", 
-"C[C>T]C", "C[C>T]G", "C[C>T]T", "G[C>T]A", "G[C>T]C", "G[C>T]G", 
-"G[C>T]T", "T[C>T]A", "T[C>T]C", "T[C>T]G", "T[C>T]T", "A[T>A]A", 
-"A[T>A]C", "A[T>A]G", "A[T>A]T", "C[T>A]A", "C[T>A]C", "C[T>A]G", 
-"C[T>A]T", "G[T>A]A", "G[T>A]C", "G[T>A]G", "G[T>A]T", "T[T>A]A", 
-"T[T>A]C", "T[T>A]G", "T[T>A]T", "A[T>C]A", "A[T>C]C", "A[T>C]G", 
-"A[T>C]T", "C[T>C]A", "C[T>C]C", "C[T>C]G", "C[T>C]T", "G[T>C]A", 
-"G[T>C]C", "G[T>C]G", "G[T>C]T", "T[T>C]A", "T[T>C]C", "T[T>C]G", 
-"T[T>C]T", "A[T>G]A", "A[T>G]C", "A[T>G]G", "A[T>G]T", "C[T>G]A", 
-"C[T>G]C", "C[T>G]G", "C[T>G]T", "G[T>G]A", "G[T>G]C", "G[T>G]G", 
-"G[T>G]T", "T[T>G]A", "T[T>G]C", "T[T>G]G", "T[T>G]T"), c("Signature_1", 
-"Signature_2"))), coSineSimMat = structure(c(0.76789895507522, 
-0.757733629596811, 0.171803248681684, 0.199391522195904, 0.407671912943102, 
-0.372979035914154, 0.344078922420868, 0.319857408370786, 0.573357292983596, 
-0.562412460243176, 0.685700701802704, 0.686217358302521, 0.377725890462418, 
-0.386689478887272, 0.382312659188403, 0.407516946456442, 0.339149804914427, 
-0.305305965796845, 0.386629499233586, 0.15685755480318, 0.350678506033931, 
-0.562433289508901, 0.268840367435164, 0.322933955777266, 0.108666524311962, 
-0.0628339785033974, 0.49126593617209, 0.527932757462746, 0.47172512923794, 
-0.461711639647726, 0.362590079921887, 0.387794528034913, 0.154909499589746, 
-0.154613800740969, 0.303423806321064, 0.204479833568232, 0.570031076792535, 
-0.740784602225925, 0.445644443725404, 0.510768207280784, 0.248807908838572, 
-0.28784224944225, 0.140154287925718, 0.0725523826114571, 0.407829024906403, 
-0.610157444568381, 0.256945337078229, 0.227615984891259, 0.43572741633734, 
-0.391864627867027, 0.296855754287958, 0.345602091793204, 0.105681572106723, 
-0.0918011629446175, 0.0955192240249301, 0.0892005087879189, 0.35734783741945, 
-0.351111836488432, 0.570462074592721, 0.532907409369077), .Dim = c(2L, 
-30L), .Dimnames = list(c("Signature_1", "Signature_2"), c("Signature_1", 
-"Signature_2", "Signature_3", "Signature_4", "Signature_5", "Signature_6", 
-"Signature_7", "Signature_8", "Signature_9", "Signature_10", 
-"Signature_11", "Signature_12", "Signature_13", "Signature_14", 
-"Signature_15", "Signature_16", "Signature_17", "Signature_18", 
-"Signature_19", "Signature_20", "Signature_21", "Signature_22", 
-"Signature_23", "Signature_24", "Signature_25", "Signature_26", 
-"Signature_27", "Signature_28", "Signature_29", "Signature_30"
-))), nmfObj = NULL, contributions = structure(c(0.50337879623466, 
-0.49662120376534, 0.735184687577203, 0.264815312422796, 0.926454506999779, 
-0.0735454930002212, 6.84562518316801e-15, 0.999999999999993, 
-0.63514205992338, 0.36485794007662, 0.405196139226508, 0.594803860773492, 
-1.0648750284928e-14, 0.999999999999989, 2.3959688141088e-14, 
-0.999999999999976, 0.388932338884403, 0.611067661115597, 0.789353253877505, 
-0.210646746122495, 0.70558528036746, 0.294414719632539, 0.425275906358389, 
-0.574724093641611, 1.36912503663359e-14, 0.999999999999986, 0.335618602334815, 
-0.664381397665185, 0.854637052669362, 0.145362947330638, 0.999999999999993, 
-7.12839115795779e-15, 0.451109064541674, 0.548890935458326, 0.999999999999993, 
-7.12839115795777e-15, 0.231557676487435, 0.768442323512564, 3.19462508547833e-14, 
-0.999999999999968, 0.9999999999999, 9.97974762114e-14, 2.39596881410876e-14, 
-0.999999999999976, 0.707339986758224, 0.292660013241776, 0.623888274173047, 
-0.376111725826953, 0.761349287087994, 0.238650712912006, 0.185110462876877, 
-0.814889537123123, 0.99999999999995, 4.98987381057022e-14, 0.99999999999999, 
-9.97974762114085e-15, 1.1979844070544e-14, 0.999999999999988, 
-0.9999999999999, 9.97974762113995e-14, 0.923471904280283, 0.076528095719717, 
-4.79193762821742e-14, 0.999999999999952, 0.417499523255935, 0.582500476744065, 
-0.427651278437266, 0.572348721562734, 0.999999999999975, 2.49493690528517e-14, 
-4.79193762821741e-14, 0.999999999999952, 8.71261386948656e-15, 
-0.999999999999991, 0.901731575615889, 0.098268424384111, 0.526348275461158, 
-0.473651724538842, 0.383123830992873, 0.616876169007127, 0.676458226167224, 
-0.323541773832776, 0.62617579781792, 0.37382420218208, 3.19462508547836e-14, 
-0.999999999999968, 0.571318817161484, 0.428681182838516, 0.539484231563079, 
-0.460515768436921, 0.999999999999991, 9.07249783740083e-15, 0.663750621983501, 
-0.336249378016499, 0.340128808961781, 0.659871191038219, 0.999999999999992, 
-8.31645635095072e-15, 0.99999999999999, 9.97974762114085e-15, 
-9.5838752564352e-15, 0.99999999999999, 0.123828233985777, 0.876171766014223, 
-0.99999999999999, 9.97974762114086e-15, 0.999999999999994, 5.8704397771417e-15, 
-0.795422962132652, 0.204577037867348, 0.502029549198604, 0.497970450801396, 
-9.58387525643452e-14, 0.999999999999904, 0.147092909392627, 0.852907090607373, 
-7.3722117357194e-15, 0.999999999999993, 0.99999999999999, 9.97974762114086e-15, 
-0.508037326891693, 0.491962673108307, 0.535750610709636, 0.464249389290364, 
-0.99999999999999, 9.97974762114087e-15, 0.9999999999999, 9.97974762114e-14, 
-0.999999999999993, 6.65316508076059e-15, 0.422991976717691, 0.577008023282309, 
-0.161518855160448, 0.838481144839552, 0.95649107631202, 0.0435089236879803, 
-0.252788998249348, 0.747211001750652, 0.99999999999995, 4.98987381057023e-14, 
-0.9999999999999, 9.97974762113995e-14, 0.464185141122002, 0.535814858877999, 
-0.505653558249352, 0.494346441750648, 0.444394111481323, 0.555605888518677, 
-0.357951030231189, 0.642048969768811, 8.71261386948657e-15, 0.999999999999991, 
-0.470221885688493, 0.529778114311507, 0.557673480791699, 0.442326519208301, 
-1.84111243164613e-05, 0.999981588875683, 0.999999999999986, 1.42567823159154e-14, 
-6.38925017095682e-15, 0.999999999999994, 0.999999712408211, 2.87591789023604e-07, 
-0.99999999999998, 1.99594952422816e-14, 0.29671503347543, 0.70328496652457, 
-0.9999999999999, 9.97974762114e-14, 1.59731254273919e-14, 0.999999999999984, 
-0.637601867611109, 0.362398132388891, 0.609548816453349, 0.390451183546651, 
-5.63757368025602e-15, 0.999999999999994, 0.99999997290847, 2.70915302413065e-08, 
-0.501204783088238, 0.498795216911762, 0.461243728880635, 0.538756271119365, 
-0.999999999999993, 7.12839115795777e-15, 0.615608327489882, 0.384391672510118, 
-0.999999999999994, 5.54430423396717e-15, 0.569928863637076, 0.430071136362924, 
-4.79193762821743e-14, 0.999999999999952, 0.100851461315826, 0.899148538684174, 
-0.999999999999992, 7.67672893933913e-15, 0.141416581853325, 0.858583418146675, 
-0.704078506817208, 0.295921493182792, 0.256820491175602, 0.743179508824398, 
-6.84562518316802e-15, 0.999999999999993, 9.58387525643438e-14, 
-0.999999999999904, 0.308965325142456, 0.691034674857544, 0.54420855115639, 
-0.45579144884361, 1.1979844070544e-14, 0.999999999999988, 0.390887402815504, 
-0.609112597184496, 0.403491456621558, 0.596508543378441, 0.498611242993035, 
-0.501388757006965, 0.999999999999993, 7.12839115795777e-15, 7.98656271369601e-15, 
-0.999999999999992, 0.35276002632962, 0.64723997367038, 0.251306887425971, 
-0.748693112574029, 0.572879892841475, 0.427120107158525, 1.91677505128702e-14, 
-0.999999999999981, 9.5838752564352e-15, 0.99999999999999, 0.607255141365351, 
-0.392744858634649, 9.58387525643437e-14, 0.999999999999904, 0.999999999999988, 
-1.2474684526426e-14, 0.999999999999989, 1.10886084679343e-14, 
-1.1979844070544e-14, 0.999999999999988, 0.744287626983694, 0.255712373016306, 
-0.390812458637443, 0.609187541362557, 0.999999999999993, 7.12839115795777e-15, 
-0.99999999999995, 4.98987381057022e-14, 0.311861999705299, 0.688138000294701, 
-6.38925017095682e-15, 0.999999999999994, 0.67213229360714, 0.327867706392859, 
-3.19462508547833e-14, 0.999999999999968, 4.79193762821742e-14, 
-0.999999999999952, 9.58387525643452e-14, 0.999999999999904, 0.28017165708634, 
-0.71982834291366, 8.71261386948655e-15, 0.999999999999991, 0.395003268601784, 
-0.604996731398216, 9.58387525643437e-14, 0.999999999999904, 6.38925017095682e-15, 
-0.999999999999994, 2.39596881410877e-14, 0.999999999999976, 4.79193762821741e-14, 
-0.999999999999952, 0.214731893915975, 0.785268106084026, 0.365495605625826, 
-0.634504394374174, 0.434278914613828, 0.565721085386172, 0.999999999999986, 
-1.42567823159154e-14, 6.38925017095682e-15, 0.999999999999994, 
-0.999999999999986, 1.42567823159155e-14, 5.98992203527202e-15, 
-0.999999999999994, 0.61728491590254, 0.38271508409746, 0.622547952361923, 
-0.377452047638077, 4.56375012211202e-15, 0.999999999999995, 2.39596881410877e-14, 
-0.999999999999976, 0.651162583867872, 0.348837416132128, 4.79193762821742e-14, 
-0.999999999999952, 0.548809595398619, 0.451190404601381, 0.350410016472764, 
-0.649589983527236, 0.999999999999993, 7.12839115795778e-15, 0.999999999999983, 
-1.66329127019013e-14, 0.734514125942381, 0.265485874057619, 2.39596881410876e-14, 
-0.999999999999976, 0.99999999999995, 4.98987381057022e-14, 0.142044376495145, 
-0.857955623504855, 0.364173961579135, 0.635826038420865, 1.91677505128702e-14, 
-0.999999999999981, 0.999999999999989, 1.10886084679343e-14, 0.626999624911337, 
-0.373000375088663, 0.999999999999992, 7.67672893933913e-15, 0.999999999999989, 
-1.10886084679343e-14, 0.746961249019172, 0.253038750980829, 0.59777540188719, 
-0.40222459811281, 1.36912503663359e-14, 0.999999999999986, 0.999999999999989, 
-1.10886084679343e-14, 8.71261386948656e-15, 0.999999999999991, 
-0.999999999999983, 1.66329127019013e-14, 5.63757368025602e-15, 
-0.999999999999994, 8.71261386948655e-15, 0.999999999999991, 0.999999999999988, 
-1.2474684526426e-14, 0.999999999999991, 9.07249783740084e-15, 
-0.999999999999967, 3.32658254038021e-14, 0.99999999999999, 9.97974762114085e-15, 
-0.569329445983671, 0.43067055401633, 0.972356604437691, 0.027643395562309, 
-0.999999999999994, 5.8704397771417e-15, 1.36912503663359e-14, 
-0.999999999999986, 0.311861999705299, 0.688138000294701, 0.294158858972731, 
-0.705841141027269, 0.99999999999998, 1.99594952422817e-14, 0.367632671587342, 
-0.632367328412658, 9.58387525643437e-14, 0.999999999999904), .Dim = c(2L, 
-187L), .Dimnames = list(c("Signature_1", "Signature_2"), NULL))), .Names = c("signatures", 
-"coSineSimMat", "nmfObj", "contributions"))
+```{r, fig.height=5, fig.width=5, eval=TRUE, message=FALSE, echo=FALSE}
+#Run main function with maximum 6 signatures. 
+library('NMF')
+laml.sign = extractSignatures(mat = laml.tnm, n = 2, plotBestFitRes = FALSE, pConstant = 0.1)
 ```
 
 ```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
-plotSignatures(laml.sign, title_size = 0.8)
+plotSignatures(laml.sign, title_size = 0.8, )
 ```
-
 
 `extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overfitted/underfitted, it is also possible to be re-run `extractSignatures` by manually specifying r.
 
-Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). See [here](http://cancer.sanger.ac.uk/cosmic/signatures) for list of validated signatures. In the above example, 2 signatures are derived, which are similar to validated Signature-1. Signature_1 is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, resulting in C>T transitions and predominantly occurs at NpCpG trinucleotide, which is a most common process in AML [12](#references). 
+Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). See [here](http://cancer.sanger.ac.uk/cosmic/signatures) for list of validated signatures. In the above example, 2 signatures are derived, which are similar to validated Signature-1 and Signature-5. Signature_1 is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, resulting in C>T transitions and predominantly occurs at NpCpG trinucleotide, which is a most common process in AML [12](#references). 
 
 Full table of cosine similarities against validated signatures are also returned, which can be further analysed. Below plot shows comparison of similarities of detected signatures against validated signatures.
 
 ```{r, fig.width=7, fig.height=2.5, fig.align='center'}
-require('pheatmap')
+library('pheatmap')
 pheatmap::pheatmap(mat = laml.sign$coSineSimMat, cluster_rows = FALSE, main = "cosine similarity against validated signatures")
 ```
 
@@ -879,7 +552,7 @@ NOTE: Should you receive an error while running `extractSignatures` complaining 
 ### Signature enrichment analysis
 Signatures can further be assigned to samples and enrichment analysis can be performd using `signatureEnrichment` funtion, which identifies mutations enriched in every signature identified. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE,eval=FALSE}
 colnames(laml.sign$contributions) = as.character(getSampleSummary(x = laml)[,Tumor_Sample_Barcode])[1:187]
 ```
 
@@ -891,8 +564,7 @@ laml.se = signatureEnrichment(maf = laml, sig_res = laml.sign)
 Above results can be visualzied similar to clinical enrichments.
 
 ```{r, fig.height=4, fig.width=6}
-#Note: pvalue < 0.5 is only for plotting purpose since AML has no interesting differences in signatures.
-plotEnrichmentResults(enrich_res = laml.se, pVal = 0.5)
+plotEnrichmentResults(enrich_res = laml.se, pVal = 0.05)
 ```
 
 

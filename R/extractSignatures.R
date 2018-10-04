@@ -10,6 +10,7 @@
 #' @param nTry tries upto this number of signatures before choosing best \code{n}. Default 6.
 #' @param plotBestFitRes plots consensus heatmap for range of values tried. Default FALSE
 #' @param parallel calls to .opt argument of \code{\link{nmf}}. e.g, 'P4' for using 4 cores. See note on \code{\link{nmf}} for MAC users.
+#' @param pConstant A small positive value to add to the matrix. Use it ONLY if the functions throws an \code{non-conformable arrays} error
 #' @return a list with decomposed scaled signatures, signature contributions in each sample and a cosine similarity table against validated signatures.
 #' @examples
 #' \dontrun{
@@ -23,7 +24,7 @@
 #' @export
 
 
-extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, parallel = NULL){
+extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, parallel = NULL, pConstant = NULL){
 
     #suppressPackageStartupMessages(require(NMF, quietly = TRUE))
     #transpose matrix
@@ -33,9 +34,17 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     zeroMutClass = names(which(rowSums(mat) == 0))
 
     if(length(zeroMutClass)){
-      message(paste('Warning : Found zero mutations for conversions ', zeroMutClass, sep=''))
+      stop(paste('Warning : Found zero mutations for conversions ', zeroMutClass, sep=''))
       #Add small value to avoid zero counts (maybe not appropriate). This happens when sample size is low or in cancers with low mutation rate.
-      mat[which(rowSums(mat) == 0),] = 0.1
+      #mat[which(rowSums(mat) == 0),] = 0.1
+    }
+
+    #To avoid error due to non-conformable arrays
+    if(!is.null(pConstant)){
+      if(pConstant < 0 | pConstant == 0){
+        stop("pConstant must be > 0")
+      }
+      mat = mat+pConstant
     }
 
     #Notes:

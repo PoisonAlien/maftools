@@ -25,7 +25,7 @@ Checks for drug-gene interactions and druggable categories
 }
 \details{
 This function takes a list of genes and checks for known/reported drug-gene interactions or Druggable categories.
-All gene-drug interactions and drug claims are compiled from DGIdb (Drug Gene Interaction Databse). See reference for details and cite it if you use this function.
+All gene-drug interactions and drug claims are compiled from Drug Gene Interaction Databse. See reference for details and cite it if you use this function.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -33,5 +33,5 @@ laml <- read.maf(maf = laml.maf)
 drugInteractions(maf = laml)
 }
 \references{
-Griffith, M., Griffith, O. L., Coffman, A. C., Weible, J. V., McMichael, J. F., Spies, N. C., … Wilson, R. K. (2013). DGIdb - Mining the druggable genome. Nature Methods, 10(12), 1209–1210. http://doi.org/10.1038/nmeth.2689
+Griffith, M., Griffith, O. L., Coffman, A. C., Weible, J. V., McMichael, J. F., Spies, N. C., et. al,. 2013. DGIdb - Mining the druggable genome. Nature Methods.
 }
