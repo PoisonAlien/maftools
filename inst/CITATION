@@ -2,12 +2,15 @@ citHeader("maftools can be cited as:")
 
 citEntry(
    entry="article",
-   title = "Maftools: Efficient analysis, visualization and summarization of MAF files from large-scale cohort based cancer studies.",
+   title = "Maftools: efficient and comprehensive analysis of somatic variants in cancer.",
    author = personList(as.person("Anand Mayakonda"),
+                       as.person("Dechen Lin"),
+                       as.person("Yassen Assenov"),
+                       as.person("Christoph Plass"),
                        as.person("Phillip H Koeffler")
                        ),
-   journal = "BioRxiv",
-   year = 2016,
-   doi = "http://dx.doi.org/10.1101/052662",
-   textVersion = "Mayakonda, A. and H.P. Koeffler, Maftools: Efficient analysis, visualization and summarization of MAF files from large-scale cohort based cancer studies. bioRxiv, 2016. doi: http://dx.doi.org/10.1101/052662"
+   journal = "Genome Research",
+   year = 2018,
+   doi = "https://doi.org/10.1101/gr.239244.118",
+   textVersion = "Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. Genome Research. https://doi.org/10.1101/gr.239244.118"
 )

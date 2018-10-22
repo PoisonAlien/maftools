@@ -24,11 +24,10 @@ With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has sequenced over 30 different cancers with sample size of each cancer type being over 200. [Resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of somatic variants are stored in the form of [Mutation Annotation Format](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/). This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner from either TCGA sources or any in-house studies as long as the data is in MAF format.
 
 ## Citation
-Please cite the [below](http://dx.doi.org/10.1101/052662) if you find this tool useful for you.
+Please cite the [below](https://doi.org/10.1101/gr.239244.118) if you find this tool useful for you.
 
 ```
-Mayakonda, A. & Koeffler, H.P. Maftools: Efficient analysis, visualization and summarization of MAF files 
-from large-scale cohort based cancer studies. bioRxiv (2016). doi: http://dx.doi.org/10.1101/052662
+Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome Resarch](https://doi.org/10.1101/gr.239244.118). 
 ```
 
 # Generating MAF files
@@ -205,17 +204,6 @@ MutationMapper on cBioPortal collapses Variant Classifications into truncating a
 lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', refSeqID = 'NM_175629', labelPos = 882, collapsePosLabel = TRUE, cBioPortal = TRUE)
 ```
 
-
-## Integrating somatic variants and copy number alterations
-Many cancer genomic studies involve copy number data generated either from sequencing or SNP chip arrays. Copy number analysis provides us a lot of information from genome wide copy number aberrations to tumor purity. Most of the time copy number data is stored as segments, with each segment represented by a log ratio of copy number changes compared to matched normals. There are many segmentation algorithms, with the most popular being Circular Binary Segmentation implemented in "DNACopy" [4](#references). We can plot such segmented copy number data and map all mutations on to it. It provides a quick way of knowing which variants (in a way which genes) are located on copy number altered genomic regions.
-
-```{r, fig.height=3,fig.width=8,fig.align='center'}
-tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package = "maftools")
-plotCBSsegments(cbsFile = tcga.ab.009.seg, maf = laml, labelAll = TRUE)
-```
-
-Above plot shows two genes NF1 and SUZ12 are located on a region which has a shallow deletion. Later we will also see how these variants on copy number altered regions affect variant allele frequencies and tumor heterogeneity estimation.
-
 ## Rainfall plots
 Cancer genomes, especially solid tumors are characterized by genomic loci with localized hyper-mutations [5](#references). Such hyper mutated genomic regions can be visualized by plotting inter variant distance on a linear genomic scale. These plots generally called rainfall plots and we can draw such plots using `rainfallPlot`. If `detectChangePoints` is set to TRUE, `rainfall` plot also highlights regions where potential changes in inter-event distances are located. 
 
@@ -289,6 +277,11 @@ This is similar to oncoplots except for copy number data. One can again sort the
 gisticOncoPlot(gistic = laml.gistic, clinicalData = getClinicalData(x = laml), clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, top = 10)
 ```
 
+### Visualizing CBS segments
+```{r, fig.height=3,fig.width=8,fig.align='center'}
+tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package = "maftools")
+plotCBSsegments(cbsFile = tcga.ab.009.seg)
+```
 
 # Analysis
 ## Somatic Interactions
@@ -336,7 +329,7 @@ Above plot and results shows AdoMet_MTases domain is frequently mutated, but num
 
 
 ## Pan-Cancer comparison
-Lawrence et al performed MutSigCV analysis on 21 cancer cohorts and identified over 200 genes to be significantly mutated which consists of previously undescribed  novel genes [9](#references). Their results show only few genes are mutated in multiple cohort while many of them are tissue/cohort specific. We can compare mutSig results against this pan-can list of significantly mutated genes to see genes specifically mutated in given cohort. This function requires MutSigCV results (usually named sig_genes.txt) as an input.
+Lawrence et al performed MutSigCV analysis on 21 cancer cohorts and identified over 200 genes to be significantly mutated which consists of previously un-subscribed  novel genes [9](#references). Their results show only few genes are mutated in multiple cohort while many of them are tissue/cohort specific. We can compare mutSig results against this pan-can list of significantly mutated genes to see genes specifically mutated in given cohort. This function requires MutSigCV results (usually named sig_genes.txt) as an input.
 
 ```{r, fig.width=5, fig.height=4}
 #MutsigCV results for TCGA-AML

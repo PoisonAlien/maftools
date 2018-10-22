@@ -36,8 +36,9 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL, mar
   }
 
   gis.scores = transformSegments(segmentedData = gistic@gis.scores, build = ref.build)
-  gis.scores$amp = ifelse(test = gis.scores$Variant_Classification == 'Del', yes = -gis.scores$G_Score-cytobandOffset, no = gis.scores$G_Score+cytobandOffset)
-  gis.scores$ystart = ifelse(test = gis.scores$Variant_Classification == 'Del', yes = -cytobandOffset, no = cytobandOffset)
+  gis.scores$amp = ifelse(test = gis.scores$Variant_Classification == 'Del', yes = -gis.scores$G_Score, no = gis.scores$G_Score)
+  gis.scores$ystart = 0
+  #gis.scores$ystart = ifelse(test = gis.scores$Variant_Classification == 'Del', yes = -cytobandOffset, no = cytobandOffset)
   fdrCutOff = -log10(fdrCutOff)
   gis.scores$Variant_Classification = ifelse(test = as.numeric(gis.scores$fdr) > fdrCutOff, yes = gis.scores$Variant_Classification, no = 'neutral')
   gis.scores$Variant_Classification = factor(gis.scores$Variant_Classification, levels = c('neutral', 'Amp', 'Del'))
