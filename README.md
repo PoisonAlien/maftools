@@ -21,7 +21,10 @@ This package attempts to summarize, analyze, annotate and visualize MAF files in
 
 ## Citation
 
-Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome Research](https://doi.org/10.1101/gr.239244.118). PMID: [30341162](https://www.ncbi.nlm.nih.gov/pubmed/?term=30341162)
+***
+**_Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome Research](https://doi.org/10.1101/gr.239244.118). PMID: [30341162](https://www.ncbi.nlm.nih.gov/pubmed/?term=30341162)_**
+
+***
 
 ### MAF field requirements.
 MAF files contains many fields ranging from chromosome names to cosmic annotations. However, most of the analysis in maftools uses following fields. Please stick to MAF specifications for better results.

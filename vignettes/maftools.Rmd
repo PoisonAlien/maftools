@@ -24,11 +24,15 @@ With advances in Cancer Genomics, [Mutation Annotation Format](https://wiki.nci.
 [The Cancer Genome Atlas](http://cancergenome.nih.gov) Project has sequenced over 30 different cancers with sample size of each cancer type being over 200. [Resulting data](https://wiki.nci.nih.gov/display/TCGA/TCGA+MAF+Files) consisting of somatic variants are stored in the form of [Mutation Annotation Format](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/). This package attempts to summarize, analyze, annotate and visualize MAF files in an efficient manner from either TCGA sources or any in-house studies as long as the data is in MAF format.
 
 ## Citation
-Please cite the [below](https://doi.org/10.1101/gr.239244.118) if you find this tool useful for you.
 
-```
-Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome Resarch](https://doi.org/10.1101/gr.239244.118). 
-```
+If you find this tool useful, please cite:
+
+***
+**_Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. 
+Maftools: efficient and comprehensive analysis of somatic variants in cancer. 
+Genome Resarch.[10.1101/gr.239244.118](https://doi.org/10.1101/gr.239244.118)_**
+
+***
 
 # Generating MAF files
 

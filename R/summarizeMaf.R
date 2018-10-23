@@ -181,6 +181,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
       print(maf.tsbs[!maf.tsbs %in% anno.tsbs])
     }
   }
+  sample.anno = sample.anno[Tumor_Sample_Barcode %in% maf.tsbs]
 
   return(list(variants.per.sample = tsb, variant.type.summary = vt.cast, variant.classification.summary = vc.cast,
               gene.summary = hs.cast, summary = summary, sample.anno = sample.anno))
