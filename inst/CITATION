@@ -11,6 +11,6 @@ citEntry(
                        ),
    journal = "Genome Research",
    year = 2018,
-   doi = "https://doi.org/10.1101/gr.239244.118",
-   textVersion = "Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. Genome Research. https://doi.org/10.1101/gr.239244.118"
+   doi = "http://dx.doi.org/10.1101/gr.239244.118",
+   textVersion = "Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. Genome Research. http://dx.doi.org/10.1101/gr.239244.118"
 )
