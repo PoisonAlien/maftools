@@ -41,7 +41,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
 
   hsgs.installed = BSgenome::installed.genomes(splitNameParts = TRUE)
   data.table::setDT(x = hsgs.installed)
-  hsgs.installed = hsgs.installed[organism %in% "Hsapiens"]
+  #hsgs.installed = hsgs.installed[organism %in% "Hsapiens"]
 
   if(is.null(ref_genome)){
     if(nrow(hsgs.installed) == 0){
