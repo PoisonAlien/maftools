@@ -85,6 +85,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
   }
 
   query[, Start_Position := as.numeric(as.character(Start_Position))]
+  query[, End_Position := as.numeric(as.character(End_Position))]
 
   query_seq_lvls = query[,.N,Chromosome]
   ref_seqs_lvls = BSgenome::seqnames(x = ref_genome)
@@ -250,7 +251,11 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
 
   message("Estimating APOBEC enrichment scores.. ")
   apobec.fisher.dat = sub.tbl[,c(19, 28, 32, 33, 34)]
-  apobec.fisher.dat = apply(X = apobec.fisher.dat, 2, as.numeric)
+  if(nrow(apobec.fisher.dat) == 1){
+    apobec.fisher.dat = t(as.matrix(apply(X = apobec.fisher.dat, 2, as.numeric)))
+  }else{
+    apobec.fisher.dat = apply(X = apobec.fisher.dat, 2, as.numeric)
+  }
 
   ###One way Fisher test to estimate over representation og APOBEC associated tcw mutations
   message("Performing one-way Fisher's test for APOBEC enrichment..")
