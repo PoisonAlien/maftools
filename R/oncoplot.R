@@ -224,7 +224,8 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   }
 
   if (writeMatrix) {
-    write.table(mat, "onco_matrix.txt", sep = "\t", quote = FALSE)
+    ###add histology for oncomatrix to allow integration with other codes
+    write.table(mat, paste0(grouping, "_onco_matrix.txt"), sep = "\t", quote = FALSE)
   }
 
   #New version of complexheatmap complains about '' , replacing them with random string xxx
