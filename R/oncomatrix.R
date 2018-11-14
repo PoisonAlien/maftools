@@ -62,6 +62,7 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
 
   #If MAF file contains a single sample, simple sorting is enuf.
   if(ncol(mdf) == 1){
+    sampleId = colnames(mdf)
     mdf = as.matrix(mdf[order(mdf, decreasing = TRUE),])
     colnames(mdf) = sampleId
 

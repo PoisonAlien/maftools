@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.8.10
+-------------------------
+BUG FIX
+    o Support non human BSgenome. Issue: #197
+    o SampleID bug fix. Issue: #153
+
 CHANGES IN VERSION 1.8.0
 -------------------------
 NEW FUNCTIONS
