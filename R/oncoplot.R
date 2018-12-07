@@ -436,9 +436,9 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
   }
 
   if(colbar_pathway){
-    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar2, which = "column", height = grid.unit(2, "cm"))
+    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar2, which = "column", height = grid::unit(2, "cm"))
   }else{
-    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar, which = "column", height = grid.unit(2, "cm"))
+    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar, which = "column", height = grid::unit(2, "cm"))
   }
 
 
