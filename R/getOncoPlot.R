@@ -315,14 +315,14 @@ getOncoPlot = function(maf, genes, removeNonMutated = FALSE, colors = NULL, show
     if(!is.null(clinicalFeatures)){
       ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-                                   top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
+                                   show_row_names = FALSE,
                                    column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs), bottom_annotation = bot.anno,
                                    column_title_gp = grid::gpar(fontsize = tfs, fontface = "bold"))
 
     }else{
       ht = ComplexHeatmap::Heatmap(matrix = mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                    show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-                                   top_annotation_height = grid::unit(2, "cm"), show_row_names = FALSE,
+                                   show_row_names = FALSE,
                                    column_title =  hmName, column_names_gp = grid::gpar(fontsize = fs),
                                    column_title_gp = grid::gpar(fontsize = tfs, fontface = "bold"))
     }
