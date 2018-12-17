@@ -285,12 +285,12 @@ oncostrip = function(maf, genes = NULL, top = 5, colors = NULL, sort = TRUE, cli
   if(is.null(clinicalFeatures)){
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                  row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
-                                 show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"), column_title = altStat,
+                                 show_heatmap_legend = FALSE, column_title = altStat,
                                  column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"))
   }else{
     ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
                                  row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
-                                 show_heatmap_legend = FALSE, top_annotation_height = grid::unit(2, "cm"),
+                                 show_heatmap_legend = FALSE,
                                  bottom_annotation = bot.anno, column_title = altStat,
                                  column_title_gp = gpar(fontsize = titleFontSize, fontface = "bold"))
   }
