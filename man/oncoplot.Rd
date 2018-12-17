@@ -34,7 +34,7 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
 
 \item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
 
-\item{annotationDat}{If MAF file was read without clinical data, provide a custom \code{data.frame} with a column containing Tumor_Sample_Barcodes along with rest of columns with annotations.
+\item{annotationDat}{If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{annotationColor}{list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.}

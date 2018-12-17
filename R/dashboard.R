@@ -78,7 +78,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   title(main = "SNV Class", adj = 0, cex.main = titleSize[1], font = 2)
   if(!rawcount){
     text(x = titv.sums$value+0.03, y = b, labels = titv.sums$raw_value,
-         font = 4, col = "gray70", cex = fontSize, adj = 0)
+         font = 4, col = "black", cex = fontSize, adj = 0)
   }
 
   #--------------------------- variant per sample plot -----------------
@@ -103,18 +103,14 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
       med.line = round(maf@summary[ID %in% "total", Mean], 2)
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Mean: ', med.line, sep='')))
       title(main = paste0("Mean: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 2, line = 1)
+      lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 2, lty = 2)
     }else if(stat == 'median'){
       med.line = round(maf@summary[ID %in% "total", Median], 2)
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
       title(main = paste0("Median: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 2, line = 1)
+      lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 2, lty = 2)
     }
-  }else{
-    med.line = round(maf@summary[ID %in% "total", Median], 2)
-    title(main = paste0("Median: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 2, line = 1)
   }
-
-
-  lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 2, lty = 2)
 
   #--------------------------- vc summary plot -----------------
   par(mar = c(3, 2, 3, 1))
@@ -165,7 +161,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   axis(side = 1, at = xt, lwd = 2, font = 2, las = 2, cex.axis = fontSize*0.9)
   title(main = paste0('Top ',  n, '\nmutated genes'), adj = 0, cex.main = titleSize[1], font = 2)
   text(x = colSums(gs.dat)+1, y = b, labels = rev(paste0(gs.load$AlteredSamples, "%")),
-       font = 4, col = "gray70", cex = fontSize*0.9, adj = 0)
+       font = 4, col = "black", cex = fontSize*0.9, adj = 0)
 }
 
 #   #--------------------------- oncoplot via ggplot -----------------

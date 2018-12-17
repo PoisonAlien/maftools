@@ -15,7 +15,7 @@
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
-#' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column containing Tumor_Sample_Barcodes along with rest of columns with annotations.
+#' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
 #' @param annotationColor list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.

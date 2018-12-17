@@ -1,6 +1,10 @@
 CHANGES IN VERSION 1.8.10
 -------------------------
 BUG FIX
+    o Cleanup docs for Oncoplot. Issue: #207
+    o Fix ComplexHeatmap update. Issue: #205 #210
+    o plotmafSummary addStats bug fix Issue: #204
+    o Rainfall plot data.table null fix. Issue: #201
     o Support non human BSgenome. Issue: #197
     o SampleID bug fix. Issue: #153
 

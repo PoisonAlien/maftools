@@ -13,7 +13,7 @@ LazyData: TRUE
 Depends: R (>= 3.3)
 Imports: data.table, ggplot2(>= 2.0), cowplot, cometExactTest,
         RColorBrewer, NMF, ggrepel, methods,
-        ComplexHeatmap (>= 1.99.0), mclust, Biostrings,
+        ComplexHeatmap, mclust, Biostrings,
         rjson, grid, wordcloud, grDevices, gridExtra, survival, BSgenome
 RoxygenNote: 6.1.0
 Encoding: UTF-8

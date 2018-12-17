@@ -89,7 +89,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
     seg_len = 5
     #maf.cpt = detectCP(dat = maf.snp, segLen = seg_len)
     maf.cpt = detect_kataegis(maf.snp = maf.snp)
-    if(is.null(maf.cpt)){
+    if(nrow(maf.cpt) == 0){
       message('No changepoints detected!')
     }else{
       maf.snp[,id := paste0(Chromosome, ':', Start_Position)]
