@@ -1,6 +1,7 @@
 CHANGES IN VERSION 1.8.10
 -------------------------
 BUG FIX
+    o Add showTumorSampleBarcodes to PlotOncogenicPathways. Issue: #214
     o Cleanup docs for Oncoplot. Issue: #207
     o Fix ComplexHeatmap update. Issue: #205 #210
     o plotmafSummary addStats bug fix Issue: #204

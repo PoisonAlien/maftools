@@ -10,6 +10,8 @@
 #' @param tsgCol Color for tumro suppressor genes. Default red
 #' @param ogCol Color for onco genes. Default royalblue
 #' @param fontSize Default 0.6
+#' @param showTumorSampleBarcodes logical to include sample names.
+#' @param SampleNamefontSize font size for sample names. Default 10
 #' @seealso \code{\link{OncogenicPathways}}
 #' @export
 #' @examples
@@ -17,7 +19,7 @@
 #' laml <- read.maf(maf = laml.maf)
 #' PlotOncogenicPathways(maf = laml, pathways = "RTK-RAS")
 PlotOncogenicPathways = function(maf, pathways = NULL, fullPathway = FALSE,
-                                 removeNonMutated = TRUE, tsgCol = "red", ogCol = "royalblue", fontSize = 0.6){
+                                 removeNonMutated = TRUE, tsgCol = "red", ogCol = "royalblue", fontSize = 0.6, showTumorSampleBarcodes = FALSE, SampleNamefontSize = 0.6){
 
   pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
   pathdb = data.table::fread(input = pathdb)
@@ -70,12 +72,22 @@ PlotOncogenicPathways = function(maf, pathways = NULL, fullPathway = FALSE,
     nm[nm == 0] = NA
     nm[!is.na(nm)] = 1
 
-    image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = "brown") #col = "#FC8D62"
+    if(showTumorSampleBarcodes){
+      par(mar = c(4, 4, 2, 2), xpd = TRUE)
+    }
+
+    image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = "brown", ) #col = "#FC8D62"
     abline(h = (1:ncol(nm)) + 0.5, col = "white")
     abline(v = (1:nrow(nm)) + 0.5, col = "white")
     points(which(is.na(nm), arr.ind = TRUE), pch=".", col = "gray70")
     mtext(text = colnames(nm), side = 2, at = 1:ncol(nm), col = oncopath[colnames(nm), "color_code",],
           font = 3, line = 0.4, cex = fontSize)
+    if(showTumorSampleBarcodes){
+      # mtext(text = rownames(nm), side = 1, at = 1:nrow(nm),
+      #       font = 3, line = 0.1, cex = SampleNamefontSize, las = 2)
+      text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+           labels = rownames(nm), srt = 45, font = 3, cex = SampleNamefontSize, adj = 1)
+    }
     title(main = paste0(pathways[i], " pathway"), adj = 0)
   }
 }
