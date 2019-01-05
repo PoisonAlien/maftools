@@ -1,5 +1,8 @@
 CHANGES IN VERSION 1.8.10
 -------------------------
+SIGNIFICANT USER-LEVEL IMPROVEMENT
+    o Oncoplot, oncostrip and coOncoplot code has been migrated from ComplexHeatmap to base graphics. Default values for some arguments have been changed.
+
 BUG FIX
     o Add showTumorSampleBarcodes to PlotOncogenicPathways. Issue: #214
     o Cleanup docs for Oncoplot. Issue: #207
