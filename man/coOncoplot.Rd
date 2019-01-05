@@ -7,11 +7,11 @@
 coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
   annotationColor1 = NULL, annotationColor2 = NULL,
-  sortByAnnotation1 = FALSE, sortByAnnotation2 = FALSE,
-  colors = NULL, removeNonMutated = TRUE, geneNamefont = 10,
-  showSampleNames = FALSE, SampleNamefont = 10, legendFontSize = 10,
-  titleFontSize = 12, keepGeneOrder = FALSE, includeSyn = FALSE,
-  bgCol = "#CCCCCC", borderCol = NA)
+  annotationFontSize = 1.2, sortByAnnotation1 = FALSE,
+  sortByAnnotation2 = FALSE, colors = NULL, removeNonMutated = TRUE,
+  geneNamefont = 1.2, showSampleNames = FALSE, SampleNamefont = 1,
+  legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder = FALSE,
+  bgCol = "#CCCCCC", borderCol = "white")
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}
@@ -32,6 +32,8 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
 \item{annotationColor2}{list of colors to use for `clinicalFeatures2` Default NULL.}
 
+\item{annotationFontSize}{font size for annotations Default 1.2}
+
 \item{sortByAnnotation1}{logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort}
 
 \item{sortByAnnotation2}{same as above but for m2}
@@ -40,23 +42,21 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
 \item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
-\item{geneNamefont}{font size for gene names. Default 10}
+\item{geneNamefont}{font size for gene names. Default 1}
 
 \item{showSampleNames}{whether to show sample names. Defult FALSE.}
 
-\item{SampleNamefont}{font size for sample names. Default 10}
+\item{SampleNamefont}{font size for sample names. Default 1}
 
-\item{legendFontSize}{font size for legend. Default 10}
+\item{legendFontSize}{font size for legend. Default 1.2}
 
-\item{titleFontSize}{font size for title. Default 12}
+\item{titleFontSize}{font size for title. Default 1.5}
 
 \item{keepGeneOrder}{force the resulting plot to use the order of the genes as specified. Default FALSE}
 
-\item{includeSyn}{Set to TRUE to include silent variants. Default FALSE.}
-
 \item{bgCol}{Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"}
 
-\item{borderCol}{border grid color for wild-type (not-mutated) samples. Default NA.}
+\item{borderCol}{border grid color for wild-type (not-mutated) samples. Default 'white'}
 }
 \value{
 Returns nothing. Just draws plot.

@@ -30,7 +30,7 @@ If you find this tool useful, please cite:
 ***
 **_Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. 
 Maftools: efficient and comprehensive analysis of somatic variants in cancer. 
-Genome Resarch.[10.1101/gr.239244.118](https://doi.org/10.1101/gr.239244.118)_**
+[Genome Resarch](https://doi.org/10.1101/gr.239244.118)_**
 
 ***
 
@@ -75,10 +75,12 @@ maftools functions can be categorized into mainly Visualization and Analysis mod
 `read.maf` function reads MAF files, summarizes it in various ways and stores it as an MAF object. Even though MAF file is alone enough, it is recommended to provide annotations associated with samples in MAF. One can also integrate copy number data if available.
 
 ```{r results='hide', message=FALSE}
-require(maftools)
+library(maftools)
 
-laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools') #path to TCGA LAML MAF file
-laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools') # clinical information containing survival information and histology. This is optional
+#path to TCGA LAML MAF file
+laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools') 
+#clinical information containing survival information and histology. This is optional
+laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools') 
 
 laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 ```
@@ -111,11 +113,11 @@ plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRU
 
 ## Oncoplots
 ### Drawing oncoplots
-Better representation of maf file can be shown as oncoplots, also known as waterfall plots. Oncoplot function uses "ComplexHeatmap" to draw oncoplots[2](#references). To be specific,  `oncoplot` is a wrapper around ComplexHeatmap's `OncoPrint` function with little modification and automation which makes plotting easier. Side barplot and top barplots can be controlled by `drawRowBar` and `drawColBar` arguments respectively.
+Better representation of maf file can be shown as oncoplots, also known as waterfall plots. Side barplot and top barplots can be controlled by `drawRowBar` and `drawColBar` arguments respectively.
 
 ```{r, fig.align='left',fig.height=5,fig.width=10, fig.align='left'}
-#We will draw oncoplots for top ten mutated genes.
-oncoplot(maf = laml, top = 10, fontSize = 12)
+#oncoplot for top ten mutated genes.
+oncoplot(maf = laml, top = 10)
 ```
 
 NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more than once in the same sample.
@@ -134,8 +136,7 @@ laml.plus.gistic = read.maf(maf = laml.maf, gisticAllLesionsFile = all.lesions, 
 ```
 
 ```{r, fig.align='left',fig.height=5,fig.width=10, eval=T, fig.align='left'}
-#We will draw oncoplots for top ten mutated genes. (Removing non-mutated samples from the plot for better visualization)
-oncoplot(maf = laml.plus.gistic, top = 10, fontSize = 12)
+oncoplot(maf = laml.plus.gistic, top = 10)
 ```
 
 This plot shows frequent deletions in TP53 gene which is located on one of the significantly deleted locus 17p13.2.
@@ -150,9 +151,11 @@ Oncoplots can be further improved by including annotations (clinical features) a
 One can use SMG list generated from any progrm as long as it contains two required columns titled `gene` and `q`
 
 ```{r, fig.height=7,fig.width=10, eval=T, fig.align='left'}
-#Changing colors for variant classifications (You can use any colors, here in this example we will use a color palette from RColorBrewer)
+#Changing colors for variant classifications 
+#One can use any colors, here in this example color palette from RColorBrewer package is used
 col = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
-names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Multi_Hit', 'Frame_Shift_Ins',
+names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 
+               'Multi_Hit', 'Frame_Shift_Ins',
                'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
 
 #Color coding for FAB classification; try getAnnotations(x = laml) to see available annotations.
@@ -171,7 +174,7 @@ Also note that using `sortByAnnotation = TRUE` further sorts oncoplot according 
 ## Oncostrip
 We can visualize any set of genes using `oncostrip` function, which draws mutations in each sample similar to [OncoPrinter tool](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do). `oncostrip` can be used to draw any number of genes using `top` or `genes` arguments.
 
-```{r, fig.height=2,fig.width=8,fig.align='left'}
+```{r, fig.height=2.4,fig.width=8,fig.align='left'}
 oncostrip(maf = laml, genes = c('DNMT3A','NPM1', 'RUNX1'))
 ```
 
@@ -199,13 +202,6 @@ We can also label points on the `lollipopPlot` using argument `labelPos`. If `la
 
 ```{r,fig.align='left', fig.width=6, fig.height=3}
 lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = 816, refSeqID = 'NM_000222')
-```
-
-### cBioPortal style annotations
-MutationMapper on cBioPortal collapses Variant Classifications into truncating and others. It also includes somatic mutation rate.
-
-```{r, warning=FALSE, message=FALSE,fig.align='left', fig.width=6, fig.height=3}
-lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', refSeqID = 'NM_175629', labelPos = 882, collapsePosLabel = TRUE, cBioPortal = TRUE)
 ```
 
 ## Rainfall plots
@@ -292,13 +288,13 @@ plotCBSsegments(cbsFile = tcga.ab.009.seg)
 Many disease causing genes in cancer are co-occurring or show strong exclusiveness in their mutation pattern. Such mutually exclusive or co-occurring set of genes can be detected using `somaticInteractions` function, which performs pair-wise Fisher's Exact test to detect such significant pair of genes. `somaticInteractions` function also uses `cometExactTest` to identify potentially altered gene sets involving >2 two genes  [6](#references).
 
 ```{r, message=FALSE}
-#We will run mutExclusive on top 10 mutated genes. 
+#exclusive/co-occurance event analysis on top 10 mutated genes. 
 somaticInteractions(maf = laml, top = 25, pvalue = c(0.05, 0.1))
 ```
 
 We can visualize the above results using `oncostrip`. For example, in above analysis, gene set TP53, FLT3 and RUNX1 show a strong exclusiveness with each other a p-value of 4.8e-5. 
 
-```{r, fig.height=2,fig.width=8,fig.align='center'}
+```{r, fig.height=2.3,fig.width=8,fig.align='center'}
 oncostrip(maf = laml, genes = c('TP53', 'FLT3', 'RUNX1'))
 ```
 
@@ -367,7 +363,7 @@ relapse.apl = read.maf(maf = relapse.apl)
 
 
 ```{r, fig.align='left'}
-#We will consider only genes which are mutated in at-least in 5 samples in one of the cohort, to avoid bias due to single mutated genes.
+#Considering only genes which are mutated in at-least in 5 samples in one of the cohort to avoid bias due to genes mutated in single sample.
 pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary', m2Name = 'Relapse', minMut = 5)
 print(pt.vs.rt)
 ```
@@ -449,7 +445,7 @@ Tumor suppressor genes are in red, and oncogenes are in blue font.
 Tumors are generally heterogeneous i.e, consist of multiple clones. This heterogeneity can be inferred by clustering variant allele frequencies. `inferHeterogeneity` function uses vaf information to cluster variants (using `mclust`), to infer clonality. By default, `inferHeterogeneity` function looks for column *t_vaf* containing vaf information. However, if the field name is different from *t_vaf*, we can manually specify it using argument `vafCol`. For example, in this case study vaf is stored under the field name *i_TumorVAF_WU*.
 
 ```{r, echo = TRUE, fig.align='left', fig.height=4, fig.width=6, eval=T}
-#We will run this for sample TCGA.AB.2972
+#Heterogeneity in sample TCGA.AB.2972
 tcga.ab.2972.het = inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
 print(tcga.ab.2972.het$clusterMeans)
 #Visualizing results
@@ -669,7 +665,6 @@ devtools::install_github(repo = "PoisonAlien/TCGAmutations")
 
 # References
 1.	Cancer Genome Atlas Research, N. Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med 368, 2059-74 (2013).
-2.	Gu, Z., Eils, R. & Schlesner, M. Complex heatmaps reveal patterns and correlations in multidimensional genomic data. Bioinformatics (2016).
 3.	Mermel, C.H. et al. GISTIC2.0 facilitates sensitive and confident localization of the targets of focal somatic copy-number alteration in human cancers. Genome Biol 12, R41 (2011).
 4.	Olshen, A.B., Venkatraman, E.S., Lucito, R. & Wigler, M. Circular binary segmentation for the analysis of array-based DNA copy number data. Biostatistics 5, 557-72 (2004).
 5.	Alexandrov, L.B. et al. Signatures of mutational processes in human cancer. Nature 500, 415-21 (2013).

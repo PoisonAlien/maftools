@@ -22,44 +22,33 @@
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
-#' @param borderCol border grid color for wild-type (not-mutated) samples. Default NA.
+#' @param borderCol border grid color (not-mutated) samples. Default 'white'.
 #' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
 #' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
 #' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
 #' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
-#' @param fontSize font size for gene names. Default 10.
-#' @param SampleNamefontSize font size for sample names. Default 10
-#' @param titleFontSize font size for title. Default 15
-#' @param legendFontSize font size for legend. Default 12
-#' @param annotationFontSize font size for annotations. Default 12
-#' @param annotationTitleFontSize font size for annotation title. Default 12
-#' @param writeMatrix writes character coded matrix used to generate the plot to an output file. This can be used as an input
-#' for ComplexHeatmap \link[ComplexHeatmap]{oncoPrint} function if you wish to customize the plot.
-#' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE
+#' @param fontSize font size for gene names. Default 0.8.
+#' @param SampleNamefontSize font size for sample names. Default 1
+#' @param titleFontSize font size for title. Default 1.5
+#' @param legendFontSize font size for legend. Default 1.2
+#' @param annotationFontSize font size for annotations. Default 1.2
+#' @param writeMatrix writes character coded matrix used to generate the plot to an output file.
+#' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE. Not implemented yet!
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' oncoplot(maf = laml, top = 3)
-#' @import ComplexHeatmap
-#' @import grid
 #' @seealso \code{\link{oncostrip}}
 #' @export
-
-
-oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
+oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
                      clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE,
-                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 10, SampleNamefontSize = 10,
-                     titleFontSize = 15, legendFontSize = 12, annotationFontSize = 12, annotationTitleFontSize = 12, bgCol = "#CCCCCC", borderCol = NA, colbar_pathway = FALSE) {
-
-  #set seed for consistancy.
-  set.seed(seed = 1024)
-
-  #-------------------------------------Preprocess matrix---------------------------------------------------
+                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
+                     titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
   if(!is.null(genes)){ #If user provides a gene list
     om = createOncoMatrix(m = maf, g = genes)
@@ -102,8 +91,8 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
 
     ms.smg = ms.smg[,.(gene, FDR)]
     ms.smg = data.frame(row.names = ms.smg$gene, FDR = ms.smg$FDR)
+    ms.smg = ms.smg[rownames(numMat),,drop = FALSE]
   }else { #If user does not provide gene list or MutSig results, draw TOP (default 20) genes
-
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
     om = createOncoMatrix(m = maf, g = genes)
     numMat = om$numericMatrix
@@ -116,104 +105,17 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     mat_origin = mat_origin[!rownames(mat_origin) %in% genesToIgnore,]
   }
 
-  #If <2 samples stop !
-  if(ncol(numMat) < 2){
-    stop('Cannot create oncoplot for single sample. Minimum two sample required ! ')
-  }
-
-  #If <2 samples stop !
-  if(nrow(numMat) < 2){
-    stop('Cannot create oncoplot for single gene. Minimum two genes required ! ')
-  }
-
-  totSamps = as.numeric(maf@summary[3,summary])
+  #Total samples
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
 
-  #-----------------------
-
-  #Annotations
-  if(!is.null(clinicalFeatures)){
-    if(!is.null(annotationDat)){
-      data.table::setDF(annotationDat)
-      if(length(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)]) > 0){
-        message('Following columns are missing from provided annotation data. Ignoring them..')
-        print(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)])
-        clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
-        if(length(clinicalFeatures) == 0){
-          stop('Zero annotaions to add! Make sure at-least one of the provided clinicalFeatures are present in annotationDat')
-        }
-      }
-      annotation = annotationDat[,c('Tumor_Sample_Barcode', clinicalFeatures)]
-      annotation = data.frame(row.names = annotation$Tumor_Sample_Barcode ,annotation[,clinicalFeatures, drop = FALSE])
-    } else{
-      annotationDat = getClinicalData(x = maf)
-      #data.table::setDF(annotationDat)
-      if(length(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)]) > 0){
-        message('Following columns are missing from annotation slot of MAF. Ignoring them..')
-        print(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)])
-        clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
-        if(length(clinicalFeatures) == 0){
-          message('Make sure at-least one of the values from provided clinicalFeatures are present in annotation slot of MAF. Here are available annotaions from MAF..')
-          print(colnames(getClinicalData(maf)))
-          stop('Zero annotaions to add! You can also provide custom annotations via annotationDat argument.')
-        }
-      }
-      annotation = data.frame(row.names = annotationDat$Tumor_Sample_Barcode ,annotationDat[,clinicalFeatures, with = FALSE])
-    }
-  }
-
-  #--Sort
-
-  if(length(genes[!genes %in% rownames(numMat)]) > 0){
-    message('Following genes from provided gene list are missing from MAF:')
-    print(genes[!genes %in% rownames(numMat)])
-    message('Ignoring them.')
-    genes = genes[genes %in% rownames(numMat)]
-
-    if(length(genes) < 1){
-      stop('Only one gene left! At-least two genes required for plotting.')
-    }
-  }
-
-  #By default oncomatrix excludes non-mutated samples. Add rest here if user requests
   if(!removeNonMutated){
-    tsb.include = matrix(data = 0, nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(numMat)]))
-    colnames(tsb.include) =tsbs[!tsbs %in% colnames(numMat)]
+    tsb.include = matrix(data = 0, nrow = length(genes),
+                         ncol = length(tsbs[!tsbs %in% colnames(numMat)]))
+    colnames(tsb.include) = tsbs[!tsbs %in% colnames(numMat)]
     rownames(tsb.include) = rownames(numMat)
     numMat = cbind(numMat, tsb.include)
-  }
-
-  if(sortByMutation){
-    numMat = sortByMutation(numMat = numMat, maf = maf)
-  }
-
-  if(sortByAnnotation){
-    if(is.null(clinicalFeatures)){
-      stop("Use argument `annotationCol` to provide at-least one of the annotations.")
-    }
-    numMat = sortByAnnotation(numMat = numMat, maf = maf, annotation, annoOrder = annotationOrder)
-  }
-
-  if(!is.null(sampleOrder)){
-    if(length(sampleOrder) != length(sampleOrder[sampleOrder %in% colnames(numMat)])){
-      if(removeNonMutated){
-        message("Consider setting removeNonMutated = FALSE while working with manual sample ordering")
-      }
-    }
-    sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
-    numMat = numMat[,as.character(sampleOrder), drop = FALSE]
-  }
-
-  #Do the same thing for character matrix
-  if(!removeNonMutated){
-    tsb.include = matrix(data = '', nrow = length(genes), ncol = length(tsbs[!tsbs %in% colnames(mat_origin)]))
-    colnames(tsb.include) = tsbs[!tsbs %in% colnames(mat_origin)]
-    rownames(tsb.include) = rownames(mat_origin)
     mat_origin = cbind(mat_origin, tsb.include)
   }
-
-  mat = mat_origin[rownames(numMat), , drop = FALSE]
-  mat = mat[,colnames(numMat), drop = FALSE]
 
   #If user wannts to keep given gene order
   if(keepGeneOrder){
@@ -226,328 +128,357 @@ oncoplot = function (maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.
     mat = mat[,colnames(numMat), drop = FALSE]
   }
 
-  #finally sort annotation data in same order as plot matrix
-  if(!is.null(clinicalFeatures)){
-    annotation = annotation[rownames(annotation) %in% colnames(mat),, drop = FALSE]
-    annotation = annotation[colnames(mat), , drop = FALSE]
+  if(sortByMutation){
+    numMat_temp = sortByMutation(numMat = numMat, maf = maf)
+    numMat = numMat[rownames(numMat_temp), colnames(numMat_temp), drop = FALSE]
   }
 
-  if (writeMatrix) {
-    write.table(mat, "onco_matrix.txt", sep = "\t", quote = FALSE)
-  }
+  samp_sum = getSampleSummary(x = maf)
+  samp_sum = samp_sum[,1:c(ncol(samp_sum)-1)]
+  data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
+  samp_sum = samp_sum[,-1]
 
-  #New version of complexheatmap complains about '' , replacing them with random string xxx
-  mat[mat == ''] = 'xxx'
+  tot_samps = as.numeric(maf@summary[3,summary])
+  gene_sum = getGeneSummary(maf)[,.(Hugo_Symbol, AlteredSamples)]
+  gene_sum[,percent_altered := round((AlteredSamples/tot_samps)*100)]
+  data.table::setDF(x = gene_sum, rownames = gene_sum$Hugo_Symbol)
 
+
+  totSamps = as.numeric(maf@summary[3,summary])
   if(removeNonMutated){
     #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
-    altStat = paste0("Altered in ", ncol(mat), " (", round(ncol(mat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
+    altStat = paste0("Altered in ", ncol(numMat), " (", round(ncol(numMat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
   }else{
-    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
+    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE))))
     altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
   }
 
-  #---------------------------------------Colors and vcs-------------------------------------------------
-
-  #hard coded colors for variant classification if user doesnt provide any
-  if(is.null(colors)){
-    col = get_vcColors()
-  }else{
-    col = colors
-  }
-
-  bg = bgCol
-
-  col = c(col, 'xxx' = bg)
-
-  #Variant classes available in matrix
-  variant.classes = unique(unlist(as.list(apply(mat_origin, 2, unique))))
-  variant.classes = unique(unlist(strsplit(x = variant.classes, split = ';', fixed = TRUE)))
-  variant.classes = variant.classes[!variant.classes %in% c('xxx')]
-
-  type_col = structure(col[variant.classes], names = names(col[variant.classes]))
-  type_col = type_col[!is.na(type_col)]
-
-  type_name = structure(variant.classes, names = variant.classes)
-
-  variant.classes = variant.classes[!variant.classes %in% c('Amp', 'Del')]
-
-  #Variant classes available in plot matrix (We want to color code all vc's in colbar but only use those
-  #in plot matrix for legend)
-  vc.mat = unique(unlist(as.list(apply(mat, 2, unique))))
-  vc.mat = unique(unlist(strsplit(x = vc.mat, split = ';', fixed = TRUE)))
-  vc.mat = vc.mat[!vc.mat %in% c('xxx')]
-  vc.type_name = structure(vc.mat, names = vc.mat)
-
-  vc.type_col = structure(col[vc.mat], names = names(col[vc.mat]))
-  vc.type_col = vc.type_col[!is.na(vc.type_col)]
-
-  #Bottom annotations
+  #Parse annotations
   if(!is.null(clinicalFeatures)){
-    if(!is.null(annotationColor)){
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor, annotation_legend_param = list(title_gp = gpar(fontsize = annotationTitleFontSize, fontface = "bold"),
-                                                   labels_gp = gpar(fontsize = annotationFontSize, fontface = "bold")))
+    if(is.null(annotationDat)){
+      annotation = parse_annotation_dat(annotationDat = maf, clinicalFeatures = clinicalFeatures)
     }else{
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation, annotation_legend_param = list(title_gp = gpar(fontsize = annotationTitleFontSize, fontface = "bold"),
-                                                   labels_gp = gpar(fontsize = annotationFontSize, fontface = "bold")))
+      annotation = parse_annotation_dat(annotationDat = annotationDat, clinicalFeatures = clinicalFeatures)
+    }
+
+    if(sortByAnnotation){
+      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder)
     }
   }
 
-
-  #------------------------------------functions to add %, rowbar and colbar----------------------------------------------------
-
-  #------------------------------------------------------------------------------------------------------
-  #Many thanks to Zuguang Gu (ComplexHeatmap) for letting me use the below code !
-  #Modifed for maftools.
-  #------------------------------------------------------------------------------------------------------
-
-  ##This function adds percent rate
-  # anno_pct = function(index){
-  #   n = length(index)
-  #   pct = paste0(round(apply(numMat[rownames(mat)[n],], 1, function(x) length(x[x != 0]))/as.numeric(maf@summary[3, summary]), digits = 2)*100, "%")
-  #   grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
-  #   grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
-  #                   just = "right", gp = grid::gpar(fontsize = fontSize))
-  #   grid::upViewport()
-  # }
-
-
-  anno_pct = function(index) {
-    n = length(index)
-    pct = apply(numMat[rev(index),], 1, function(x) length(x[x != 0]))/totSamps * 100
-    pct = paste0(round(pct), "%")
-    grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
-    grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
-                    just = "right", gp = grid::gpar(fontsize = fontSize, fontface = "bold"))
-    grid::upViewport()
-  }
-
-  ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct,
-                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10))), which = "row")
-
-  ##This function adds rowbar
-  if(!is.null(mutsig)){
-    ms.smg = ms.smg[rownames(mat), , drop = FALSE]
-    anno_row_bar = function(index){
-      n = length(index)
-      max_count = max(as.numeric(as.character(ms.smg$FDR)))
-      tb = rev(as.list(ms.smg$FDR))
-      grid::pushViewport(grid::viewport(xscale = c(0, max_count * 1.1), yscale = c(0.5, n + 0.5)))
-      for (i in seq_along(tb)) {
-        if (length(tb[[i]])) {
-          x = cumsum(tb[[i]])
-          grid::grid.rect(x = x, i, width = tb[[i]], height = 0.8,
-                          default.units = "native", just = "right",
-                          gp = grid::gpar(col = NA, fill = "gray70"))
-        }
-      }
-      breaks = grid::grid.pretty(c(0, max_count))
-      grid::grid.xaxis(at = breaks, label = breaks, main = FALSE,
-                       gp = grid::gpar(fontsize = 10))
-      grid::upViewport()
-    }
-  }else{
-    anno_row_bar = function(index) {
-      n = length(index)
-
-      tb = list()
-      for(i in nrow(mat):1){
-        x = mat[i,]
-        x = x[x != '']
-        x = x[x != 'xxx']
-        x = unlist(strsplit(x, ";"))
-        x = sort(x)
-        tb[[i]] = table(x)
-      }
-      tb = rev(tb)
-
-      max_count = max(sapply(tb, sum))
-      grid::pushViewport(grid::viewport(xscale = c(0, max_count * 1.1), yscale = c(0.5, n + 0.5)))
-      for (i in seq_along(tb)) {
-        if (length(tb[[i]])) {
-          x = cumsum(tb[[i]])
-          grid::grid.rect(x = x, i, width = tb[[i]], height = 0.8,
-                          default.units = "native", just = "right",
-                          gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
-        }
-      }
-      breaks = grid::grid.pretty(c(0, max_count))
-      grid::grid.xaxis(at = breaks, label = breaks, main = FALSE,
-                       gp = grid::gpar(fontsize = 10))
-      grid::upViewport()
-    }
-  }
-
-
-  ha_row_bar = ComplexHeatmap::HeatmapAnnotation(row_bar = anno_row_bar,
-                                                 width = grid::unit(4, "cm"), which = "row")
-
-  ##This function adds columnbar
-  anno_column_bar = function(index) {
-    n = length(index)
-    ss = getSampleSummary(x = maf)
-    tb = ss[Tumor_Sample_Barcode %in% colnames(mat)]
-    tb = tb[,colnames(tb)[!colnames(tb) %in% c('total', 'Amp', 'Del', 'CNV_total')], with = FALSE]
-    tb = split(tb, as.factor(as.character(tb$Tumor_Sample_Barcode)))
-    tb = lapply(X = tb, function(x) unlist(x)[-1])
-    tb = tb[colnames(mat)]
-
-    max_count = max(sapply(tb, sum))
-
-    grid::pushViewport(grid::viewport(yscale = c(0, max_count * 1.1),
-                                      xscale = c(0.5, n + 0.5)))
-    for (i in seq_along(tb)) {
-      if (length(tb[[i]])) {
-        y = cumsum(tb[[i]])
-        grid::grid.rect(i, y, height = tb[[i]], width = 0.8,
-                        default.units = "native", just = "top",
-                        gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
-      }
-    }
-    breaks = grid::grid.pretty(c(0, max_count))
-    grid::grid.yaxis(at = breaks, label = breaks, gp = grid::gpar(fontsize = 10))
-    grid::upViewport()
-  }
-
-  #Adds column bar for only samples displayed in oncoplot
-  anno_column_bar2 = function(index) {
-    n = length(index)
-    tb = apply(mat[, index], 2, function(x) {
-      x = unlist(strsplit(x, ";"))
-      x = x[!grepl("^\\s*$", x)]
-      x = sort(x)
-      x = x[!x %in% "xxx"]
-      table(x)
-    })
-
-    max_count = max(sapply(tb, sum))
-    grid::pushViewport(grid::viewport(yscale = c(0, max_count * 1.1),
-                                      xscale = c(0.5, n + 0.5)))
-    for (i in seq_along(tb)) {
-      if (length(tb[[i]])) {
-        y = cumsum(tb[[i]])
-        grid::grid.rect(i, y, height = tb[[i]], width = 0.8,
-                        default.units = "native", just = "top", gp = grid::gpar(col = NA, fill = type_col[names(tb[[i]])]))
-      }
-    }
-    breaks = grid::grid.pretty(c(0, max_count))
-    grid::grid.yaxis(at = breaks, label = breaks, gp = grid::gpar(fontsize = 10))
-    grid::upViewport()
-  }
+  percent_alt = paste0(gene_sum[rownames(numMat),"percent_altered",], "%")
 
   if(colbar_pathway){
-    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar2, which = "column", height = grid::unit(2, "cm"))
+    top_bar_data = t(samp_sum[colnames(numMat),,])
   }else{
-    ha_column_bar = ComplexHeatmap::HeatmapAnnotation(column_bar = anno_column_bar, which = "column", height = grid::unit(2, "cm"))
+    top_bar_data = t(samp_sum[colnames(numMat),,])
   }
 
-
-  ##Following two funcs add grids
-  add_oncoprint = function(type, x, y, width, height) {
-    grid::grid.rect(x, y, width - unit(0.5, "mm"),
-                    height - grid::unit(1, "mm"), gp = grid::gpar(col = borderCol, fill = bg))
-
-    for (i in 1:length(variant.classes)) {
-      if (any(type %in% variant.classes[i])) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
-      } else if (any(type %in% 'Amp')) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          unit(15, 'mm'), gp = grid::gpar(col = NA, fill = type_col['Amp']))
-      } else if (any(type %in% 'Del')) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height - grid::unit(15, "mm")
-                        , gp = grid::gpar(col = NA, fill = type_col['Del']))
-      }
-    }
+  if(is.null(colors)){
+    vc_col = get_vcColors()
+  }else{
+    vc_col = colors
   }
+  vc_codes = om$vc #VC codes
 
-  add_oncoprint2 = function(type, x, y, width, height) {
-    for (i in 1:length(variant.classes)) {
-      if (any(type %in% variant.classes[i])) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
-      } else if (any(type %in% 'Amp')) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          unit(15, 'mm'), gp = grid::gpar(col = NA, fill = type_col['Amp']))
-      } else if (any(type %in% 'Del')) {
-
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height - grid::unit(15, "mm")
-                        , gp = grid::gpar(col = NA, fill = type_col['Del']))
-      }
-    }
-  }
-
-  #This is the main cel function which is passed to ComplexHeatmap::Hetamap()
-  celFun = function(j, i, x, y, width, height, fill) {
-    type = mat[i, j]
-    if(type != 'xxx'){
-      typeList = sort(unlist(strsplit(x = as.character(type), split = ';')), decreasing = TRUE)
-      if(length(typeList) > 1){
-        for(i in 1:length(typeList)){
-          add_oncoprint2(typeList[i], x, y, width, height)
-        }
-      }else{
-        for(i in 1:length(typeList)){
-          add_oncoprint(typeList[i], x, y, width, height)
-        }
-      }
-
+  #Plot layout
+  if(is.null(clinicalFeatures)){
+    if(!drawRowBar & !drawColBar){
+      mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
+      lo = layout(mat = mat_lo, heights = c(12, 4))
+    }else if(!drawRowBar){
+      mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
+      lo = layout(mat = mat_lo, heights = c(4, 12, 4))
+    }else if(!drawColBar){
+      mat_lo = matrix(data = c(1,2,3,3), nrow = 2, ncol = 2, byrow = TRUE)
+      lo = layout(mat = mat_lo, heights = c(12, 4), widths = c(4, 1))
     }else{
-      add_oncoprint(type, x, y, width, height)
+      mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+      lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 4))
+    }
+  }else{
+    if(!drawRowBar & !drawColBar){
+      mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
+      lo = layout(mat = mat_lo, heights = c(12, 1, 4))
+    }else if(!drawRowBar){
+      mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
+      lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4))
+    }else if(!drawColBar){
+      mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+      lo = layout(mat = mat_lo, heights = c(12, 1, 4), widths = c(4, 1))
+    }else{
+      mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
+      lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, 4))
     }
   }
 
-
-  #----------------------------------------------------------------------------------------
-
-
+  #Draw top bar plot
   if(drawColBar){
-    if(is.null(clinicalFeatures)){
-
-      ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
-                                   show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
-                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
-    } else{
-
-      ht = ComplexHeatmap::Heatmap(mat, na_col = bg,rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
-                                   show_heatmap_legend = FALSE, top_annotation = ha_column_bar,
-                                   bottom_annotation = bot.anno,
-                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
+    if(drawRowBar){
+      par(mar = c(0.25 , 5, 2, 3), xpd = TRUE)
+    }else{
+      par(mar = c(0.25 , 5, 2, 5), xpd = TRUE)
     }
 
-  } else{
-
-    if(is.null(clinicalFeatures)){
-
-      ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
-                                   show_heatmap_legend = FALSE,
-                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
-    }else{
-      ht = ComplexHeatmap::Heatmap(mat, na_col = bg, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-                                   row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"), show_column_names = showTumorSampleBarcodes,
-                                   show_heatmap_legend = FALSE, bottom_annotation = bot.anno,
-                                   column_title_gp = grid::gpar(fontsize = titleFontSize, fontface = "bold"), column_title = altStat)
+    plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(top_bar_data)), ylim = c(0, max(colSums(x = top_bar_data, na.rm = TRUE))),
+         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
+    axis(side = 2, at = c(0, max(colSums(top_bar_data, na.rm = TRUE))), las = 2, line = 0.5)
+    for(i in 1:ncol(top_bar_data)){
+      x = top_bar_data[,i]
+      x = x[!x == 0]
+      rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
+           ytop = cumsum(x), col = vc_col[names(x)], border = NA, lwd = 0)
     }
   }
-
-  ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct,
-                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10, fontface = "bold"))),
-                                             which = "row")
-  ht_list = ha_pct + ht
-
 
   if(drawRowBar){
-    ht_list =  ht_list + ha_row_bar
+    if(is.null(mutsig)){
+      side_bar_lims = c(0, max(unlist(apply(numMat, 1, function(x) cumsum(table(x[x!=0])))), na.rm = TRUE))
+    }else{
+      side_bar_lims = c(0, round(max(ms.smg$FDR, na.rm = TRUE), digits = 2))
+    }
+    #Draw axis for side bar plot
+    if(drawColBar){
+      par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
+      plot(x = NA, y = NA, type = "n", axes = FALSE,
+           xlim = side_bar_lims, ylim = c(0, 1), xaxs = "i")
+    }
   }
 
-  legend = grid::legendGrob(labels = vc.type_name[names(vc.type_col)],  pch = 15, gp = grid::gpar(col = vc.type_col, fontsize = legendFontSize, fontface = "bold"), nrow = 3)
+  #Background plot
+  if(showTumorSampleBarcodes){
+    if(!drawRowBar & !drawColBar){
+      par(mar = c(4, 5, 2.5, 5), xpd = TRUE)
+    }else if(!drawRowBar & drawColBar){
+      par(mar = c(4, 5, 0, 3), xpd = TRUE)
+    }else if(drawRowBar & !drawColBar){
+      par(mar = c(4, 5, 2.5, 3), xpd = TRUE)
+    } else{
+      par(mar = c(4, 5, 0, 3), xpd = TRUE)
+    }
+  }else{
+    if(!drawRowBar & !drawColBar){
+      par(mar = c(0.5, 5, 2.5, 5), xpd = TRUE)
+    }else if(!drawRowBar & drawColBar){
+      par(mar = c(0.5, 5, 0, 5), xpd = TRUE)
+    }else if(drawRowBar & !drawColBar){
+      par(mar = c(0.5, 5, 2.5, 3), xpd = TRUE)
+    } else{
+      par(mar = c(0.5, 5, 0, 3), xpd = TRUE)
+    }
+  }
 
-  suppressWarnings( ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend)) )
+  nm = t(apply(numMat, 2, rev))
+  nm[nm == 0] = NA
+  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
+        xlab="", ylab="", col = "white") #col = "#FC8D62"
+  #Plot for all variant classifications
+  vc_codes_temp = vc_codes[!vc_codes %in% c('Amp', 'Del')]
+  for(i in 2:length(names(vc_codes_temp))){
+    vc_code = vc_codes_temp[i]
+    col = vc_col[vc_code]
+    nm = t(apply(numMat, 2, rev))
+    nm[nm != names(vc_code)] = NA
+    image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
+          xlab="", ylab="", col = col, add = TRUE)
+  }
+
+  #Add blanks
+  nm = t(apply(numMat, 2, rev))
+  nm[nm != 0] = NA
+  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+
+  #Add CNVs if any
+  mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
+  if(writeMatrix){
+    write.table(mat_origin, "onco_matrix.txt", sep = "\t", quote = FALSE)
+  }
+  mo = t(apply(mat_origin, 2, rev))
+
+
+
+  ##Complex events (mutated as well as CN altered)
+  complex_events = unique(grep(pattern = ";", x = mo, value = TRUE))
+
+  if(length(complex_events) > 0){
+    for(i in 1:length(complex_events)){
+      ce = complex_events[i]
+      #mo = t(apply(mat_origin, 2, rev))
+      ce_idx = which(mo == ce, arr.ind = TRUE)
+
+      ce = unlist(strsplit(x = ce, split = ";", fixed = TRUE))
+
+      nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
+      nm_temp[ce_idx] = 0
+      image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
+            yaxt="n", xlab="", ylab="", col = vc_col[ce[2]], add = TRUE)
+      points(ce_idx, pch= 15, col= vc_col[ce[1]])
+    }
+  }
+
+  del_idx = which(mo == "Del", arr.ind = TRUE)
+  amp_idx = which(mo == "Amp", arr.ind = TRUE)
+
+  if(nrow(amp_idx) > 0){
+    nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
+    nm_temp[amp_idx] = 0
+    image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
+          yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+    points(amp_idx, pch= 15, col= vc_col['Amp'], cex = 1.5)
+  }
+
+  if(nrow(del_idx) > 0){
+    nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
+    nm_temp[del_idx] = 0
+    image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
+          yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+    points(del_idx, pch= 15, col= vc_col['Del'], cex = 1.5)
+  }
+
+  #Add grids
+  abline(h = (1:ncol(nm)) + 0.5, col = borderCol)
+  abline(v = (1:nrow(nm)) + 0.5, col = borderCol)
+
+  mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
+        font = 3, line = 0.4, cex = fontSize, las = 2)
+  mtext(text = rev(percent_alt), side = 4, at = 1:ncol(nm),
+        font = 1, line = 0.4, cex = fontSize, las = 2, adj = 0.15)
+
+  if(showTumorSampleBarcodes){
+    text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+         labels = rownames(nm), srt = 90, font = 1, cex = SampleNamefontSize, adj = 1)
+  }
+
+  #Draw side bar plot
+  if(drawRowBar){
+    if(showTumorSampleBarcodes){
+      if(!drawRowBar || !drawColBar){
+        par(mar = c(4, 0, 2.5, 1), xpd = TRUE)
+      }else{
+        par(mar = c(4, 0, 0, 1), xpd = TRUE)
+      }
+    }else{
+      if(!drawRowBar || !drawColBar){
+        par(mar = c(0.5, 0, 2.5, 1), xpd = TRUE)
+      }else{
+        par(mar = c(0.5, 0, 0, 1), xpd = TRUE)
+      }
+    }
+
+    if(is.null(mutsig)){
+      side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
+      plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, length(side_bar_data)),
+           axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
+
+      for(i in 1:length(side_bar_data)){
+        x = rev(side_bar_data)[[i]]
+        rect(ybottom = i-1, xleft = c(0, cumsum(x)[1:(length(x)-1)]), ytop = i-0.1,
+             xright = cumsum(x), col = vc_col[vc_codes[names(x)]], border = NA, lwd = 0)
+      }
+      axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
+
+    }else{
+
+      plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, nrow(ms.smg)),
+           axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
+      for(i in 1:nrow(ms.smg)){
+        x = rev(ms.smg$FDR)[i]
+        rect(ybottom = i-1, xleft = 0, ytop = i-0.1,
+             xright = x, col = "gray70", border = NA, lwd = 0)
+      }
+      axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
+    }
+  }
+
+  #Plot annotations if any
+  if(!is.null(clinicalFeatures)){
+
+    clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
+
+    if(is.null(annotationColor)){
+      annotationColor = get_anno_cols(ann = annotation)
+    }
+
+    anno_cols = c()
+    for(i in 1:length(annotationColor)){
+      anno_cols = c(anno_cols, annotationColor[[i]])
+    }
+
+    clini_lvls = clini_lvls[!is.na(clini_lvls)]
+    names(clini_lvls) = 1:length(clini_lvls)
+    temp_rownames = rownames(annotation)
+    annotation = data.frame(lapply(annotation, as.character),
+                            stringsAsFactors = FALSE, row.names = temp_rownames)
+
+    for(i in 1:length(clini_lvls)){
+      annotation[annotation == clini_lvls[i]] = names(clini_lvls[i])
+    }
+
+    annotation = data.frame(lapply(annotation, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
+
+    annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
+    if(!drawRowBar){
+      par(mar = c(0, 5, 0, 5), xpd = TRUE)
+    }else{
+      par(mar = c(0, 5, 0, 3), xpd = TRUE)
+    }
+
+    image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
+          axes = FALSE, xaxt="n", yaxt="n", bty = "n",
+          xlab="", ylab="", col = "white") #col = "#FC8D62"
+
+    #Plot for all variant classifications
+    for(i in 1:length(names(clini_lvls))){
+      anno_code = clini_lvls[i]
+      col = anno_cols[anno_code]
+      #temp_anno = t(apply(annotation, 2, rev))
+      temp_anno = as.matrix(annotation)
+      temp_anno[temp_anno != names(anno_code)] = NA
+      image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
+            axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE)
+    }
+
+    #Add grids
+    abline(h = (1:ncol(nm)) + 0.5, col = "white")
+    abline(v = (1:nrow(nm)) + 0.5, col = "white")
+    mtext(text = colnames(annotation), side = 4,
+          font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
+
+    if(drawRowBar){
+      plot.new()
+    }
+  }
+
+  par(mar = c(0, 0.5, 0, 0), xpd = TRUE)
+
+  plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
+  lep = legend("topleft", legend = names(vc_col[vc_codes[2:length(vc_codes)]]),
+               col = vc_col[vc_codes[2:length(vc_codes)]], border = NA, bty = "n",
+               ncol= 2, pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
+
+  x_axp = 0+lep$rect$w
+
+  if(!is.null(clinicalFeatures)){
+
+    for(i in 1:ncol(annotation)){
+      #x = unique(annotation[,i])
+      x = annotationColor[[i]]
+
+      if(length(x) <= 4){
+        n_col = 1
+      }else{
+        n_col = (length(x) %/% 4)+1
+      }
+
+      lep = legend(x = x_axp, y = 1, legend = names(x),
+                   col = x, border = NA,
+                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+                   cex = annotationFontSize, title = rev(names(annotation))[i],
+                   title.adj = 0)
+      x_axp = x_axp + lep$rect$w
+
+    }
+  }
+
+  title(main = altStat, outer = TRUE, line = -1, cex.main = titleFontSize)
 }

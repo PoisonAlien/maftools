@@ -141,8 +141,4 @@ plotTiTv = function(res = NULL, plotType = 'both',
   }else{
     stop('plotType can only be bar, box or both')
   }
-
-  if(!is.null(file)){
-
-  }
 }

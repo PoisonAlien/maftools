@@ -1,7 +1,7 @@
 Package: maftools
 Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 1.9.10
+Version: 1.9.20
 Date: 2015-12-14
 Author: Anand Mayakonda <anand_mt@hotmail.com>
 Maintainer: Anand Mayakonda <anand_mt@hotmail.com>
@@ -13,9 +13,9 @@ LazyData: TRUE
 Depends: R (>= 3.3)
 Imports: data.table, ggplot2(>= 2.0), cowplot, cometExactTest,
         RColorBrewer, NMF, ggrepel, methods,
-        ComplexHeatmap, mclust, Biostrings,
+        mclust, Biostrings,
         rjson, grid, wordcloud, grDevices, gridExtra, survival, BSgenome
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Encoding: UTF-8
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

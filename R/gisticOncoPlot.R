@@ -14,7 +14,9 @@
 #' @param bandsToIgnore do not show these bands in the plot Default NULL.
 #' @param removeNonAltered Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
 #' @param colors named vector of colors Amp and Del events.
-#' @param fontSize font size for cytoband names. Default 10.
+#' @param fontSize font size for cytoband names. Default 0.8
+#' @param legendFontSize font size for legend. Default 1.2
+#' @param annotationFontSize font size for annotations. Default 1.2
 #' @return None.
 #' @examples
 #' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
@@ -23,29 +25,21 @@
 #' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
 #' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
 #' gisticOncoPlot(laml.gistic)
-#' @import ComplexHeatmap
-#' @import grid
 #' @seealso \code{\link{oncostrip}}
 #' @export
 
 
-gisticOncoPlot = function (gistic, top = NULL,
-                     showTumorSampleBarcodes = FALSE, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE,
-                     annotationColor = NULL, bandsToIgnore = NULL,
-                     removeNonAltered = FALSE, colors = NULL, fontSize = 10) {
+gisticOncoPlot = function(gistic = NULL, top = NULL,
+                           showTumorSampleBarcodes = FALSE, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE,
+                           annotationColor = NULL, bandsToIgnore = NULL,
+                           removeNonAltered = FALSE, colors = NULL, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2) {
 
-  #set seed for consistancy.
-  set.seed(seed = 1024)
-
-  #Not so useful. Set default to FALSE.
-  drawRowBar = FALSE
-  drawColBar = FALSE
-  writeMatrix = FALSE
+  if(class(gistic) != "GISTIC"){
+    stop("Input data should be of GISTIC class. Use readGistic function to generate one.")
+  }
 
   numMat = gistic@numericMatrix
-  #rownames(numMat) = sapply(strsplit(x = rownames(numMat), split = ':'), '[', 2)
   mat_origin = gistic@cnMatrix
-  #rownames(mat_origin) = sapply(strsplit(x = rownames(mat_origin), split = ':'), '[', 2)
 
   if(ncol(numMat) < 2){
     stop('Cannot create plot for single sample. Minimum two sample required ! ')
@@ -65,8 +59,8 @@ gisticOncoPlot = function (gistic, top = NULL,
     }
   }
 
-  oncoPlot = TRUE #Change later
-  bg = "#CCCCCC" #Default gray background
+  bgCol = "#CCCCCC" #Default gray background
+  borderCol = "white"
 
   #To remove samples with no mutations in top n genes, if user says removeNonAltered
   if(removeNonAltered){
@@ -81,17 +75,7 @@ gisticOncoPlot = function (gistic, top = NULL,
     if(is.null(clinicalData)){
       stop("annotation data missing. Use argument annotation to provide one.")
     }else{
-      data.table::setDF(clinicalData)
-      if(length(clinicalFeatures[!clinicalFeatures %in% colnames(clinicalData)]) > 0){
-        message('Following columns are missing from provided annotation data. Ignoring them..')
-        print(clinicalFeatures[!clinicalFeatures %in% colnames(clinicalData)])
-        clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotation)]
-        if(length(clinicalFeatures) == 0){
-          stop('Zero annotaions to add! Make sure at-least one of the provided clinicalFeatures are present in clinicalData')
-        }
-      }
-      annotation = clinicalData[,c('Tumor_Sample_Barcode', clinicalFeatures)]
-      annotation = data.frame(row.names = annotation$Tumor_Sample_Barcode ,annotation[,clinicalFeatures, drop = FALSE])
+      annotation = parse_annotation_dat(annotationDat = clinicalData, clinicalFeatures = clinicalFeatures)
     }
 
     if(sortByAnnotation){
@@ -100,106 +84,148 @@ gisticOncoPlot = function (gistic, top = NULL,
     }
   }
 
-
-  mat = mat_origin[rownames(numMat), , drop = FALSE]
-  mat = mat[,colnames(numMat), drop = FALSE]
-  mat[mat == ''] = 'xxx'
-
-  #Bottom annotations
-  if(!is.null(clinicalFeatures)){
-    if(!is.null(annotationColor)){
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(df = annotation, col = annotationColor, annotation_legend_param = list(title_gp = gpar(fontface = "bold"),
-                                                                                                                          labels_gp = gpar(fontface = "bold")))
-    }else{
-      bot.anno = ComplexHeatmap::HeatmapAnnotation(annotation, annotation_legend_param = list(title_gp = gpar(fontface = "bold"),
-                                                                                              labels_gp = gpar(fontface = "bold")))
-    }
-  }
+  mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
+  nsamps = as.numeric(as.character(gistic@summary[1, summary]))
+  percent_alt = apply(numMat, 1, function(x) length(x[x != 0]))
+  percent_alt = paste0(rev(round(percent_alt * 100/nsamps)), "%")
 
   #hard coded colors for variant classification if user doesnt provide any
   if(is.null(colors)){
-    col = c('green', 'red', 'blue')
-    names(col) = names = c('Del', 'Amp', 'Complex')
+    vc_col = c('green', 'red', 'blue')
+    names(vc_col) = names = c('Del', 'Amp', 'Complex')
   }else{
-    col = colors
+    vc_col = colors
   }
 
-  variant.classes = unique(unlist(as.list(apply(mat_origin, 2, unique))))
-  variant.classes = unique(unlist(strsplit(x = variant.classes, split = ';', fixed = TRUE)))
-  variant.classes = variant.classes[!variant.classes %in% c('xxx')]
-
-  type_col = structure(col[variant.classes], names = names(col[variant.classes]))
-  type_col = type_col[!is.na(type_col)]
-
-  type_name = structure(variant.classes, names = variant.classes)
+  vc_codes = gistic@classCode #VC codes
 
 
-  #------------------------------------Helper functions to add %, rowbar and colbar----------------------------------------------------
-
-  ##This function adds percent rate
-  anno_pct = function(index) {
-    n = length(index)
-    pct = apply(mat_origin[rev(index), ], 1, function(x) sum(!grepl("^\\s*$", x))/length(x)) * 100
-    pct = paste0(round(pct), "%")
-    grid::pushViewport(viewport(xscale = c(0, 1), yscale = c(0.5, n + 0.5)))
-    grid::grid.text(pct, x = 1, y = seq_along(index), default.units = "native",
-                    just = "right", gp = grid::gpar(fontsize = fontSize, fontface = "bold"))
-    grid::upViewport()
+  #Plot layout
+  if(is.null(clinicalFeatures)){
+    mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
+    lo = layout(mat = mat_lo, heights = c(12, 4))
+  }else{
+    mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
+    lo = layout(mat = mat_lo, heights = c(12, 1, 4))
   }
 
-  ha_pct = ComplexHeatmap::HeatmapAnnotation(pct = anno_pct,
-                                             width = grid::grobWidth(grid::textGrob("100%", gp = grid::gpar(fontsize = 10, fontface = "bold"))), which = "row")
+  if(showTumorSampleBarcodes){
+    par(mar = c(4, 5, 2.5, 5), xpd = TRUE)
+  }else{
+    par(mar = c(0.5, 5, 2.5, 5), xpd = TRUE)
+  }
 
-  ##Following two funcs add grids
-  add_oncoprint = function(type, x, y, width, height) {
-    grid::grid.rect(x, y, width - unit(0.5, "mm"),
-                    height - grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = bg))
+  nm = t(apply(numMat, 2, rev))
+  nm[nm == 0] = NA
+  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
+        xlab="", ylab="", col = "white") #col = "#FC8D62"
+  #Plot for all variant classifications
+  vc_codes_temp = vc_codes
+  for(i in 2:length(names(vc_codes_temp))){
+    vc_code = vc_codes_temp[i]
+    col = vc_col[vc_code]
+    nm = t(apply(numMat, 2, rev))
+    nm[nm != names(vc_code)] = NA
+    image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
+          xlab="", ylab="", col = col, add = TRUE)
+  }
 
-    for (i in 1:length(variant.classes)) {
-      if (any(type %in% variant.classes[i])) {
-        grid::grid.rect(x, y, width - unit(0.5, "mm"), height -
-                          grid::unit(1, "mm"), gp = grid::gpar(col = NA, fill = type_col[variant.classes[i]]))
+  #Add blanks
+  nm = t(apply(numMat, 2, rev))
+  nm[nm != 0] = NA
+  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+
+  #Add grids
+  abline(h = (1:ncol(nm)) + 0.5, col = borderCol)
+  abline(v = (1:nrow(nm)) + 0.5, col = borderCol)
+
+  mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
+        font = 3, line = 0.4, cex = fontSize, las = 2)
+  mtext(text = percent_alt, side = 4, at = 1:ncol(nm),
+        font = 3, line = 0.4, cex = fontSize, las = 2)
+
+  if(showTumorSampleBarcodes){
+    text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+         labels = rownames(nm), srt = 45, font = 1, cex = SampleNamefontSize, adj = 1)
+  }
+
+  #Plot annotations if any
+  if(!is.null(clinicalFeatures)){
+    clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
+
+    if(is.null(annotationColor)){
+      annotationColor = get_anno_cols(ann = annotation)
+    }
+
+    anno_cols = c()
+    for(i in 1:length(annotationColor)){
+      anno_cols = c(anno_cols, annotationColor[[i]])
+    }
+
+    clini_lvls = clini_lvls[!is.na(clini_lvls)]
+    names(clini_lvls) = 1:length(clini_lvls)
+    temp_rownames = rownames(annotation)
+    annotation = data.frame(lapply(annotation, as.character),
+                            stringsAsFactors = FALSE, row.names = temp_rownames)
+
+    for(i in 1:length(clini_lvls)){
+      annotation[annotation == clini_lvls[i]] = names(clini_lvls[i])
+    }
+
+    annotation = data.frame(lapply(annotation, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
+
+    annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
+
+    par(mar = c(0, 5, 0, 5), xpd = TRUE)
+
+    image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
+          axes = FALSE, xaxt="n", yaxt="n", bty = "n",
+          xlab="", ylab="", col = "white") #col = "#FC8D62"
+
+    #Plot for all variant classifications
+    for(i in 1:length(names(clini_lvls))){
+      anno_code = clini_lvls[i]
+      col = anno_cols[anno_code]
+      #temp_anno = t(apply(annotation, 2, rev))
+      temp_anno = as.matrix(annotation)
+      temp_anno[temp_anno != names(anno_code)] = NA
+      image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
+            axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE)
+    }
+
+    #Add grids
+    abline(h = (1:ncol(nm)) + 0.5, col = "white")
+    abline(v = (1:nrow(nm)) + 0.5, col = "white")
+    mtext(text = colnames(annotation), side = 4,
+          font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
+  }
+
+  par(mar = c(1, 1, 0, 0), xpd = TRUE)
+
+  plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
+  lep = legend("topleft", legend = names(vc_col[vc_codes[2:length(vc_codes)]]),
+               col = vc_col[vc_codes[2:length(vc_codes)]], border = NA, bty = "n",
+               pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
+
+  x_axp = 0+lep$rect$w
+
+  if(!is.null(clinicalFeatures)){
+
+    for(i in 1:ncol(annotation)){
+      #x = unique(annotation[,i])
+      x = annotationColor[[i]]
+
+      if(length(x) <= 4){
+        n_col = 1
+      }else{
+        n_col = (length(x) %/% 4)+1
       }
+
+      lep = legend(x = x_axp, y = 1, legend = names(x),
+                   col = x, border = NA,
+                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+                   cex = annotationFontSize, title = names(annotation)[i], title.adj = 0)
+      x_axp = x_axp + lep$rect$w
     }
   }
-
-  #This is the main cel function which is passed to ComplexHeatmap::Hetamap()
-  celFun = function(j, i, x, y, width, height, fill) {
-    type = mat[i, j]
-    if(type != 'xxx'){
-      typeList = unlist(strsplit(x = as.character(type), split = ';'))
-      if(length(typeList) > 1){
-        for(i in 1:length(typeList)){
-          add_oncoprint(typeList[i], x, y, width, height)
-        }
-      }else{
-        for(i in 1:length(typeList)){
-          add_oncoprint(typeList[i], x, y, width, height)
-        }
-      }
-
-    }else{
-      add_oncoprint(type, x, y, width, height)
-    }
-  }
-
-  #---------------------------------------------------------------------------
-
-      if(is.null(clinicalFeatures)){
-        ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-          row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"),
-          show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE)
-      }else{
-        ht = ComplexHeatmap::Heatmap(mat, rect_gp = grid::gpar(type = "none"), cell_fun = celFun,
-          row_names_gp = grid::gpar(fontsize = fontSize, fontface = "bold"),
-          show_column_names = showTumorSampleBarcodes, show_heatmap_legend = FALSE,
-          bottom_annotation = bot.anno)
-      }
-
-
-    ht_list = ha_pct + ht
-
-    legend = grid::legendGrob(labels = type_name[names(type_col)],  pch = 15, gp = grid::gpar(col = type_col, fontface = "bold"), nrow = 2)
-
-    ComplexHeatmap::draw(ht_list, newpage = FALSE, annotation_legend_side = "bottom", annotation_legend_list = list(legend))
 }
