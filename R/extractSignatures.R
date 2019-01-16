@@ -34,7 +34,7 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     zeroMutClass = names(which(rowSums(mat) == 0))
 
     if(length(zeroMutClass)){
-      stop(paste('Warning : Found zero mutations for conversions ', zeroMutClass, sep=''))
+      message(paste('Warning : Found zero mutations for conversions ', zeroMutClass, sep=''))
       #Add small value to avoid zero counts (maybe not appropriate). This happens when sample size is low or in cancers with low mutation rate.
       #mat[which(rowSums(mat) == 0),] = 0.1
     }
