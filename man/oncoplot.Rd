@@ -10,6 +10,7 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
   annotationColor = NULL, genesToIgnore = NULL,
   showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE,
   colors = NULL, sortByMutation = FALSE, sortByAnnotation = FALSE,
+  isNumeric = FALSE, groupAnnotationBySize = TRUE,
   annotationOrder = NULL, keepGeneOrder = FALSE,
   GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE,
   fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5,
@@ -49,6 +50,10 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{sortByMutation}{Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.}
 
 \item{sortByAnnotation}{logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort}
+
+\item{isNumeric}{Is `clinicalFeatures` used for `sortByAnnotation` is numeric? Default FALSE.}
+
+\item{groupAnnotationBySize}{Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.}
 
 \item{annotationOrder}{Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.}
 

@@ -25,6 +25,8 @@
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
 #' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
 #' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort
+#' @param isNumeric Is `clinicalFeatures` used for `sortByAnnotation` is numeric? Default FALSE.
+#' @param groupAnnotationBySize Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
 #' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
@@ -46,7 +48,7 @@
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
                      clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
-                     sortByMutation = FALSE, sortByAnnotation = FALSE, annotationOrder = NULL, keepGeneOrder = FALSE,
+                     sortByMutation = FALSE, sortByAnnotation = FALSE, isNumeric = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
                      titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
@@ -162,7 +164,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     if(sortByAnnotation){
-      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder)
+      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = isNumeric)
     }
   }
 

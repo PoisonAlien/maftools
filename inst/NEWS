@@ -4,9 +4,10 @@ SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Oncoplot, oncostrip and coOncoplot code has been migrated from ComplexHeatmap to base graphics. Default values for some arguments have been changed.
 
 BUG FIX
-    o Bug fix that caused signature extraction to terminate in case of zero mutations. Issue: #214
+    o Bug fix that caused signature extraction to terminate in case of zero mutations. Issue: #228
     o Add showTumorSampleBarcodes to PlotOncogenicPathways. Issue: #214
     o Cleanup docs for Oncoplot. Issue: #207
+    o Implemented `isNumeric` and `groupAnnotationBySize` to improve sorting. Issue: #207
     o Fix ComplexHeatmap update. Issue: #205 #210
     o plotmafSummary addStats bug fix Issue: #204
     o Rainfall plot data.table null fix. Issue: #201

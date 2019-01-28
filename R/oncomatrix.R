@@ -116,15 +116,26 @@ sortByMutation = function(numMat, maf){
 
 #Thanks to Ryan Morin for the suggestion (https://github.com/rdmorin)
 #original code has been changed with vectorized code, in-addition performs class-wise sorting.
-sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL){
+sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL, group = TRUE, isNumeric = FALSE){
   anno[,1] = as.character(anno[,1])
   anno[,1] = ifelse(test = is.na(anno[,1]), yes = "NA", no = anno[,1]) #NAs are notorious; converting them to characters
-  anno.spl = split(anno, as.factor(as.character(anno[,1]))) #sorting only first annotation
+  #anno.spl = split(anno, anno[,1]) #sorting only first annotation (not converting to charcter)
+  if(isNumeric){
+    anno.spl = split(anno, as.numeric(as.character(anno[,1]))) #sorting only first annotation
+  }else{
+    anno[,1] = ifelse(test = is.na(anno[,1]), yes = "NA", no = anno[,1]) #NAs are notorious; converting them to characters
+    anno.spl = split(anno, as.factor(as.character(anno[,1]))) #sorting only first annotation
+  }
+
+
   anno.spl.sort = lapply(X = anno.spl, function(x){
     numMat[,colnames(numMat)[colnames(numMat) %in% rownames(x)], drop = FALSE]
   })
 
-  anno.spl.sort = anno.spl.sort[names(sort(unlist(lapply(anno.spl.sort, ncol)), decreasing = TRUE))] #sort list according to number of elemnts in each classification
+  if(group){
+    #sort list according to number of elemnts in each classification
+    anno.spl.sort = anno.spl.sort[names(sort(unlist(lapply(anno.spl.sort, ncol)), decreasing = TRUE))]
+  }
 
   if(!is.null(annoOrder)){
     annoSplOrder = names(anno.spl.sort)
@@ -139,7 +150,7 @@ sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL){
     anno.spl.sort = anno.spl.sort[annoOrder]
 
     if(length(annoSplOrder[!annoSplOrder %in% annoOrder]) > 0){
-      warning("Following levels are missing from the provided annotation order: ", paste(annoSplOrder[!annoSplOrder %in% annoOrder], collapse = ", "))
+      warning("Following levels are missing from the provided annotation order: ", paste(annoSplOrder[!annoSplOrder %in% annoOrder], collapse = ", "), immediate. = TRUE)
     }
   }
 
@@ -180,4 +191,96 @@ sortByGeneOrder = function(m, g){
   }
 
   return(numMat.sorted)
+}
+
+#plot_dat = plotting data
+#lab_dat = data to be labelled
+#x_var = x
+#y_var = y
+#bubble_var = z (variable name for bubble size)
+#bubble_size (exclusive with bubble_var)
+#text_size = font size for labels
+bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
+                       bubble_var = NULL, bubble_size = 1, text_var = NULL, text_size = 1){
+
+  x_col_idx = which(colnames(plot_dat) == x_var)
+  y_col_idx = which(colnames(plot_dat) == y_var)
+  colnames(plot_dat)[c(x_col_idx, y_col_idx)] = c("x", "y")
+
+  if(!is.null(lab_dat)){
+    x_col_idx = which(colnames(lab_dat) == x_var)
+    y_col_idx = which(colnames(lab_dat) == y_var)
+    colnames(lab_dat)[c(x_col_idx, y_col_idx)] = c("x", "y")
+    if(is.null(text_var)){
+      stop("Missing text variable")
+    }else{
+      colnames(lab_dat)[which(colnames(lab_dat) == text_var)] = "z_text"
+    }
+  }
+
+  if(!is.null(bubble_var)){
+
+    if(bubble_var %in% c(x_var, y_var)){
+      if(which(bubble_var == c(x_var, y_var)) == 2){
+        plot_dat$size_z = sqrt(as.numeric(plot_dat$y)/pi)
+      }else if(which(bubble_var == c(x_var, y_var)) == 1){
+        plot_dat$size_z = sqrt(as.numeric(plot_dat$x)/pi)
+      }
+    }else{
+      if(length(which(colnames(plot_dat) == bubble_var)) > 0){
+        colnames(plot_dat)[which(colnames(plot_dat) == bubble_var)] = "z"
+        plot_dat$size_z = sqrt(as.numeric(plot_dat$z)/pi)
+      }else{
+        plot_dat$size_z = bubble_size
+      }
+    }
+
+    if(!is.null(lab_dat)){
+      if(bubble_var %in% c(x_var, y_var)){
+        if(which(bubble_var == c(x_var, y_var)) == 2){
+          lab_dat$size_z = sqrt(as.numeric(lab_dat$y)/pi) * bubble_size
+        }else if(which(bubble_var == c(x_var, y_var)) == 1){
+          lab_dat$size_z = sqrt(as.numeric(lab_dat$x)/pi) * bubble_size
+        }
+      }else{
+        colnames(lab_dat)[which(colnames(lab_dat) == bubble_var)] = "z"
+        lab_dat$size_z = sqrt(as.numeric(lab_dat$z)/pi) * bubble_size
+      }
+    }
+  }else{
+    plot_dat$size_z = bubble_size
+    if(!is.null(lab_dat)){
+      lab_dat$size_z = bubble_size
+    }
+  }
+
+  if(is.null(lab_dat)){
+    x_lims = as.integer(seq(0, max(as.numeric(plot_dat$x), na.rm = TRUE), length.out = 4))
+    x_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$x), na.rm = TRUE)))
+    y_lims = as.integer(seq(0, max(as.numeric(plot_dat$y), na.rm = TRUE), length.out = 4))
+    y_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$y), na.rm = TRUE)))
+  }else{
+    x_lims = as.integer(seq(0, max(as.numeric(c(plot_dat$x, lab_dat$x)), na.rm = TRUE), length.out = 4))
+    x_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$x), na.rm = TRUE)))
+    y_lims = as.integer(seq(0, max(as.numeric(c(plot_dat$y, lab_dat$x)), na.rm = TRUE), length.out = 4))
+    y_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$y), na.rm = TRUE)))
+  }
+
+
+  print(head(plot_dat))
+  plot(x = plot_dat$x, y = plot_dat$y, cex = plot_dat$size_z,
+       pch = 16, col = 'gray70', axes = FALSE, xlim = x_lims[c(1, 4)],
+       ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA)
+  axis(side = 1, at = x_lims[c(1, 4)])
+  #mtext(text = "# mutations", side = 1, line = 2.5, cex = 1.2)
+  axis(side = 2, at = y_lims[c(1, 4)], las = 2)
+  #mtext(text = "# genes", side = 2, line = 2.5, cex = 1.2)
+
+  if(!is.null(lab_dat)){
+    points(x = lab_dat$x, y = lab_dat$y, cex = lab_dat$size_z,
+           pch = 16, col = 'maroon')
+    wordcloud::textplot(x = lab_dat$x, y = lab_dat$y, words = lab_dat$z_text,
+                        cex = text_size, new = FALSE, show.lines = TRUE,
+                        xlim = x_lims[c(1, 4)], ylim = y_lims[c(1, 4)])
+  }
 }
