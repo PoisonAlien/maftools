@@ -6,7 +6,7 @@
 #' @param genes subset by these genes
 #' @param fields include only these fields along with necessary fields in the output
 #' @param query query string. e.g, "Variant_Classification == 'Missense_Mutation'" returns only Missense variants.
-#' @param mafObj returns output as MAF class \code{\link{MAF-class}}. Default FALSE
+#' @param mafObj returns output as MAF class \code{\link{MAF-class}}. Default TRUE
 #' @param includeSyn Default TRUE, only applicable when mafObj = FALSE. If mafObj = TRUE, synonymous variants will be stored in a seperate slot of MAF object.
 #' @param isTCGA Is input MAF file from TCGA source.
 #' @param dropLevels Default TRUE.
@@ -25,7 +25,7 @@
 #' subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), fields = 'i_TumorVAF_WU')
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = FALSE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
+subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
 
 
   if(length(restrictTo) > 1){

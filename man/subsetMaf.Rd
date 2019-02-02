@@ -5,7 +5,7 @@
 \title{Subset MAF}
 \usage{
 subsetMaf(maf, tsb = NULL, genes = NULL, fields = NULL,
-  query = NULL, mafObj = FALSE, includeSyn = TRUE, isTCGA = FALSE,
+  query = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE,
   dropLevels = TRUE, restrictTo = "all")
 }
 \arguments{
@@ -19,7 +19,7 @@ subsetMaf(maf, tsb = NULL, genes = NULL, fields = NULL,
 
 \item{query}{query string. e.g, "Variant_Classification == 'Missense_Mutation'" returns only Missense variants.}
 
-\item{mafObj}{returns output as MAF class \code{\link{MAF-class}}. Default FALSE}
+\item{mafObj}{returns output as MAF class \code{\link{MAF-class}}. Default TRUE}
 
 \item{includeSyn}{Default TRUE, only applicable when mafObj = FALSE. If mafObj = TRUE, synonymous variants will be stored in a seperate slot of MAF object.}
 
