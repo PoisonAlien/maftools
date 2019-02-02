@@ -6,8 +6,7 @@
 \usage{
 pancanComparison(mutsigResults, qval = 0.1, cohortName = "input",
   inputSampleSize = NULL, label = 1, genesToLabel = NULL,
-  normSampleSize = FALSE, file = NULL, width = 6, height = 6,
-  pointSize = 3, labelSize = 3)
+  pointSize = 1, labelSize = 0.8)
 }
 \arguments{
 \item{mutsigResults}{MutSig results (usually sig_genes.txt). Can be gz compressed.}
@@ -22,20 +21,12 @@ pancanComparison(mutsigResults, qval = 0.1, cohortName = "input",
 
 \item{genesToLabel}{Default NULL. Exclusive with label argument.}
 
-\item{normSampleSize}{normalizes gene sizes to draw bubble plot. Requires inputSampleSize. i.e, bubble sizes proportional to fraction of samples in which the gene is mutated.}
-
-\item{file}{basename for output file (both raw data and plot are saved)}
-
-\item{width}{width of the file to be saved.}
-
-\item{height}{height of the file to be saved.}
-
 \item{pointSize}{size for scatter plot. Default 1.}
 
-\item{labelSize}{label text size. Default 3}
+\item{labelSize}{label text size. Default 1}
 }
 \value{
-ggplot object
+result table
 }
 \description{
 Takes MutSig results and compares them against PanCancer results.
@@ -46,7 +37,7 @@ novel genes exclusively mutated in input cohort.
 }
 \examples{
 laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
-pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
+pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1)
 }
 \references{
 Lawrence MS, Stojanov P, Mermel CH, et al. Discovery and saturation analysis of cancer genes across 21 tumor types. Nature. 2014;505(7484):495-501. doi:10.1038/nature12912.

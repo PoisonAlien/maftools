@@ -12,6 +12,6 @@
 #' @export
 
 mafSummary = function(maf){
-  x = summarizeMaf(maf = subsetMaf(maf = maf, fields = 'Hugo_Symbol', includeSyn = TRUE), chatty = FALSE)[c("variant.classification.summary", "gene.summary", "variants.per.sample", "variant.type.summary")]
+  x = summarizeMaf(maf = subsetMaf(maf = maf, fields = 'Hugo_Symbol', includeSyn = TRUE, mafObj = FALSE), chatty = FALSE)[c("variant.classification.summary", "gene.summary", "variants.per.sample", "variant.type.summary")]
   return(x)
 }

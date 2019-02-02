@@ -17,7 +17,7 @@
 
 genotypeMatrix = function(maf, genes = NULL, tsb = NULL, includeSyn = FALSE, vafCol = NULL, vafCutoff = c(0.1, 0.75)){
 
-  mdat = subsetMaf(maf = maf, tsb = tsb, genes = genes, fields = vafCol, includeSyn = includeSyn)
+  mdat = subsetMaf(maf = maf, tsb = tsb, genes = genes, fields = vafCol, includeSyn = includeSyn, mafObj = FALSE)
 
   if(nrow(mdat) == 0){
     stop("Zero mutations to make table.")

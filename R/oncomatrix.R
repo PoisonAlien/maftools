@@ -4,7 +4,7 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
     stop("Please provde atleast two genes!")
   }
 
-  subMaf = subsetMaf(maf = m, genes = g, includeSyn = FALSE)
+  subMaf = subsetMaf(maf = m, genes = g, includeSyn = FALSE, mafObj = FALSE)
 
   if(nrow(subMaf) == 0){
     return(NULL)
@@ -118,7 +118,7 @@ sortByMutation = function(numMat, maf){
 #original code has been changed with vectorized code, in-addition performs class-wise sorting.
 sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL, group = TRUE, isNumeric = FALSE){
   anno[,1] = as.character(anno[,1])
-  anno[,1] = ifelse(test = is.na(anno[,1]), yes = "NA", no = anno[,1]) #NAs are notorious; converting them to characters
+  #anno[,1] = ifelse(test = is.na(anno[,1]), yes = "NA", no = anno[,1]) #NAs are notorious; converting them to characters
   #anno.spl = split(anno, anno[,1]) #sorting only first annotation (not converting to charcter)
   if(isNumeric){
     anno.spl = split(anno, as.numeric(as.character(anno[,1]))) #sorting only first annotation
@@ -134,7 +134,7 @@ sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL, group = TRUE, is
 
   if(group){
     #sort list according to number of elemnts in each classification
-    anno.spl.sort = anno.spl.sort[names(sort(unlist(lapply(anno.spl.sort, ncol)), decreasing = TRUE))]
+    anno.spl.sort = anno.spl.sort[names(sort(unlist(lapply(anno.spl.sort, ncol)), decreasing = TRUE, na.last = TRUE))]
   }
 
   if(!is.null(annoOrder)){

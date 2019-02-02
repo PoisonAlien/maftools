@@ -11,19 +11,16 @@
 #' @param inputSampleSize Sample size from MAF file used to generate mutSig results. Optional.
 #' @param label Default 1. Can be 1, 2 or 3.
 #' @param genesToLabel Default NULL. Exclusive with label argument.
-#' @param normSampleSize normalizes gene sizes to draw bubble plot. Requires inputSampleSize. i.e, bubble sizes proportional to fraction of samples in which the gene is mutated.
 #' @param pointSize size for scatter plot. Default 1.
-#' @param labelSize label text size. Default 3
-#' @param file basename for output file (both raw data and plot are saved)
-#' @param width width of the file to be saved.
-#' @param height height of the file to be saved.
-#' @return ggplot object
+#' @param labelSize label text size. Default 1
+#' @return result table
 #' @examples
 #' laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
-#' pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
+#' pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1)
 #' @export
 
-pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inputSampleSize = NULL, label = 1, genesToLabel = NULL, normSampleSize = FALSE, file = NULL, width = 6, height = 6, pointSize = 3, labelSize = 3){
+pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input',
+                            inputSampleSize = NULL, label = 1, genesToLabel = NULL, pointSize = 1, labelSize = 0.8){
 
   #Pancan results
   pancan = system.file('extdata', 'pancan.txt.gz', package = 'maftools')
@@ -54,7 +51,7 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
 
   #0 q values (such as for TP53) are horrible for plotting since -log10(0) -> Inf. Changing them lowest machine epslion value for convenience
   mach.epsi = .Machine$double.eps
-  mutsig$q = ifelse(test = mutsig$q == 0, yes = mach.epsi, no = mutsig$q)
+  mutsig$q = ifelse(test = as.numeric(as.character(mutsig$q)) == 0, yes = mach.epsi, no = mutsig$q)
   mutsig.smg = mutsig[q < qval, gene]
 
   message(paste0('Significantly mutated genes in PanCan cohort (q <', qval, '): ', nrow(pancan[pancan < qval])))
@@ -78,71 +75,44 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input', inp
   pancan.input.q = merge(com.pancan.q, com.input.q, by = 'gene', all = TRUE)
   #Some genes are exlusively mutated in one cohort; such genes have q value set to NA. We will set them to 1 for plotting convenience
   pancan.input.q[is.na(pancan.input.q)] = 1
+  pancan.input.q[, log_q_pancan := -log10(pancan)]
+  pancan.input.q[, log_q := -log10(q)]
 
   pancan.specific = pancan.input.q[q > qval & pancan < qval]
   pancan.rest = pancan.input.q[!gene %in% pancan.specific[,gene]]
 
-  #Plotting
   gTitle = paste0(cohortName, ' v/s Pan-cancer')
   xAxLab = paste0('-log10(', cohortName, ' q-value)')
 
-  th = theme(legend.position = 'bottom', axis.text.x = element_text(face = "bold", size = 12),
-             axis.title.x = element_text(face = "bold", size = 12), axis.text.y = element_text(face = "bold", size = 12),
-             axis.title.y = element_text(face = "bold", size = 12),
-             legend.title = element_text(face = "bold"), legend.text = element_text(size = 12, face = "bold"))
-
-
-  if(normSampleSize){
-    if(is.null(inputSampleSize)){
-      stop('Missing inputSampleSize. Please provide number of samples from input MAF used to generate mutSig results.')
-    }else{
-      pancan.rest[,SampleFraction := nMut/inputSampleSize]
-      pc.gg = ggplot(data = pancan.specific, aes(x = -log10(q), y = -log10(pancan), label = gene))+
-        geom_point(alpha = 0.8, size = pointSize)+cowplot::theme_cowplot(font_size = 12, line_size = 1)+cowplot::background_grid(major = 'xy')+
-        geom_hline(yintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
-        geom_vline(xintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
-        xlab(xAxLab)+ylab('-log10(Pan-can q-value)')+ggtitle(gTitle)+
-        geom_point(data = pancan.rest, aes(x = -log10(q), y = -log10(pancan), size = SampleFraction), alpha  = 0.8)+th
-
-    }
-  }else{
-    pc.gg = ggplot(data = pancan.specific, aes(x = -log10(q), y = -log10(pancan), label = gene))+
-      geom_point(alpha = 0.8, size = pointSize)+cowplot::theme_cowplot(font_size = 12, line_size = 1)+cowplot::background_grid(major = 'xy')+
-      geom_hline(yintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
-      geom_vline(xintercept = -log10(qval), color = 'maroon', alpha = 0.8, linetype = 2)+
-      xlab(xAxLab)+ylab('-log10(Pan-cancer q-value)')+ggtitle(gTitle)+
-      geom_point(data = pancan.rest, aes(x = -log10(q), y = -log10(pancan)), size = pointSize)+
-      th
-  }
-
-  message(paste0('Significantly mutated genes exclusive to ', cohortName, ' (q < ', qval, '): '))
-  print(pancan.input.q[pancan > qval & q < qval])
 
   if(!is.null(genesToLabel)){
-    pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[gene %in% genesToLabel], size = labelSize, color = 'red')
+    lab_dat = pancan.rest[gene %in% genesToLabel]
   }else{
     if(label == 1){
-      pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[q < qval & pancan > qval], size = labelSize, color = 'red')
+      lab_dat = pancan.rest[q < qval & pancan > qval]
     }else if(label == 2){
-      pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest[q < qval & pancan < qval], size = labelSize, color = 'red')
+      lab_dat = pancan.rest[q < qval & pancan < qval]
     }else if(label == 3){
-      pc.gg = pc.gg+ggrepel::geom_text_repel(data = pancan.rest, size = labelSize, color = 'red')
+      lab_dat = pancan.rest
     }else{
       stop('label can be 1, 2 or 3
          1: Labels genes mutated only in input cohort (Default)
          2: Labels genes mutated in both input and PanCancer cohort
          3: Labels all genes')
+      }
     }
 
-  }
+  message(paste0('Significantly mutated genes exclusive to ', cohortName, ' (q < ', qval, '): '))
+  print(pancan.input.q[pancan > qval & q < qval])
 
+  par(mar = c(4, 4, 2, 2))
+  bubble_plot(plot_dat = pancan.input.q, x_var = "log_q", y_var = "log_q_pancan", lab_dat = lab_dat,
+              text_var = "gene", bubble_size = pointSize, text_size = labelSize)
+  abline(v = -log10(qval), h = -log10(qval), col = 'maroon', lty = 2)
+  title(paste0(cohortName, ' v/s Pan-cancer'))
+  mtext(text =  paste0('-log10(', cohortName, ' q-value)'), side = 1, line = 2)
+  mtext(text =  "-log10(Pan-can q-value)", side = 2, line = 2)
 
-  if(!is.null(file)){
-    cowplot::save_plot(filename = paste0(file, '_pancan.pdf'), plot = pc.gg, base_height = height, base_width = width)
-    pancan.input.q = pancan.input.q[order(q, pancan)]
-    colnames(pancan.input.q)[2:3] = c('pancan_q', paste0(cohortName, '_q'))
-    write.table(x = pancan.input.q, file = paste0(file, '_pancan.txt'), sep = '\t', quote = FALSE, row.names = FALSE)
-  }
+  return(pancan.input.q)
 
-  pc.gg
 }

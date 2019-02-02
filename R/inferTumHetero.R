@@ -40,7 +40,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
     tsb = as.character(getSampleSummary(x = maf)[1:top, Tumor_Sample_Barcode])
   }
 
-  dat.tsb = subsetMaf(maf = maf, tsb = tsb, includeSyn = useSyn)
+  dat.tsb = subsetMaf(maf = maf, tsb = tsb, includeSyn = useSyn, mafObj = FALSE)
 
   if(nrow(dat.tsb) == 0){
     stop(paste(tsb, 'not found in MAF'))

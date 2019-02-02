@@ -4,10 +4,10 @@
 \alias{plotCBSsegments}
 \title{Plots segmented copy number data.}
 \usage{
-plotCBSsegments(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL,
-  savePlot = FALSE, width = 6, height = 3, labelAll = FALSE,
-  genes = NULL, ref.build = "hg19", writeTable = FALSE,
-  removeXY = FALSE, color = NULL)
+plotCBSsegments(cbsFile = NULL, maf = NULL, tsb = NULL,
+  savePlot = FALSE, width = 6, height = 3, genes = NULL,
+  ref.build = "hg19", writeTable = FALSE, removeXY = FALSE,
+  color = NULL)
 }
 \arguments{
 \item{cbsFile}{CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).}
@@ -17,17 +17,13 @@ plotCBSsegments(cbsFile = NULL, maf = NULL, tsb = NULL, chr = NULL,
 \item{tsb}{If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. If you are maping maf, make sure sample names in
 Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF.}
 
-\item{chr}{Just plot this chromosome.}
-
 \item{savePlot}{If true plot is saved as pdf.}
 
 \item{width}{width of plot}
 
 \item{height}{height of plot}
 
-\item{labelAll}{If true and if maf object is specified, maps all mutataions from maf onto segments. Default FALSE, maps only variants on copy number altered regions.}
-
-\item{genes}{highlight only these variants}
+\item{genes}{If given and maf object is specified, maps all mutataions from maf onto segments. Default NULL}
 
 \item{ref.build}{Reference build for chromosome sizes. Can be hg18, hg19 or hg38. Default hg19.}
 
@@ -38,7 +34,7 @@ Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF
 \item{color}{Manually specify color scheme for chromosomes. Default NULL. i.e, aletrnating Gray70 and midnightblue}
 }
 \value{
-ggplot object
+Draws plot
 }
 \description{
 Plots segmented copy number data.

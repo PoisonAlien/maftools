@@ -29,7 +29,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
     genes = as.character(getGeneSummary(x =maf)[1:top, Hugo_Symbol])
   }
 
-  dat = subsetMaf(maf = maf, genes = genes, includeSyn = FALSE)
+  dat = subsetMaf(maf = maf, genes = genes, includeSyn = FALSE, mafObj = FALSE)
 
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){

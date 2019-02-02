@@ -64,7 +64,7 @@ signatureEnrichment = function(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NU
   message("Estimating mutation load and signature exposures..")
   mut.load = lapply(names(cf.tbl), function(x){
     tsbs = xc[Signature %in% x][,Tumor_Sample_Barcode]
-    subsetMaf(maf = maf, tsb = tsbs, fields = 'Hugo_Symbol')[,.N,Tumor_Sample_Barcode]
+    subsetMaf(maf = maf, tsb = tsbs, fields = 'Hugo_Symbol', mafObj = FALSE)[,.N,Tumor_Sample_Barcode]
   })
 
   names(mut.load) = names(cf.tbl)

@@ -120,38 +120,31 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
 
   surv.diff.pval = round(1 - pchisq(surv.diff$chisq, length(surv.diff$n) - 1), digits = 5)
 
-
-  surv.dat = data.frame(Group = res$strata, Time = res$time, survProb = res$surv, survUp = res$upper, survLower = res$lower)
+  surv.dat = data.table::data.table(Group = res$strata, Time = res$time, survProb = res$surv, survUp = res$upper, survLower = res$lower)
   surv.dat$Group = gsub(pattern = 'Group=', replacement = '', x = surv.dat$Group)
 
-  surv.gg = ggplot(data = surv.dat, aes(x = Time, y = survProb, group = Group))+geom_line(aes(color = Group))+
-    geom_point(aes(color = Group))+
-    cowplot::theme_cowplot(font_size = 12, line_size = 1)+
-    theme(legend.position = 'bottom', plot.title = element_text(size = 14, face = "bold"), axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"),
-          plot.subtitle = element_text(size = 12, face = "bold", colour = ifelse(surv.diff.pval < 0.05, yes = 'red', no = 'black')),
-          legend.title = element_blank())+
-    ggtitle(label = paste0(groupNames[1], " v/s ", groupNames[2]), subtitle = paste0("P-value: ", surv.diff.pval))+
-    xlab('Time')+ylab('Survival')+
-    scale_color_manual(values = col)
+  par(mar = c(4, 4, 2, 2))
+  x_lims = pretty(surv.km$time)
+  y_lims = seq(0, 1, 0.20)
+  plot(NA, xlim = c(min(x_lims), max(x_lims)), ylim = c(0, 1),
+       frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA)
 
-  if(addInfo){
-    ypos = as.numeric(as.character(quantile(surv.dat$Time, probs = seq(0, 1, 0.1))["90%"]))
-    surv.gg = surv.gg+
-      annotation_custom(grob = gridExtra::tableGrob(d = clin.mut.dat, rows = NULL,
-                                         cols = c('Group', 'Median', '#Cases'),
-                                         theme = gridExtra::ttheme_minimal(base_size = textSize)),
-                                         ymin = 0.75, ymax = 0.95,
-                                         xmin = ypos, xmax = max(surv.dat$Time, na.rm = TRUE))
-  }
-  ypos = as.numeric(quantile(surv.dat$Time, probs = seq(0, 1, 0.1))["70%"])
+  points(surv.dat[Group %in% "Mutant", Time], y = surv.dat[Group %in% "Mutant", survProb], pch = 8, col = col [1])
+  points(surv.dat[Group %in% "WT", Time], y = surv.dat[Group %in% "WT", survProb], pch = 8, col = col [2])
 
-  if(showConfInt){
-    surv.gg = surv.gg+geom_ribbon(aes(ymin = survLower, ymax = survUp), alpha = 0.2, fill = "grey70")
-  }
+  lines(surv.km[1], col = col[1], lty = 1, lwd = 2, conf.int=FALSE)
+  lines(surv.km[2], col = col[2], lty = 1, lwd = 2, conf.int=FALSE)
 
-  if(!is.null(fn)){
-    cowplot::save_plot(filename = paste0(fn, '.pdf'), plot = surv.gg, base_height = height, base_width = width, bg = 'white')
-  }
+  axis(side = 1, at = x_lims)
+  axis(side = 2, at = y_lims, las = 2)
+  mtext(text = "Survival probability", side = 2, line = 2.5)
+  mtext(text = "Time", side = 1, line = 2)
 
-  surv.gg
+  legend(x = "topright", legend = c("Mutant", "WT"), col = col, bty = "n", lwd = 2, pch = 8)
+
+  title(main = NA,
+        sub = paste0("P-value: ", surv.diff.pval), cex.main = 1, font.main= 4, col.main= "black",
+        cex.sub = 1, font.sub = 3, col.sub = ifelse(test = surv.diff.pval < 0.05, yes = "red", no = "black"),
+        line = 2.5, adj = 0)
+  title(main = paste0(groupNames[1], " v/s ", groupNames[2]), adj = 0, font.main = 4)
 }

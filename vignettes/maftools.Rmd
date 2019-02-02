@@ -213,7 +213,7 @@ brca = read.maf(maf = brca, verbose = FALSE)
 ```
 
 ```{r, fig.height=5,fig.width=12,fig.align='center'}
-rainfallPlot(maf = brca, detectChangePoints = TRUE, fontSize = 12, pointSize = 0.6)
+rainfallPlot(maf = brca, detectChangePoints = TRUE, pointSize = 0.6)
 ```
 
 "Kataegis" are defined as those genomic segments containing six or more consecutive mutations with an average inter-mutation distance of less than or equal to 1,00 bp [5](#references).
@@ -334,7 +334,7 @@ Lawrence et al performed MutSigCV analysis on 21 cancer cohorts and identified o
 ```{r, fig.width=5, fig.height=4}
 #MutsigCV results for TCGA-AML
 laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
-pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1, normSampleSize = TRUE)
+pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1)
 ```
 
 Above results show genes such as CEBPa, TET2 and WT1 are specifically mutated in Leukemia.
@@ -641,18 +641,18 @@ laml.mutsig.corrected = prepareMutSig(maf = laml)
 We can also subset MAF using function `subsetMaf`
 ```{r}
 #Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933'  (Printing just 5 rows for display convenience)
-subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'))[1:5]
-##Same as above but return output as an MAF object
-subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), mafObj = TRUE)
+subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), mafObj = FALSE)[1:5]
+##Same as above but return output as an MAF object (Default behaviour)
+subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'))
 ```
 
 ### Specifying queries and controlling output fields.
 ```{r}
 #Select all Splice_Site mutations from DNMT3A and NPM1
-subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'")
+subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), mafObj = FALSE,query = "Variant_Classification == 'Splice_Site'")
 
 #Same as above but include only 'i_transcript_name' column in the output
-subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), query = "Variant_Classification == 'Splice_Site'", fields = 'i_transcript_name')
+subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), mafObj = FALSE, query = "Variant_Classification == 'Splice_Site'", fields = 'i_transcript_name')
 ```
 
 # Pre-compiled TCGA MAF objects

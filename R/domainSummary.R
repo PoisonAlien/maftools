@@ -9,7 +9,7 @@
 #' @param baseName If given writes the results to output file. Default NULL.
 #' @param width width of the file to be saved.
 #' @param height height of the file to be saved.
-#' @param labelSize font size for labels. Default 3.
+#' @param labelSize font size for labels. Default 1.
 #' @return returns a list two tables summarized by amino acid positions and domains respectively. Also plots top 5 most mutated domains as scatter plot.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -18,7 +18,7 @@
 #' @export
 
 
-pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5, domainsToLabel = NULL, baseName = NULL, varClass = 'nonSyn', width = 5, height = 5, labelSize = 3){
+pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5, domainsToLabel = NULL, baseName = NULL, varClass = 'nonSyn', width = 5, height = 5, labelSize = 1){
 
 
   summarizeBy.opts = c('AAPos', 'AAChange')
@@ -46,9 +46,9 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   if(varClass == 'Syn'){
     mut = maf@maf.silent
   }else if(varClass == 'all'){
-    mut = subsetMaf(maf = maf, fields = AACol, includeSyn = TRUE)
+    mut = subsetMaf(maf = maf, fields = AACol, includeSyn = TRUE, mafObj = FALSE, query = "Variant_Type != 'CNV'")
   }else{
-    mut = subsetMaf(maf = maf, fields = AACol, includeSyn = FALSE)
+    mut = subsetMaf(maf = maf, fields = AACol, includeSyn = FALSE, mafObj = FALSE, query = "Variant_Type != 'CNV'")
   }
 
   mut = mut[!Variant_Type %in% 'CNV']
@@ -81,6 +81,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
 
   prot.dat[,conv := prot.conv]
+  return(prot.dat)
   pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = prot.dat$conv)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
   pos = gsub(pattern = '^\\*', replacement = '', x = pos)
@@ -158,28 +159,25 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   domainSum = domainSum[order(nMuts, decreasing = TRUE)]
 
   if(!is.null(domainsToLabel)){
-    p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point(color = 'gray70', alpha = 0.4)+cowplot::theme_cowplot(line_size = 1, font_size = 14)+
-      geom_point(data = domainSum[DomainLabel %in% domainsToLabel], color = 'red', alpha = 0.9)+
-      ggrepel::geom_text_repel(data = domainSum[DomainLabel %in% domainsToLabel], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = labelSize, fontface = 'bold', force = 20)+
-      theme(legend.position = 'none', axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))+
-      cowplot::background_grid(major = 'xy')+
-      xlab("# mutations")+ylab("# genes")
+    lab_dat = domainSum[DomainLabel %in% domainsToLabel]
   }else{
-    p = ggplot(data = domainSum, aes(x = nMuts, y = nGenes, size = nGenes))+geom_point(color = 'gray70', alpha = 0.4)+cowplot::theme_cowplot(line_size = 1, font_size = 14)+
-      geom_point(data = domainSum[1:top], color = 'red', alpha = 0.9)+
-      ggrepel::geom_text_repel(data = domainSum[1:top], aes(x = nMuts, y = nGenes, label = DomainLabel), color = 'red', size = labelSize, fontface = 'bold', force = 20)+
-      theme(legend.position = 'none', axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))+
-      cowplot::background_grid(major = 'xy')+
-      xlab("# mutations")+ylab("# genes")
+    lab_dat = domainSum[1:top]
   }
-
-
-  print(p)
 
   if(!is.null(baseName)){
     write.table(x = prot.sum, file = paste(baseName, '_AAPos_summary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
     write.table(x = domainSum, file = paste(baseName, '_domainSummary.txt',sep= ''), quote = FALSE, row.names = FALSE, sep = '\t')
-    cowplot::save_plot(filename = paste(baseName, '_domainSummary.pdf',sep= ''), plot = p, base_height = height, base_width = width)
+    pdf(file = paste(baseName, '_domainSummary.pdf',sep= ''), width = width, height = height, paper = "special", bg = "white")
+  }
+
+  par(mar = c(4, 4, 2, 2))
+  xx = bubble_plot(plot_dat = domainSum, lab_dat = lab_dat, x_var = "nMuts", y_var = "nGenes",
+              bubble_var = "nGenes", text_var = "DomainLabel", text_size = labelSize)
+  mtext(text = "# mutations", side = 1, line = 2.5, cex = 1.2)
+  mtext(text = "# genes", side = 2, line = 2.5, cex = 1.2)
+
+  if(!is.null(baseName)){
+    dev.off()
   }
 
   return(list(proteinSummary = prot.sum, domainSummary = domainSum))

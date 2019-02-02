@@ -10,7 +10,7 @@ readSegs = function(seg){
 
   seg$Chromosome = as.character(seg$Chromosome)
   colnames(seg)[2:4] = c('Chromosome', 'Start_Position', 'End_Position')
-  setkey(x = seg, Chromosome, Start_Position, End_Position)
+  data.table::setkey(x = seg, Chromosome, Start_Position, End_Position)
   return(seg)
 }
 
@@ -26,9 +26,9 @@ mapMutsToSegs = function(seg, maf, tsb, build = 'hg19'){
   }
 
   seg.dat = transformSegments(segmentedData = seg.dat, build = build)
-  setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
+  data.table::setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
 
-  tsb.dat = subsetMaf(maf = maf, tsb = tsb, fields = 'Hugo_Symbol')
+  tsb.dat = subsetMaf(maf = maf, tsb = tsb, fields = 'Hugo_Symbol', mafObj = FALSE)
 
   if(nrow(tsb.dat) < 1){
     stop(paste('Sample',tsb, 'not found in MAF'))
@@ -44,7 +44,7 @@ mapMutsToSegs = function(seg, maf, tsb, build = 'hg19'){
 #   tsb.dat = tsb.dat[!Chromosome %in% c('X', 'Y')]
 #   tsb.dat = tsb.dat[Chromosome %in% onlyContigs]
 
-  tsb.dat = foverlaps(x = tsb.dat, y = seg.dat, by.x = c('Chromosome', 'Start_Position', 'End_Position'))
+  tsb.dat = data.table::foverlaps(x = tsb.dat, y = seg.dat, by.x = c('Chromosome', 'Start_Position', 'End_Position'))
   tsb.dat = tsb.dat[,.(Hugo_Symbol, Chromosome, i.Start_Position, i.End_Position,
                        Tumor_Sample_Barcode, Start_Position, End_Position, Segment_Mean, Start_Position_updated, End_Position_updated)]
   colnames(tsb.dat)[c(3:4, 6:7)] = c('Start_Position', 'End_Position', 'Segment_Start', 'Segment_End')
@@ -169,6 +169,7 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL){
   chr.labels= c(1:22, 'X', 'Y')
   chr.lvls = levels(seg.spl.transformed[,Chromosome])
 
+  print(chr.colors)
   if(is.null(chr.colors)){
     chr.colors = c('gray70', 'midnightblue')
   }
@@ -176,23 +177,20 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL){
   chr.colors = rep(x = chr.colors, times = length(chr.lvls))[1:length(chr.lvls)]
   names(chr.colors) = chr.lvls
 
-
-  p = ggplot(data = seg.spl.transformed)+geom_segment(data = seg.spl.transformed, aes(x = Start_Position_updated, xend = End_Position_updated, y = Segment_Mean, yend = Segment_Mean, color = Chromosome), size = 3)+
-    geom_vline(xintercept = chr.lens.sumsum[1:nchrs], linetype = 'dotted', size = 0.3, alpha = 0.7)+
-    cowplot::theme_cowplot(font_size = 8)+theme(legend.position = 'none')+xlab('Chromosome')+ylim(-2,2)+scale_x_continuous(breaks = chr.lens.sumsum[1:nchrs], labels = chr.labels[1:nchrs])+ylab('Segment Mean')+
-    theme(axis.line.x = element_blank())+ggtitle(tsb)+cowplot::background_grid(major = 'onlyminor', minor = 'y')+scale_color_manual(values = chr.colors)
-
-  return(p)
+  y_lims = pretty(round(range(seg.spl.transformed$Segment_Mean, na.rm = TRUE, finite = TRUE), digits = 2))
+  par(mar = c(3, 3, 2, 1))
+  plot(NA, xlim = c(0, max(seg.spl.transformed$End_Position_updated, na.rm = TRUE)),
+       ylim = range(y_lims, na.rm = TRUE), axes = FALSE, ann = FALSE)
+  axis(side = 1, at = chr.lens.sumsum, labels = chr.lvls, lwd.ticks = 1, tick = FALSE, line = -1)
+  axis(side = 2,
+       at = ,
+       lwd.ticks = 1, las = 2)
+  abline(v = chr.lens.sumsum, col = 'gray70', lwd = 0.25)
+  rect(xleft = seg.spl.transformed$Start_Position_updated, xright =  seg.spl.transformed$End_Position_updated,
+       ybottom = seg.spl.transformed$Segment_Mean, ytop = seg.spl.transformed$Segment_Mean,
+       col = rep(chr.colors, seg.spl.transformed[,.N,Chromosome][,N]),
+       border = rep(chr.colors, seg.spl.transformed[,.N,Chromosome][,N]))
+  title(main = tsb, adj = 0, font.main = 3)
+  mtext(text = "Chromosome", side = 1, line = 1, font = 3)
+  mtext(text = "Segment mean", side = 2, line = 2, font = 3)
 }
-
-# #--- Perform CBS segmentation on mutation data for raifall plot
-# docbs = function(maf.snp){
-#   x = DNAcopy::CNA(genomdat = maf.snp$diff, chrom = maf.snp$Chromosome, maploc = maf.snp$Start_Position, data.type = 'logratio', sampleid = tsb, presorted = TRUE)
-#   CNA.smoothed <- DNAcopy::smooth.CNA(x)
-#   segs = DNAcopy::segment(CNA.smoothed, verbose=0, min.width=2)
-#   seg = DNAcopy::segs$output
-#   colnames(seg) = c('Sample', 'Chromosome', 'Start_Position', 'End_Position', 'Num_Probes', 'Segment_Mean')
-#   seg = transformSegments(segData = seg)
-#   return(seg)
-# }
-

@@ -44,11 +44,9 @@ OncogenicPathways = function(maf){
   altered_pws = altered_pws[!n_affected_genes %in% 0]
 
   if(nrow(altered_pws) > 0){
-    altered_pws.gg = ggplot(data = altered_pws, aes(x = N, y = n_affected_genes, size = fraction_affected, label = Pathway))+
-      geom_point()+ggrepel::geom_text_repel(size = 4)+cowplot::theme_cowplot()+
-      theme(legend.position = "bottom", legend.title = element_blank())+xlab("Pathway size")+ylab("# affected genes")
-
-    return(altered_pws.gg)
+    bubble_plot(plot_dat = altered_pws, lab_dat = altered_pws, y_var = "n_affected_genes",
+                x_var = "N", text_var = "Pathway", bubble_var = "fraction_affected", bubble_size = 5)
+    mtext(text =  "Pathway size", side = 1, line = 2)
+    mtext(text =  "# affected genes", side = 2, line = 2)
   }
-
 }

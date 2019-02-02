@@ -24,7 +24,7 @@ math.score = function(maf, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075){
     sampleName = as.character(getSampleSummary(maf)[,Tumor_Sample_Barcode])
   }
 
-  dat = subsetMaf(maf, includeSyn = FALSE, tsb = sampleName)
+  dat = subsetMaf(maf, includeSyn = FALSE, tsb = sampleName, mafObj = FALSE)
 
   if(!'t_vaf' %in% colnames(dat)){
     if(is.null(vafCol)){

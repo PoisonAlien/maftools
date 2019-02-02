@@ -5,7 +5,7 @@
 \title{Plots results from \code{oncodrive}}
 \usage{
 plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = FALSE,
-  colCode = NULL, labelSize = 2)
+  colCode = NULL, bubbleSize = 1, labelSize = 1)
 }
 \arguments{
 \item{res}{results from \code{\link{oncodrive}}}
@@ -16,7 +16,9 @@ plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = FALSE,
 
 \item{colCode}{Colors to use for indicating significant and non-signififcant genes. Default NULL}
 
-\item{labelSize}{font size for labelling genes. Default 2.}
+\item{bubbleSize}{Size for bubbles. Default 2.}
+
+\item{labelSize}{font size for labelling genes. Default 1.}
 }
 \value{
 a ggplot object which can be further modified.

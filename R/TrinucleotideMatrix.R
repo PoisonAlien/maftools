@@ -65,7 +65,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
   }
 
   ref_genome = BSgenome::getBSgenome(genome = ref_genome)
-  query = subsetMaf(maf = maf, query = "Variant_Type %in% 'SNP'", fields = "Chromosome", includeSyn = useSyn)
+  query = subsetMaf(maf = maf, query = "Variant_Type %in% 'SNP'", fields = "Chromosome", includeSyn = useSyn, mafObj = FALSE)
 
   #Remove unwanted contigs
   if(!is.null(ignoreChr)){

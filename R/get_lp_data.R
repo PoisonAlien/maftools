@@ -9,7 +9,7 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
   gff = readRDS(file = gff)
   data.table::setDT(x = gff)
 
-  mut = subsetMaf(maf = maf, includeSyn = FALSE, genes = geneID, query = "Variant_Type != 'CNV'")
+  mut = subsetMaf(maf = maf, includeSyn = FALSE, genes = geneID, query = "Variant_Type != 'CNV'", mafObj = FALSE)
 
   if(is.null(AACol)){
     pchange = c('HGVSp_Short', 'Protein_Change', 'AAChange')

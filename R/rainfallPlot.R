@@ -16,13 +16,13 @@
 #' @param width width of plot to be saved.
 #' @param height height of plot to be saved.
 #' @param fontSize Default 12.
-#' @param pointSize Default 2.
+#' @param pointSize Default 0.8.
 #' @return returns ggplot object of the plot which can be further modified. Results are written to an output file with suffix changePoints.tsv
 #' @export
 
 
 rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
-                        ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 12, pointSize = 1){
+                        ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 1.2, pointSize = 0.4){
 
   if(is.null(tsb)){
     tsb = as.character(getSampleSummary(maf)[1,Tumor_Sample_Barcode])
@@ -30,7 +30,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
 
   message(paste0("Processing ", tsb, ".."))
 
-  maf.snp = subsetMaf(maf = maf, includeSyn = TRUE, tsb = tsb, fields = 'Hugo_Symbol', query = "Variant_Type == 'SNP'")
+  maf.snp = subsetMaf(maf = maf, includeSyn = TRUE, tsb = tsb, fields = 'Hugo_Symbol', query = "Variant_Type == 'SNP'", mafObj = FALSE)
 
   if(nrow(maf.snp) == 0){
     stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
@@ -75,20 +75,26 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
   }
 
   chr.lens.sumsum = cumsum(chr.lens)
+  ###########
 
-  gg.rf = ggplot(data = maf.snp, aes(x= Start_Position_updated, y = diff, col = con.class))+
-                geom_point(size = pointSize, alpha = 0.6)+cowplot::theme_cowplot(font_size = fontSize, line_size = 1)+
-                cowplot::background_grid(major = 'y')+xlab('')+ylab('log10(inter event distance)')+
-                theme(axis.line.x = element_blank(), axis.title.y = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), axis.text.y = element_text(size = 12, face = "bold"))+scale_x_continuous(breaks = chr.lens.sumsum, labels = c(1:22, 'X', 'Y'))+
-                geom_vline(xintercept = chr.lens.sumsum, linetype = 'dotted', size = 0.3)+
-                theme(legend.position = 'bottom', legend.title = element_blank())+
-                scale_color_manual(values = col)+
-                ggtitle(tsb)+guides(colour = guide_legend(override.aes = list(size=3)))
+  ylims = round(seq(min(summary(maf.snp[,diff]), na.rm = TRUE),
+                    max(summary(maf.snp[,diff]), na.rm = TRUE), length.out = 4), 2)
+  layout(mat = matrix(data = c(1, 2), nrow = 2, byrow = T), heights= c(4, 1))
+  par(mar = c(1, 4, 2, 0))
+  plot(NA, NA,
+      axes = FALSE, xlab = NA, ylab = NA,
+       ylim = ylims[c(1, 4)], xlim = c(0, max(chr.lens.sumsum)))
+  segments(x0 = chr.lens.sumsum, y0 = 0, x1 = chr.lens.sumsum, y1 = max(ylims), col = 'black', lwd = 0.25)
+  points(x = maf.snp$Start_Position_updated, y = maf.snp$diff, col = col[maf.snp$con.class], pch = 16, cex = pointSize)
+  axis(side = 2, at = ylims, las = 2)
+  axis(side = 1, at = chr.lens.sumsum, labels = c(1:22, "X", "Y"), tick = FALSE, line = -1.5, cex.axis = 1)
+  mtext(text = "log10 (inter event distance)", side = 2, line = 2.8, cex = fontSize)
 
+
+  ###########
   if(detectChangePoints){
-    seg_len = 5
-    #maf.cpt = detectCP(dat = maf.snp, segLen = seg_len)
     maf.cpt = detect_kataegis(maf.snp = maf.snp)
+    #return(maf.cpt)
     if(nrow(maf.cpt) == 0){
       message('No changepoints detected!')
     }else{
@@ -98,17 +104,21 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
       maf.cpt[,id := paste0(Chromosome, ':', Start_Position)]
       maf.cpt = merge(maf.snp[,.(id, Start_Position_updated, End_Position_updated, minDiff)], maf.cpt[,.(id)])
       maf.cpt[,pos := (End_Position_updated - Start_Position_updated)/2]
-      gg.rf = gg.rf+geom_segment(aes(x = Start_Position_updated, y = 0.1, yend = minDiff-0.2,
-                                     xend = End_Position_updated), data = maf.cpt, inherit.aes = FALSE,
-                                 arrow = arrow(length = unit(0.2, "cm")))
+      arrows(x0 = maf.cpt$Start_Position_updated, y0 = 0, x1 = maf.cpt$Start_Position_updated,
+             y1 = maf.cpt$minDiff - 0.2, lwd = 1.2, length = 0.05)
     }
   }
 
+  title(main = tsb, outer = TRUE, line = -1.5, cex.main = fontSize, adj = 0.2)
+  par(mar = c(0, 0.5, 0.5, 0), xpd = TRUE)
+  plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
+  lep = legend("topleft", legend = names(col),
+               col = col, border = NA, bty = "n",
+              pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = 1, ncol= 4) #ncol= 2
 
   if(savePlot){
-    cowplot::save_plot(filename = paste(tsb, 'rainfallPlot.pdf', sep = '_'),
-                       plot = gg.rf, base_height = height, base_width = width)
+    pdf(file = paste(tsb, 'rainfallPlot.pdf', sep = '_'),
+                       height = height, width = width, paper = "special", bg = "white")
   }
 
-  gg.rf
 }

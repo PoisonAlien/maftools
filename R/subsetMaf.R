@@ -22,7 +22,7 @@
 #' ##Select all variants with VAF above 30%
 #' subsetMaf(maf = laml, query = "i_TumorVAF_WU > 30")
 #' ##Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933' but only include vaf filed.
-#' subsetMaf(maf = laml, tsb = c('TCGA.AB.3009', 'TCGA.AB.2933'), fields = 'i_TumorVAF_WU')
+#' subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), fields = 'i_TumorVAF_WU')
 #' @export
 
 subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
