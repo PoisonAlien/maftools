@@ -135,8 +135,11 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     numMat = numMat[rownames(numMat_temp), colnames(numMat_temp), drop = FALSE]
   }
 
-  samp_sum = getSampleSummary(x = maf)
-  samp_sum = samp_sum[,1:c(ncol(samp_sum)-1)]
+  samp_sum = data.table::copy(getSampleSummary(x = maf))
+  samp_sum[,total := NULL]
+  if("CNV_total" %in% colnames(samp_sum)){
+    samp_sum[,CNV_total := NULL]
+  }
   data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
   samp_sum = samp_sum[,-1]
 
