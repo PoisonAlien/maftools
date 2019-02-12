@@ -171,6 +171,15 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
   }
 
+  #return(numMat)
+  if(!is.null(sampleOrder)){
+    sampleOrder = colnames(numMat)[colnames(numMat) %in% as.character(sampleOrder)]
+    if(length(sampleOrder) == 0){
+      stop("None of the provided samples are present in the input MAF")
+    }
+    numMat = numMat[,sampleOrder, drop = FALSE]
+  }
+
   percent_alt = paste0(gene_sum[rownames(numMat),"percent_altered",], "%")
 
   if(colbar_pathway){
@@ -178,6 +187,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }else{
     top_bar_data = t(samp_sum[colnames(numMat),,])
   }
+
 
   if(is.null(colors)){
     vc_col = get_vcColors()
@@ -372,13 +382,16 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
     if(is.null(mutsig)){
       side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
+      #return(side_bar_data)
       plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, length(side_bar_data)),
            axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
 
       for(i in 1:length(side_bar_data)){
         x = rev(side_bar_data)[[i]]
-        rect(ybottom = i-1, xleft = c(0, cumsum(x)[1:(length(x)-1)]), ytop = i-0.1,
-             xright = cumsum(x), col = vc_col[vc_codes[names(x)]], border = NA, lwd = 0)
+        if(length(x) > 0){
+          rect(ybottom = i-1, xleft = c(0, cumsum(x)[1:(length(x)-1)]), ytop = i-0.1,
+               xright = cumsum(x), col = vc_col[vc_codes[names(x)]], border = NA, lwd = 0)
+        }
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
 

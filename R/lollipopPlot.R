@@ -62,7 +62,13 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
       stop('AAChange field not found in MAF. Use argument AACol to manually specifiy field name containing protein changes.')
     }
   }else{
-    colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange'
+    if(length(which(colnames(mut) == AACol)) == 0){
+      message('Available fields:')
+      print(colnames(mut))
+      stop(paste0("Column ", AACol, " not found."))
+    }else{
+      colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange'
+    }
   }
 
   prot.dat = mut[Hugo_Symbol %in% geneID, .(Variant_Type, Variant_Classification, AAChange)]
@@ -252,7 +258,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   #-----------------------------------
   #Base
   domains = unique(prot[,Label])
-  print(prot)
+  #print(prot)
   domain_cols = c(RColorBrewer::brewer.pal(8, name = "Accent"),
                   RColorBrewer::brewer.pal(12, name = "Set3"),
                   RColorBrewer::brewer.pal(8, name = "Set1"))
