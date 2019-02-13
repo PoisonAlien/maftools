@@ -66,7 +66,7 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL, mar
   nchrs = length(unique(gis.scores$Chromosome))
   chr.labels= c(1:22, 'X', 'Y')
   chr.tbl = data.table::data.table(chr = chr.labels, start = c(1, chr.lens.cumsum[1:length(chr.lens.cumsum)-1]), end = chr.lens.cumsum)
-  chr.tbl$color = c('black', 'white')
+  chr.tbl$color = rep(c('black','white'), length=nrow(chr.tbl))
 
   gist.gg = ggplot(data = gis.scores[Variant_Classification %in% 'neutral'], aes(x = Start_Position_updated, xend = End_Position_updated, y= ystart , yend = amp, color = Variant_Classification))+
     geom_segment(alpha = 0.6)+geom_segment(data = gis.scores[!Variant_Classification %in% 'neutral'], alpha = 0.6)+cowplot::theme_cowplot(line_size = 1, font_size = 12)+theme(legend.position = 'none')+
