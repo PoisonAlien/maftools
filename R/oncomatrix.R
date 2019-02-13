@@ -267,7 +267,7 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
   }
 
 
-  print(head(plot_dat))
+  #print(head(plot_dat))
   plot(x = plot_dat$x, y = plot_dat$y, cex = plot_dat$size_z,
        pch = 16, col = 'gray70', axes = FALSE, xlim = x_lims[c(1, 4)],
        ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA)

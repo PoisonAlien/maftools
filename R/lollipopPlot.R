@@ -44,7 +44,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
   geneID = gene
   #Protein domain source.
-  gff = system.file('extdata', 'protein_domains.rds', package = 'maftools')
+  gff = system.file('extdata', 'protein_domains.RDs', package = 'maftools')
   gff = readRDS(file = gff)
   data.table::setDT(x = gff)
 
@@ -52,7 +52,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
   if(is.null(AACol)){
     pchange = c('HGVSp_Short', 'Protein_Change', 'AAChange')
-    if(pchange[pchange %in% colnames(mut)] > 0){
+    if(length(pchange[pchange %in% colnames(mut)]) > 0){
       pchange = suppressWarnings(pchange[pchange %in% colnames(mut)][1])
       message(paste0("Assuming protein change information are stored under column ", pchange,". Use argument AACol to override if necessary."))
       colnames(mut)[which(colnames(mut) == pchange)] = 'AAChange'
@@ -168,7 +168,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   colnames(prot.snp.sumamry)[ncol(prot.snp.sumamry)] = 'count'
   maxCount = max(prot.snp.sumamry$count, na.rm = TRUE)
 
-  prot.snp.sumamry = prot.snp.sumamry[order(prot.snp.sumamry$pos),]
+  prot.snp.sumamry = prot.snp.sumamry[order(pos),]
   #prot.snp.sumamry$distance = c(0,diff(prot.snp.sumamry$pos))
 
   if(cBioPortal){
@@ -293,12 +293,10 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
   if(showDomainLabel){
     if(labelOnlyUniqueDoamins){
-      prot$pos = rowMeans(x = prot[!duplicated(Label),.(Start, End)])
-      text(y = 0.5, x = prot$pos, labels = prot$Label, font = 2, cex = domainLabelSize)
-    }else{
-      prot$pos = rowMeans(x = prot[,.(Start, End)])
-      text(y = 0.5, x = prot$pos, labels = prot$Label, font = 2, cex = domainLabelSize)
+      prot = prot[!duplicated(Label)]
     }
+    prot$pos = rowMeans(x = prot[,.(Start, End)], na.rm = FALSE)
+    text(y = 0.5, x = prot$pos, labels = prot$Label, font = 2, cex = domainLabelSize)
   }
 
   if(!is.null(labelPos)){
