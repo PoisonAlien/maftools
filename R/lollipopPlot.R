@@ -55,7 +55,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
     if(length(pchange[pchange %in% colnames(mut)]) > 0){
       pchange = suppressWarnings(pchange[pchange %in% colnames(mut)][1])
       message(paste0("Assuming protein change information are stored under column ", pchange,". Use argument AACol to override if necessary."))
-      colnames(mut)[which(colnames(mut) == pchange)] = 'AAChange'
+      colnames(mut)[which(colnames(mut) == pchange)] = 'AAChange_'
     }else{
       message('Available fields:')
       print(colnames(mut))
@@ -67,11 +67,11 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
       print(colnames(mut))
       stop(paste0("Column ", AACol, " not found."))
     }else{
-      colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange'
+      colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange_'
     }
   }
 
-  prot.dat = mut[Hugo_Symbol %in% geneID, .(Variant_Type, Variant_Classification, AAChange)]
+  prot.dat = mut[Hugo_Symbol %in% geneID, .(Variant_Type, Variant_Classification, AAChange_)]
   if(nrow(prot.dat) == 0){
     stop(paste(geneID, 'does not seem to have any mutations!', sep=' '))
   }
@@ -140,7 +140,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
   #prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
   #Remove 'p.'
-  prot.spl = strsplit(x = as.character(prot.dat$AAChange), split = '.', fixed = TRUE)
+  prot.spl = strsplit(x = as.character(prot.dat$AAChange_), split = '.', fixed = TRUE)
   prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
 
   prot.dat[,conv := prot.conv]
@@ -330,7 +330,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   }
 
   if(printCount){
-    print(prot.snp.sumamry)
+    print(prot.snp.sumamry[,.(pos, conv, count, Variant_Classification)][order(pos)])
     #print(prot.snp.sumamry[,.(mutations = sum(count)), pos][order(mutations, decreasing = TRUE)])
   }
 }
