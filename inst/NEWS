@@ -7,6 +7,7 @@ SIGNIFICANT USER-LEVEL IMPROVEMENT
 BUG FIX
     o Bug fix for oncoplots with CNV data. Issue: #240
     o Bug fix that caused signature extraction to terminate in case of zero mutations. Issue: #228
+    o Bug fix due to missing levels contingency tables in clinical enrichment. Issue: #225
     o Add showTumorSampleBarcodes to PlotOncogenicPathways. Issue: #214
     o Cleanup docs for Oncoplot. Issue: #207
     o Implemented `isNumeric` and `groupAnnotationBySize` to improve sorting. Issue: #207
