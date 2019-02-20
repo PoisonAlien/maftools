@@ -5,9 +5,6 @@
 #' @param genes genes to highlight on the plot. Can be a vector of gene names, \code{CN_altered} to label copy number altered varinats.
 #'   or \code{all} to label all genes. Default NULL.
 #' @param showCNvars show copy numbered altered variants on the plot. Default FALSE.
-#' @param savePlot If TRUE saves plot to output pdf
-#' @param width plot width. Default 6.
-#' @param height plot height. Default 5.
 #' @param colors manual colors for clusters. Default NULL.
 #' @return returns nothing.
 #' @export
@@ -22,7 +19,7 @@
 #' }
 #' @seealso \code{\link{inferHeterogeneity}}
 
-plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, savePlot = FALSE, width = 6, height = 5, colors = NULL){
+plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, colors = NULL){
 
   clusterData = clusters$clusterData
 
@@ -32,8 +29,8 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
 
   if(is.null(colors)){
     colors = RColorBrewer::brewer.pal(n = 9, name = 'Set1')
-    colors = c(colors, 'darkgray')
-    names(colors) = as.character(c(as.character(1:9), 'outlier'))
+    colors = c(colors, 'darkgray', 'black')
+    names(colors) = as.character(c(as.character(1:9), 'outlier', 'CN_altered'))
   }else{
     colors = colors
   }
@@ -49,54 +46,59 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
 
     #CN altered and outliersregions
     tsb.dat.cn.vars = tsb.dat[cluster == c('CN_altered')]
-    tsb.dat = tsb.dat[!cluster == 'CN_altered']
-    #Top density plot
-    tsb.dat.dens = ggplot(tsb.dat, aes(t_vaf))+geom_density(data = tsb.dat[cluster != 'outlier'], size = 1, alpha = 0.3)+geom_point(aes(y = 0, x = t_vaf, color = cluster), size = 3, alpha = 0.6)+
-      cowplot::theme_cowplot(line_size = 1)+theme(legend.position = 'bottom', plot.title = element_text(size = 12), axis.text.x = element_text(face = "bold"), axis.text.y = element_text(face = "bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_blank())+xlab('VAF')+xlim(0,1)+ylab('')+
-      cowplot::background_grid('xy')+
-      scale_colour_manual(values = colors)+
-      ggtitle(tsb[i], subtitle = paste0("MATH: ", round(unique(tsb.dat[,MATH]), digits = 3)))
+    #tsb.dat = tsb.dat[!cluster == 'CN_altered']
+    tsb_nclust = as.numeric(unique(tsb.dat[!cluster %in% c("outlier", "CN_altered"),cluster]))
+    lo_mat = matrix(c(tsb_nclust, max(tsb_nclust)+1) , ncol = 1)
+    #return(lo_mat)
+    layout(mat = lo_mat, heights = c(rep(0.5, length(tsb_nclust)), 4))
 
-    #If any copy number altered variants, mark them with dark dots.
-    if(nrow(tsb.dat.cn.vars) > 0){
-      if(showCNvars){
-        tsb.dat.dens = tsb.dat.dens+geom_point(data = tsb.dat.cn.vars, aes(y = 0, x = t_vaf), size = 3,alpha = 0.6)
-      }
+    tsb.dat.spl = split(tsb.dat, as.factor(as.character(tsb.dat$cluster)))
+    for(cl in seq_along(tsb_nclust)){
+      par(mar = c(0, 3, 0, 2))
+      boxplot(tsb.dat.spl[[cl]][,t_vaf], axes = FALSE, ylim = c(0, 1), horizontal = TRUE,
+              xaxt="n", boxwex=0.75, outline=FALSE, lty=1, lwd = 1.4, outwex=0, staplewex=0,
+              border = colors[cl])
     }
+
+    tsb_dens = density(x = tsb.dat[!cluster %in% c("outlier", "CN_altered"), t_vaf])
+    y_ax_ticks = pretty(x = range(tsb_dens$y))
+
+    par(mar = c(4, 3, 3, 2))
+    plot(NA, NA, axes = FALSE, xlab = NA, ylab = NA, xlim = c(0, 1),
+         ylim = y_ax_ticks[c(1, length(y_ax_ticks))])
+    lines(tsb_dens, lwd = 1.5)
+    abline(h = y_ax_ticks, v = seq(0, 1, 0.2), lty = 2, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5))
+    axis(side = 1, at = seq(0, 1, 0.2), lwd = 1.5, cex = 1)
+    axis(side = 2, at = y_ax_ticks, lwd = 1.5, las = 2, cex = 1)
+    points(y = rep(0, length(tsb.dat[, t_vaf])),
+           x = tsb.dat[, t_vaf], pch = 16, col = colors[tsb.dat[, cluster]], cex = 1)
+    title(main = tsb[i], adj = 0, line = 2)
+    title(main = paste0("MATH: ", round(unique(tsb.dat[!is.na(MATH)][,MATH]), digits = 3)), cex.main = 1,
+          font.main= 3, col.main= "black", cex.sub = 1, font.sub = 3, line = 0.75, adj = 0)
 
     #Are there genes to highlight?
     if(!is.null(genes)){
-      if(length(genes) > 1){
-        genesDat = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE)
-        genesDat = genesDat[Hugo_Symbol %in% genes]
-        #genesDat = dplyr::filter(.data = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE), filter = Hugo_Symbol %in% genes)
-        if(nrow(genesDat) > 0){
-          tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = genesDat,
-                                                               aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
+      if(genes == "CN_altered"){
+        if(nrow(tsb.dat.cn.vars) > 0){
+          segments(x0 = tsb.dat.cn.vars[, t_vaf], y0 = 0, x1 = tsb.dat.cn.vars[, t_vaf], y1 = 0.1 * max(tsb_dens$y, na.rm = TRUE), lwd = 1)
+          text(x = tsb.dat.cn.vars[, t_vaf], y = 0.1 * max(tsb_dens$y, na.rm = TRUE), srt = 90, font = 3, labels = tsb.dat.cn.vars[, Hugo_Symbol], adj = 0)
         }
       }else if(genes == 'all'){
-        tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE),
-                                                             aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
-      }else if(genes == 'CN_altered'){
-        if(nrow(tsb.dat.cn.vars) > 0){
-          tsb.dat.dens = tsb.dat.dens+ggrepel::geom_text_repel(data = tsb.dat.cn.vars,
-                                                               aes(label = Hugo_Symbol, x = t_vaf, y = 0), force = 10, nudge_y = 0.5)
-        }
+        segments(x0 = tsb.dat[, t_vaf], y0 = 0, x1 = tsb.dat[, t_vaf], y1 = 0.1 * max(tsb_dens$y, na.rm = TRUE), lwd = 1)
+        text(x = tsb.dat[, t_vaf], y = 0.1 * max(tsb_dens$y, na.rm = TRUE),
+             srt = 90, font = 3, labels = tsb.dat[, Hugo_Symbol], adj = 0, cex = 1)
+      }else{
+        genesDat = tsb.dat[Hugo_Symbol %in% genes]
+        if(nrow(genesDat) > 0){
+          segments(x0 = genesDat[, t_vaf], y0 = 0, x1 = genesDat[, t_vaf], y1 = 0.1 * max(tsb_dens$y, na.rm = TRUE), lwd = 1)
+          text(x = genesDat[, t_vaf], y = 0.1 * max(tsb_dens$y, na.rm = TRUE), srt = 90, font = 3, labels = genesDat[, Hugo_Symbol], adj = 0)
+      }
       }
     }
 
-    #Top boxplot
-    tsb.dat.bar = ggplot(tsb.dat[cluster != 'outlier'], aes(x = cluster, t_vaf, color = cluster))+geom_boxplot()+coord_flip()+xlab('')+ylab('')+cowplot::theme_cowplot()+
-      theme(legend.position = 'none', axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())+ylim(0,1)+scale_colour_manual(values = colors)
-
-    #Organize grid
-    tsb.dat.gg = cowplot::plot_grid(tsb.dat.bar, tsb.dat.dens, nrow = 2, ncol =  1, rel_heights = c(0.25, 1))
-
-
-    if(savePlot){
-      cowplot::save_plot(filename = paste(tsb[i], '_het.pdf', sep=''), plot = tsb.dat.gg, base_height = height, base_width = width)
-    }
-
-    print(tsb.dat.gg)
+    legend(x = "topright", legend = unique(names(colors[tsb.dat[, cluster]])), bty = "n",
+           col = unique(colors[tsb.dat[, cluster]]), pch = 16, border = NA, cex = 1,
+           title = "Cluster")
+    mtext(text = "VAF", side = 1, cex = 1.2, line = 2.2)
   }
 }

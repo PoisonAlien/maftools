@@ -80,6 +80,8 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
           #Perform groupwise comparision for given gene
           ft = lapply(X = names(cf.tbl), FUN = function(y){
             cd$Group = ifelse(test = cd$cf %in% y, yes = y, no = "Other")
+            cd$Genotype = factor(x = cd$Genotype, levels = c("WT", "Mutant"))
+            cd$Group = factor(x = cd$Group, levels = c(y, "Other"))
             cd.tbl = with(cd, table(Genotype, Group))
             cd.tbl = cd.tbl[c("WT", "Mutant") ,c(y, "Other")]
             ft = fisher.test(cd.tbl, alternative = 'l')

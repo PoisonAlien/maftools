@@ -5,7 +5,7 @@
 \title{Plot density plots from clutering results.}
 \usage{
 plotClusters(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE,
-  savePlot = FALSE, width = 6, height = 5, colors = NULL)
+  colors = NULL)
 }
 \arguments{
 \item{clusters}{clustering results from \code{\link{inferHeterogeneity}}}
@@ -16,12 +16,6 @@ plotClusters(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE,
 or \code{all} to label all genes. Default NULL.}
 
 \item{showCNvars}{show copy numbered altered variants on the plot. Default FALSE.}
-
-\item{savePlot}{If TRUE saves plot to output pdf}
-
-\item{width}{plot width. Default 6.}
-
-\item{height}{plot height. Default 5.}
 
 \item{colors}{manual colors for clusters. Default NULL.}
 }

@@ -81,19 +81,21 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
 
   prot.dat[,conv := prot.conv]
-  return(prot.dat)
+  if(nrow(prot.dat[conv %in% c("", NA)]) > 0){
+    warning(paste('Removed', nrow(prot.dat[conv %in% c(NA, "")]),
+                  'mutations for which AA position was not available', sep = ' '), immediate. = TRUE)
+    #print(prot.dat[is.na(prot.dat$pos),])
+    prot.dat = prot.dat[!conv %in% c(NA, "")]
+  }
   pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = prot.dat$conv)
   pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
   pos = gsub(pattern = '^\\*', replacement = '', x = pos)
   pos = gsub(pattern = '\\*.*', replacement = '', x = pos) #Remove * followed by position e.g, p.C229Lfs*18
+  #return(pos)
   pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[[', 1))
   prot.dat[,pos := pos]
-
-  if(nrow( prot.dat[is.na(prot.dat$pos),]) > 0){
-    message(paste('Removed', nrow( prot.dat[is.na(prot.dat$pos),]), 'mutations for which AA position was not available', sep = ' '))
-    #print(prot.dat[is.na(prot.dat$pos),])
-    prot.dat = prot.dat[!is.na(prot.dat$pos),]
-  }
+  prot.dat = prot.dat[!is.na(pos)]
+  #return(prot.dat)
 
   if(summarizeBy == 'AAPos'){
     prot.sum = prot.dat[,.N, by = .(Hugo_Symbol, Variant_Classification ,pos)]
@@ -115,6 +117,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   gff = gff[,.(HGNC, Start, End, Label, pfam, Description)]
   data.table::setkey(gff, HGNC, Start, End)
+  #return(list(prot.sum, gff))
   gff.idx = data.table::foverlaps(prot.sum, gff, type="within", which=TRUE, nomatch = NA, mult = 'first')
 
   prot.sum[, idx:=gff.idx]
@@ -172,7 +175,8 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
 
   par(mar = c(4, 4, 2, 2))
   xx = bubble_plot(plot_dat = domainSum, lab_dat = lab_dat, x_var = "nMuts", y_var = "nGenes",
-              bubble_var = "nGenes", text_var = "DomainLabel", text_size = labelSize)
+              bubble_var = "nGenes", text_var = "DomainLabel", text_size = labelSize, return_dat = FALSE)
+  #return(xx)
   mtext(text = "# mutations", side = 1, line = 2.5, cex = 1.2)
   mtext(text = "# genes", side = 2, line = 2.5, cex = 1.2)
 

@@ -15,6 +15,7 @@
 #' @param removeNonAltered Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
 #' @param colors named vector of colors Amp and Del events.
 #' @param fontSize font size for cytoband names. Default 0.8
+#' @param SampleNamefontSize font size for sample names. Default 0.6
 #' @param legendFontSize font size for legend. Default 1.2
 #' @param annotationFontSize font size for annotations. Default 1.2
 #' @return None.
@@ -32,7 +33,7 @@
 gisticOncoPlot = function(gistic = NULL, top = NULL,
                            showTumorSampleBarcodes = FALSE, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE,
                            annotationColor = NULL, bandsToIgnore = NULL,
-                           removeNonAltered = FALSE, colors = NULL, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2) {
+                           removeNonAltered = FALSE, colors = NULL, SampleNamefontSize = 0.6, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2) {
 
   if(class(gistic) != "GISTIC"){
     stop("Input data should be of GISTIC class. Use readGistic function to generate one.")
@@ -103,17 +104,26 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
   #Plot layout
   if(is.null(clinicalFeatures)){
     mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
-    lo = layout(mat = mat_lo, heights = c(12, 4))
+    lo = layout(mat = mat_lo, heights = c(12, 2))
   }else{
     mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
     lo = layout(mat = mat_lo, heights = c(12, 1, 4))
   }
 
-  if(showTumorSampleBarcodes){
-    par(mar = c(4, 5, 2.5, 5), xpd = TRUE)
+  if(is.null(clinicalFeatures)){
+    if(showTumorSampleBarcodes){
+      par(mar = c(5, 6, 1, 2.5), xpd = TRUE)
+    }else{
+      par(mar = c(0.5, 6, 1, 2.5), xpd = TRUE)
+    }
   }else{
-    par(mar = c(0.5, 5, 2.5, 5), xpd = TRUE)
+    if(showTumorSampleBarcodes){
+      par(mar = c(6, 6, 1, 5), xpd = TRUE)
+    }else{
+      par(mar = c(0.5, 6, 1, 5), xpd = TRUE)
+    }
   }
+
 
   nm = t(apply(numMat, 2, rev))
   nm[nm == 0] = NA
@@ -176,7 +186,7 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
 
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
-    par(mar = c(0, 5, 0, 5), xpd = TRUE)
+    par(mar = c(0, 6, 0, 5), xpd = TRUE)
 
     image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
           axes = FALSE, xaxt="n", yaxt="n", bty = "n",

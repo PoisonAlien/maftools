@@ -113,6 +113,11 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
 
   clinicalData$Time = ifelse(test = is.infinite(clinicalData$Time), yes = 0, no = clinicalData$Time)
 
+  if(nrow(clinicalData[!is.na(Time)][!is.na(Status)]) < nrow(clinicalData)){
+    message(paste0("Removed ", nrow(clinicalData) - nrow(clinicalData[!is.na(Time)][!is.na(Status)]),
+                   " samples with NA's"))
+    clinicalData = clinicalData[!is.na(Time)][!is.na(Status)]
+  }
   surv.km = survival::survfit(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData, conf.type = "log-log")
   res = summary(surv.km)
 
@@ -128,6 +133,7 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   y_lims = seq(0, 1, 0.20)
   plot(NA, xlim = c(min(x_lims), max(x_lims)), ylim = c(0, 1),
        frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA)
+  abline(h = y_lims, v = x_lims, lty = 2, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lwd = 0.75)
 
   points(surv.dat[Group %in% "Mutant", Time], y = surv.dat[Group %in% "Mutant", survProb], pch = 8, col = col [1])
   points(surv.dat[Group %in% "WT", Time], y = surv.dat[Group %in% "WT", survProb], pch = 8, col = col [2])

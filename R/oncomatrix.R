@@ -200,12 +200,21 @@ sortByGeneOrder = function(m, g){
 #bubble_var = z (variable name for bubble size)
 #bubble_size (exclusive with bubble_var)
 #text_size = font size for labels
+#col_var = a vector color
 bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
-                       bubble_var = NULL, bubble_size = 1, text_var = NULL, text_size = 1){
+                       bubble_var = NULL, bubble_size = 1, text_var = NULL,
+                       text_size = 1, col_var = NULL, return_dat = FALSE){
 
   x_col_idx = which(colnames(plot_dat) == x_var)
   y_col_idx = which(colnames(plot_dat) == y_var)
   colnames(plot_dat)[c(x_col_idx, y_col_idx)] = c("x", "y")
+
+  if(!is.null(col_var)){
+    col_idx = which(colnames(plot_dat) == col_var)
+    colnames(plot_dat)[col_idx] = c("color_var")
+  }else{
+    plot_dat$color_var = grDevices::adjustcolor("black", alpha.f = "0.75")
+  }
 
   if(!is.null(lab_dat)){
     x_col_idx = which(colnames(lab_dat) == x_var)
@@ -215,6 +224,12 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
       stop("Missing text variable")
     }else{
       colnames(lab_dat)[which(colnames(lab_dat) == text_var)] = "z_text"
+    }
+    if(!is.null(col_var)){
+      col_idx = which(colnames(lab_dat) == col_var)
+      colnames(lab_dat)[col_idx] = c("color_var")
+    }else{
+      lab_dat$color_var = "black"
     }
   }
 
@@ -254,33 +269,44 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
     }
   }
 
-  if(is.null(lab_dat)){
-    x_lims = as.integer(seq(0, max(as.numeric(plot_dat$x), na.rm = TRUE), length.out = 4))
-    x_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$x), na.rm = TRUE)))
-    y_lims = as.integer(seq(0, max(as.numeric(plot_dat$y), na.rm = TRUE), length.out = 4))
-    y_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$y), na.rm = TRUE)))
-  }else{
-    x_lims = as.integer(seq(0, max(as.numeric(c(plot_dat$x, lab_dat$x)), na.rm = TRUE), length.out = 4))
-    x_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$x), na.rm = TRUE)))
-    y_lims = as.integer(seq(0, max(as.numeric(c(plot_dat$y, lab_dat$x)), na.rm = TRUE), length.out = 4))
-    y_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$y), na.rm = TRUE)))
+  x_lims = as.integer(seq(min(as.numeric(plot_dat$x), na.rm = TRUE),
+                          max(as.numeric(plot_dat$x), na.rm = TRUE), length.out = 4))
+  x_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$x), na.rm = TRUE)))
+  x_lims[1] = as.integer(floor(min(as.numeric(plot_dat$x), na.rm = TRUE)))
+  x_ticks = pretty(x = x_lims, na.rm = TRUE)
+  x_ticks[c(1, length(x_ticks))] = x_lims[c(1, 4)]
+
+  y_lims = as.integer(seq(min(as.numeric(plot_dat$y), na.rm = TRUE),
+                          max(as.numeric(plot_dat$y), na.rm = TRUE), length.out = 4))
+  y_lims[4] = as.integer(ceiling(max(as.numeric(plot_dat$y), na.rm = TRUE)))
+  y_lims[1] = as.integer(floor(min(as.numeric(plot_dat$y), na.rm = TRUE)))
+  y_ticks = pretty(x = y_lims, na.rm = TRUE)
+  y_ticks[c(1, length(y_ticks))] = y_lims[c(1, 4)]
+
+  if(return_dat){
+    return(list(plots_data = plot_dat, label_cords = lab_dat,
+                x_lims = x_lims, y_lims = y_lims))
   }
 
-
-  #print(head(plot_dat))
-  plot(x = plot_dat$x, y = plot_dat$y, cex = plot_dat$size_z,
-       pch = 16, col = 'gray70', axes = FALSE, xlim = x_lims[c(1, 4)],
-       ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA)
-  axis(side = 1, at = x_lims[c(1, 4)])
-  #mtext(text = "# mutations", side = 1, line = 2.5, cex = 1.2)
-  axis(side = 2, at = y_lims[c(1, 4)], las = 2)
-  #mtext(text = "# genes", side = 2, line = 2.5, cex = 1.2)
+  # plot(x = plot_dat$x, y = plot_dat$y, cex = plot_dat$size_z,
+  #      pch = 16, col = plot_dat$color_var, axes = FALSE, xlim = x_lims[c(1, 4)],
+  #      ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA)
+  par(axes = FALSE)
+  symbols(x = plot_dat$x, y = plot_dat$y, circles = plot_dat$size_z, inches = 0.1, bg = plot_dat$color_var, xlim = x_lims[c(1, 4)],
+          ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA, axes = FALSE, fg = "white")
+  axis(side = 1, at = x_ticks)
+  axis(side = 2, at = y_ticks, las = 2)
+  abline(h = y_ticks, v = x_ticks, lty = 2,
+         col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lwd = 0.75)
 
   if(!is.null(lab_dat)){
-    points(x = lab_dat$x, y = lab_dat$y, cex = lab_dat$size_z,
-           pch = 16, col = 'maroon')
+    # points(x = lab_dat$x, y = lab_dat$y, cex = lab_dat$size_z,
+    #        pch = 16, col = lab_dat$color_var)
+    symbols(x = lab_dat$x, y = lab_dat$y, circles = lab_dat$size_z,
+            bg = lab_dat$color_var, add = TRUE, fg = "white", inches = 0.1)
+
     wordcloud::textplot(x = lab_dat$x, y = lab_dat$y, words = lab_dat$z_text,
                         cex = text_size, new = FALSE, show.lines = TRUE,
-                        xlim = x_lims[c(1, 4)], ylim = y_lims[c(1, 4)])
+                        xlim = x_lims[c(1, 4)], ylim = y_lims[c(1, 4)], font = 3, col = lab_dat$color_var)
   }
 }

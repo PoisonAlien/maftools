@@ -76,12 +76,13 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
   if(flip){
     par(mar = c(3, 4, 2, 2))
     b = boxplot(value ~ Hugo_Symbol, data = datm, xaxt="n", boxwex=0.5, outline=FALSE, lty=1, lwd = 1.4, outwex=0,
-                staplewex=0, ylim = c(0, 1), axes = FALSE, border = bcol, horizontal = TRUE)
-    axis(side = 1, at = seq(0, 1, 0.2), las = 1, font = 2, lwd = 2.2, cex.axis = axis_fs)
-    axis(side = 2, at = 1:length(b$names), labels = b$names, tick = FALSE, las = 2, font = 2, line = -1, cex.axis = gene_fs)
+                staplewex=0, ylim = c(0, 1), axes = FALSE, border = bcol, horizontal = TRUE, ylab = NA)
+    axis(side = 1, at = seq(0, 1, 0.2), las = 1, font = 2, lwd = 1.5, cex.axis = axis_fs)
+    axis(side = 2, at = 1:length(b$names), labels = b$names, tick = FALSE, las = 2, font = 3, line = -1, cex.axis = gene_fs)
     if(showN){
       axis(side = 4, at = 1:length(b$names), labels = b$n, font = 2, tick = FALSE, line = -1, las = 2, cex.axis = gene_fs)
     }
+    abline(v = seq(0, 1, 0.2), h = 1:length(b$names), col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lty = 2)
 
 
     stripchart(value ~ Hugo_Symbol, vertical = FALSE, data = datm,
@@ -90,13 +91,14 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
   }else{
     par(mar = c(4, 3, 2, 1))
     b = boxplot(value ~ Hugo_Symbol, data = datm, xaxt="n", boxwex=0.5, outline=FALSE, lty=1, lwd = 1.4, outwex=0,
-                staplewex=0, ylim = c(0, 1), axes = FALSE, border = bcol)
-    axis(side = 1, at = 1:length(b$names), labels = b$names, tick = FALSE, las = 2, font = 2, line = -1, cex.axis = gene_fs)
-    axis(side = 2, at = seq(0, 1, 0.2), las = 2, cex.axis = axis_fs, lwd = 3, font.axis = 2, cex = 1.5, font = 2)
+                staplewex=0, ylim = c(0, 1), axes = FALSE, border = bcol, xlab = NA)
+    axis(side = 1, at = 1:length(b$names), labels = b$names, tick = FALSE, las = 2, font = 3, line = -1, cex.axis = gene_fs)
+    axis(side = 2, at = seq(0, 1, 0.2), las = 2, cex.axis = axis_fs, lwd = 1.5, font.axis = 2, cex = 1.5, font = 2)
     if(showN){
       axis(side = 3, at = 1:length(b$names), labels = b$n, font = 2, tick = FALSE,
            line = -1, cex.axis = gene_fs)
     }
+    abline(h = seq(0, 1, 0.2), v = 1:length(b$names), col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lty = 2)
 
     stripchart(value ~ Hugo_Symbol, vertical = TRUE, data = datm,
                method = "jitter", add = TRUE, pch = 16, col = bcol, cex = 0.5)

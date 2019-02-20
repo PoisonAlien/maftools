@@ -35,15 +35,17 @@ plotOncodrive = function(res = NULL, fdrCutOff = 0.05, useFraction = FALSE, colC
   }else{
     names(colCode)[1:2] = c('sig', 'nonsig')
   }
+  res$color = ifelse(test = res$fdr < fdrCutOff, yes = colCode[1], no = colCode[2])
+
 
   par(mar = c(4, 4, 2, 2))
   if(useFraction){
     bubble_plot(plot_dat = res, x_var = "fract_muts_in_clusters", y_var = "log_fdr",
-                bubble_var = "clusters", lab_dat = res[significant %in% "sig"], text_var = "label", bubble_size = bubbleSize, text_size = labelSize)
+                bubble_var = "clusters", lab_dat = res[significant %in% "sig"], text_var = "label", bubble_size = bubbleSize, text_size = labelSize, col_var = "color")
     mtext(text =  "Fraction of variants within clusters", side = 1, line = 2)
   }else{
     bubble_plot(plot_dat = res, x_var = "muts_in_clusters", y_var = "log_fdr",
-                bubble_var = "clusters", lab_dat = res[significant %in% "sig"], text_var = "label", bubble_size = bubbleSize, text_size = labelSize)
+                bubble_var = "clusters", lab_dat = res[significant %in% "sig"], text_var = "label", bubble_size = bubbleSize, text_size = labelSize, col_var = "color")
     mtext(text =  "# of variants within clusters", side = 1, line = 2)
   }
   mtext(text =  "-log10 (fdr)", side = 2, line = 2)

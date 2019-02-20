@@ -101,17 +101,22 @@ plotTiTv = function(res = NULL, plotType = 'both',
 
     layout(mat = matrix(data = c(1, 2, 3, 3), byrow = TRUE, nrow = 2), widths = c(4, 2), heights = c(5, 4))
     par(mar = c(2, 4, 2, 1))
+    plot(NA, axes = FALSE, xlim = c(0.25, 6.25), ylim = c(0, 100), xlab = NA, ylab = NA)
+    abline(h = seq(0, 100, 25), v = 1:6, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lty = 2, lwd = 0.6)
     b = boxplot(value ~ variable, data = titv.frac.melt, axes = FALSE, xlab = "", ylab = "", col = col[levels(titv.frac.melt[,variable])],
                 names=NA, lty = 1, staplewex = 0, pch = 16, xaxt="n", notch = plotNotch,
-                outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6)
+                outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6, add = TRUE)
     axis(side = 1, at = 1:length(levels(titv.frac.melt[,variable])), labels = levels(titv.frac.melt[,variable]), tick = FALSE, font = 2, line = -1, cex.axis = axisTextSize[1])
-    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2])
+    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2], line = 0.4)
     mtext(side = 2, text = "% Mutations", font = 2, cex = baseFontSize, line = 2.5)
 
     par(mar = c(2, 1.5, 2, 2))
+    plot(NA, axes = FALSE, xlim = c(0, 3), ylim = c(0, 100), xlab = NA, ylab = NA)
+    abline(h = seq(0, 100, 25), v = 1:2,
+           col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lty = 2, lwd = 0.6)
     b = boxplot(tf, axes = FALSE, xlab = "", ylab = "", col = 'gray70',
                 names=NA, lty = 1, staplewex = 0, pch = 16, xaxt="n", notch = plotNotch,
-                outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6)
+                outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6, add = TRUE, at = 1:2)
     axis(side = 1, at = 1:2, labels = names(tf), tick = FALSE, font = 2, line = -1, cex.axis = axisTextSize[1])
     axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2])
 

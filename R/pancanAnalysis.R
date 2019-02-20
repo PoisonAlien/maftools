@@ -20,7 +20,7 @@
 #' @export
 
 pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input',
-                            inputSampleSize = NULL, label = 1, genesToLabel = NULL, pointSize = 1, labelSize = 0.8){
+                            inputSampleSize = NULL, label = 1, genesToLabel = NULL, pointSize = 0.1, labelSize = 0.8){
 
   #Pancan results
   pancan = system.file('extdata', 'pancan.txt.gz', package = 'maftools')
@@ -105,11 +105,12 @@ pancanComparison = function(mutsigResults, qval = 0.1, cohortName = 'input',
   message(paste0('Significantly mutated genes exclusive to ', cohortName, ' (q < ', qval, '): '))
   print(pancan.input.q[pancan > qval & q < qval])
 
+  #return(pancan.input.q)
   par(mar = c(4, 4, 2, 2))
   bubble_plot(plot_dat = pancan.input.q, x_var = "log_q", y_var = "log_q_pancan", lab_dat = lab_dat,
-              text_var = "gene", bubble_size = pointSize, text_size = labelSize)
+              text_var = "gene", bubble_var = "log_q", text_size = labelSize)
   abline(v = -log10(qval), h = -log10(qval), col = 'maroon', lty = 2)
-  title(paste0(cohortName, ' v/s Pan-cancer'))
+  title(paste0(cohortName, ' v/s Pan-cancer'), adj = 0)
   mtext(text =  paste0('-log10(', cohortName, ' q-value)'), side = 1, line = 2)
   mtext(text =  "-log10(Pan-can q-value)", side = 2, line = 2)
 

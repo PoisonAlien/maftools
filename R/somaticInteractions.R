@@ -108,8 +108,8 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     abline(h=0:n+.5, col="white", lwd=.5)
     abline(v=0:n+.5, col="white", lwd=.5)
 
-    mtext(side = 2, at = 1:m, text = colnames(interactions), cex = fontSize, font = 2)
-    mtext(side = 3, at = 1:n, text = colnames(interactions), las = 2, line = -2, cex = fontSize, font = 2)
+    mtext(side = 2, at = 1:m, text = colnames(interactions), cex = fontSize, font = 3)
+    mtext(side = 3, at = 1:n, text = colnames(interactions), las = 2, line = -2, cex = fontSize, font = 3)
 
     #q <- p.adjust(10^-abs(interactions), method="BH")
     #p <- p.adjust(10^-abs(interactions), method="holm")
