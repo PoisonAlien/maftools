@@ -7,7 +7,7 @@
 #' @param AACol manually specify column name for amino acid changes. Default looks for fields 'HGVSp_Short', 'AAChange' or 'Protein_Change'. Changes can be of any format i.e, can be a numeric value or HGVSp annotations (e.g; p.P459L, p.L2195Pfs*30 or p.Leu2195ProfsTer30)
 #' @param labelPos Amino acid positions to label. If 'all', labels all variants.
 #' @param labPosSize Text size for labels. Default 0.9
-#' @param showMutationRate Default TRUE
+#' @param showMutationRate Whether to show the somatic mutation rate on the title. Default TRUE
 #' @param showDomainLabel Label domains within the plot. Default TRUE. If FALSE they will be annotated in legend.
 #' @param cBioPortal Adds annotations similar to cBioPortals MutationMapper and collapse Variants into Truncating and rest.
 #' @param refSeqID RefSeq transcript identifier for \code{gene} if known.
@@ -117,7 +117,10 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
   sampleSize = as.numeric(maf@summary[ID %in% 'Samples', summary])
   mutRate = round(getGeneSummary(x = maf)[Hugo_Symbol %in% geneID, MutatedSamples]/sampleSize*100, digits = 2)
-  cbioSubTitle = paste0(geneID, ": [Somatic Mutation Rate: ", mutRate, "%]")
+  cbioSubTitle = geneID
+  if (isTRUE(showMutationRate)){
+    cbioSubTitle = paste0(cbioSubTitle, ": [Somatic Mutation Rate: ", mutRate, "%]")
+  }
 
   if(cBioPortal){
     vc = c("Nonstop_Mutation", "Frame_Shift_Del", "Missense_Mutation",
