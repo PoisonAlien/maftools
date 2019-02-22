@@ -5,6 +5,7 @@ SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Changed default value for mafObj argument in subsetMaf to TRUE. #235
 
 BUG FIX
+    o GISTIC sample size issue fix. Issue: #249
     o Bug fix for oncoplots with CNV data. Issue: #240
     o Bug fix that caused signature extraction to terminate in case of zero mutations. Issue: #228
     o Bug fix due to missing levels contingency tables in clinical enrichment. Issue: #225
