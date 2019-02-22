@@ -82,7 +82,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
     if(showN){
       axis(side = 4, at = 1:length(b$names), labels = b$n, font = 2, tick = FALSE, line = -1, las = 2, cex.axis = gene_fs)
     }
-    abline(v = seq(0, 1, 0.2), h = 1:length(b$names), col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lty = 2)
+    abline(v = seq(0, 1, 0.2), h = 1:length(b$names), col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.25), lty = 2)
 
 
     stripchart(value ~ Hugo_Symbol, vertical = FALSE, data = datm,

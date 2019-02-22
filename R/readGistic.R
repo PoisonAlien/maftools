@@ -62,16 +62,17 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
   all.lesions[,Unique_Name := NULL]
   all.lesions[,Wide_Peak_Limits := NULL]
 
-  all.lesions.melt = suppressWarnings(data.table::melt(all.lesions, id.vars = 'cytoband'))
+  cnSamples = colnames(all.lesions)[2:ncol(all.lesions)]
 
+  all.lesions.melt = data.table::melt(all.lesions, id.vars = 'cytoband')
+
+  cnLevel = match.arg(arg = cnLevel, choices = c("all", "deep", "shallow"))
   if(cnLevel == 'all'){
     all.lesions.melt = all.lesions.melt[value %in% c(1, 2)] #1 = shallow amp/del; 2 = deep amp/del
   }else if(cnLevel == 'deep'){
     all.lesions.melt = all.lesions.melt[value %in% 2] #1 = shallow amp/del; 2 = deep amp/del
   }else if(cnLevel == 'shallow'){
     all.lesions.melt = all.lesions.melt[value %in% 1] #1 = shallow amp/del; 2 = deep amp/del
-  }else{
-    stop("cnLevel can only be 'deep', 'shallow' or 'all'!")
   }
 
   cnGenes = data.table::data.table()
@@ -133,7 +134,7 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
   #gis.scores$Variant_Classification = ifelse(test = as.numeric(gis.scores$fdr) > fdrCutOff, yes = gis.scores$Variant_Classification, no = 'neutral')
   #gis.scores$Variant_Classification = factor(gis.scores$Variant_Classification, levels = c('neutral', 'Amp', 'Del'))
 
-  cnSamples = unique(x = as.character(all.lesions.melt$variable))
+  #cnSamples = unique(x = as.character(all.lesions.melt$variable))
 
   message('Summarizing samples..')
   cnDT = data.table::rbindlist( lapply(X = cnSamples, FUN = function(x){
@@ -149,6 +150,7 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
 
   if(isTCGA){
     cnDT$Tumor_Sample_Barcode = substr(x = cnDT$Tumor_Sample_Barcode, start = 1, stop = 12)
+    cnSamples = substr(x = cnSamples, start = 1, stop = 12)
   }
 
   qval$Unique_Name = gsub(pattern = 'Amplification_Peak', replacement = 'AP', x = qval$Unique_Name)
@@ -159,6 +161,7 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
   cnDT[,Cytoband := NULL]
   colnames(cnDT)[5] = 'Cytoband'
 
+  cnDT[, Tumor_Sample_Barcode := factor(x = Tumor_Sample_Barcode, levels = cnSamples)]
   cnDt.summary = summarizeGistic(gistic = cnDT)
   cnDt.mat = gisticMap(gistic = cnDT)
 

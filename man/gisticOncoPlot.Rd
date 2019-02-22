@@ -8,7 +8,7 @@ gisticOncoPlot(gistic = NULL, top = NULL,
   showTumorSampleBarcodes = FALSE, clinicalData = NULL,
   clinicalFeatures = NULL, sortByAnnotation = FALSE,
   annotationColor = NULL, bandsToIgnore = NULL,
-  removeNonAltered = FALSE, colors = NULL, SampleNamefontSize = 0.6,
+  removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6,
   fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2)
 }
 \arguments{

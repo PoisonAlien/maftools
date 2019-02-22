@@ -118,7 +118,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   sampleSize = as.numeric(maf@summary[ID %in% 'Samples', summary])
   mutRate = round(getGeneSummary(x = maf)[Hugo_Symbol %in% geneID, MutatedSamples]/sampleSize*100, digits = 2)
   cbioSubTitle = geneID
-  if (isTRUE(showMutationRate)){
+  if(showMutationRate){
     cbioSubTitle = paste0(cbioSubTitle, ": [Somatic Mutation Rate: ", mutRate, "%]")
   }
 

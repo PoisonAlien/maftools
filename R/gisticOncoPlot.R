@@ -33,7 +33,7 @@
 gisticOncoPlot = function(gistic = NULL, top = NULL,
                            showTumorSampleBarcodes = FALSE, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE,
                            annotationColor = NULL, bandsToIgnore = NULL,
-                           removeNonAltered = FALSE, colors = NULL, SampleNamefontSize = 0.6, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2) {
+                           removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2) {
 
   if(class(gistic) != "GISTIC"){
     stop("Input data should be of GISTIC class. Use readGistic function to generate one.")

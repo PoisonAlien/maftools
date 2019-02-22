@@ -24,7 +24,7 @@ lollipopPlot(maf, gene = NULL, AACol = NULL, labelPos = NULL,
 
 \item{labPosSize}{Text size for labels. Default 0.9}
 
-\item{showMutationRate}{Default TRUE}
+\item{showMutationRate}{Whether to show the somatic mutation rate on the title. Default TRUE}
 
 \item{showDomainLabel}{Label domains within the plot. Default TRUE. If FALSE they will be annotated in legend.}
 

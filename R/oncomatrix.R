@@ -291,9 +291,8 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
   # plot(x = plot_dat$x, y = plot_dat$y, cex = plot_dat$size_z,
   #      pch = 16, col = plot_dat$color_var, axes = FALSE, xlim = x_lims[c(1, 4)],
   #      ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA)
-  par(axes = FALSE)
-  symbols(x = plot_dat$x, y = plot_dat$y, circles = plot_dat$size_z, inches = 0.1, bg = plot_dat$color_var, xlim = x_lims[c(1, 4)],
-          ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA, axes = FALSE, fg = "white")
+  suppressWarnings(symbols(x = plot_dat$x, y = plot_dat$y, circles = plot_dat$size_z, inches = 0.1, bg = plot_dat$color_var, xlim = x_lims[c(1, 4)],
+          ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA, fg = "white", axes = FALSE))
   axis(side = 1, at = x_ticks)
   axis(side = 2, at = y_ticks, las = 2)
   abline(h = y_ticks, v = x_ticks, lty = 2,

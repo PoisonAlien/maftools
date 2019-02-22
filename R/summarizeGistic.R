@@ -1,13 +1,13 @@
 summarizeGistic = function(gistic){
 
-  nGenes = length(unique(gistic[,Hugo_Symbol]))
+  nGenes = nrow(gistic[,.N,Hugo_Symbol])
 
   tsb = gistic[,.N, Tumor_Sample_Barcode]
   colnames(tsb)[2] = 'CNV'
   tsb = tsb[order(tsb$CNV, decreasing = TRUE),]
 
   vc = gistic[,.N, .(Tumor_Sample_Barcode, Variant_Classification )]
-  vc.cast = data.table::dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N')
+  vc.cast = data.table::dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N', drop = FALSE)
 
   vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
   vc.cast = vc.cast[order(total, decreasing = TRUE)]
@@ -16,7 +16,7 @@ summarizeGistic = function(gistic){
   vc.median = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, median))))
 
   hs = gistic[,.N, .(Hugo_Symbol, Variant_Classification)]
-  hs.cast = data.table::dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N')
+  hs.cast = data.table::dcast(data = hs, formula = Hugo_Symbol ~Variant_Classification, fill = 0, value.var = 'N', drop = FALSE)
   hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
   hs.cast = hs.cast[order(total, decreasing = TRUE)]
 
@@ -46,7 +46,7 @@ gisticMap = function(gistic){
                                 xad = x[x %in% c('Amp', 'Del')]
                                 x = ifelse(test = length(xad) > 1, no = xad, yes = 'Complex')
                                 return(x)
-                              })
+                              }, drop = FALSE)
 
   #If maf contains only one sample converting to matrix is not trivial.
   if(ncol(oncomat) == 2){
