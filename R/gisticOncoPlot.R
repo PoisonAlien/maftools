@@ -234,7 +234,7 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
       lep = legend(x = x_axp, y = 1, legend = names(x),
                    col = x, border = NA,
                    ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                   cex = annotationFontSize, title = names(annotation)[i], title.adj = 0)
+                   cex = annotationFontSize, title = rev(names(annotation))[i], title.adj = 0)
       x_axp = x_axp + lep$rect$w
     }
   }
