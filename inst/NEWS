@@ -4,6 +4,9 @@ SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Oncoplot, oncostrip and coOncoplot code has been migrated from ComplexHeatmap to base graphics. Default values for some arguments have been changed.
     o Changed default value for mafObj argument in subsetMaf to TRUE. #235
 
+IMPROVEMENTS:
+    o Add missing genes and samples to oncoplot even when they are not altered. Issue: #254
+
 BUG FIX
     o Fix legend title order. Issue: #253
     o GISTIC sample size issue fix. Issue: #249

@@ -21,9 +21,8 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
 
       return(list(oncoMatrix = oncoMatrix, numericMatrix = numericMatrix, vc = vc))
     }else{
-
+      return(NULL)
     }
-    return(NULL)
   }
 
   if(add_missing){
