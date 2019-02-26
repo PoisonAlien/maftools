@@ -1,4 +1,4 @@
-createOncoMatrix = function(m, g = NULL, chatty = TRUE){
+createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
 
   if(is.null(g)){
     stop("Please provde atleast two genes!")
@@ -7,7 +7,27 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE){
   subMaf = subsetMaf(maf = m, genes = g, includeSyn = FALSE, mafObj = FALSE)
 
   if(nrow(subMaf) == 0){
+    if(add_missing){
+      numericMatrix = matrix(data = 0, nrow = length(g), ncol = length(levels(getSampleSummary(x = m)[,Tumor_Sample_Barcode])))
+      rownames(numericMatrix) = g
+      colnames(numericMatrix) = levels(getSampleSummary(x = m)[,Tumor_Sample_Barcode])
+
+      oncoMatrix = matrix(data = "", nrow = length(g), ncol = length(levels(getSampleSummary(x = m)[,Tumor_Sample_Barcode])))
+      rownames(oncoMatrix) = g
+      colnames(oncoMatrix) = levels(getSampleSummary(x = m)[,Tumor_Sample_Barcode])
+
+      vc = c("")
+      names(vc) = 0
+
+      return(list(oncoMatrix = oncoMatrix, numericMatrix = numericMatrix, vc = vc))
+    }else{
+
+    }
     return(NULL)
+  }
+
+  if(add_missing){
+    subMaf[, Hugo_Symbol := factor(x = Hugo_Symbol, levels = g)]
   }
 
   oncomat = data.table::dcast(data = subMaf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,

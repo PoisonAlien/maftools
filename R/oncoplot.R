@@ -20,6 +20,7 @@
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
 #' @param annotationColor list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
+#' @param fill Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
@@ -47,13 +48,13 @@
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
                      clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, colors = NULL,
+                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = TRUE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, isNumeric = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
                      titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
   if(!is.null(genes)){ #If user provides a gene list
-    om = createOncoMatrix(m = maf, g = genes)
+    om = createOncoMatrix(m = maf, g = genes, add_missing = fill)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
   } else if(!is.null(mutsig)){ #If user provides significant gene table (e.g; mutsig results)
@@ -121,10 +122,14 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
   #If user wannts to keep given gene order
   if(keepGeneOrder){
-    if(GeneOrderSort){
-      numMat = sortByGeneOrder(m = numMat, g = genes)
-    }else{
+    if(fill){
       numMat = numMat[genes, , drop = FALSE]
+    }else{
+      if(GeneOrderSort){
+        numMat = sortByGeneOrder(m = numMat, g = genes)
+      }else{
+        numMat = numMat[genes, , drop = FALSE]
+      }
     }
     mat = mat_origin[rownames(numMat), , drop = FALSE]
     mat = mat[,colnames(numMat), drop = FALSE]
@@ -180,7 +185,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     numMat = numMat[,sampleOrder, drop = FALSE]
   }
 
-  percent_alt = paste0(gene_sum[rownames(numMat),"percent_altered",], "%")
+  percent_alt = gene_sum[rownames(numMat), "percent_altered"]
+  percent_alt[is.na(percent_alt)] = 0
+  percent_alt = paste0(percent_alt, "%")
 
   if(colbar_pathway){
     top_bar_data = t(samp_sum[colnames(numMat),,])
@@ -253,6 +260,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       side_bar_lims = c(0, round(max(ms.smg$FDR, na.rm = TRUE), digits = 2))
     }
     #Draw axis for side bar plot
+    if(is.infinite(side_bar_lims[2])){
+      side_bar_lims[2] = 1
+    }
     if(drawColBar){
       par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
       plot(x = NA, y = NA, type = "n", axes = FALSE,
