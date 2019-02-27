@@ -48,7 +48,7 @@
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
                      clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = TRUE, colors = NULL,
+                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, isNumeric = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
                      titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
@@ -148,12 +148,6 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
   samp_sum = samp_sum[,-1]
 
-  tot_samps = as.numeric(maf@summary[3,summary])
-  gene_sum = getGeneSummary(maf)[,.(Hugo_Symbol, AlteredSamples)]
-  gene_sum[,percent_altered := round((AlteredSamples/tot_samps)*100)]
-  data.table::setDF(x = gene_sum, rownames = gene_sum$Hugo_Symbol)
-
-
   totSamps = as.numeric(maf@summary[3,summary])
   if(removeNonMutated){
     #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
@@ -178,16 +172,16 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
   #return(numMat)
   if(!is.null(sampleOrder)){
-    sampleOrder = colnames(numMat)[colnames(numMat) %in% as.character(sampleOrder)]
+    sampleOrder = as.character(sampleOrder)
+    sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
     if(length(sampleOrder) == 0){
       stop("None of the provided samples are present in the input MAF")
     }
     numMat = numMat[,sampleOrder, drop = FALSE]
   }
 
-  percent_alt = gene_sum[rownames(numMat), "percent_altered"]
-  percent_alt[is.na(percent_alt)] = 0
-  percent_alt = paste0(percent_alt, "%")
+  gene_sum = apply(numMat, 1, function(x) length(x[x!=0]))
+  percent_alt = paste0(round(100*(apply(numMat, 1, function(x) length(x[x!=0]))/192)), "%")
 
   if(colbar_pathway){
     top_bar_data = t(samp_sum[colnames(numMat),,])
