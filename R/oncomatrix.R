@@ -320,11 +320,15 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
   if(!is.null(lab_dat)){
     # points(x = lab_dat$x, y = lab_dat$y, cex = lab_dat$size_z,
     #        pch = 16, col = lab_dat$color_var)
-    symbols(x = lab_dat$x, y = lab_dat$y, circles = lab_dat$size_z,
-            bg = lab_dat$color_var, add = TRUE, fg = "white", inches = 0.1)
+    if(nrow(lab_dat) < 2){
+      text(x = lab_dat$x, y = lab_dat$y, labels = lab_dat$z_text, adj = 1, offset = 0.2, cex = text_size, col = lab_dat$color_var)
+    }else{
+      symbols(x = lab_dat$x, y = lab_dat$y, circles = lab_dat$size_z,
+              bg = lab_dat$color_var, add = TRUE, fg = "white", inches = 0.1)
 
-    wordcloud::textplot(x = lab_dat$x, y = lab_dat$y, words = lab_dat$z_text,
-                        cex = text_size, new = FALSE, show.lines = TRUE,
-                        xlim = x_lims[c(1, 4)], ylim = y_lims[c(1, 4)], font = 3, col = lab_dat$color_var)
+      wordcloud::textplot(x = lab_dat$x, y = lab_dat$y, words = lab_dat$z_text,
+                          cex = text_size, new = FALSE, show.lines = TRUE,
+                          xlim = x_lims[c(1, 4)], ylim = y_lims[c(1, 4)], font = 3, col = lab_dat$color_var)
+    }
   }
 }

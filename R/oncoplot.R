@@ -181,7 +181,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }
 
   gene_sum = apply(numMat, 1, function(x) length(x[x!=0]))
-  percent_alt = paste0(round(100*(apply(numMat, 1, function(x) length(x[x!=0]))/192)), "%")
+  percent_alt = paste0(round(100*(apply(numMat, 1, function(x) length(x[x!=0]))/totSamps)), "%")
 
   if(colbar_pathway){
     top_bar_data = t(samp_sum[colnames(numMat),,])
