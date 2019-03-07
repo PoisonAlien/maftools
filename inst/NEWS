@@ -6,6 +6,7 @@ SIGNIFICANT USER-LEVEL IMPROVEMENT
 
 IMPROVEMENTS:
     o Add missing genes and samples to oncoplot even when they are not altered. Issue: #254
+    o Added MTRNR2L8 protein structure to pfam database. Issue: #255
 
 BUG FIX
     o Fix legend title order. Issue: #253
