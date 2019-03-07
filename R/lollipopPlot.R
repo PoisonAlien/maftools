@@ -208,12 +208,13 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
     prot.snp.sumamry$pos2 = prot.snp.sumamry$pos
   }
 
-  xlimPos = pretty(0:max(prot$aa.length))
-  xlimPos[length(xlimPos)] = max(prot$aa.length)+3
+  xlimPos = pretty(0:max(prot$aa.length, na.rm = TRUE))
+  xlimPos[length(xlimPos)] = max(prot$aa.length)
 
-  if(xlimPos[length(xlimPos)] - xlimPos[length(xlimPos)-1] <= 10){
-    xlimPos = xlimPos[-(length(xlimPos)-1)]
-  }
+  # if(xlimPos[length(xlimPos)] - xlimPos[length(xlimPos)-1] <= 10){
+  #   xlimPos = xlimPos[-(length(xlimPos)-1)]
+  # }
+  #xlimPos[length(xlimPos)] = max(as.numeric(prot$aa.length), na.rm = TRUE)
 
   #-----------------------------------
   #If user asks to label points, use ggrepel to label.
