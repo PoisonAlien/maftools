@@ -5,6 +5,8 @@
 #' @param tsb If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. If you are maping maf, make sure sample names in
 #' Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF.
 #' @param savePlot If true plot is saved as pdf.
+#' @param ylims Default NULL
+#' @param seg_size Default 0.1
 #' @param width width of plot
 #' @param height height of plot
 #' @param genes If given and maf object is specified, maps all mutataions from maf onto segments. Default NULL
@@ -19,7 +21,7 @@
 #' plotCBSsegments(cbsFile = tcga.ab.009.seg)
 #'
 
-plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FALSE,
+plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FALSE, ylims = NULL, seg_size = 0.1,
                            width = 6, height = 3, genes = NULL, ref.build = 'hg19', writeTable = FALSE, removeXY = FALSE, color = NULL){
 
   if(is.null(cbsFile)){
@@ -48,7 +50,7 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FA
       pdf(file = paste(tsb[i], '_segPlot.pdf', sep = ''), width = width, height = height, bg = "white", paper = "special")
     }
 
-    plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color)
+    plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color, y_lims = ylims, rect_size = seg_size)
 
     if(!is.null(maf)){
       tsb.mapped = mapMutsToSegs(seg = seg, maf = maf, tsb = tsb[i], build = ref.build)
