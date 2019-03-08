@@ -134,7 +134,7 @@ plotCBSchr = function(segData, chr, tsb){
 }
 
 #--- Plot complete segments
-plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL){
+plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL, y_lims = NULL, rect_size = 0.1){
 
   segData = segData[Sample %in% tsb]
 
@@ -177,7 +177,10 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL){
   chr.colors = rep(x = chr.colors, times = length(chr.lvls))[1:length(chr.lvls)]
   names(chr.colors) = chr.lvls
 
-  y_lims = pretty(round(range(seg.spl.transformed$Segment_Mean, na.rm = TRUE, finite = TRUE), digits = 2))
+  if(is.null(y_lims)){
+    y_lims = pretty(round(range(seg.spl.transformed$Segment_Mean, na.rm = TRUE, finite = TRUE), digits = 2))
+  }
+
   par(mar = c(3, 3, 2, 1))
   plot(NA, xlim = c(0, max(seg.spl.transformed$End_Position_updated, na.rm = TRUE)),
        ylim = range(y_lims, na.rm = TRUE), axes = FALSE, ann = FALSE)
@@ -187,7 +190,7 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL){
        lwd.ticks = 1, las = 2)
   abline(v = chr.lens.sumsum, col = 'gray70', lwd = 0.25)
   rect(xleft = seg.spl.transformed$Start_Position_updated, xright =  seg.spl.transformed$End_Position_updated,
-       ybottom = seg.spl.transformed$Segment_Mean, ytop = seg.spl.transformed$Segment_Mean,
+       ybottom = seg.spl.transformed$Segment_Mean-rect_size, ytop = seg.spl.transformed$Segment_Mean+rect_size,
        col = rep(chr.colors, seg.spl.transformed[,.N,Chromosome][,N]),
        border = rep(chr.colors, seg.spl.transformed[,.N,Chromosome][,N]))
   title(main = tsb, adj = 0, font.main = 3)
