@@ -63,32 +63,29 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
 
  #Set missing genes to zero
  m.gs.meged[is.na(m.gs.meged)] = 0
-
  m.gs.meged = as.data.frame(m.gs.meged)
 
- fisherTable = c()
+ fisherTable = lapply(seq_len(nrow(m.gs.meged)), function(i){
+                     gene = m.gs.meged[i, 1]
+                     m1Mut = m.gs.meged[i,2]
+                     m2Mut = m.gs.meged[i,3]
+                     #print(i)
+                     xf = fisher.test(matrix(c(m1Mut, m1.sampleSize-m1Mut, m2Mut, m2.sampleSize-m2Mut),
+                                             byrow = TRUE, nrow = 2), conf.int = TRUE, conf.level = 0.95)
 
- for(i in 1:nrow(m.gs.meged)){
-   gene = m.gs.meged[i, 1]
-   m1Mut = m.gs.meged[i,2]
-   m2Mut = m.gs.meged[i,3]
-   #print(i)
-   xf = fisher.test(matrix(c(m1Mut, m1.sampleSize-m1Mut, m2Mut, m2.sampleSize-m2Mut),
-                           byrow = TRUE, nrow = 2), conf.int = TRUE, conf.level = 0.95)
+                     pval = xf$p.value
+                     or = xf$estimate
+                     ci.up = xf$conf.int[1]
+                     ci.low = xf$conf.int[2]
+                     tdat = data.table::data.table(Hugo_Symbol = gene, m1Mut , m2Mut,
+                                                   pval = pval, or = or, ci.up = ci.up, ci.low = ci.low)
+                     tdat
+                  })
 
-   pval = xf$p.value
-   or = xf$estimate
-   ci.up = xf$conf.int[1]
-   ci.low = xf$conf.int[2]
-   tdat = data.table::data.table(Hugo_Symbol = gene, m1Mut , m2Mut, pval = pval, or = or, ci.up = ci.up, ci.low = ci.low)
-   fisherTable = rbind(fisherTable, tdat)
- }
-
-  fisherTable = fisherTable[order(pval)]
-  fisherTable[,adjPval := p.adjust(p = pval, method = 'fdr')]
-
-  colnames(fisherTable)[2:3] = c(m1Name, m2Name)
+ fisherTable = data.table::rbindlist(l = fisherTable, use.names = TRUE, fill = TRUE)
+ fisherTable = fisherTable[order(pval)]
+ fisherTable[,adjPval := p.adjust(p = pval, method = 'fdr')]
+ colnames(fisherTable)[2:3] = c(m1Name, m2Name)
 
  return(list(results = fisherTable, SampleSummary = sampleSummary))
-
 }

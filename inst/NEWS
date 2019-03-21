@@ -9,6 +9,7 @@ IMPROVEMENTS:
     o Added MTRNR2L8 protein structure to pfam database. Issue: #255
 
 BUG FIX
+    o update docs, and vectorized code #266 #267
     o Fix legend title order. Issue: #253
     o GISTIC sample size issue fix. Issue: #249
     o Bug fix for oncoplots with CNV data. Issue: #240
