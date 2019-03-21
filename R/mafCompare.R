@@ -75,8 +75,8 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
 
                      pval = xf$p.value
                      or = xf$estimate
-                     ci.up = xf$conf.int[1]
-                     ci.low = xf$conf.int[2]
+                     ci.up = xf$conf.int[2]
+                     ci.low = xf$conf.int[1]
                      tdat = data.table::data.table(Hugo_Symbol = gene, m1Mut , m2Mut,
                                                    pval = pval, or = or, ci.up = ci.up, ci.low = ci.low)
                      tdat

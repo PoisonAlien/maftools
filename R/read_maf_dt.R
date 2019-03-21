@@ -29,7 +29,6 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' @import data.table
-#' @import ggplot2
 #' @seealso \code{\link{plotmafSummary}} \code{\link{write.mafSummary}}
 #' @export
 

@@ -5,8 +5,7 @@
 \title{Draw forest plot for differences betweeen cohorts.}
 \usage{
 forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, color = NULL,
-  geneFontSize = 1.2, titleSize = 1.2, lineWidth = 2.2,
-  file = NULL, width = 5, height = 6)
+  geneFontSize = 1.2, titleSize = 1.2, lineWidth = 2.2)
 }
 \arguments{
 \item{mafCompareRes}{results from \code{\link{mafCompare}}}
@@ -22,15 +21,9 @@ forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, color = NULL,
 \item{titleSize}{font size for titles. Default 1.2}
 
 \item{lineWidth}{line width for CI bars. Default 2.2}
-
-\item{file}{basename for output file. Plot will saved to an output pdf.}
-
-\item{width}{width of plot to be generated}
-
-\item{height}{height of plot to be generated}
 }
 \value{
-ggplot object of the plot.
+Nothing
 }
 \description{
 Draw forest plot for differences betweeen cohorts.

@@ -13,7 +13,7 @@
 #' @param axis_fs font size for axis. Default 0.8
 #' @param width Width of plot to be saved. Default 4
 #' @param height Height of plot to be saved. Default 5
-#' @return ggplot object which can be further modified.
+#' @return Nothing.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)

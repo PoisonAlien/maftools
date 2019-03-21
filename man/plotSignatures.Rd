@@ -33,7 +33,7 @@ plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
 \item{...}{further plot options passed to \code{\link{barplot}}}
 }
 \value{
-ggplot object if contributions is TRUE
+Nothing
 }
 \description{
 Takes results from \code{\link{extractSignatures}} and plots decomposed mutational signatures as a barplot.

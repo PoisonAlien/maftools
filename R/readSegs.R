@@ -125,12 +125,7 @@ plotCBSchr = function(segData, chr, tsb){
   }
 
   seg.dat = seg[Chromosome == chr]
-  p = ggplot(data = seg.dat)+geom_segment(data = seg.dat, aes(x = Start_Position, xend = End_Position, y = Segment_Mean, yend = Segment_Mean), color = 'maroon', size = 3)+
-    cowplot::theme_cowplot(font_size = 8)+theme(axis.line.x = element_blank())+
-    geom_hline(yintercept = 0, size = 0.5, linetype = 'dashed')+ggtitle(paste(tsb, ' : chr',chr, sep = ''))+xlab('Size')+ylab('Segment Mean')+
-    cowplot::background_grid(major = 'onlyminor', minor = 'y')
 
-  return(p)
 }
 
 #--- Plot complete segments

@@ -30,7 +30,7 @@ rainfallPlot(maf, tsb = NULL, detectChangePoints = FALSE,
 \item{pointSize}{Default 0.8.}
 }
 \value{
-returns ggplot object of the plot which can be further modified. Results are written to an output file with suffix changePoints.tsv
+Results are written to an output file with suffix changePoints.tsv
 }
 \description{
 Plots inter variant distance as a function of genomic locus.

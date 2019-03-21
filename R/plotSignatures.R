@@ -13,7 +13,7 @@
 #' @param show_barcodes Default FALSE
 #' @param yaxisLim Default 0.3. If NA autoscales.
 #' @param ... further plot options passed to \code{\link{barplot}}
-#' @return ggplot object if contributions is TRUE
+#' @return Nothing
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'

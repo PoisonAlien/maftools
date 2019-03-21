@@ -21,7 +21,7 @@ plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = FALSE,
 \item{labelSize}{font size for labelling genes. Default 1.}
 }
 \value{
-a ggplot object which can be further modified.
+Nothing
 }
 \description{
 Takes results from \code{oncodrive} and plots them as a scatter plot. Size of the gene shows number of clusters (hotspots), x-axis can either be an absolute number of variants

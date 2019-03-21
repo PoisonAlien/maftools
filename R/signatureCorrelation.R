@@ -133,7 +133,6 @@ signatureEnrichment = function(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NU
                 quote = FALSE, row.names = FALSE)
     write.table(x = sig.enrich$mutation_load, file = paste0(fn, "_mutation_load.tsv"), sep = "\t",
                 quote = FALSE, row.names = FALSE)
-    cowplot::save_plot(filename = paste0(fn, "_mutation_load.pdf"), plot = mut.load.p, base_height = 5, base_width = 4)
   }
 
   sig.enrich

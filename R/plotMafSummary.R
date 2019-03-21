@@ -19,7 +19,6 @@
 #' plotmafSummary(maf = laml, addStat = 'median')
 #' @return Prints plot.
 #' @import RColorBrewer
-#' @importFrom cowplot background_grid plot_grid save_plot theme_cowplot
 #' @seealso \code{\link{read.maf}} \code{\link{MAF}}
 #' @export
 

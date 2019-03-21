@@ -9,7 +9,7 @@
 #' @param colCode Colors to use for indicating significant and non-signififcant genes. Default NULL
 #' @param labelSize font size for labelling genes. Default 1.
 #' @param bubbleSize Size for bubbles. Default 2.
-#' @return a ggplot object which can be further modified.
+#' @return Nothing
 #' @seealso \code{\link{oncodrive}}
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

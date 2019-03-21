@@ -34,7 +34,7 @@ plotVaf(maf, vafCol = NULL, genes = NULL, top = 10,
 \item{showN}{if TRUE, includes number of observations}
 }
 \value{
-ggplot object which can be further modified.
+Nothing.
 }
 \description{
 Plots vaf distribution of genes as a boxplot.

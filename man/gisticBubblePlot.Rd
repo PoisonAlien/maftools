@@ -26,7 +26,7 @@ gisticBubblePlot(gistic = NULL, color = NULL, markBands = NULL,
 \item{height}{height of the file to be saved.}
 }
 \value{
-invisible ggplot2 object
+Nothing
 }
 \description{
 Plots significantly altered cytobands as a function of number samples in which it is altered and number genes it contains. Size of each bubble is according to -log10 transformed q values.

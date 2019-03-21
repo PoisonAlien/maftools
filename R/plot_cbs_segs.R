@@ -50,7 +50,8 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FA
       pdf(file = paste(tsb[i], '_segPlot.pdf', sep = ''), width = width, height = height, bg = "white", paper = "special")
     }
 
-    plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color, y_lims = ylims, rect_size = seg_size)
+    plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color,
+            y_lims = ylims, rect_size = seg_size)
 
     if(!is.null(maf)){
       tsb.mapped = mapMutsToSegs(seg = seg, maf = maf, tsb = tsb[i], build = ref.build)

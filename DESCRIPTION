@@ -1,7 +1,7 @@
 Package: maftools
 Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 1.9.22
+Version: 1.9.25
 Date: 2015-12-14
 Author: Anand Mayakonda <anand_mt@hotmail.com>
 Maintainer: Anand Mayakonda <anand_mt@hotmail.com>
@@ -11,10 +11,20 @@ BugReports: https://github.com/PoisonAlien/maftools/issues
 License: MIT + file LICENSE
 LazyData: TRUE
 Depends: R (>= 3.3)
-Imports: data.table, ggplot2(>= 2.0), cowplot, cometExactTest,
-        RColorBrewer, NMF, ggrepel, methods,
-        mclust, Biostrings,
-        rjson, grid, wordcloud, grDevices, gridExtra, survival, BSgenome
+Imports: 
+    data.table,
+    cometExactTest,
+    RColorBrewer,
+    NMF,
+    methods,
+    mclust,
+    Biostrings,
+    rjson,
+    grid,
+    wordcloud,
+    grDevices,
+    survival,
+    BSgenome
 RoxygenNote: 6.1.1
 Encoding: UTF-8
 Suggests: knitr, rmarkdown

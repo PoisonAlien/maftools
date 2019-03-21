@@ -17,7 +17,7 @@
 #' @param height height of plot to be saved.
 #' @param fontSize Default 12.
 #' @param pointSize Default 0.8.
-#' @return returns ggplot object of the plot which can be further modified. Results are written to an output file with suffix changePoints.tsv
+#' @return Results are written to an output file with suffix changePoints.tsv
 #' @export
 
 
