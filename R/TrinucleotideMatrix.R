@@ -31,9 +31,6 @@
 #' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19',
 #' prefix = 'chr', add = TRUE, useSyn = TRUE)
 #' }
-#'
-#' @importFrom BSgenome installed.genomes getBSgenome seqnames getSeq alphabetFrequency
-#' @importFrom Biostrings trinucleotideFrequency
 #' @seealso \code{\link{extractSignatures}} \code{\link{plotApobecDiff}}
 #' @export
 trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,

@@ -27,7 +27,7 @@ tcgaCompare(maf, capture_size = NULL, cohortName = NULL,
 data.table with median mutations per cohort
 }
 \description{
-Compares mutation load in input MAF against all of 33 TCGA cohorts
+Compares mutation load in input MAF against all of 33 TCGA cohorts derived from MC3 project.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

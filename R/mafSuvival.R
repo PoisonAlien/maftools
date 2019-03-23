@@ -18,7 +18,6 @@
 #' @param width width of plot to be saved. Default 6
 #' @param height height of plot to be saved. Default 6
 #' @import survival
-#' @importFrom gridExtra tableGrob ttheme_minimal
 #' @return Survival plot
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

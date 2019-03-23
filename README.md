@@ -119,4 +119,3 @@ For full documentation please refer to [vignette](http://bioconductor.org/packag
 
 #### Powered By:
 * [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive)
-* [ggplot2](https://github.com/hadley/ggplot2)

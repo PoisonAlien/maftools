@@ -50,7 +50,6 @@ One-sided Fisher's Exact test is performed to determine the enrichment of APOBEC
 laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19',
 prefix = 'chr', add = TRUE, useSyn = TRUE)
 }
-
 }
 \references{
 Roberts SA, Lawrence MS, Klimczak LJ, et al. An APOBEC Cytidine Deaminase Mutagenesis Pattern is Widespread in Human Cancers. Nature genetics. 2013;45(9):970-976. doi:10.1038/ng.2702.
