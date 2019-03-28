@@ -122,7 +122,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
   extract.tbl[,Substitution:=paste(extract.tbl$Reference_Allele, extract.tbl$Tumor_Seq_Allele2, sep='>')]
   extract.tbl$SubstitutionMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$Substitution, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
 
-  #substitutions are referred to by the pyrimidine of the mutated Watson–Crick base pair
+  #substitutions are referred to by the pyrimidine of the mutated Watson-Crick base pair
   conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
   names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
 
@@ -180,7 +180,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
                        "T[A>G]A", "G[C>G]G", "T[T>C]A", "C[T>A]A", "T[T>A]G", "T[A>T]C"
   )
 
-  #Possible substitution types after being referred to by the pyrimidine of the mutated Watson–Crick base pair
+  #Possible substitution types after being referred to by the pyrimidine of the mutated Watson-Crick base pair
   subtype.levels = c("A[C>A]A", "A[C>A]C", "A[C>A]G", "A[C>A]T", "C[C>A]A", "C[C>A]C",
                      "C[C>A]G", "C[C>A]T", "G[C>A]A", "G[C>A]C", "G[C>A]G", "G[C>A]T",
                      "T[C>A]A", "T[C>A]C", "T[C>A]G", "T[C>A]T", "A[C>G]A", "A[C>G]C",
