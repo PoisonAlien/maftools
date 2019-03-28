@@ -104,7 +104,7 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   data.table::setDT(clinicalData)
 
   clinicalData$Time = suppressWarnings( as.numeric(as.character(clinicalData$Time)) )
-  clinicalData$Status = suppressWarnings( as.integer(as.character(clinicalData$Status)) )
+  clinicalData$Status = suppressWarnings( as.integer(clinicalData$Status) )
   clinicalData$Group = ifelse(test = clinicalData$Tumor_Sample_Barcode %in% genesTSB, yes = groupNames[1], no = groupNames[2])
   clin.mut.dat = clinicalData[,.(medianTime = median(Time, na.rm = TRUE),N = .N), Group][order(Group)]
   message("Median survival..")
