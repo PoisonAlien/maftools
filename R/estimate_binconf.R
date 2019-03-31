@@ -1,7 +1,7 @@
 #X = number of successes
 #n = number of trials
 #alpha = pvalues threshold
-#Details: https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Agresti–Coull_interval
+#Details: https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Agresti-Coull_interval
 
 estimate_binconf = function(X, n, alpha = 0.05){
 
