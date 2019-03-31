@@ -1,7 +1,7 @@
 Package: maftools
 Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 1.9.27
+Version: 1.9.30
 Date: 2015-12-14
 Author: Anand Mayakonda <anand_mt@hotmail.com>
 Maintainer: Anand Mayakonda <anand_mt@hotmail.com>
@@ -17,7 +17,6 @@ Imports:
     RColorBrewer,
     NMF,
     methods,
-    mclust,
     rjson,
     grid,
     wordcloud,
@@ -25,7 +24,7 @@ Imports:
     survival
 RoxygenNote: 6.1.1
 Encoding: UTF-8
-Suggests: knitr, rmarkdown, BSgenome, Biostrings
+Suggests: knitr, rmarkdown, BSgenome, Biostrings, mclust
 VignetteBuilder: knitr
 biocViews: DataRepresentation, DNASeq, Visualization, DriverMutation, VariantAnnotation,
         FeatureExtraction, Classification, SomaticMutation, Sequencing, FunctionalGenomics, Survival

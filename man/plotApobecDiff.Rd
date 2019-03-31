@@ -4,7 +4,7 @@
 \alias{plotApobecDiff}
 \title{Plot differences between APOBEC enriched and non-APOBEC enriched samples.}
 \usage{
-plotApobecDiff(tnm, maf, title_size = 1, axis_lwd = 2,
+plotApobecDiff(tnm, maf, title_size = 1, axis_lwd = 1,
   font_size = 1.2)
 }
 \arguments{
@@ -14,7 +14,7 @@ plotApobecDiff(tnm, maf, title_size = 1, axis_lwd = 2,
 
 \item{title_size}{size of title. Default 1.3}
 
-\item{axis_lwd}{axis width. Default 2.}
+\item{axis_lwd}{axis width. Default 1}
 
 \item{font_size}{font size. Default 1.2}
 }

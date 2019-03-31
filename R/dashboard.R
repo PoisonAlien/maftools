@@ -1,4 +1,4 @@
-dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie, rawcount = TRUE, stat = NULL, titleSize = NULL, barcodes = NULL, barcodeSize = NULL){
+dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv.color = NULL, sfs = statFontSize, fontSize = fs, n = 10, donut = pie, rawcount = TRUE, stat = NULL, titleSize = NULL, barcodes = NULL, barcodeSize = NULL){
 
   if(is.null(color)){
     #hard coded color scheme if user doesnt provide any
@@ -21,20 +21,28 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
 
   lo = matrix(data = 1:6, nrow = 2, byrow = TRUE)
   layout(mat = lo, heights = c(3.5, 3), widths = c(3, 2, 2))
-  par(cex.axis = fontSize, font = 3, cex.main = titleSize[1], lwd = 2)
+  par(cex.axis = fontSize, font = 3, cex.main = titleSize[1], lwd = 1.2)
 
   #--------------------------- variant classification plot -----------------
   vc.plot.dat = rev(rowSums(vcs))
-  xt = as.integer(seq(0, max(vc.plot.dat), length.out = 4))
+  if(log_conv){
+    vc.plot.dat = log10(vc.plot.dat)
+  }
+
+  xt = pretty(c(0, vc.plot.dat))
 
   par(mar = c(3, 9, 3, 1))
   b = barplot(vc.plot.dat, axes = FALSE, horiz = TRUE, col = col[names(vc.plot.dat)], border = NA,
               xlim = c(0, max(xt)), names.arg = rep("", length(vc.plot.dat)))
   abline(v = xt, h = 1:length(b)-0.25, lty = 2, lwd = 0.3, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.6))
-  axis(side = 2, at = b, labels = names(vc.plot.dat), lwd = 2, cex.axis = fontSize,
+  axis(side = 2, at = b, labels = names(vc.plot.dat), lwd = 1.2, cex.axis = fontSize,
        las = 2, line = 0.2, hadj = 0.9, font = 3, tick = FALSE)
-  axis(side = 1, at = xt, lwd = 2, font = 3, las = 2, cex.axis = fontSize*0.9)
+  axis(side = 1, at = xt, lwd = 1.2, font = 3, las = 2, cex.axis = fontSize*0.9)
   title(main = "Variant Classification", adj = 0, cex.main = titleSize[1], font = 3)
+  if(log_conv){
+    axis(side = 2, at = 0, labels = "(log10)", lwd = 1.2, font = 3,
+         las = 1, cex.axis = fontSize*0.9, hadj = 0.5, padj = 2, line = 0.75, tick = FALSE, outer = FALSE)
+  }
 
   #--------------------------- variant type plot -----------------
   vt.plot.dat = maf@variant.type.summary
@@ -43,16 +51,24 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   colnames(vt.plot.dat)[2] = "sum"
 
   vt.cols = RColorBrewer::brewer.pal(n = 10, name = "Set3")
-  xt = as.integer(seq(0, max(vt.plot.dat$sum), length.out = 4))
+  if(log_conv){
+    vt.plot.dat$sum = log10(vt.plot.dat$sum)
+  }
+  #xt = as.integer(seq(0, max(vt.plot.dat$sum), length.out = 4))
+  xt = pretty(c(0, vt.plot.dat$sum))
 
   par(mar = c(3, 3, 3, 1))
   b = barplot(vt.plot.dat$sum, axes = FALSE, horiz = TRUE, col = vt.cols[1:length(vt.plot.dat$variable)],
               border = NA, xlim = c(0, max(xt)))
   abline(v = xt, h = 1:length(b)-0.25, lty = 2, lwd = 0.3, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.6))
-  axis(side = 2, at = b, labels = vt.plot.dat$variable, lwd = 2, cex.axis = fontSize,
+  axis(side = 2, at = b, labels = vt.plot.dat$variable, lwd = 1.2, cex.axis = fontSize,
        las = 2, line = 0.2, hadj = 0.8, font = 3, tick = FALSE)
-  axis(side = 1, at = xt, lwd = 2, font = 3, las = 2, cex.axis = fontSize*0.9)
+  axis(side = 1, at = xt, lwd = 1.2, font = 3, las = 2, cex.axis = fontSize*0.9)
   title(main = "Variant Type", adj = 0, cex.main = titleSize[1], font = 3)
+  if(log_conv){
+    axis(side = 2, at = 0, labels = "(log10)", lwd = 1.2, font = 3,
+         las = 1, cex.axis = fontSize*0.9, hadj = 0.5, padj = 2, line = 0.75, tick = FALSE, outer = FALSE)
+  }
 
   #--------------------------- titv summary plot -----------------
   titv = titv(maf = maf, useSyn = TRUE, plot = FALSE)
@@ -74,9 +90,9 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   par(mar = c(3, 3, 3, 1))
   b = barplot(titv.sums$value, axes = FALSE, horiz = TRUE, col = titv.color[rownames(titv.sums)],
               border = NA, xlim = c(0, xt[length(xt)]))
-  axis(side = 2, at = b, labels = rownames(titv.sums), lwd = 2, cex.axis = fontSize,
+  axis(side = 2, at = b, labels = rownames(titv.sums), lwd = 1.2, cex.axis = fontSize,
        las = 2, line = 0.2, hadj = 0.8, font = 3, tick = FALSE)
-  axis(side = 1, at = xt, lwd = 2, font = 3, las = 2, cex.axis = fontSize*0.9)
+  axis(side = 1, at = xt, lwd = 1.2, font = 3, las = 2, cex.axis = fontSize*0.9)
   title(main = "SNV Class", adj = 0, cex.main = titleSize[1], font = 3)
   if(!rawcount){
     text(x = titv.sums$value+0.03, y = b, labels = titv.sums$raw_value,
@@ -92,8 +108,16 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
     par(mar = c(3, 2, 3, 1))
   }
 
+  if(log_conv){
+    vcs = apply(vcs, 2, function(x){
+      x_fract = x / sum(x)
+      x_log_total = log10(sum(x))
+      x_fract * x_log_total
+    })
+  }
+
   b = barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg =  rep("", ncol(vcs)))
-  axis(side = 2, at = as.integer(seq(0, max(colSums(vcs)), length.out = 4)), lwd = 2, font = 3, las = 2,
+  axis(side = 2, at = as.integer(seq(0, max(colSums(vcs)), length.out = 4)), lwd = 1.2, font = 3, las = 2,
        line = -0.3, hadj = 0.6, cex.axis = fontSize)
   title(main = "Variants per sample", adj = 0, cex.main = titleSize[1], font = 3, line = 2)
 
@@ -104,15 +128,27 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   if(!is.null(stat)){
     if(stat == 'mean'){
       med.line = round(maf@summary[ID %in% "total", Mean], 2)
+      if(log_conv){
+        med.line = round(log10(med.line), 2)
+      }
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Mean: ', med.line, sep='')))
       title(main = paste0("Mean: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 3, line = 1)
-      lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 2, lty = 2)
+      lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 1.2, lty = 2)
     }else if(stat == 'median'){
       med.line = round(maf@summary[ID %in% "total", Median], 2)
+      if(log_conv){
+        med.line = log10(med.line)
+        title(main = paste0("Median: ", round(10^med.line)), adj = 0, cex.main = titleSize[1]*0.8, font = 3, line = 1)
+      }else{
+        title(main = paste0("Median: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 3, line = 1)
+      }
       df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
-      title(main = paste0("Median: ", med.line), adj = 0, cex.main = titleSize[1]*0.8, font = 3, line = 1)
-      lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 2, lty = 2)
+      lines(x = c(1, b[length(b)]), y = c(med.line, med.line), col = "maroon", lwd = 1.2, lty = 2)
     }
+  }
+
+  if(log_conv){
+    mtext(text = "(log10)", side = 2, lwd = 1.2, font = 3, cex = fontSize*0.7, line = 1)
   }
 
   #--------------------------- vc summary plot -----------------
@@ -120,11 +156,12 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   boxH = vcs.m[,boxplot.stats(N)$stat[5], by = .(Variant_Classification)]
   colnames(boxH)[ncol(boxH)] = 'boxStat'
   bcol = col[levels(vcs.m$Variant_Classification)]
+  #vcs.m$N = log10(vcs.m$N)
   b = boxplot(N ~ Variant_Classification, data = vcs.m, xaxt="n", outline=FALSE, lty=1, lwd = 1.4, outwex=0,
               staplewex=0, axes = FALSE, border = bcol)
 
   axis(side = 2, at = as.integer(seq(0, max(boxH[,boxStat], na.rm = TRUE), length.out = 4)),
-       lwd = 2, font = 3, cex.axis = fontSize, las = 2)
+       lwd = 1.2, font = 3, cex.axis = fontSize, las = 2)
   title(main = "Variant Classification \nsummary", adj = 0, cex.main = titleSize[1], font = 3, line = 1)
   abline(v = 1:length(bcol), h = as.integer(seq(0, max(boxH[,boxStat], na.rm = TRUE), length.out = 4)),
          lty = 2,
@@ -156,38 +193,13 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, titv.color = NULL, sfs
   par(mar = c(3, 4, 3, 1))
   gs.load = gs.load[rev(colnames(gs.dat)),,]
   b = barplot(gs.dat, axes = FALSE, horiz = TRUE, col = col[rownames(gs.dat)], border = NA,
-              xlim = c(0, max(xt)+8), names.arg = rep("", ncol(gs.dat)))
-  axis(side = 2, at = b, labels = colnames(gs.dat), lwd = 2, cex.axis = fontSize,
+              xlim = c(0, max(xt)+(max(xt)*0.15)), names.arg = rep("", ncol(gs.dat)))
+  axis(side = 2, at = b, labels = colnames(gs.dat), lwd = 1.2, cex.axis = fontSize,
        las = 2, line = 0.2, hadj = 0.8, font = 3, tick = FALSE)
-  axis(side = 1, at = xt, lwd = 2, font = 3, las = 2, cex.axis = fontSize*0.9)
+  axis(side = 1, at = xt, lwd = 1.2, font = 3, las = 2, cex.axis = fontSize*0.9)
   title(main = paste0('Top ',  n, '\nmutated genes'), adj = 0, cex.main = titleSize[1], font = 3)
   text(x = colSums(gs.dat)+1, y = b, labels = rev(paste0(gs.load$AlteredSamples, "%")),
        font = 4, col = "black", cex = fontSize*0.9, adj = 0)
   abline(h = b, v = xt,lty = 2, lwd = 0.3,
          col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.6))
 }
-
-#   #--------------------------- oncoplot via ggplot -----------------
-#
-#   #Summary Table
-#
-#   hm.df = maf@oncoMatrix[1:10,]
-#   hm.df = data.table::melt(hm.df)
-#   #Reverse factors for decreasing order.
-#   hm.df$Var1 = factor(hm.df$Var1, levels = rev(rownames(maf@oncoMatrix[1:20,])))
-#
-#   col = c(col, 'gray')
-#   names(col)[length(col)] = ""
-#
-#   nsamples = as.numeric(maf.summary[ID %in% 'Samples',summary])
-#
-#   if(is.null(cohortName)){
-#     cohortName = 'Cohort'
-#   }
-#
-#   plot.title = paste(cohortName, " (n = ", nsamples,")", sep = '')
-#
-#   hm.gg = ggplot(data = hm.df, aes(x = Var2, y = Var1))+geom_tile(aes(fill = as.character(value)), color = 'white')+
-#     scale_fill_manual(values = col)+
-#     theme(legend.position = 'none', axis.line = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank())+
-#     xlab('')+ylab('')+ggtitle(label = plot.title)+theme(plot.background = element_rect(fill = '#F2F2F2'))

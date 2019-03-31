@@ -6,8 +6,9 @@
 \usage{
 oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
   mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
-  clinicalFeatures = NULL, annotationDat = NULL,
-  annotationColor = NULL, genesToIgnore = NULL,
+  logColBar = FALSE, clinicalFeatures = NULL,
+  additionalFeature = NULL, additionalFeaturePch = 20,
+  annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
   showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE,
   fill = FALSE, colors = NULL, sortByMutation = FALSE,
   sortByAnnotation = FALSE, isNumeric = FALSE,
@@ -33,7 +34,13 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
 
 \item{drawColBar}{logical plots barplot for each sample. Default \code{TRUE}.}
 
+\item{logColBar}{Plot top bar plot on log10 scale. Default \code{FALSE}.}
+
 \item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
+
+\item{additionalFeature}{a vector of length two indicating column name in the MAF and the factor level to be highlighted.}
+
+\item{additionalFeaturePch}{Default 20}
 
 \item{annotationDat}{If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 You can specify which columns to be drawn using `clinicalFeatures` argument.}

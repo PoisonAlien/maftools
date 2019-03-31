@@ -72,12 +72,12 @@ plotTiTv = function(res = NULL, plotType = 'both',
                 names.arg = rep("", ncol(titv.frac.melt)),
                 axes = FALSE, space = 0.2, border = NA, lwd = 1.2)
     if(showBarcodes){
-      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 2, line = -1, las = 2, cex.axis = axisTextSize[1])
+      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 1, line = -1, las = 2, cex.axis = axisTextSize[1])
     }
-    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2])
-    mtext(side = 2, text = "% Mutations", font = 2, cex = baseFontSize, line = 2.5)
+    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2])
+    mtext(side = 2, text = "% Mutations", font = 1, cex = baseFontSize, line = 2.5)
 
-    add_legend(x = "topright", legend = names(col), col = col, bty = "n", pch = 15, y.intersp = 0.7, text.font = 2)
+    add_legend(x = "topright", legend = names(col), col = col, bty = "n", pch = 15, y.intersp = 0.7, text.font = 1)
 
   } else if(plotType == 'box'){
     layout(matrix(data = c(1, 2), nrow = 1), widths = c(4, 2))
@@ -86,16 +86,16 @@ plotTiTv = function(res = NULL, plotType = 'both',
                 names=NA, lty = 1, staplewex = 0, pch = 16, xaxt="n", notch = plotNotch,
                 outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6)
     axis(side = 1, at = 1:length(levels(titv.frac.melt[,variable])), labels = levels(titv.frac.melt[,variable]),
-         tick = FALSE, font = 2, line = -1, cex.axis = axisTextSize[1])
-    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2])
-    mtext(side = 2, text = "% Mutations", font = 2, cex = baseFontSize, line = 2.5)
+         tick = FALSE, font = 1, line = -1, cex.axis = axisTextSize[1])
+    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2])
+    mtext(side = 2, text = "% Mutations", font = 1, cex = baseFontSize, line = 2.5)
 
     par(mar = c(2, 1.5, 2, 2))
     b = boxplot(tf, axes = FALSE, xlab = "", ylab = "", col = 'gray70',
                 names=NA, lty = 1, staplewex = 0, pch = 16, xaxt="n", notch = plotNotch,
                 outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6)
-    axis(side = 1, at = 1:2, labels = names(tf), tick = FALSE, font = 2, line = -1, cex.axis = axisTextSize[1])
-    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2])
+    axis(side = 1, at = 1:2, labels = names(tf), tick = FALSE, font = 1, line = -1, cex.axis = axisTextSize[1])
+    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2])
 
   } else if(plotType == 'both'){
 
@@ -106,9 +106,9 @@ plotTiTv = function(res = NULL, plotType = 'both',
     b = boxplot(value ~ variable, data = titv.frac.melt, axes = FALSE, xlab = "", ylab = "", col = col[levels(titv.frac.melt[,variable])],
                 names=NA, lty = 1, staplewex = 0, pch = 16, xaxt="n", notch = plotNotch,
                 outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6, add = TRUE)
-    axis(side = 1, at = 1:length(levels(titv.frac.melt[,variable])), labels = levels(titv.frac.melt[,variable]), tick = FALSE, font = 2, line = -1, cex.axis = axisTextSize[1])
-    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2], line = 0.4)
-    mtext(side = 2, text = "% Mutations", font = 2, cex = baseFontSize, line = 2.5)
+    axis(side = 1, at = 1:length(levels(titv.frac.melt[,variable])), labels = levels(titv.frac.melt[,variable]), tick = FALSE, font = 1, line = -1, cex.axis = axisTextSize[1])
+    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2], line = 0.4)
+    mtext(side = 2, text = "% Mutations", font = 1, cex = baseFontSize, line = 2.5)
 
     par(mar = c(2, 1.5, 2, 2))
     plot(NA, axes = FALSE, xlim = c(0, 3), ylim = c(0, 100), xlab = NA, ylab = NA)
@@ -117,8 +117,8 @@ plotTiTv = function(res = NULL, plotType = 'both',
     b = boxplot(tf, axes = FALSE, xlab = "", ylab = "", col = 'gray70',
                 names=NA, lty = 1, staplewex = 0, pch = 16, xaxt="n", notch = plotNotch,
                 outcex = 0.6, outcol = "gray70", ylim = c(0, 100), lwd = 0.6, add = TRUE, at = 1:2)
-    axis(side = 1, at = 1:2, labels = names(tf), tick = FALSE, font = 2, line = -1, cex.axis = axisTextSize[1])
-    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2])
+    axis(side = 1, at = 1:2, labels = names(tf), tick = FALSE, font = 1, line = -1, cex.axis = axisTextSize[1])
+    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2])
 
     titv.frac.melt = data.table::dcast(data = titv.frac.melt, variable ~ Tumor_Sample_Barcode)
     data.table::setDF(x = titv.frac.melt)
@@ -138,10 +138,10 @@ plotTiTv = function(res = NULL, plotType = 'both',
     b = barplot(titv.frac.melt, col = col[rownames(x = titv.frac.melt)], names.arg = rep("", ncol(titv.frac.melt)),
                 axes = FALSE, space = 0.2, border = NA)
     if(showBarcodes){
-      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 2, line = -1, las = 2, cex.axis = axisTextSize[1])
+      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 1, line = -1, las = 2, cex.axis = axisTextSize[1])
     }
-    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 2, lwd = 2, cex.axis = axisTextSize[2])
-    mtext(side = 2, text = "% Mutations", font = 2, cex = baseFontSize, line = 2.5)
+    axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2])
+    mtext(side = 2, text = "% Mutations", font = 1, cex = baseFontSize, line = 2.5)
 
   }else{
     stop('plotType can only be bar, box or both')

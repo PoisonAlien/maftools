@@ -30,7 +30,6 @@
 #' laml <- read.maf(maf = laml.maf)
 #' TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
 #'}
-#' @importFrom mclust densityMclust
 #' @export
 #' @seealso \code{\link{plotClusters}}
 

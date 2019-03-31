@@ -114,7 +114,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
   plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
   lep = legend("topleft", legend = names(col),
                col = col, border = NA, bty = "n",
-              pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = 1, ncol= 4) #ncol= 2
+              pch = 19, xpd = TRUE, xjust = 0, yjust = 0, cex = 1, ncol= 4) #ncol= 2
 
   if(savePlot){
     pdf(file = paste(tsb, 'rainfallPlot.pdf', sep = '_'),

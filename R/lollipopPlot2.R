@@ -70,15 +70,15 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
   par(mar = c(2, 2.5, 2, 1))
   plot(0, 0, xlim = c(0, max(m1.lp[[2]], na.rm = TRUE)+10), ylim = c(-6.5, 6.5), axes = FALSE, pch = NA, xlab = "", ylab = "")
   rect(xleft = 0, ybottom = -0.8, xright = max(m1.lp[[2]]), ytop = 0.8, col = "gray70", border = "gray70")
-  # axis(side = 1, at = m1.lp[[2]], labels = m1.lp[[2]], lwd = 2, font = 2,
+  # axis(side = 1, at = m1.lp[[2]], labels = m1.lp[[2]], lwd = 1.2, font = 1,
   #      cex.axis = axisTextSize[1], line = -0.4)
-  axis(side = 2, at = m1.lp[[3]], labels = m1.lp[[4]], lwd = 2, font = 2, las = 2,
+  axis(side = 2, at = m1.lp[[3]], labels = m1.lp[[4]], lwd = 1.2, font = 1, las = 2,
        cex.axis = axisTextSize[2])
-  axis(side = 2, at = -m2.lp[[3]], labels = m2.lp[[4]], lwd = 2, font = 2, las = 2,
+  axis(side = 2, at = -m2.lp[[3]], labels = m2.lp[[4]], lwd = 1.2, font = 1, las = 2,
        cex.axis = axisTextSize[2])
 
-  segments(x0 = m1.lp[[1]][,pos2], y0 = 0.8, x1 = m1.lp[[1]][,pos2], y1 = m1.lp[[1]][,count2-0.03], lwd = 2, col = "gray70")
-  segments(x0 = m2.lp[[1]][,pos2], y0 = -0.8, x1 = m2.lp[[1]][,pos2], y1 = -m2.lp[[1]][,count2-0.03], lwd = 2, col = "gray70")
+  segments(x0 = m1.lp[[1]][,pos2], y0 = 0.8, x1 = m1.lp[[1]][,pos2], y1 = m1.lp[[1]][,count2-0.03], lwd = 1.2, col = "gray70")
+  segments(x0 = m2.lp[[1]][,pos2], y0 = -0.8, x1 = m2.lp[[1]][,pos2], y1 = -m2.lp[[1]][,count2-0.03], lwd = 1.2, col = "gray70")
 
   points(x = m1.lp[[1]][,pos2], y = m1.lp[[1]][,count2], col = col1, pch = 16, cex = pointSize)
   points(x = m2.lp[[1]][,pos2], y = -m2.lp[[1]][,count2], col = col2, pch = 16, cex = pointSize)
@@ -86,30 +86,30 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
   rect(xleft = prot[,Start], ybottom = -1, xright = prot[,End], ytop = 1, col = domain_cols, border = NA)
 
   prot$pos = rowMeans(x = prot[,.(Start, End)])
-  text(y = 0, x = prot$pos, labels = prot$Label, font = 2, cex = domainLabelSize)
+  text(y = 0, x = prot$pos, labels = prot$Label, font = 3, cex = domainLabelSize)
 
-  text(x = max(m1.lp[[2]])+10, y = 0.5, labels = paste0(max(m1.lp[[2]]), " aa"), font = 2, adj = 1, srt = 90)
+  text(x = max(m1.lp[[2]])+10, y = 0.5, labels = paste0(max(m1.lp[[2]]), " aa"), font = 1, adj = 1, srt = 90)
 
 
   if(!is.null(m1_name)){
     mtext(text = paste0(m1_name, " [", m1.lp[[5]], "; N = ", m1@summary[3, summary], "]"), side = 3, line = 0.2, adj = 0, font = 4)
   }else{
-    mtext(text = paste0(m1.lp[[5]], "; N = ", m1@summary[3, summary]), side = 3, line = 0.2, adj = 0, font = 4)
+    mtext(text = paste0(m1.lp[[5]], "; N = ", m1@summary[3, summary]), side = 3, line = 0.2, adj = 0, font = 3)
   }
 
-  mtext(text = paste0(gene, ": ", unique(prot[,refseq.ID])), side = 3, line = 0.2, adj = 1, font = 2)
+  mtext(text = paste0(gene, ": ", unique(prot[,refseq.ID])), side = 3, line = 0.2, adj = 1, font = 1)
 
   if(!is.null(m2_name)){
     mtext(text = paste0(m2_name, " [", m2.lp[[5]], "; N = ", m2@summary[3, summary], "]"), side = 1, line = 0.2, adj = 0, font = 4)
   }else{
-    mtext(text = paste0(m2.lp[[5]], "; N = ", m2@summary[3, summary]), side = 1, line = 0.2, adj = 0, font = 4)
+    mtext(text = paste0(m2.lp[[5]], "; N = ", m2@summary[3, summary]), side = 1, line = 0.2, adj = 0, font = 3)
   }
 
   if(!is.null(m1_label)){
     m1_label = label_pos(prot.snp.sumamry = m1.lp[[1]], labelPos = m1_label)
     if(!is.null(m1_label)){
       text(x = m1_label[,pos2], y = m1_label[,count2+0.45], labels = m1_label[,conv],
-           font = 2, srt = labPosAngle, cex = labPosSize)
+           font = 1, srt = labPosAngle, cex = labPosSize)
     }
   }
 
@@ -117,7 +117,7 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
     m2_label = label_pos(prot.snp.sumamry = m2.lp[[1]], labelPos = m2_label)
     if(!is.null(m2_label)){
       text(x = m2_label[,pos2], y = -m2_label[,count2+0.60], labels = m2_label[,conv],
-           font = 2, srt = labPosAngle, cex = labPosSize)
+           font = 1, srt = labPosAngle, cex = labPosSize)
     }
   }
 
@@ -125,7 +125,7 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
   par(mar = c(1, 0, 1, 1))
   col = col[unique(c(names(col1), names(col2)))]
   legend("left", legend = names(col), col = col,  bty = "n", border=NA,
-         xpd = TRUE, text.font = 2, pch = 16, xjust = 0, yjust = 0,
+         xpd = TRUE, text.font = 1, pch = 16, xjust = 0, yjust = 0,
          cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
          pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
 }

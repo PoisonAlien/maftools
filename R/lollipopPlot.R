@@ -119,7 +119,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   mutRate = round(getGeneSummary(x = maf)[Hugo_Symbol %in% geneID, MutatedSamples]/sampleSize*100, digits = 2)
   cbioSubTitle = geneID
   if(showMutationRate){
-    cbioSubTitle = paste0(cbioSubTitle, ": [Somatic Mutation Rate: ", mutRate, "%]")
+    cbioSubTitle = substitute(paste(italic(cbioSubTitle), " : [Somatic Mutation Rate: ", mutRate, "%]"))
   }
 
   if(cBioPortal){
@@ -283,37 +283,37 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   par(mar = c(1, 2.5, 2, 1))
   plot(0, 0, pch = NA, ylim = c(0, 6.5), xlim = c(0, len), axes = FALSE, xlab = NA, ylab = NA)
   rect(xleft = 0, ybottom = 0.2, xright = len, ytop = 0.8, col = "gray70", border = "gray70")
-  axis(side = 1, at = xlimPos, labels = xlimPos, lwd = 2, font = 2,
+  axis(side = 1, at = xlimPos, labels = xlimPos, lwd = 1.2, font = 1,
        cex.axis = axisTextSize[1], line = -0.4)
-  axis(side = 2, at = lim.pos, labels = lim.lab, lwd = 2, font = 2, las = 2,
+  axis(side = 2, at = lim.pos, labels = lim.lab, lwd = 1.2, font = 1, las = 2,
        cex.axis = axisTextSize[2])
-  #mtext(text = "# Mutations", side = 2, line = 1.5, font = 2)
-  segments(x0 = prot.snp.sumamry[,pos2], y0 = 0.8, x1 = prot.snp.sumamry[,pos2], y1 = prot.snp.sumamry[,count2-0.03], lwd = 2, col = "gray70")
+  #mtext(text = "# Mutations", side = 2, line = 1.5, font = 1)
+  segments(x0 = prot.snp.sumamry[,pos2], y0 = 0.8, x1 = prot.snp.sumamry[,pos2], y1 = prot.snp.sumamry[,count2-0.03], lwd = 1.2, col = "gray70")
   points(x = prot.snp.sumamry[,pos2], y = prot.snp.sumamry[,count2], col = col, pch = 16, cex = pointSize)
   rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = domain_cols, border = NA)
 
-  title(main = cbioSubTitle, adj = 0, font = 2, cex.main = titleSize[1], line = 0.8)
-  title(main = unique(prot[,refseq.ID]), adj = 0, font = 1, line = -0.5, cex.main = titleSize[2])
+  title(main = cbioSubTitle, adj = 0, font.main = 2, cex.main = titleSize[1], line = 0.8)
+  title(main = unique(prot[,refseq.ID]), adj = 0, font.main = 1, line = -0.5, cex.main = titleSize[2])
 
   if(showDomainLabel){
     if(labelOnlyUniqueDoamins){
       prot = prot[!duplicated(Label)]
     }
     prot$pos = rowMeans(x = prot[,.(Start, End)], na.rm = FALSE)
-    text(y = 0.5, x = prot$pos, labels = prot$Label, font = 2, cex = domainLabelSize)
+    text(y = 0.5, x = prot$pos, labels = prot$Label, font = 3, cex = domainLabelSize)
   }
 
   if(!is.null(labelPos)){
     #prot.snp.sumamry = repelPoints(dat = prot.snp.sumamry, protLen = len, clustSize = 5)
     text(x = labDat[,pos2], y = labDat[,count2+0.45], labels = labDat[,conv],
-         font = 2, srt = labPosAngle, cex = labPosSize)
+         font = 1, srt = labPosAngle, cex = labPosSize)
   }
 
   par(mar = c(0, 0.5, 1, 0), xpd = TRUE)
 
   plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
   lep = legend("topleft", legend = names(col), col = col,  bty = "n", border=NA,
-               xpd = TRUE, text.font = 2, pch = 16, xjust = 0, yjust = 0,
+               xpd = TRUE, text.font = 1, pch = 16, xjust = 0, yjust = 0,
                cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
                pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
 

@@ -97,20 +97,20 @@ signatureEnrichment = function(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NU
              lwd = 1.5)
   }
   axis(side = 2, at = seq(0, 1, 0.25), labels = seq(0, 1, 0.25),
-       lwd = 3, font.axis = 2, cex = 1.5, font = 2)
+       lwd = 1.2, font.axis = 1, cex = 1.5, font = 1)
   mtext(text = gsub(pattern = "Signature_", replacement = "", x = colnames(sig.mean.stat)),
-        side = 1, at = b, font  = 2)
-  mtext(text = "k-mean signature cluster", side = 1, line = 1.5, font = 2, cex = 0.9)
+        side = 1, at = b, font  = 1)
+  mtext(text = "k-mean signature cluster", side = 1, line = 1.5, font = 1, cex = 0.9)
   title(main = 'Avg. signature exposure', cex.main = title_size, adj = 0)
 
   par(mar = c(3.4,2.5,2,2))
   boxplot(at = 1:nrow(sig.mean.stat), N ~ Signature, data = mut.load,  xaxt="n", col = cols,
-          boxwex=0.6, outline = FALSE, lty=1, outwex=0, staplewex=0, axes = FALSE, ylim = c(0, bsMax))
-  axis(side = 2, at = as.integer(seq(0, bsMax, length.out = 5)), lwd = 3, font = 2)
+          boxwex=0.6, outline = FALSE, lty=1, outwex=0, staplewex=0, axes = FALSE, ylim = c(0, bsMax), xlab = NA, ylab = NA)
+  axis(side = 2, at = as.integer(seq(0, bsMax, length.out = 5)), lwd = 1, font = 1)
   mtext(text = c(gsub(pattern = "Signature_", replacement = "", x = names(cols))),
-                 side = 1, at = 1:nrow(sig.mean.stat), font  = 2)
+                 side = 1, at = 1:nrow(sig.mean.stat), font  = 1)
   mtext(text = c("N:", as.numeric(cf.tbl)),
-        side = 1, line = 1.5, font = 2, at = 0:nrow(sig.mean.stat))
+        side = 1, line = 1.5, font = 1, at = 0:nrow(sig.mean.stat))
   #mtext(text = "Signature", side = 1, line = 2, font = 2)
 
   title(main = 'Mutation load', cex.main = title_size, adj = 0)

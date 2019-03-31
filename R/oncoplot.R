@@ -13,8 +13,11 @@
 #' @param mutsigQval Q-value to choose significant genes from mutsig results. Default 0.1
 #' @param drawRowBar logical plots barplot for each gene. Default \code{TRUE}.
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
+#' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
+#' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted.
+#' @param additionalFeaturePch Default 20
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
@@ -46,8 +49,8 @@
 #' oncoplot(maf = laml, top = 3)
 #' @seealso \code{\link{oncostrip}}
 #' @export
-oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
-                     clinicalFeatures = NULL, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
+oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, logColBar = FALSE,
+                     clinicalFeatures = NULL, additionalFeature = NULL, additionalFeaturePch = 20, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, isNumeric = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
@@ -236,14 +239,28 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       par(mar = c(0.25 , 5, 2, 5), xpd = TRUE)
     }
 
+    if(logColBar){
+      top_bar_data = apply(top_bar_data, 2, function(x) {
+        x_fract = x / sum(x)
+        x_log_total = log10(sum(x))
+        x_fract * x_log_total
+      })
+      top_bar_data[is.infinite(top_bar_data)] = 0
+    }
+
     plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(top_bar_data)), ylim = c(0, max(colSums(x = top_bar_data, na.rm = TRUE))),
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
-    axis(side = 2, at = c(0, max(colSums(top_bar_data, na.rm = TRUE))), las = 2, line = 0.5)
+    axis(side = 2, at = c(0, round(max(colSums(top_bar_data, na.rm = TRUE)))), las = 2, line = 0.5)
     for(i in 1:ncol(top_bar_data)){
       x = top_bar_data[,i]
       x = x[!x == 0]
-      rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
-           ytop = cumsum(x), col = vc_col[names(x)], border = NA, lwd = 0)
+      if(length(x) > 0){
+        rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
+             ytop = cumsum(x), col = vc_col[names(x)], border = NA, lwd = 0)
+      }
+    }
+    if(logColBar){
+      mtext(text = "(log10)", side = 2, line = 2, cex = 0.6)
     }
   }
 
@@ -352,6 +369,44 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
           yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
     points(del_idx, pch= 15, col= vc_col['Del'], cex = 1.5)
+  }
+
+  #Draw if any additional features are requested
+  additionalFeature_legend = FALSE
+  if(!is.null(additionalFeature)){
+    if(length(additionalFeature) < 2){
+      stop("additionalFeature must be of length two. See ?oncoplot for details.")
+    }
+    af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = additionalFeature[1], includeSyn = FALSE, mafObj = FALSE)
+    if(length(which(colnames(af_dat) == additionalFeature[1])) == 0){
+      message(paste0("Column ", additionalFeature[1], " not found in maf. Here are available fields.."))
+      print(getFields(maf))
+      stop()
+    }
+    colnames(af_dat)[which(colnames(af_dat) == additionalFeature[1])] = 'temp_af'
+    af_dat = af_dat[temp_af %in% additionalFeature[2]]
+    if(nrow(af_dat) == 0){
+      warning(paste0("No samples are enriched for ", additionalFeature[2], " in ", additionalFeature[1]))
+    }else{
+      af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
+      af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
+
+      nm = t(apply(numMat, 2, rev))
+
+      lapply(seq_len(nrow(af_mat)), function(i){
+        af_i = af_mat[i,, drop = FALSE]
+        af_i_genes = colnames(af_i)[which(af_i > 0)]
+        af_i_sample = rownames(af_i)
+
+        lapply(af_i_genes, function(ig){
+          af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
+                              which(colnames(nm) == ig)),
+                            nrow = 1)
+          points(af_i_mat, pch = additionalFeaturePch, col= "white", cex = 0.9)
+        })
+      })
+      additionalFeature_legend = TRUE
+    }
   }
 
   #Add grids
@@ -474,9 +529,17 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   par(mar = c(0, 0.5, 0, 0), xpd = TRUE)
 
   plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
-  lep = legend("topleft", legend = names(vc_col[vc_codes[2:length(vc_codes)]]),
-               col = vc_col[vc_codes[2:length(vc_codes)]], border = NA, bty = "n",
-               ncol= 2, pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
+  leg_classes = vc_col[vc_codes[2:length(vc_codes)]]
+  leg_classes_pch = rep(15, length(leg_classes))
+  if(additionalFeature_legend){
+    leg_classes = c(leg_classes,"gray70")
+    names(leg_classes)[length(leg_classes)] = paste(additionalFeature, collapse = ":")
+    leg_classes_pch = c(leg_classes_pch, additionalFeaturePch)
+  }
+
+  lep = legend("topleft", legend = names(leg_classes),
+               col = leg_classes, border = NA, bty = "n",
+               ncol= 2, pch = leg_classes_pch, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
 
   x_axp = 0+lep$rect$w
 

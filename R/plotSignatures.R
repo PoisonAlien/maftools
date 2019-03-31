@@ -43,9 +43,9 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       par(mar = c(6, 4, 2, 1))
       b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
       axis(side = 1, at = b, labels = colnames(contrib), lwd = 2, cex.axis = font_size,
-           las = 2, line = 0.2, hadj = 0.8, font = 2, tick = FALSE)
-      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 2, las = 2, cex.axis = 0.9)
-      mtext(text = "Signature exposures", side = 2, font = 2, cex = 1, line = 2.8)
+           las = 2, line = 0.2, hadj = 0.8, font = 1, tick = FALSE)
+      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 1, las = 2, cex.axis = 0.9)
+      mtext(text = "Signature exposures", side = 2, font = 1, cex = 1, line = 2.8)
       plot.new()
       par(mar = c(2, 3, 0, 0))
       legend(x = "left", legend = rownames(contrib), col = cols[1:nrow(contrib)],
@@ -55,8 +55,8 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       lo = layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
       par(mar = c(3, 4, 2, 1))
       b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
-      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 2, las = 2, cex.axis = 0.9)
-      mtext(text = "Signature exposure", side = 2, font = 2, cex = 1, line = 2.8)
+      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 1, las = 2, cex.axis = 0.9)
+      mtext(text = "Signature exposure", side = 2, font = 1, cex = 1, line = 2.8)
       plot.new()
       par(mar = c(2, 3, 0, 0))
       legend(x = "left", legend = rownames(contrib), col = cols[1:nrow(contrib)],
@@ -110,19 +110,19 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
               cex.main = 1, border = NA, font.axis = 2, font.lab = 2,
               adj = 0.25, ...)
       if(show_title){
-        title(main = ae, cex.main = title_size, line = 0)
+        title(main = ae, cex.main = title_size, line = 0, font.main = 3)
       }
 
       #mtext(text = ae, side = 1, line = 2, font = 1, cex = 0.5, at = 0.3)
       axis(side = 2, at = seq(0, bh, 0.1),
            pos = -2, las = 2, lwd = axis_lwd, hadj = 1.1,
-           font = 2, cex.axis = font_size)
+           font = 1, cex.axis = font_size)
       #abline(h = seq(0, 0.3, 0.1),lty=2,lwd=0.3, col = 'gray70')
       rect(xleft = seq(0, 192, 32), ybottom = -0.05, xright = 192, ytop = -0.02, col = color, border = 'gray70')
       if(i == nsigs){
         text(labels = c("C>A","C>G","C>T","T>A","T>C","T>G"),
              y = rep(-0.1,6),x = seq(0, 192, 32)[2:7]-16, cex = font_size,
-             font = 2, font.lab = 2, pos = 1.2)
+             font = 1, font.lab = 2, pos = 1.2)
       }
     }
   }
