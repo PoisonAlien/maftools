@@ -12,6 +12,7 @@ IMPROVEMENTS:
     o Added MTRNR2L8 protein structure to pfam database. Issue: #255
     o Added addtionalFeature argument to oncoplots. Issue: #270
     o Added log scale option for summary and oncoplots. Issue: #273
+    o Made protein domain db compatible with R version < 3.5 Issue: #276
 
 BUG FIX
     o fixed handling of Status in survival. PR #274
