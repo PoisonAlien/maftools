@@ -136,46 +136,47 @@ sortByMutation = function(numMat, maf){
 #Thanks to Ryan Morin for the suggestion (https://github.com/rdmorin)
 #original code has been changed with vectorized code, in-addition performs class-wise sorting.
 sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL, group = TRUE, isNumeric = FALSE){
-  anno[,1] = as.character(anno[,1])
-  #anno[,1] = ifelse(test = is.na(anno[,1]), yes = "NA", no = anno[,1]) #NAs are notorious; converting them to characters
-  #anno.spl = split(anno, anno[,1]) #sorting only first annotation (not converting to charcter)
-  if(isNumeric){
-    anno.spl = split(anno, as.numeric(as.character(anno[,1]))) #sorting only first annotation
+
+  if(is.numeric(anno[,1])){
+    #anno.spl = split(anno, as.numeric(as.character(anno[,1]))) #sorting only first annotation
+    mat_samps = colnames(numMat)[colnames(numMat) %in% rownames(anno)]
+    anno = anno[mat_samps,, drop = FALSE]
+    anno = anno[order(anno[,1], na.last = TRUE),, drop = FALSE]
+    numMat.sorted = numMat[,rownames(anno)]
   }else{
     anno[,1] = ifelse(test = is.na(anno[,1]), yes = "NA", no = anno[,1]) #NAs are notorious; converting them to characters
     anno.spl = split(anno, as.factor(as.character(anno[,1]))) #sorting only first annotation
-  }
 
+    anno.spl.sort = lapply(X = anno.spl, function(x){
+      numMat[,colnames(numMat)[colnames(numMat) %in% rownames(x)], drop = FALSE]
+    })
 
-  anno.spl.sort = lapply(X = anno.spl, function(x){
-    numMat[,colnames(numMat)[colnames(numMat) %in% rownames(x)], drop = FALSE]
-  })
-
-  if(group){
-    #sort list according to number of elemnts in each classification
-    anno.spl.sort = anno.spl.sort[names(sort(unlist(lapply(anno.spl.sort, ncol)), decreasing = TRUE, na.last = TRUE))]
-  }
-
-  if(!is.null(annoOrder)){
-    annoSplOrder = names(anno.spl.sort)
-
-    if(length(annoOrder[annoOrder %in% annoSplOrder]) == 0){
-      message("Values in provided annotation order ", paste(annoOrder, collapse = ", ")," does not match values in clinical features. Here are the available features..")
-      print(annoSplOrder)
-      stop()
+    if(group){
+      #sort list according to number of elemnts in each classification
+      anno.spl.sort = anno.spl.sort[names(sort(unlist(lapply(anno.spl.sort, ncol)), decreasing = TRUE, na.last = TRUE))]
     }
-    annoOrder = annoOrder[annoOrder %in% annoSplOrder]
 
-    anno.spl.sort = anno.spl.sort[annoOrder]
+    if(!is.null(annoOrder)){
+      annoSplOrder = names(anno.spl.sort)
 
-    if(length(annoSplOrder[!annoSplOrder %in% annoOrder]) > 0){
-      warning("Following levels are missing from the provided annotation order: ", paste(annoSplOrder[!annoSplOrder %in% annoOrder], collapse = ", "), immediate. = TRUE)
+      if(length(annoOrder[annoOrder %in% annoSplOrder]) == 0){
+        message("Values in provided annotation order ", paste(annoOrder, collapse = ", ")," does not match values in clinical features. Here are the available features..")
+        print(annoSplOrder)
+        stop()
+      }
+      annoOrder = annoOrder[annoOrder %in% annoSplOrder]
+
+      anno.spl.sort = anno.spl.sort[annoOrder]
+
+      if(length(annoSplOrder[!annoSplOrder %in% annoOrder]) > 0){
+        warning("Following levels are missing from the provided annotation order: ", paste(annoSplOrder[!annoSplOrder %in% annoOrder], collapse = ", "), immediate. = TRUE)
+      }
     }
-  }
 
-  numMat.sorted = c()
-  for(i in 1:length(anno.spl.sort)){
-    numMat.sorted  = cbind(numMat.sorted, anno.spl.sort[[i]])
+    numMat.sorted = c()
+    for(i in 1:length(anno.spl.sort)){
+      numMat.sorted  = cbind(numMat.sorted, anno.spl.sort[[i]])
+    }
   }
 
   return(numMat.sorted)

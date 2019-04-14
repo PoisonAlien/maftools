@@ -29,7 +29,7 @@
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
 #' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
 #' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort
-#' @param isNumeric Is `clinicalFeatures` used for `sortByAnnotation` is numeric? Default FALSE.
+#' @param numericAnnoCol color palette used for numeric annotations. Default 'YlOrBr' from RColorBrewer
 #' @param groupAnnotationBySize Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
@@ -52,7 +52,7 @@
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, logColBar = FALSE,
                      clinicalFeatures = NULL, additionalFeature = NULL, additionalFeaturePch = 20, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
-                     sortByMutation = FALSE, sortByAnnotation = FALSE, isNumeric = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
+                     sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
                      titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
@@ -169,7 +169,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     if(sortByAnnotation){
-      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = isNumeric)
+      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = FALSE)
     }
   }
 
@@ -441,7 +441,6 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
     if(is.null(mutsig)){
       side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
-      #return(side_bar_data)
       plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, length(side_bar_data)),
            axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
 
@@ -470,10 +469,10 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   #Plot annotations if any
   if(!is.null(clinicalFeatures)){
 
-    clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
+    clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(x))))
 
     if(is.null(annotationColor)){
-      annotationColor = get_anno_cols(ann = annotation)
+      annotationColor = get_anno_cols(ann = annotation, numericAnnoCol = numericAnnoCol)
     }
 
     anno_cols = c()
@@ -482,35 +481,37 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     clini_lvls = clini_lvls[!is.na(clini_lvls)]
-    names(clini_lvls) = 1:length(clini_lvls)
+    names(clini_lvls) = paste0('cl_', 1:length(clini_lvls))
     temp_rownames = rownames(annotation)
     annotation = data.frame(lapply(annotation, as.character),
                             stringsAsFactors = FALSE, row.names = temp_rownames)
 
     for(i in 1:length(clini_lvls)){
-      annotation[annotation == clini_lvls[i]] = names(clini_lvls[i])
+      annotation[annotation == clini_lvls[i]] = names(clini_lvls)[i]
     }
 
-    annotation = data.frame(lapply(annotation, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
-
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
+
     if(!drawRowBar){
       par(mar = c(0, 5, 0, 5), xpd = TRUE)
     }else{
       par(mar = c(0, 5, 0, 3), xpd = TRUE)
     }
 
-    image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
+    image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = matrix(0, nrow = nrow(annotation), ncol = ncol(annotation)),
           axes = FALSE, xaxt="n", yaxt="n", bty = "n",
           xlab="", ylab="", col = "white") #col = "#FC8D62"
 
     #Plot for all variant classifications
+    return(list(annotation, clini_lvls, anno_cols))
     for(i in 1:length(names(clini_lvls))){
       anno_code = clini_lvls[i]
-      col = anno_cols[anno_code]
-      #temp_anno = t(apply(annotation, 2, rev))
+      col = anno_cols[as.character(anno_code)]
       temp_anno = as.matrix(annotation)
       temp_anno[temp_anno != names(anno_code)] = NA
+      temp_anno[temp_anno == names(anno_code)] = 1
+      temp_anno = apply(temp_anno, 2, as.numeric)
+      print(head(temp_anno))
       image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
             axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE)
     }
@@ -550,6 +551,11 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       x = annotationColor[[i]]
 
       if(length(x) <= 4){
+        n_col = 1
+      }else if(length(x) >= nrow(numMat)){
+        x_idx = as.integer(seq(1, length(x), length.out = 4))
+        x = x[order(as.numeric(names(x)))]
+        x = x[x_idx]
         n_col = 1
       }else{
         n_col = (length(x) %/% 4)+1

@@ -11,7 +11,7 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
   annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
   showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE,
   fill = FALSE, colors = NULL, sortByMutation = FALSE,
-  sortByAnnotation = FALSE, isNumeric = FALSE,
+  sortByAnnotation = FALSE, numericAnnoCol = NULL,
   groupAnnotationBySize = TRUE, annotationOrder = NULL,
   keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
   writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
@@ -61,7 +61,7 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{sortByAnnotation}{logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort}
 
-\item{isNumeric}{Is `clinicalFeatures` used for `sortByAnnotation` is numeric? Default FALSE.}
+\item{numericAnnoCol}{color palette used for numeric annotations. Default 'YlOrBr' from RColorBrewer}
 
 \item{groupAnnotationBySize}{Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.}
 

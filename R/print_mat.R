@@ -361,22 +361,32 @@ parse_annotation_dat = function(annotationDat = NULL, clinicalFeatures = NULL){
   return(annotation)
 }
 
-get_anno_cols = function(ann){
+get_anno_cols = function(ann, numericAnnoCol = NULL){
   ann_cols = list()
-
+  if(is.null(numericAnnoCol)){
+    numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = "YlOrBr")
+  }else{
+    numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = numericAnnoCol)
+  }
   for(i in 1:ncol(ann)){
-    ann_lvls = unique(as.character(ann[,i]))
-    if(length(ann_lvls) <= 9){
-      ann_lvls_cols = RColorBrewer::brewer.pal(n = 9, name = 'Set1')[1:length(ann_lvls)]
+    if(is.numeric(ann[,i])){
+      x = ann[,i]
+      ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x))
+      names(ann_lvls_cols) = x[order(x, na.last = TRUE)]
+      ann_cols[[i]] = ann_lvls_cols
     }else{
-      ann_lvls_cols = colors()[sample(x = 1:100, size = length(ann_lvls), replace = FALSE)]
+      ann_lvls = unique(as.character(ann[,i]))
+      if(length(ann_lvls) <= 9){
+        ann_lvls_cols = RColorBrewer::brewer.pal(n = 9, name = 'Set1')[1:length(ann_lvls)]
+      }else{
+        ann_lvls_cols = colors()[sample(x = 1:100, size = length(ann_lvls), replace = FALSE)]
+      }
+      ann_cols[[i]] = ann_lvls_cols
+      names(ann_cols[[i]]) = ann_lvls
     }
-    ann_cols[[i]] = ann_lvls_cols
-    names(ann_cols[[i]]) = ann_lvls
   }
 
   names(ann_cols) = colnames(ann)
 
   return(ann_cols)
 }
-

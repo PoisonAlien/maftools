@@ -22,7 +22,7 @@ signatureEnrichment = function(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NU
   cluster_df = as.data.frame(apply(contrib.km$centers, 2, function(x) which(x == max(x))))
   colnames(cluster_df)[1] = 'Cluster'
   #cluster_df$Cluster = paste0("Cluster_", cluster_df$Cluster)
-  data.table::setDT(x = cluster_df, keep.rownames = T)
+  data.table::setDT(x = cluster_df, keep.rownames = TRUE)
   colnames(cluster_df)[1] = 'Signature'
 
   xc = as.data.frame(contrib.km$cluster)
