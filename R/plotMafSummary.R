@@ -43,7 +43,7 @@ plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRU
   if(dashboard){
     #Plot in dashboard style
     pie = FALSE
-    dashboard(maf = maf, color = color, rmOutlier = TRUE, log_conv = log_scale,
+     dashboard(maf = maf, color = color, rmOutlier = TRUE, log_conv = log_scale,
                           titv.color = titvColor, fontSize = fs, titleSize = titleSize, sfs = statFontSize,
                           n = top, donut = pie, rawcount = titvRaw, stat = addStat, barcodes = showBarcodes, barcodeSize = textSize)
 

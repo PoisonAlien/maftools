@@ -2,7 +2,7 @@ CHANGES IN VERSION 1.8.10
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Oncoplot, oncostrip and coOncoplot code has been migrated from ComplexHeatmap to base graphics. Default values for some arguments have been changed.
-    o Changed default value for mafObj argument in subsetMaf to TRUE. #235
+    o Changed default value for mafObj argument in subsetMaf to TRUE. Issue: #235
     o All ggplots are migrated to base graphics for consistancy
     o TCGA mutations per sample used for tcgaCompare are updated to more stable MC3 cohort from deprecated broad firehose.
 
@@ -18,6 +18,7 @@ BUG FIX
     o fixed handling of Status in survival. PR #274
     o Fix swapped confidance intervals in mafCompare function #269
     o update docs, and vectorized code #266 #267
+    o Improve oncoplot annotations for numeric class Issue: #263 and #203
     o In annovarToMaf read the .tsv file considering the header. PR #259
     o Fix legend title order. Issue: #253
     o GISTIC sample size issue fix. Issue: #249

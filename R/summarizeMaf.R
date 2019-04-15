@@ -134,7 +134,6 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     }
   }
 
-
   if(chatty){
     message("Checking clinical data..")
   }

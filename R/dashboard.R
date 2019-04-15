@@ -9,7 +9,6 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv
 
   vcs = getSampleSummary(maf)
   vcs = vcs[,colnames(vcs)[!colnames(x = vcs) %in% c('total', 'Amp', 'Del', 'CNV_total')], with = FALSE]
-
   vcs = vcs[,c(1,order(colSums(x = vcs[,2:(ncol(vcs)), with =FALSE]), decreasing = TRUE)+1), with =FALSE] #order based on most event
   vcs.m = data.table::melt(data = vcs, id = 'Tumor_Sample_Barcode')
   colnames(vcs.m) = c('Tumor_Sample_Barcode', 'Variant_Classification', 'N')
@@ -114,6 +113,9 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv
       x_log_total = log10(sum(x))
       x_fract * x_log_total
     })
+    #Replace NaN's and remove those samples (resulting from samples with no variants but with CNVs)
+    vcs[is.nan(x = vcs)] = 0
+    vcs = vcs[,-which(colSums(x = vcs) == 0)]
   }
 
   b = barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg =  rep("", ncol(vcs)))
