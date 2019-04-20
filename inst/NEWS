@@ -13,6 +13,7 @@ IMPROVEMENTS:
     o Added addtionalFeature argument to oncoplots. Issue: #270
     o Added log scale option for summary and oncoplots. Issue: #273
     o Made protein domain db compatible with R version < 3.5 Issue: #276
+    o Added draw `draw_titv` argument to oncoplot
 
 BUG FIX
     o fixed handling of Status in survival. PR #274
@@ -23,6 +24,7 @@ BUG FIX
     o Fix legend title order. Issue: #253
     o GISTIC sample size issue fix. Issue: #249
     o Bug fix for oncoplots with CNV data. Issue: #240
+    o Better error handling in plotApobecDiff with no SMGs. Issue: #232
     o Bug fix that caused signature extraction to terminate in case of zero mutations. Issue: #228
     o Bug fix due to missing levels contingency tables in clinical enrichment. Issue: #225
     o Add showTumorSampleBarcodes to PlotOncogenicPathways. Issue: #214

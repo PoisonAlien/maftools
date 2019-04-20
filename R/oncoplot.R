@@ -13,6 +13,7 @@
 #' @param mutsigQval Q-value to choose significant genes from mutsig results. Default 0.1
 #' @param drawRowBar logical plots barplot for each gene. Default \code{TRUE}.
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
+#' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
@@ -49,7 +50,7 @@
 #' oncoplot(maf = laml, top = 3)
 #' @seealso \code{\link{oncostrip}}
 #' @export
-oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, logColBar = FALSE,
+oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, draw_titv = FALSE, logColBar = FALSE,
                      clinicalFeatures = NULL, additionalFeature = NULL, additionalFeaturePch = 20, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
@@ -201,35 +202,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   vc_codes = om$vc #VC codes
 
   #Plot layout
-  if(is.null(clinicalFeatures)){
-    if(!drawRowBar & !drawColBar){
-      mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
-      lo = layout(mat = mat_lo, heights = c(12, 4))
-    }else if(!drawRowBar){
-      mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-      lo = layout(mat = mat_lo, heights = c(4, 12, 4))
-    }else if(!drawColBar){
-      mat_lo = matrix(data = c(1,2,3,3), nrow = 2, ncol = 2, byrow = TRUE)
-      lo = layout(mat = mat_lo, heights = c(12, 4), widths = c(4, 1))
-    }else{
-      mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
-      lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 4))
-    }
-  }else{
-    if(!drawRowBar & !drawColBar){
-      mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-      lo = layout(mat = mat_lo, heights = c(12, 1, 4))
-    }else if(!drawRowBar){
-      mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
-      lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4))
-    }else if(!drawColBar){
-      mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
-      lo = layout(mat = mat_lo, heights = c(12, 1, 4), widths = c(4, 1))
-    }else{
-      mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
-      lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, 4))
-    }
-  }
+  plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar, drawColBar = drawColBar, draw_titv = draw_titv)
 
   #Draw top bar plot
   if(drawColBar){
@@ -315,8 +288,10 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     col = vc_col[vc_code]
     nm = t(apply(numMat, 2, rev))
     nm[nm != names(vc_code)] = NA
-    image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
-          xlab="", ylab="", col = col, add = TRUE)
+    #Suppress warning due to min/max applied to a vector of NAs; Issue: #286
+    #This is an harmless warning as matrix is looped over all VC's and missing VC's form NA's (which are plotted in gray)
+    suppressWarnings(image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
+          xlab="", ylab="", col = col, add = TRUE))
   }
 
   #Add blanks
@@ -523,6 +498,51 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
     if(drawRowBar){
       plot.new()
+    }
+  }
+
+  #Draw TiTv plot
+  if(draw_titv){
+    titv_dat = titv(maf = maf, useSyn = TRUE, plot = FALSE)
+    titv_dat = titv_dat$fraction.contribution
+    data.table::setDF(x = titv_dat, rownames = as.character(titv_dat$Tumor_Sample_Barcode))
+    titv_dat = titv_dat[,-1]
+    #titv_dat = titv_dat[-which(rowSums(titv_dat) == 0),, ]
+    titv_dat = t(titv_dat[colnames(numMat), ])
+    #return(list(titv_dat, numMat))
+
+    if(!drawRowBar){
+      par(mar = c(0, 5, 0, 5), xpd = TRUE)
+    }else{
+      par(mar = c(0, 5, 0, 3), xpd = TRUE)
+    }
+
+    plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(titv_dat)), ylim = c(0, 100),
+         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
+
+    titv_col = get_titvCol(alpha = 1)
+    for(i in 1:ncol(titv_dat)){
+      x = titv_dat[,i]
+      x = x[x > 0]
+      if(length(x) > 0){
+        rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
+             ytop = cumsum(x), col = titv_col[names(x)], border = NA, lwd = 0)
+      }
+    }
+
+    if(drawRowBar){
+      par(mar = c(0, 0, 1, 6), xpd = TRUE)
+      plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
+      lep = legend("topleft", legend = names(titv_col),
+                   col = titv_col, border = NA, bty = "n",
+                   ncol= 2, pch = 15, xpd = TRUE, xjust = 0, yjust = 0,
+                   cex = legendFontSize)
+
+    }else{
+      mtext(text = names(titv_col)[1:3], side = 2, at = c(25, 50, 75),
+            font = 1, line = 0.4, cex = fontSize, las = 2, col = titv_col[1:3])
+      mtext(text = names(titv_col)[4:6], side = 4, at = c(25, 50, 75),
+            font = 1, line = 0.4, cex = fontSize, las = 2, col = titv_col[4:6],  adj = 0.15)
     }
   }
 

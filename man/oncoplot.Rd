@@ -6,7 +6,7 @@
 \usage{
 oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
   mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
-  logColBar = FALSE, clinicalFeatures = NULL,
+  draw_titv = FALSE, logColBar = FALSE, clinicalFeatures = NULL,
   additionalFeature = NULL, additionalFeaturePch = 20,
   annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
   showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE,
@@ -33,6 +33,8 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
 \item{drawRowBar}{logical plots barplot for each gene. Default \code{TRUE}.}
 
 \item{drawColBar}{logical plots barplot for each sample. Default \code{TRUE}.}
+
+\item{draw_titv}{logical Includes TiTv plot. \code{FALSE}}
 
 \item{logColBar}{Plot top bar plot on log10 scale. Default \code{FALSE}.}
 
