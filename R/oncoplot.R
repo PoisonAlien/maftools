@@ -507,9 +507,15 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     titv_dat = titv_dat$fraction.contribution
     data.table::setDF(x = titv_dat, rownames = as.character(titv_dat$Tumor_Sample_Barcode))
     titv_dat = titv_dat[,-1]
-    #titv_dat = titv_dat[-which(rowSums(titv_dat) == 0),, ]
     titv_dat = t(titv_dat[colnames(numMat), ])
-    #return(list(titv_dat, numMat))
+
+    missing_samps = colnames(numMat)[!colnames(numMat) %in% colnames(titv_dat)]
+    if(length(missing_samps) > 0){
+      temp_data = matrix(data = 0, nrow = 6, ncol = length(missing_samps))
+      colnames(temp_data) = missing_samps
+      titv_dat = cbind(titv_dat, temp_data)
+      titv_dat = titv_dat[,colnames(numMat)]
+    }
 
     if(!drawRowBar){
       par(mar = c(0, 5, 0, 5), xpd = TRUE)
@@ -527,6 +533,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       if(length(x) > 0){
         rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
              ytop = cumsum(x), col = titv_col[names(x)], border = NA, lwd = 0)
+      }else{
+        rect(xleft = i-1, ybottom = c(0, 100), xright = i-0.1,
+             ytop = 100, col = "gray70", border = NA, lwd = 0)
       }
     }
 

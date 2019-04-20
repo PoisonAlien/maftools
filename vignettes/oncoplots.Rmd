@@ -1,0 +1,217 @@
+---
+title: "Customizing oncoplots"
+author: "Anand Mayakonda"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    self_contained: yes
+    css: corp-styles.css
+    highlight: pygments
+vignette: >
+  %\VignetteIndexEntry{oncoplots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = 'left',
+  fig.height = 5,
+  fig.width = 10
+)
+```
+
+```{r setup, message=FALSE, warning=FALSE}
+library(maftools)
+```
+
+```{r}
+#path to TCGA LAML MAF file
+laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
+#clinical information containing survival information and histology. This is optional
+laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
+
+laml = read.maf(maf = laml.maf,
+                clinicalData = laml.clin,
+                verbose = FALSE)
+```
+
+## Including Transition/Transversions into oncoplot
+```{r, fig.height = 7, fig.width = 10}
+oncoplot(maf = laml, draw_titv = TRUE)
+```
+
+
+## Changing colors for variant classifications 
+
+```{r}
+#One can use any colors, here in this example color palette from RColorBrewer package is used
+vc_cols = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
+names(vc_cols) = c(
+  'Frame_Shift_Del',
+  'Missense_Mutation',
+  'Nonsense_Mutation',
+  'Multi_Hit',
+  'Frame_Shift_Ins',
+  'In_Frame_Ins',
+  'Splice_Site',
+  'In_Frame_Del'
+)
+
+print(vc_cols)
+
+oncoplot(maf = laml, colors = vc_cols, top = 10)
+```
+
+
+## Including copy number data into oncoplots.
+There are two ways one include CN status into MAF. 
+1. GISTIC [results](ftp://ftp.broadinstitute.org/pub/GISTIC2.0/GISTICDocumentation_standalone.htm)
+2. Custom copy number table
+
+### GISTIC results
+Most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF. GISTIC generates numerous files but we need mainly four files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt`, `del_genes.conf_XX.txt`, `scores.gistic` where XX is confidence level. These files contain significantly altered genomic regions along with amplified and deleted genes respectively.
+
+```{r results='hide', message=FALSE, fig.height=5,fig.width=10, fig.align='left'}
+#GISTIC results LAML
+all.lesions =
+  system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
+amp.genes =
+  system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
+del.genes =
+  system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
+scores.gis =
+  system.file("extdata", "scores.gistic", package = "maftools")
+
+#Read GISTIC results along with MAF
+laml.plus.gistic = read.maf(
+  maf = laml.maf,
+  gisticAllLesionsFile = all.lesions,
+  gisticAmpGenesFile = amp.genes,
+  gisticDelGenesFile = del.genes,
+  gisticScoresFile = scores.gis,
+  isTCGA = TRUE,
+  verbose = FALSE, 
+  clinicalData = laml.clin
+)
+```
+
+```{r, fig.align='left',fig.height=5,fig.width=10, eval=T, fig.align='left'}
+oncoplot(maf = laml.plus.gistic, top = 10)
+```
+
+This plot shows frequent deletions in TP53 gene which is located on one of the significantly deleted locus 17p13.2.
+
+### Custom copy-number table
+In case there is no GISTIC results available, one can generate a table containing CN status for known genes in known samples. This can be easily created and read along with MAF file.
+
+For example lets create a dummy CN alterations for `DNMT3A` in random 20 samples.
+```{r}
+set.seed(seed = 1024)
+barcodes = as.character(getSampleSummary(x = laml)[,Tumor_Sample_Barcode])
+#Random 20 samples
+dummy.samples = sample(x = barcodes,
+                       size = 20,
+                       replace = FALSE)
+
+#Genarate random CN status for above samples
+cn.status = sample(
+  x = c('Amp', 'Del'),
+  size = length(dummy.samples),
+  replace = TRUE
+)
+
+custom.cn.data = data.frame(
+  Gene = "DNMT3A",
+  Sample_name = dummy.samples,
+  CN = cn.status,
+  stringsAsFactors = FALSE
+)
+
+head(custom.cn.data)
+
+laml.plus.cn = read.maf(maf = laml.maf,
+                        cnTable = custom.cn.data,
+                        verbose = FALSE)
+
+oncoplot(maf = laml.plus.cn, top = 5)
+```
+
+
+## Including significance values
+This data should be a data.frame or a tsv file with two required columns titled `gene` and `q`.
+
+For example, including mutsig `q` values into oncoplot.
+
+```{r, fig.height=7,fig.width=10, eval=T, fig.align='left'}
+#MutSig results
+laml.mutsig = system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
+
+oncoplot(
+  maf = laml,
+  mutsig = laml.mutsig,
+  mutsigQval = 0.01,
+)
+```
+
+## Including annotations
+Annotations are usually stored in `clinical.data` slot of MAF.
+```{r}
+getClinicalData(x = laml)
+```
+
+Include `FAB_classification` from clinical data as one of the sample annotations. 
+```{r}
+oncoplot(maf = laml, clinicalFeatures = 'FAB_classification')
+```
+
+More than one annotations can be included by passing them to the argument `clinicalFeatures`. Above plot can be further enhanced by sorting according to annotations.
+ 
+```{r}
+oncoplot(
+  maf = laml,
+  clinicalFeatures = 'FAB_classification',
+  sortByAnnotation = TRUE
+)
+```
+
+## Highlighting samples
+If you prefer to highlight mutations by a specific attribute, you can use `additionalFeature` argument.
+
+Example: Highlight all mutations where alt allele is C. 
+```{r}
+oncoplot(maf = laml,
+         additionalFeature = c("Tumor_Seq_Allele2", "C"))
+```
+
+Note that first argument (Tumor_Seq_Allele2) must a be column in MAF file, and second argument (C) is a value in that column. If you want to know what columns are present in the MAF file, use `getFields`.
+
+```{r}
+getFields(x = laml)
+```
+
+## Combining all
+
+```{r, fig.height = 8, fig.width = 10}
+oncoplot(
+  maf = laml.plus.gistic,
+  top = 10,
+  draw_titv = TRUE,
+  clinicalFeatures = c('FAB_classification', 'Overall_Survival_Status'),
+  additionalFeature = c("Tumor_Seq_Allele2", "C"),
+  sortByAnnotation = TRUE,
+  mutsig = laml.mutsig
+)
+```
+
+
+## SessionInfo  
+```{r}
+sessionInfo()
+```

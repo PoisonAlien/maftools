@@ -400,3 +400,18 @@ plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE, drawColBar = 
   }
 }
 
+get_vcColors = function(alpha = 1){
+  col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue')
+  col = grDevices::adjustcolor(col = col, alpha.f = alpha)
+  names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
+                         'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins',
+                         'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del')
+  col
+}
+
+get_titvCol = function(alpha = 1){
+  col = c('coral4', 'lightcyan4', 'cornflowerblue', 'lightsalmon1', 'forestgreen', 'deeppink3')
+  col = grDevices::adjustcolor(col = col, alpha.f = alpha)
+  names(col) = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G')
+  col
+}

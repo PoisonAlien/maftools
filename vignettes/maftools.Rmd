@@ -122,54 +122,7 @@ oncoplot(maf = laml, top = 10)
 
 NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more than once in the same sample.
 
-### Including copy number data into oncoplots.
-If we have copy number data along with MAF file, we can include them in oncoplot as to show if any genes are amplified or deleted. One most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF[3](#references). GISTIC generates numerous files but we need mainly four files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt`, `del_genes.conf_XX.txt`, `scores.gistic` where XX is confidence level. These files contain significantly altered genomic regions along with amplified and deleted genes respectively.
-
-```{r results='hide', message=FALSE, fig.height=5,fig.width=10, fig.align='left'}
-#read TCGA maf file for LAML
-laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
-all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
-amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
-del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
-scores.gis <- system.file("extdata", "scores.gistic", package = "maftools")
-laml.plus.gistic = read.maf(maf = laml.maf, gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gis, isTCGA = TRUE)
-```
-
-```{r, fig.align='left',fig.height=5,fig.width=10, eval=T, fig.align='left'}
-oncoplot(maf = laml.plus.gistic, top = 10)
-```
-
-This plot shows frequent deletions in TP53 gene which is located on one of the significantly deleted locus 17p13.2.
-
-### Changing colors, including MutSig Q-Values, adding annotations and sorting.
-Oncoplots can be further improved by including annotations (clinical features) associated with samples, changing colors for variant classifications and including q-values of significance (either generated from MutSig or similar program). Below plot includes,
-
-  * list of significantly mutated genes (SMG) and their q-values as a side barplot, 
-  * FAB classification of each sample as bottom annotations.
-  * custom color coding for variant classification.
-
-One can use SMG list generated from any progrm as long as it contains two required columns titled `gene` and `q`
-
-```{r, fig.height=7,fig.width=10, eval=T, fig.align='left'}
-#Changing colors for variant classifications 
-#One can use any colors, here in this example color palette from RColorBrewer package is used
-col = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
-names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 
-               'Multi_Hit', 'Frame_Shift_Ins',
-               'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
-
-#Color coding for FAB classification; try getAnnotations(x = laml) to see available annotations.
-fabcolors = RColorBrewer::brewer.pal(n = 8,name = 'Spectral')
-names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
-fabcolors = list(FAB_classification = fabcolors)
-
-#MutSig reusults
-laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
-
-oncoplot(maf = laml, colors = col, mutsig = laml.mutsig, mutsigQval = 0.01, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
-```
-
-Also note that using `sortByAnnotation = TRUE` further sorts oncoplot according to annotations provided (here FAB_classification) and helps in clear representation of mutational patters within subtypes. For example above plot shows NPM1 is rarely mutated in M0 type of AML whereas RUNX1 is virtually absent in M5 subtype.
+For more details on customisation see the `oncoplots` vignette.
 
 ## Oncostrip
 We can visualize any set of genes using `oncostrip` function, which draws mutations in each sample similar to [OncoPrinter tool](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do). `oncostrip` can be used to draw any number of genes using `top` or `genes` arguments.
@@ -502,7 +455,7 @@ We can also analyze the differences in mutational patterns between APOBEC enrich
 Note that, LAML with no APOBEC enrichments, is not an ideal cohort for this sort of analysis and hence below plot is only for demonstration purpose.
 
 ```{r, eval=TRUE, fig.height=4, fig.width=7}
-plotApobecDiff(tnm = laml.tnm, maf = laml)
+plotApobecDiff(tnm = laml.tnm, maf = laml, pVal = 0.2)
 ```
 
 ### Signature analysis
