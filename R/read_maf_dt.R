@@ -37,11 +37,12 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
                     gisticDelGenesFile = NULL, gisticScoresFile = NULL, cnLevel = 'all', cnTable = NULL, isTCGA = FALSE, vc_nonSyn = NULL, verbose = TRUE){
 
   #1. Read MAF if its a file or convert to data.table if its data.frame
+  start_time = proc.time()
   if(is.data.frame(x = maf)){
     maf  = data.table::setDT(maf)
   } else{
     if(verbose){
-      message('reading maf..')
+      cat('-Reading\n')
     }
 
     if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = FALSE)))){
@@ -59,18 +60,21 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
   }
 
   #2. validate MAF file
+  if(verbose){
+    cat("-Validating\n")
+  }
   maf = validateMaf(maf = maf, isTCGA = isTCGA, rdup = removeDuplicatedVariants, chatty = verbose)
 
   #3. validation check for variants classified as Somatic in Mutation_Status field.
   if(!useAll){
-    message('--Using only `Somatic` variants from Mutation_Status. Set useAll = TRUE to include everything.')
+    cat('--Using only `Somatic` variants from Mutation_Status. Set useAll = TRUE to include everything.')
     if(length(colnames(maf)[colnames(x = maf) %in% 'Mutation_Status']) > 0){
       maf = maf[Mutation_Status %in% "Somatic"]
       if(nrow(maf) == 0){
         stop('No more Somatic mutations left after filtering for Mutation_Status! Maybe set useAll to TRUE ?')
       }
     }else{
-      message('---Oops! Mutation_Status not found. Assuming all variants are Somatic and validated.')
+      cat('Mutation_Status not found. Assuming all variants are Somatic and validated\n')
     }
   }
 
@@ -97,8 +101,8 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
 
     maf = maf[Variant_Classification %in% vc.nonSilent] #Choose only non-silent variants from main table
     if(verbose){
-      message(paste0('silent variants: ', nrow(maf.silent)))
-      print(summary.silent)
+      cat(paste0('-Silent variants: ', nrow(maf.silent)), '\n')
+      #print(summary.silent)
     }
   }
 
@@ -109,7 +113,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
   #5. Process CN data if available.
   if(!is.null(gisticAllLesionsFile)){
     gisticIp = readGistic(gisticAllLesionsFile = gisticAllLesionsFile, gisticAmpGenesFile = gisticAmpGenesFile,
-                          gisticDelGenesFile = gisticDelGenesFile, isTCGA = isTCGA, gisticScoresFile = gisticScoresFile, cnLevel = cnLevel)
+                          gisticDelGenesFile = gisticDelGenesFile, isTCGA = isTCGA, gisticScoresFile = gisticScoresFile, cnLevel = cnLevel, verbose = verbose)
     gisticIp = gisticIp@data
 
     suppressWarnings(gisticIp[, id := paste(Hugo_Symbol, Tumor_Sample_Barcode, sep=':')])
@@ -123,7 +127,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
     #oncomat = createOncoMatrix(maf, chatty = verbose)
   }else if(!is.null(cnTable)){
     if(verbose){
-      message('Processing copy number data..')
+      cat('-Processing copy number data\n')
     }
     if(is.data.frame(cnTable)){
       cnDat = data.table::setDT(cnTable)
@@ -148,7 +152,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
   maf$Variant_Type = as.factor(as.character(maf$Variant_Type))
 
   if(verbose){
-    message('Summarizing..')
+    cat('-Summarizing\n')
   }
   mafSummary = summarizeMaf(maf = maf, anno = clinicalData, chatty = verbose)
 
@@ -160,7 +164,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
 
 
   if(verbose){
-    message('Done !')
+    cat("-Finished in",data.table::timetaken(start_time),"\n")
   }
 
   return(m)

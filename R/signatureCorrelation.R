@@ -9,7 +9,7 @@
 #' @param fn basename for output file. Default NULL.
 #' @return result list containing p-values
 #' @export
-#' @seealso \code{\link{plotEnrichmentResults}}
+#' @seealso \code{\link{plotEnrichmentResults}} \code{\link{plotCopheneticMetric}}
 
 signatureEnrichment = function(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NULL){
 

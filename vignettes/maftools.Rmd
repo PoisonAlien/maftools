@@ -76,7 +76,9 @@ maftools functions can be categorized into mainly Visualization and Analysis mod
 
 ```{r results='hide', message=FALSE}
 library(maftools)
+```
 
+```{r}
 #path to TCGA LAML MAF file
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools') 
 #clinical information containing survival information and histology. This is optional
@@ -466,10 +468,6 @@ plotApobecDiff(tnm = laml.tnm, maf = laml, pVal = 0.2)
 #Run main function with maximum 6 signatures. 
 library('NMF')
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
-
-# Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)
-# Found Signature_1 most similar to validated Signature_1. Aetiology: spontaneous deamination of 5-methylcytosine [cosine-similarity: 0.919] 
-# Found Signature_2 most similar to validated Signature_5. Aetiology: Unknown [cosine-similarity: 0.82] 
 ```
 
 ```{r, fig.height=5, fig.width=5, eval=TRUE, message=FALSE, echo=FALSE}

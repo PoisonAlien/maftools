@@ -28,13 +28,17 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
 
     #suppressPackageStartupMessages(require(NMF, quietly = TRUE))
     #transpose matrix
+  start_time = proc.time()
     mat = t(mat$nmf_matrix)
 
     #Validation
     zeroMutClass = names(which(rowSums(mat) == 0))
 
     if(length(zeroMutClass)){
-      message(paste('Warning : Found zero mutations for conversions ', zeroMutClass, sep=''))
+      cat('-Found zero mutations for conversions:\n')
+      for(temp in zeroMutClass){
+        cat(paste0("  ", temp, "\n"))
+      }
       #Add small value to avoid zero counts (maybe not appropriate). This happens when sample size is low or in cancers with low mutation rate.
       #mat[which(rowSums(mat) == 0),] = 0.1
     }
@@ -52,8 +56,9 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     #But based 21 breast cancer signatures data, defualt brunet seems to be working close to the results.
     #Sticking with default for now.
 
+    nmf.sum = NULL
     if(is.null(n)){
-      message('Estimating best rank..')
+      cat('-Estimating optimal factorization rank\n')
       if(!is.null(parallel)){
         nmfTry = NMF::nmfEstimateRank(mat, seq(2,nTry), method='brunet', nrun=10, seed=123456, .opt = parallel) #try nmf for a range of values
       }else{
@@ -64,30 +69,34 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
         pdf('nmf_consensus.pdf', bg = 'white', pointsize = 9, width = 12, height = 12, paper = "special")
         NMF::consensusmap(nmfTry)
         dev.off()
-        message('created nmf_consensus.pdf')
+        cat('-created nmf_consensus.pdf\n')
         #print(NMF::plot(nmfTry, 'cophenetic'))
       }
 
       nmf.sum = summary(nmfTry) # Get summary of estimates
       data.table::setDT(nmf.sum)
-      print(nmf.sum)
+      #print(nmf.sum)
       nmf.sum$diff = c(0, diff(nmf.sum$cophenetic))
       bestFit = nmf.sum[diff < 0, rank][1] #First point where cophenetic correlation coefficient starts decreasing
 
-      plot(nmf.sum$rank, nmf.sum$cophenetic, axes = FALSE, pch = 16, col = "#D8B365", cex = 1.2, xlab = NA, ylab = NA)
-      axis(side = 1, at = nmf.sum$rank, labels = nmf.sum$rank, lwd = 3, font = 2, cex.axis = 1.2)
-      lines(x = nmf.sum$rank, y = round(nmf.sum$cophenetic, digits = 4), lwd = 3)
+      par(mar = c(3, 3, 2, 1))
+      plot(nmf.sum$rank, nmf.sum$cophenetic, axes = FALSE, pch = 16, col = "#D8B365", cex = 1, xlab = NA, ylab = NA, ylim = range(pretty(nmf.sum$cophenetic)))
+      axis(side = 1, at = nmf.sum$rank, labels = nmf.sum$rank, lwd = 1, font = 1, cex.axis = 1)
+      lines(x = nmf.sum$rank, y = round(nmf.sum$cophenetic, digits = 4), lwd = 1)
       points(nmf.sum$rank, nmf.sum$cophenetic, pch = 16, col = "#D8B365", cex = 1.6)
-      axis(side = 2, at = round(nmf.sum$cophenetic, digits = 4), lwd = 3, font = 2, las = 2, cex = 1.4, cex.axis = 1.2)
-      segments(x0 = bestFit, y0 = 0, x1 = bestFit, y1 = nmf.sum[rank == bestFit, cophenetic], lwd= 3, lty = 2, col = "maroon")
+      axis(side = 2, at = pretty(nmf.sum$cophenetic), lwd = 1, font = 1, las = 2, cex = 1, cex.axis = 1)
+      segments(x0 = bestFit, y0 = 0, x1 = bestFit, y1 = nmf.sum[rank == bestFit, cophenetic], lwd= 1, lty = 1, col = "maroon")
       title(main = "cophenetic metric", adj = 0, font.main = 4)
 
 
       #bestFit = nmf.sum[which(nmf.sum$cophenetic == max(nmf.sum$)),'rank'] #Get the best rank based on highest cophenetic correlation coefficient
-      message(paste('Using ',bestFit, ' as a best-fit rank based on decreasing cophenetic correlation coefficient.', sep=''))
+      cat(paste('--Using ',bestFit, ' as the best-fit factorization rank\n', sep=''))
+      cat("--Consult elbow plot and re-consider the value if necessary\n")
       n = as.numeric(bestFit)
+      cat('--------------------------------------\n')
     }
 
+    cat(paste0('-Running NMF for factorization rank: ', n, '\n'))
     if(!is.null(parallel)){
       conv.mat.nmf = NMF::nmf(x = mat, rank = n, .opt = parallel, seed = 123456)
     }else{
@@ -111,15 +120,10 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
       rownames(h) = paste('Signature', 1:nrow(h),sep='_')
     }
 
-
-    #conv.mat.nmf.signatures.melted = melt(conv.mat.nmf.signatures)
-    #levels(conv.mat.nmf.signatures.melted$X1) = colOrder
-
     sigs = data.table::fread(input = system.file('extdata', 'signatures.txt', package = 'maftools'), stringsAsFactors = FALSE, data.table = FALSE)
     colnames(sigs) = gsub(pattern = ' ', replacement = '_', x = colnames(sigs))
     rownames(sigs) = sigs$Somatic_Mutation_Type
     sigs = sigs[,-c(1:3)]
-    #sigs = sigs[,1:22] #use only first 21 validated sigantures
     sigs = sigs[rownames(w),]
 
     aetiology = structure(list(aetiology = c("spontaneous deamination of 5-methylcytosine",
@@ -141,7 +145,8 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
                                                                                                                                         "Signature_27", "Signature_28", "Signature_29", "Signature_30"
                                              ), class = "data.frame")
 
-    message('Comparing against experimentally validated 30 signatures.. (See http://cancer.sanger.ac.uk/cosmic/signatures for details.)')
+    cat('-Comparing against COSMIC signatures\n')
+    cat('------------------------------------\n')
     #corMat = c()
     coSineMat = c()
     for(i in 1:ncol(w)){
@@ -157,8 +162,11 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
     for(i in 1:nrow(coSineMat)){
       ae = aetiology[names(which(coSineMat[i,] == max(coSineMat[i,]))),]
       ae = paste0("Aetiology: ", ae, " [cosine-similarity: ", max(coSineMat[i,]), "]")
-      message('Found ',rownames(coSineMat)[i], ' most similar to validated ', names(which(coSineMat[i,] == max(coSineMat[i,]))), '. ', ae, sep=' ')
+      cat('--Found ',rownames(coSineMat)[i], ' most similar COSMIC ', names(which(coSineMat[i,] == max(coSineMat[i,]))), '.\n',sep='')
+      cat(paste0('   ', ae, '\n'))
     }
+    cat('------------------------------------\n')
 
-    return(list(signatures = w, contributions = h, coSineSimMat = coSineMat, nmfObj = conv.mat.nmf))
+    cat("-Finished in",data.table::timetaken(start_time),"\n")
+    return(list(signatures = w, contributions = h, coSineSimMat = coSineMat, nmfObj = conv.mat.nmf, nmfSummary = nmf.sum))
 }

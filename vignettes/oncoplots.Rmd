@@ -78,7 +78,7 @@ There are two ways one include CN status into MAF.
 ### GISTIC results
 Most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF. GISTIC generates numerous files but we need mainly four files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt`, `del_genes.conf_XX.txt`, `scores.gistic` where XX is confidence level. These files contain significantly altered genomic regions along with amplified and deleted genes respectively.
 
-```{r results='hide', message=FALSE, fig.height=5,fig.width=10, fig.align='left'}
+```{r, fig.height=5,fig.width=10, fig.align='left'}
 #GISTIC results LAML
 all.lesions =
   system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")

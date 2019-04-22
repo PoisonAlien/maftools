@@ -26,7 +26,7 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
     maf = maf[, variantId := paste(Chromosome, Start_Position, Tumor_Sample_Barcode, sep = ':')]
     if(nrow(maf[duplicated(variantId)]) > 0){
       if(chatty){
-        message("NOTE: Removed ",  nrow(maf[duplicated(variantId)]) ," duplicated variants")
+        cat("\tRemoved ",  nrow(maf[duplicated(variantId)]) ," duplicated variants\n")
       }
       maf = maf[!duplicated(variantId)]
     }
@@ -35,18 +35,18 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
 
   if(nrow(maf[Hugo_Symbol %in% ""]) > 0){
     if(chatty){
-      message('NOTE: Found ', nrow(maf[Hugo_Symbol %in% ""]), ' variants with no Gene Symbols.')
-      print(maf[Hugo_Symbol %in% "", required.fields, with = FALSE])
-      message("Annotating them as 'UnknownGene' for convenience")
+      cat('--Found ', nrow(maf[Hugo_Symbol %in% ""]), ' variants with no Gene Symbols\n')
+      #print(maf[Hugo_Symbol %in% "", required.fields, with = FALSE])
+      cat("--Annotating them as 'UnknownGene' for convenience\n")
     }
     maf$Hugo_Symbol = ifelse(test = maf$Hugo_Symbol == "", yes = 'UnknownGene', no = maf$Hugo_Symbol)
   }
 
   if(nrow(maf[is.na(Hugo_Symbol)]) > 0){
     if(chatty){
-      message('NOTE: Found ', nrow(maf[is.na(Hugo_Symbol) > 0]), ' variants with no Gene Symbols.')
-      print(maf[is.na(Hugo_Symbol), required.fields, with =FALSE])
-      message("Annotating them as 'UnknownGene' for convenience")
+      cat('--Found ', nrow(maf[is.na(Hugo_Symbol) > 0]), ' variants with no Gene Symbols\n')
+      #print(maf[is.na(Hugo_Symbol), required.fields, with =FALSE])
+      cat("--Annotating them as 'UnknownGene' for convenience\n")
     }
     maf$Hugo_Symbol = ifelse(test = is.na(maf$Hugo_Symbol), yes = 'UnknownGene', no = maf$Hugo_Symbol)
   }
@@ -68,13 +68,21 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
   maf.vts = unique(as.character(maf[,Variant_Type]))
 
   if(length(maf.vcs[!maf.vcs %in% c(silent, vc.nonSilent)] > 0)){
-    message("NOTE: Non MAF specific values in Variant_Classification column:")
-    print(maf.vcs[!maf.vcs %in% c(silent, vc.nonSilent)])
+    if(chatty){
+      cat("--Non MAF specific values in Variant_Classification column:\n")
+      for(temp in maf.vcs[!maf.vcs %in% c(silent, vc.nonSilent)]){
+        cat(paste0("  ", temp, "\n"))
+      }
+    }
   }
 
   if(length(maf.vts[!maf.vts %in% vt] > 0)){
-    message("NOTE: Non MAF specific values in Variant_Type column:")
-    print(maf.vts[!maf.vts %in% vt])
+    if(chatty){
+      cat("--Non MAF specific values in Variant_Type column:\n")
+      for(temp in maf.vts[!maf.vts %in% vt]){
+        cat(paste0("  ", temp, "\n"))
+      }
+    }
   }
 
   # Set Factors

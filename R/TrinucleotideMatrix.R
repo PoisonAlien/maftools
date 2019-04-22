@@ -44,17 +44,17 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
     if(nrow(hsgs.installed) == 0){
       stop("Could not find any installed BSgenomes.\nUse BSgenome::available.genomes() for options.")
     }else{
-      message("Found following BSgenome installtions. Using first entry..")
+      cat("-Found following BSgenome installtions. Using first entry\n")
       print(hsgs.installed)
       ref_genome = hsgs.installed[,pkgname][1]
     }
   }else{
     if(nrow(hsgs.installed[pkgname %in% ref_genome]) == 0){
-      message(paste0("Could not find BSgenome "), ref_genome)
+      cat(paste0("-Could not find BSgenome "), ref_genome, "\n")
       if(nrow(hsgs.installed) == 0){
         stop("Could not find any installed BSgenomes either.\nUse BSgenome::available.genomes() for options.")
       }else{
-        message("Found following BSgenome installtions. Correct ref_genome argument if necessary.")
+        cat("-Found following BSgenome installtions. Correct ref_genome argument if necessary\n")
         print(hsgs.installed)
         stop()
       }
@@ -89,7 +89,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
   query_seq_lvls_missing = query_seq_lvls[!Chromosome %in% ref_seqs_lvls]
 
   if(nrow(query_seq_lvls_missing)  > 0){
-    warning(paste0("Chromosome names in MAF must match chromosome names in reference genome.\nIgnorinig ", query_seq_lvls_missing[,sum(N)] ," single nucleotide variants from missing chromosomes ", paste(query_seq_lvls_missing[,Chromosome], collapse = ', ')))
+    warning(paste0("Chromosome names in MAF must match chromosome names in reference genome.\nIgnorinig ", query_seq_lvls_missing[,sum(N)] ," single nucleotide variants from missing chromosomes ", paste(query_seq_lvls_missing[,Chromosome], collapse = ', ')), immediate. = TRUE)
   }
 
   query = query[!Chromosome %in% query_seq_lvls_missing[,Chromosome]]
@@ -104,10 +104,10 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
                                        Tumor_Sample_Barcode = query$Tumor_Sample_Barcode, upstream = query$Start_Position-20,
                                        downstream = query$End_Position+20)
 
-  message("Extracting 5' and 3' adjacent bases..")
+  cat("-Extracting 5' and 3' adjacent bases\n")
   ss = BSgenome::getSeq(x = ref_genome, names = extract.tbl[,Chromosome], start = extract.tbl[,Start] , end = extract.tbl[,End], as.character = TRUE)
 
-  message('Extracting +/- 20bp around mutated bases for background C>T estimation..')
+  cat('-Extracting +/- 20bp around mutated bases for background C>T estimation\n')
   updwn = BSgenome::getSeq(x = ref_genome, names = extract.tbl[,Chromosome], start = extract.tbl[,upstream] ,
                            end = extract.tbl[,downstream], as.character = FALSE)
   updwn.alphFreq = data.table::as.data.table(BSgenome::alphabetFrequency(x = updwn))[,.(A, C, G, T)] #Nucleotide frequency
@@ -246,7 +246,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
   sub.tbl[,fraction_APOBEC_mutations := round((n_mutations-non_APOBEC_mutations)/n_mutations, digits = 3)]
   data.table::setDF(sub.tbl)
 
-  message("Estimating APOBEC enrichment scores.. ")
+  cat("-Estimating APOBEC enrichment scores\n")
   apobec.fisher.dat = sub.tbl[,c(19, 28, 32, 33, 34)]
   if(nrow(apobec.fisher.dat) == 1){
     apobec.fisher.dat = t(as.matrix(apply(X = apobec.fisher.dat, 2, as.numeric)))
@@ -255,7 +255,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
   }
 
   ###One way Fisher test to estimate over representation og APOBEC associated tcw mutations
-  message("Performing one-way Fisher's test for APOBEC enrichment..")
+  cat("--Performing one-way Fisher's test for APOBEC enrichment\n")
   sub.tbl = cbind(sub.tbl, data.table::rbindlist(apply(X = apobec.fisher.dat, 1, function(x){
     xf = fisher.test(matrix(c(x[2], sum(x[3], x[4]), x[1] - x[2], x[3]-x[4]), nrow = 2), alternative = 'g')
     data.table::data.table(fisher_pvalue = xf$p.value, or = xf$estimate, ci.up = xf$conf.int[1], ci.low = xf$conf.int[2])
@@ -269,11 +269,11 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
   sub.tbl$APOBEC_Enriched = ifelse(test = sub.tbl$APOBEC_Enrichment >2, yes = 'yes', no = 'no')
   sub.tbl[,fdr := p.adjust(fisher_pvalue, method = 'fdr')] #Adjusted p-values
 
-  message(paste0("APOBEC related mutations are enriched in "), round(nrow(sub.tbl[APOBEC_Enriched %in% 'yes']) / nrow(sub.tbl) * 100, digits = 3), "% of samples (APOBEC enrichment score > 2 ; ",
-          nrow(sub.tbl[APOBEC_Enriched %in% 'yes']), " of " , nrow(sub.tbl), " samples)")
+  cat(paste0("---APOBEC related mutations are enriched in "), round(nrow(sub.tbl[APOBEC_Enriched %in% 'yes']) / nrow(sub.tbl) * 100, digits = 3), "% of samples (APOBEC enrichment score > 2 ; ",
+          nrow(sub.tbl[APOBEC_Enriched %in% 'yes']), " of " , nrow(sub.tbl), " samples)\n")
 
 
-  message("Creating mutation matrix..")
+  cat("-Creating mutation matrix\n")
   extract.tbl.summary = extract.tbl[,.N , by = list(Tumor_Sample_Barcode, SubstitutionTypeMotif)]
 
   conv.mat = as.data.frame(data.table::dcast(extract.tbl.summary, formula = Tumor_Sample_Barcode~SubstitutionTypeMotif, fill = 0, value.var = 'N', drop = FALSE))
@@ -294,7 +294,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
 
   #Set NAs to zeros if any (highly unlikely)
   conv.mat[is.na(conv.mat)] = 0
-  message(paste('matrix of dimension ', nrow(conv.mat), 'x', ncol(conv.mat), sep=''))
+  cat(paste('--matrix of dimension ', nrow(conv.mat), 'x', ncol(conv.mat), sep=''))
 
   if(!is.null(fn)){
     write.table(x = sub.tbl, file = paste0(fn, "_APOBEC_enrichment.tsv"), sep = '\t', quote = FALSE, row.names = FALSE)

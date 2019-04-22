@@ -41,6 +41,8 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
 
 \item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
 
+\item{exprsTbl}{Expression values if availble. Must be a data.frame with two columns containing to gene names and expression values.}
+
 \item{additionalFeature}{a vector of length two indicating column name in the MAF and the factor level to be highlighted.}
 
 \item{additionalFeaturePch}{Default 20}

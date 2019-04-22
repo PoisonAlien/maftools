@@ -25,5 +25,5 @@ result list containing p-values
 Performs k-means clustering to assign signature to samples and performs enrichment analysis.
 }
 \seealso{
-\code{\link{plotEnrichmentResults}}
+\code{\link{plotEnrichmentResults}} \code{\link{plotCopheneticMetric}}
 }

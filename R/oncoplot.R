@@ -10,6 +10,7 @@
 #' @param top how many top genes to be drawn. defaults to 20.
 #' @param genes Just draw oncoplot for these genes. Default NULL.
 #' @param mutsig Mutsig resuts if availbale. Usually file named sig_genes.txt If provided plots significant genes and correpsonding Q-values as side row-bar. Default NULL.
+#' @param exprsTbl Expression values if availble. Must be a data.frame with two columns containing to gene names and expression values.
 #' @param mutsigQval Q-value to choose significant genes from mutsig results. Default 0.1
 #' @param drawRowBar logical plots barplot for each gene. Default \code{TRUE}.
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
