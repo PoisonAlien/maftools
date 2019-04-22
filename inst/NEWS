@@ -13,9 +13,10 @@ IMPROVEMENTS:
     o Added addtionalFeature argument to oncoplots. Issue: #270
     o Added log scale option for summary and oncoplots. Issue: #273
     o Made protein domain db compatible with R version < 3.5 Issue: #276
-    o Added draw `draw_titv` argument to oncoplot
+    o Added draw `draw_titv`, and `exprsTbl` argument to oncoplot
 
 BUG FIX
+    o Update code for AnnovarToMaf. PR #288, #234
     o fixed handling of Status in survival. PR #274
     o Fix swapped confidance intervals in mafCompare function #269
     o update docs, and vectorized code #266 #267

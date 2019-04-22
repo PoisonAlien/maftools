@@ -51,7 +51,7 @@
 #' @seealso \code{\link{oncostrip}}
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, draw_titv = FALSE, logColBar = FALSE,
-                     clinicalFeatures = NULL, additionalFeature = NULL, additionalFeaturePch = 20, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
+                     clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
@@ -202,9 +202,24 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   vc_codes = om$vc #VC codes
 
   #Plot layout
-  plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar, drawColBar = drawColBar, draw_titv = draw_titv)
+  plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar,
+              drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = exprsTbl)
 
-  #Draw top bar plot
+  #01: Draw scale axis for expression table
+  if(!is.null(exprsTbl)){
+    data.table::setDF(x = exprsTbl, rownames = as.character(exprsTbl$genes))
+    colnames(exprsTbl) = c('gene', 'exprn')
+
+    exprs_bar_lims = c(0, round(max(exprsTbl$exprn, na.rm = TRUE), digits = 2))
+
+    if(drawColBar){
+      par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
+      plot(x = NA, y = NA, type = "n", axes = FALSE,
+           xlim = exprs_bar_lims, ylim = c(0, 1), xaxs = "i")
+    }
+  }
+
+  #02: Draw top bar plot
   if(drawColBar){
     if(drawRowBar){
       par(mar = c(0.25 , 5, 2, 3), xpd = TRUE)
@@ -237,13 +252,14 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
   }
 
+  #03: Draw scale for side bar plot
   if(drawRowBar){
     if(is.null(mutsig)){
       side_bar_lims = c(0, max(unlist(apply(numMat, 1, function(x) cumsum(table(x[x!=0])))), na.rm = TRUE))
     }else{
       side_bar_lims = c(0, round(max(ms.smg$FDR, na.rm = TRUE), digits = 2))
     }
-    #Draw axis for side bar plot
+
     if(is.infinite(side_bar_lims[2])){
       side_bar_lims[2] = 1
     }
@@ -254,7 +270,49 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
   }
 
-  #Background plot
+  #Draw expression barplot
+  if(!is.null(exprsTbl)){
+
+  if(showTumorSampleBarcodes){
+    if(!drawRowBar & !drawColBar){
+      par(mar = c(4, 1, 2.5, 0), xpd = TRUE)
+    }else if(!drawRowBar & drawColBar){
+      par(mar = c(4, 1, 0, 0), xpd = TRUE)
+    }else if(drawRowBar & !drawColBar){
+      par(mar = c(4, 1, 2.5, 0), xpd = TRUE)
+    } else{
+      par(mar = c(4, 1, 0, 0), xpd = TRUE)
+    }
+  }else{
+    if(!drawRowBar & !drawColBar){
+      par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
+    }else if(!drawRowBar & drawColBar){
+      par(mar = c(0.5, 1, 0, 0), xpd = TRUE)
+    }else if(drawRowBar & !drawColBar){
+      par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
+    } else{
+      par(mar = c(0.5, 1, 0, 0), xpd = TRUE)
+    }
+  }
+
+    missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(exprsTbl)]
+    if(length(missing_samps) > 0){
+      temp_data = data.frame(row.names = missing_samps, gene = missing_samps, exprn = rep(0, length(missing_samps)), stringsAsFactors = FALSE)
+      exprsTbl = rbind(exprsTbl, temp_data)
+      exprsTbl = exprsTbl[rownames(numMat),]
+    }
+
+    plot(x = NA, y = NA, type = "n", xlim = rev(-exprs_bar_lims), ylim = c(0, nrow(exprsTbl)),
+         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
+    for(i in 1:nrow(exprsTbl)){
+      x = rev(exprsTbl$exprn)[i]
+      rect(ybottom = i-1, xleft = -x, ytop = i-0.1,
+           xright = 0, col = "gray70", border = NA, lwd = 0)
+    }
+    axis(side = 3, at = rev(-exprs_bar_lims), outer = FALSE, line = 0.25, labels = rev(exprs_bar_lims))
+  }
+
+  #04: Draw the main matrix
   if(showTumorSampleBarcodes){
     if(!drawRowBar & !drawColBar){
       par(mar = c(4, 5, 2.5, 5), xpd = TRUE)
@@ -305,8 +363,6 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     write.table(mat_origin, "onco_matrix.txt", sep = "\t", quote = FALSE)
   }
   mo = t(apply(mat_origin, 2, rev))
-
-
 
   ##Complex events (mutated as well as CN altered)
   complex_events = unique(grep(pattern = ";", x = mo, value = TRUE))
@@ -398,7 +454,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
          labels = rownames(nm), srt = 90, font = 1, cex = SampleNamefontSize, adj = 1)
   }
 
-  #Draw side bar plot
+  #05: Draw side bar plot
   if(drawRowBar){
     if(showTumorSampleBarcodes){
       if(!drawRowBar || !drawColBar){
@@ -441,7 +497,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
   }
 
-  #Plot annotations if any
+  #06: Plot annotations if any
   if(!is.null(clinicalFeatures)){
 
     clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
@@ -469,6 +525,11 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     annotation = data.frame(lapply(annotation, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
 
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
+
+    if(!is.null(exprsTbl)){
+      plot.new()
+    }
+
     if(!drawRowBar){
       par(mar = c(0, 5, 0, 5), xpd = TRUE)
     }else{
@@ -501,7 +562,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
   }
 
-  #Draw TiTv plot
+  #07: Draw TiTv plot
   if(draw_titv){
     titv_dat = titv(maf = maf, useSyn = TRUE, plot = FALSE)
     titv_dat = titv_dat$fraction.contribution
@@ -517,11 +578,16 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       titv_dat = titv_dat[,colnames(numMat)]
     }
 
+    if(!is.null(exprsTbl)){
+     plot.new()
+    }
+
     if(!drawRowBar){
       par(mar = c(0, 5, 0, 5), xpd = TRUE)
     }else{
       par(mar = c(0, 5, 0, 3), xpd = TRUE)
     }
+
 
     plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(titv_dat)), ylim = c(0, 100),
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
@@ -555,6 +621,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
   }
 
+  #08: Add legends
   par(mar = c(0, 0.5, 0, 0), xpd = TRUE)
 
   plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)

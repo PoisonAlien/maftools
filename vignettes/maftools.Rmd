@@ -12,7 +12,7 @@ output:
     css: corp-styles.css
     highlight: pygments
 vignette: >
-  %\VignetteIndexEntry{Summarize, Analyze and Visualize MAF Files}
+  %\VignetteIndexEntry{01: Summarize, Analyze, and Visualize MAF Files}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -122,7 +122,7 @@ oncoplot(maf = laml, top = 10)
 
 NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more than once in the same sample.
 
-For more details on customisation see the `oncoplots` vignette.
+For more details on customisation see the [Customizing oncoplots](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/oncoplots.html) vignette.
 
 ## Oncostrip
 We can visualize any set of genes using `oncostrip` function, which draws mutations in each sample similar to [OncoPrinter tool](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do). `oncostrip` can be used to draw any number of genes using `top` or `genes` arguments.

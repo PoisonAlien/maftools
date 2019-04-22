@@ -336,65 +336,147 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
 
 
 #Get plot layout for oncoplot
-plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE, drawColBar = TRUE, draw_titv = FALSE){
+plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
+                       drawColBar = TRUE, draw_titv = FALSE, exprsTbl = NULL){
   if(is.null(clinicalFeatures)){
     if(draw_titv){
       if(!drawRowBar & !drawColBar){
-        mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 4, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4, 4), widths = c(1, 4))
+        }
       }else if(!drawRowBar){
-        mat_lo = matrix(data = c(1,2,3, 4), nrow = 4, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(4, 12, 4, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3, 4), nrow = 4, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 4, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 4, 4), widths = c(1, 4))
+        }
       }else if(!drawColBar){
-        mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 4, 4), widths = c(4, 1))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4, 4), widths = c(4, 1))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7,7), nrow = 3, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4, 4), widths = c(1, 4, 1))
+        }
       }else{
-        mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 4, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 4, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,10,10), nrow = 4, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(1,4, 1), heights = c(4, 12, 4, 4))
+        }
       }
     }else{
       if(!drawRowBar & !drawColBar){
-        mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,3), nrow = 2, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4), widths = c(1, 4))
+        }
       }else if(!drawRowBar){
-        mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(4, 12, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 4), widths = c(1, 4))
+        }
       }else if(!drawColBar){
-        mat_lo = matrix(data = c(1,2,3,3), nrow = 2, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 4), widths = c(4, 1))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,3), nrow = 2, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4), widths = c(4, 1))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,4,4), nrow = 2, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 4), widths = c(1, 4, 1))
+        }
       }else{
-        mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7,7), nrow = 3, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(1, 4, 1), heights = c(4, 12, 4))
+        }
       }
     }
   }else{
     if(draw_titv){
       if(!drawRowBar & !drawColBar){
-        mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4), widths = c(1, 4))
+        }
       }else if(!drawRowBar){
-        mat_lo = matrix(data = c(1,2,3,4,5), nrow = 5, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5), nrow = 5, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,9), nrow = 5, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4, 4), widths = c(1, 4))
+        }
       }else if(!drawColBar){
-        mat_lo = matrix(data = c(1,2,3,4,5,5,6,6), nrow = 4, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4), widths = c(4, 1))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4), widths = c(4, 1))
+        }else{
+          print("I ma hee")
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,10,10), nrow = 4, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4), widths = c(1, 4, 1))
+        }
       }else{
-        mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,9), nrow = 5, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, 4, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,9), nrow = 5, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, 4, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,11,12,13,13,13), nrow = 5, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(1, 4, 1), heights = c(4, 12, 1, 4, 4))
+        }
       }
     }else{
       if(!drawRowBar & !drawColBar){
-        mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 1, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4), widths = c(1, 4))
+        }
       }else if(!drawRowBar){
-        mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(4, 12, 1, 4), widths = c(1, 4))
+        }
       }else if(!drawColBar){
-        mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, heights = c(12, 1, 4), widths = c(4, 1))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4), widths = c(4, 1))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7,7), nrow = 3, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, heights = c(12, 1, 4), widths = c(1, 4, 1))
+        }
       }else{
-        mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
-        lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, 4))
+        if(is.null(exprsTbl)){
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, 4))
+        }else{
+          mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,10,10), nrow = 4, ncol = 3, byrow = TRUE)
+          lo = layout(mat = mat_lo, widths = c(1, 4, 1), heights = c(4, 12, 1, 4))
+        }
       }
     }
   }
@@ -415,3 +497,60 @@ get_titvCol = function(alpha = 1){
   names(col) = c('C>T', 'C>G', 'C>A', 'T>A', 'T>C', 'T>G')
   col
 }
+
+parse_annotation_dat = function(annotationDat = NULL, clinicalFeatures = NULL){
+
+  if(class(annotationDat)[1] == 'MAF'){
+    annotationDat = data.table::copy(getClinicalData(x = annotationDat))
+    data.table::setDF(annotationDat)
+  }else if(class(annotationDat)[1] %in% c('data.frame', 'data.table')){
+    data.table::setDF(annotationDat)
+  }else{
+    return(NULL)
+  }
+
+  if(length(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)]) > 0){
+    message('Following columns are missing from annotation slot of MAF. Ignoring them..')
+    print(clinicalFeatures[!clinicalFeatures %in% colnames(annotationDat)])
+    clinicalFeatures = clinicalFeatures[clinicalFeatures %in% colnames(annotationDat)]
+    if(length(clinicalFeatures) == 0){
+      message('Make sure at-least one of the values from provided clinicalFeatures are present in annotation slot of MAF. Here are available annotaions..')
+      print(colnames(annotationDat))
+      stop('Zero annotaions to add! You can also provide custom annotations via annotationDat argument.')
+    }
+  }
+  annotation = data.frame(row.names = annotationDat$Tumor_Sample_Barcode ,annotationDat[,clinicalFeatures, drop = FALSE], stringsAsFactors = FALSE)
+
+  return(annotation)
+}
+
+get_anno_cols = function(ann, numericAnnoCol = NULL){
+  ann_cols = list()
+  if(is.null(numericAnnoCol)){
+    numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = "YlOrBr")
+  }else{
+    numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = numericAnnoCol)
+  }
+  for(i in 1:ncol(ann)){
+    if(is.numeric(ann[,i])){
+      x = ann[,i]
+      ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x))
+      names(ann_lvls_cols) = x[order(x, na.last = TRUE)]
+      ann_cols[[i]] = ann_lvls_cols
+    }else{
+      ann_lvls = unique(as.character(ann[,i]))
+      if(length(ann_lvls) <= 9){
+        ann_lvls_cols = RColorBrewer::brewer.pal(n = 9, name = 'Set1')[1:length(ann_lvls)]
+      }else{
+        ann_lvls_cols = colors()[sample(x = 1:100, size = length(ann_lvls), replace = FALSE)]
+      }
+      ann_cols[[i]] = ann_lvls_cols
+      names(ann_cols[[i]]) = ann_lvls
+    }
+  }
+
+  names(ann_cols) = colnames(ann)
+
+  return(ann_cols)
+}
+

@@ -12,7 +12,7 @@ output:
     css: corp-styles.css
     highlight: pygments
 vignette: >
-  %\VignetteIndexEntry{oncoplots}
+  %\VignetteIndexEntry{02: Customizing oncoplots}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -160,6 +160,19 @@ oncoplot(
 )
 ```
 
+## Including expression (or any) values
+Similar to significance values included as right bar plot, it's also possible to include expression (or any sort of continuous) data to left side of the plot
+
+```{r}
+#Dummy expression values for top 20 genes 
+set.seed(seed = 1024)
+exprs_tbl = data.frame(genes = getGeneSummary(x = laml)[1:20, Hugo_Symbol],
+                       exprn = rnorm(n = 10, mean = 12, sd = 5))
+head(exprs_tbl)
+
+oncoplot(maf = laml, exprsTbl = exprs_tbl)
+```
+
 ## Including annotations
 Annotations are usually stored in `clinical.data` slot of MAF.
 ```{r}
@@ -196,20 +209,20 @@ Note that first argument (Tumor_Seq_Allele2) must a be column in MAF file, and s
 getFields(x = laml)
 ```
 
-## Combining all
+## Combining everything
 
 ```{r, fig.height = 8, fig.width = 10}
 oncoplot(
   maf = laml.plus.gistic,
-  top = 10,
   draw_titv = TRUE,
   clinicalFeatures = c('FAB_classification', 'Overall_Survival_Status'),
   additionalFeature = c("Tumor_Seq_Allele2", "C"),
   sortByAnnotation = TRUE,
-  mutsig = laml.mutsig
+  mutsig = laml.mutsig,
+  exprsTbl = exprs_tbl,
+  logColBar = TRUE
 )
 ```
-
 
 ## SessionInfo  
 ```{r}
