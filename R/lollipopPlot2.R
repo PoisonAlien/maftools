@@ -61,8 +61,8 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
   #domain_cols = grDevices::adjustcolor(col = domain_cols, alpha.f = 0.75)
   names(domain_cols) = domains
 
-  col1 = col[unique(as.character(m1.lp[[1]][,Variant_Classification]))]
-  col2 = col[unique(as.character(m2.lp[[1]][,Variant_Classification]))]
+  col1 = col[as.character(m1.lp[[1]][,Variant_Classification])]
+  col2 = col[as.character(m2.lp[[1]][,Variant_Classification])]
 
   lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
   layout(mat = lo, heights = c(4, 1.25))
