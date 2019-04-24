@@ -16,10 +16,13 @@
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
+#' @param includeColBarCN Whether to include CN in column bar plot. Default TRUE
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
 #' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted.
 #' @param additionalFeaturePch Default 20
+#' @param additionalFeatureCol Default "white"
+#' @param additionalFeatureCex Default 0.9
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
@@ -51,8 +54,8 @@
 #' oncoplot(maf = laml, top = 3)
 #' @seealso \code{\link{oncostrip}}
 #' @export
-oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, draw_titv = FALSE, logColBar = FALSE,
-                     clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
+oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
+                     clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
@@ -150,6 +153,11 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   if("CNV_total" %in% colnames(samp_sum)){
     samp_sum[,CNV_total := NULL]
   }
+
+  if(!includeColBarCN){
+    suppressWarnings(samp_sum[,Amp := NULL])
+    suppressWarnings(samp_sum[,Del := NULL])
+  }
   data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
   samp_sum = samp_sum[,-1]
 
@@ -175,7 +183,6 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
   }
 
-  #return(numMat)
   if(!is.null(sampleOrder)){
     sampleOrder = as.character(sampleOrder)
     sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
@@ -434,7 +441,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
           af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
                               which(colnames(nm) == ig)),
                             nrow = 1)
-          points(af_i_mat, pch = additionalFeaturePch, col= "white", cex = 0.9)
+          points(af_i_mat, pch = additionalFeaturePch, col= additionalFeatureCol, cex = additionalFeatureCex)
         })
       })
       additionalFeature_legend = TRUE
