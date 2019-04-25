@@ -14,7 +14,6 @@
 #' Tumor_Sample_Barcode = c('fake_1', 'fake2'))
 #' write.table(sample.var, 'sampleVars.txt', sep='\t',quote = FALSE, row.names = FALSE)
 #' ##var.maf <- oncotate(maflite = 'sampleVars.txt', header = TRUE)
-#' @importFrom rjson fromJSON
 #' @export
 
 oncotate = function(maflite, header = FALSE,basename = NULL){

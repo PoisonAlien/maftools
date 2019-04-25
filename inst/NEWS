@@ -1,4 +1,4 @@
-CHANGES IN VERSION 1.8.10
+CHANGES IN VERSION 2.0.0
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Oncoplot, oncostrip and coOncoplot code has been migrated from ComplexHeatmap to base graphics. Default values for some arguments have been changed.
@@ -37,14 +37,3 @@ BUG FIX
     o Rainfall plot data.table null fix. Issue: #201
     o Support non human BSgenome. Issue: #197
     o SampleID bug fix. Issue: #153
-
-CHANGES IN VERSION 1.8.0
--------------------------
-NEW FUNCTIONS
-    o OncogenicPathways - Perform enrichment for known oncogenic pathways from TCGA studies.
-    o PlotOncogenicPathways - Plots OncogenicPathways results
-    o drugInteractions - Drug gene interactions from DGIB database.
-
-SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o trinucleotideMatrix functions now works with BSgenomes instead of time consuming fasta files
-    o rainfallPlot now detects Kataegis based on a greedy algorithm
