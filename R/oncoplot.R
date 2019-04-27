@@ -117,6 +117,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }
 
   #Total samples
+  totSamps = as.numeric(maf@summary[3,summary])
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
 
   if(!removeNonMutated){
@@ -160,15 +161,6 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }
   data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
   samp_sum = samp_sum[,-1]
-
-  totSamps = as.numeric(maf@summary[3,summary])
-  if(removeNonMutated){
-    #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
-    altStat = paste0("Altered in ", ncol(numMat), " (", round(ncol(numMat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
-  }else{
-    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE))))
-    altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
-  }
 
   #Parse annotations
   if(!is.null(clinicalFeatures)){
@@ -520,7 +512,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     clini_lvls = clini_lvls[!is.na(clini_lvls)]
-    temp_names = sample(x = setdiff(x = 1:1000, y = as.numeric(as.character(clini_lvls))), size = length(clini_lvls), replace = FALSE)
+    temp_names = suppressWarnings(sample(x = setdiff(x = 1:1000, y = as.numeric(as.character(clini_lvls))), size = length(clini_lvls), replace = FALSE))
     names(clini_lvls) = temp_names#1:length(clini_lvls)
     temp_rownames = rownames(annotation)
     annotation = data.frame(lapply(annotation, as.character),
@@ -672,6 +664,14 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       x_axp = x_axp + lep$rect$w
 
     }
+  }
+
+  if(removeNonMutated){
+    #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
+    altStat = paste0("Altered in ", ncol(numMat), " (", round(ncol(numMat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
+  }else{
+    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE))))
+    altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
   }
 
   title(main = altStat, outer = TRUE, line = -1, cex.main = titleFontSize)
