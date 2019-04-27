@@ -289,7 +289,8 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
        cex.axis = axisTextSize[2])
   #mtext(text = "# Mutations", side = 2, line = 1.5, font = 1)
   segments(x0 = prot.snp.sumamry[,pos2], y0 = 0.8, x1 = prot.snp.sumamry[,pos2], y1 = prot.snp.sumamry[,count2-0.03], lwd = 1.2, col = "gray70")
-  points(x = prot.snp.sumamry[,pos2], y = prot.snp.sumamry[,count2], col = col, pch = 16, cex = pointSize)
+  point_cols = col[as.character(prot.snp.sumamry$Variant_Classification)]
+  points(x = prot.snp.sumamry[,pos2], y = prot.snp.sumamry[,count2], col = point_cols, pch = 16, cex = pointSize)
   rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = domain_cols, border = NA)
 
   title(main = cbioSubTitle, adj = 0, font.main = 2, cex.main = titleSize[1], line = 0.8)
