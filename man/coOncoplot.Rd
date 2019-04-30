@@ -8,10 +8,15 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
   annotationColor1 = NULL, annotationColor2 = NULL,
   annotationFontSize = 1.2, sortByAnnotation1 = FALSE,
-  sortByAnnotation2 = FALSE, colors = NULL, removeNonMutated = TRUE,
-  geneNamefont = 1.2, showSampleNames = FALSE, SampleNamefont = 1,
-  legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder = FALSE,
-  bgCol = "#CCCCCC", borderCol = "white")
+  sortByAnnotation2 = FALSE, additionalFeature1 = NULL,
+  additionalFeaturePch1 = 20, additionalFeatureCol1 = "white",
+  additionalFeatureCex1 = 0.9, additionalFeature2 = NULL,
+  additionalFeaturePch2 = 20, additionalFeatureCol2 = "white",
+  additionalFeatureCex2 = 0.9, colors = NULL,
+  removeNonMutated = TRUE, geneNamefont = 1.2,
+  showSampleNames = FALSE, SampleNamefont = 1, legendFontSize = 1.2,
+  titleFontSize = 1.5, keepGeneOrder = FALSE, bgCol = "#CCCCCC",
+  borderCol = "white")
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}
@@ -37,6 +42,22 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 \item{sortByAnnotation1}{logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort}
 
 \item{sortByAnnotation2}{same as above but for m2}
+
+\item{additionalFeature1}{a vector of length two indicating column name in the MAF and the factor level to be highlighted.}
+
+\item{additionalFeaturePch1}{Default 20}
+
+\item{additionalFeatureCol1}{Default "white"}
+
+\item{additionalFeatureCex1}{Default 0.9}
+
+\item{additionalFeature2}{a vector of length two indicating column name in the MAF and the factor level to be highlighted.}
+
+\item{additionalFeaturePch2}{Default 20}
+
+\item{additionalFeatureCol2}{Default "white"}
+
+\item{additionalFeatureCex2}{Default 0.9}
 
 \item{colors}{named vector of colors for each Variant_Classification.}
 

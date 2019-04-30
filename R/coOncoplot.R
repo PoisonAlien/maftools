@@ -10,6 +10,14 @@
 #' @param annotationColor2 list of colors to use for `clinicalFeatures2` Default NULL.
 #' @param sortByAnnotation1 logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort
 #' @param sortByAnnotation2 same as above but for m2
+#' @param additionalFeature1 a vector of length two indicating column name in the MAF and the factor level to be highlighted.
+#' @param additionalFeaturePch1 Default 20
+#' @param additionalFeatureCol1 Default "white"
+#' @param additionalFeatureCex1 Default 0.9
+#' @param additionalFeature2 a vector of length two indicating column name in the MAF and the factor level to be highlighted.
+#' @param additionalFeaturePch2 Default 20
+#' @param additionalFeatureCol2 Default "white"
+#' @param additionalFeatureCex2 Default 0.9
 #' @param annotationFontSize font size for annotations Default 1.2
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
@@ -40,6 +48,8 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                        clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
                        annotationColor1 = NULL, annotationColor2 = NULL, annotationFontSize = 1.2,
                        sortByAnnotation1 = FALSE, sortByAnnotation2 = FALSE,
+                      additionalFeature1 = NULL, additionalFeaturePch1 = 20, additionalFeatureCol1 = "white", additionalFeatureCex1 = 0.9,
+                      additionalFeature2 = NULL, additionalFeaturePch2 = 20, additionalFeatureCol2 = "white", additionalFeatureCex2 = 0.9,
                        colors = NULL, removeNonMutated = TRUE,
                        geneNamefont = 1.2, showSampleNames = FALSE, SampleNamefont = 1,
                        legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder=FALSE,
@@ -79,6 +89,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
     vc_col = colors
   }
 
+
   m12_annotation_colors = NULL
   if(!is.null(clinicalFeatures1) & !is.null(clinicalFeatures2)){
     if(is.null(annotationColor1) & is.null(annotationColor2)){
@@ -116,7 +127,9 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         annotationColor = annotationColor1, barcode_size = SampleNamefont,
                         sortByAnnotation = sortByAnnotation1, fontSize = geneNamefont,
                         title = m1Name, title_size = titleFontSize,
-                        showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol)
+                        showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
+                        additionalFeature = additionalFeature1, additionalFeaturePch = additionalFeaturePch1,
+                        additionalFeatureCex = additionalFeatureCex1, additionalFeatureCol = additionalFeatureCol1)
 
 
   if(is.null(clinicalFeatures1) & !is.null(clinicalFeatures2)){
@@ -143,7 +156,9 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         annotationColor = annotationColor2, barcode_size = SampleNamefont,
                         sortByAnnotation = sortByAnnotation2, fontSize = geneNamefont,
                         title = m2Name, title_size = titleFontSize, plot2 = TRUE,
-                        showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol)
+                        showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
+                        additionalFeature = additionalFeature2, additionalFeaturePch = additionalFeaturePch2,
+                        additionalFeatureCex = additionalFeatureCex2, additionalFeatureCol = additionalFeatureCol2)
 
   if(!is.null(clinicalFeatures1) & is.null(clinicalFeatures2)){
     plot.new()
@@ -162,10 +177,23 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
   par(mar = c(1, 1, 0, 0), xpd = TRUE)
 
+  vc_pch = rep(15, length(vc_legend))
+  if(!is.null(additionalFeature1)){
+    vc_legend = c(vc_legend, "gray70")
+    names(vc_legend)[length(vc_legend)] = paste(additionalFeature1, collapse = ":")
+    vc_pch = c(vc_pch, additionalFeaturePch1)
+  }
+
+  if(!is.null(additionalFeature2)){
+    vc_legend = c(vc_legend, "gray70")
+    names(vc_legend)[length(vc_legend)] = paste(additionalFeature2, collapse = ":")
+    vc_pch = c(vc_pch, additionalFeaturePch2)
+  }
+
   plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
   lep = legend("topleft", legend = names(vc_legend),
                col = vc_legend, border = NA, bty = "n",
-               ncol= 2, pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
+               ncol= 2, pch = vc_pch, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
 
   x_axp = 0+lep$rect$w
 

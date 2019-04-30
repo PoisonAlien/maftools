@@ -207,8 +207,16 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
   #01: Draw scale axis for expression table
   if(!is.null(exprsTbl)){
+    colnames(exprsTbl) = c('genes', 'exprn')
     data.table::setDF(x = exprsTbl, rownames = as.character(exprsTbl$genes))
-    colnames(exprsTbl) = c('gene', 'exprn')
+
+    missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(exprsTbl)]
+    if(length(missing_samps) > 0){
+      temp_data = data.frame(row.names = missing_samps, gene = missing_samps, exprn = rep(0, length(missing_samps)), stringsAsFactors = FALSE)
+      exprsTbl = rbind(exprsTbl, temp_data)
+      exprsTbl = exprsTbl[rownames(numMat),]
+    }
+    exprsTbl = exprsTbl[genes,, drop = FALSE]
 
     exprs_bar_lims = c(0, round(max(exprsTbl$exprn, na.rm = TRUE), digits = 2))
 
@@ -294,13 +302,6 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       par(mar = c(0.5, 1, 0, 0), xpd = TRUE)
     }
   }
-
-    missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(exprsTbl)]
-    if(length(missing_samps) > 0){
-      temp_data = data.frame(row.names = missing_samps, gene = missing_samps, exprn = rep(0, length(missing_samps)), stringsAsFactors = FALSE)
-      exprsTbl = rbind(exprsTbl, temp_data)
-      exprsTbl = exprsTbl[rownames(numMat),]
-    }
 
     plot(x = NA, y = NA, type = "n", xlim = rev(-exprs_bar_lims), ylim = c(0, nrow(exprsTbl)),
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
