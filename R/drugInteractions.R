@@ -43,7 +43,7 @@ drugInteractions = function(maf, top = 20, genes = NULL, plotType = "bar", drugs
 
     ndb = db[order(Gene)][,.N,Gene][order(N, decreasing = TRUE)]
 
-    message("Number of claimed drugs for given genes..")
+    cat("Number of claimed drugs for given genes:\n")
     print(ndb)
     return(db)
   }else{

@@ -15,6 +15,7 @@ IMPROVEMENTS:
     o Made protein domain db compatible with R version < 3.5 Issue: #276
     o Added draw `draw_titv`, and `exprsTbl` argument to oncoplot
     o Additional edits with TMB visualization and additionalFeatures Issue: #289
+    o Cooncoplot improvements Issue: #296
 
 BUG FIX
     o Oncoplot annotationOrder bug fix. Issue: #293

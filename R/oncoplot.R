@@ -212,7 +212,12 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
     missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(exprsTbl)]
     if(length(missing_samps) > 0){
-      temp_data = data.frame(row.names = missing_samps, gene = missing_samps, exprn = rep(0, length(missing_samps)), stringsAsFactors = FALSE)
+      temp_data = data.frame(
+        row.names = missing_samps,
+        genes = missing_samps,
+        exprn = rep(0, length(missing_samps)),
+        stringsAsFactors = FALSE
+      )
       exprsTbl = rbind(exprsTbl, temp_data)
       exprsTbl = exprsTbl[rownames(numMat),]
     }

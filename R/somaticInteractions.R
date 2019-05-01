@@ -142,7 +142,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
   if(findPathways){
     if(nrow(sigPairsTblSig[Event %in% 'Mutually_Exclusive']) > 2){
       if(verbose){
-        message("Checking for Gene sets.. ")
+        cat("Checking for Gene sets\n")
       }
       sig.genes = unique(c(sigPairsTblSig[Event %in% 'Mutually_Exclusive', gene1], sigPairsTblSig[Event %in% 'Mutually_Exclusive', gene2]))
       sig.genes.pvals = c()
@@ -151,7 +151,10 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
         sig.genes.combn = combn(x = sig.genes, m = k)
 
         if(verbose){
-          message(paste0("k = ", k, ": ", ncol(sig.genes.combn), " combinations.."))
+          cat("------------------\n")
+          cat(paste0("genes: ", length(sig.genes), "\n"))
+          cat(paste0("geneset size: ", k, "\n"))
+          cat(paste0(ncol(sig.genes.combn), " combinations\n"))
         }
 
         sps = lapply(seq_along(1:ncol(sig.genes.combn)), function(i){
@@ -172,7 +175,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
           #reorder
           mm.lvls = mm.lvls[order(mm.lvls$Var1),]
           if(verbose){
-            message("Geneset: ", paste(x, collapse = ", "))
+            #cat("Geneset: ", paste(x, collapse = ", "), "\n")
           }
           xp = cometExactTest::comet_exact_test(tbl = as.integer(as.character(mm.lvls$Freq)), mutmatplot = FALSE, pvalthresh = 0.1)
           data.table::data.table(gene_set = paste(x, collapse = ", "), pvalue = xp)
@@ -184,11 +187,10 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
       sig.genes.pvals = sig.genes.pvals[pvalue > 0][order(pvalue, decreasing = FALSE)]
       if(nrow(sig.genes.pvals[pvalue < 0.05]) > 0){
         if(verbose){
-          message("Signifcantly altered gene-sets:")
-          print(sig.genes.pvals[pvalue < 0.05])
+          cat(paste0("Signifcantly altered gene-sets: ", nrow(sig.genes.pvals[pvalue < 0.05])), "\n")
+          cat("------------------\n")
         }
       }
-
     }
   }
 
