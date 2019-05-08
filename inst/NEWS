@@ -1,3 +1,9 @@
+CHANGES IN VERSION 2.0.05
+-------------------------
+USER-LEVEL IMPROVEMENT
+    o Added keepGeneOrder argument to plotVaf. Issue: #305
+    o Added sampleOrder argument to gisticOncoPlot. Issue: #302
+
 CHANGES IN VERSION 2.0.0
 -------------------------
 SIGNIFICANT USER-LEVEL IMPROVEMENT

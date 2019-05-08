@@ -5,6 +5,7 @@
 #' @param vafCol manually specify column name for vafs. Default looks for column 't_vaf'
 #' @param genes specify genes for which plots has to be generated
 #' @param orderByMedian Orders genes by decreasing median VAF. Default TRUE
+#' @param keepGeneOrder keep gene order. Default FALSE
 #' @param top if \code{genes} is NULL plots top n number of genes. Defaults to 5.
 #' @param flip if TRUE, flips axes. Default FALSE
 #' @param showN if TRUE, includes number of observations
@@ -22,7 +23,7 @@
 #' @export
 
 plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
-                   orderByMedian = TRUE, flip = FALSE, fn = NULL,
+                   orderByMedian = TRUE, keepGeneOrder = FALSE, flip = FALSE, fn = NULL,
                    gene_fs = 0.8, axis_fs = 0.8, height = 5, width = 5, showN = TRUE){
 
   if(is.null(genes)){
@@ -57,11 +58,13 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
     datm$value = datm$value/100
   }
 
-  if(orderByMedian){
+  if(keepGeneOrder){
+    geneOrder = genes
+    datm$Hugo_Symbol = factor(x = datm$Hugo_Symbol, levels = geneOrder)
+  }else if(orderByMedian){
     geneOrder = datm[,median(value),Hugo_Symbol][order(V1, decreasing = TRUE)][,Hugo_Symbol]
     datm$Hugo_Symbol = factor(x = datm$Hugo_Symbol, levels = geneOrder)
   }
-
 
   bcol = c(RColorBrewer::brewer.pal(n = 8, name = "Dark2"),
            RColorBrewer::brewer.pal(n = 8, name = "Accent"))

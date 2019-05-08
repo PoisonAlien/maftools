@@ -7,7 +7,7 @@
 gisticOncoPlot(gistic = NULL, top = NULL,
   showTumorSampleBarcodes = FALSE, clinicalData = NULL,
   clinicalFeatures = NULL, sortByAnnotation = FALSE,
-  annotationColor = NULL, bandsToIgnore = NULL,
+  sampleOrder = NULL, annotationColor = NULL, bandsToIgnore = NULL,
   removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6,
   fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2)
 }
@@ -23,6 +23,8 @@ gisticOncoPlot(gistic = NULL, top = NULL,
 \item{clinicalFeatures}{columns names from `clinicalData` to be drawn in the plot. Dafault NULL.}
 
 \item{sortByAnnotation}{logical sort oncomatrix (samples) by provided `clinicalFeatures`. Defaults to FALSE. column-sort}
+
+\item{sampleOrder}{Manually speify sample names for oncolplot ordering. Default NULL.}
 
 \item{annotationColor}{list of colors to use for clinicalFeatures. Default NULL.}
 

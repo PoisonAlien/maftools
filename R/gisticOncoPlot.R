@@ -11,6 +11,7 @@
 #' @param clinicalFeatures columns names from `clinicalData` to be drawn in the plot. Dafault NULL.
 #' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Defaults to FALSE. column-sort
 #' @param annotationColor list of colors to use for clinicalFeatures. Default NULL.
+#' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param bandsToIgnore do not show these bands in the plot Default NULL.
 #' @param removeNonAltered Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
 #' @param colors named vector of colors Amp and Del events.
@@ -31,7 +32,7 @@
 
 
 gisticOncoPlot = function(gistic = NULL, top = NULL,
-                           showTumorSampleBarcodes = FALSE, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE,
+                           showTumorSampleBarcodes = FALSE, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE, sampleOrder = NULL,
                            annotationColor = NULL, bandsToIgnore = NULL,
                            removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2) {
 
@@ -83,6 +84,15 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
       numMat = sortByAnnotation(numMat = numMat, anno = annotation)
       annotation = annotation[colnames(numMat), , drop = FALSE]
     }
+  }
+
+  if(!is.null(sampleOrder)){
+    sampleOrder = as.character(sampleOrder)
+    sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
+    if(length(sampleOrder) == 0){
+      stop("None of the provided samples are present in the input MAF")
+    }
+    numMat = numMat[,sampleOrder, drop = FALSE]
   }
 
   mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
