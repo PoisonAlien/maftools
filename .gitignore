@@ -5,3 +5,4 @@ proj.user
 .RData
 .Rproj.user
 .icloud
+inst/doc

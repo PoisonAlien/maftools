@@ -115,8 +115,19 @@ Oncoplot can be sorted either by mutations or by clinicalFeatures using argument
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf)
+laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
+laml <- read.maf(maf = laml.maf, clinicalData = laml.clin)
+#Basic onocplot
 oncoplot(maf = laml, top = 3)
+#Changing colors for variant classifications (You can use any colors, here in this example we will use a color palette from RColorBrewer)
+col = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
+names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Multi_Hit', 'Frame_Shift_Ins',
+               'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
+#Color coding for FAB classification; try getAnnotations(x = laml) to see available annotations.
+fabcolors = RColorBrewer::brewer.pal(n = 8,name = 'Spectral')
+names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
+fabcolors = list(FAB_classification = fabcolors)
+oncoplot(maf = laml, colors = col, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
 }
 \seealso{
 \code{\link{oncostrip}}

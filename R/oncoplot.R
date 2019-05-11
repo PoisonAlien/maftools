@@ -50,8 +50,19 @@
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf)
+#' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
+#' laml <- read.maf(maf = laml.maf, clinicalData = laml.clin)
+#' #Basic onocplot
 #' oncoplot(maf = laml, top = 3)
+#' #Changing colors for variant classifications (You can use any colors, here in this example we will use a color palette from RColorBrewer)
+#' col = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
+#' names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Multi_Hit', 'Frame_Shift_Ins',
+#'                'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
+#' #Color coding for FAB classification; try getAnnotations(x = laml) to see available annotations.
+#' fabcolors = RColorBrewer::brewer.pal(n = 8,name = 'Spectral')
+#' names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
+#' fabcolors = list(FAB_classification = fabcolors)
+#' oncoplot(maf = laml, colors = col, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
 #' @seealso \code{\link{oncostrip}}
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
@@ -169,6 +180,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }else{
       annotation = parse_annotation_dat(annotationDat = annotationDat, clinicalFeatures = clinicalFeatures)
     }
+    annotation = annotation[colnames(numMat),, drop = FALSE]
 
     if(sortByAnnotation){
       numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = FALSE)
@@ -192,7 +204,6 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }else{
     top_bar_data = t(samp_sum[colnames(numMat),,])
   }
-
 
   if(is.null(colors)){
     vc_col = get_vcColors()
@@ -512,12 +523,19 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       annotationColor = get_anno_cols(ann = annotation)
     }
 
+    annotationColor = lapply(annotationColor, function(x) {
+      na_idx = which(is.na(names(x)))
+      x[na_idx] = "gray70"
+      names(x)[na_idx] = "NA"
+      x
+    })
+
     anno_cols = c()
     for(i in 1:length(annotationColor)){
       anno_cols = c(anno_cols, annotationColor[[i]])
     }
 
-    clini_lvls = clini_lvls[!is.na(clini_lvls)]
+    #clini_lvls = clini_lvls[!is.na(clini_lvls)]
     temp_names = suppressWarnings(sample(x = setdiff(x = 1:1000, y = as.numeric(as.character(clini_lvls))), size = length(clini_lvls), replace = FALSE))
     names(clini_lvls) = temp_names#1:length(clini_lvls)
     temp_rownames = rownames(annotation)
@@ -552,9 +570,15 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
       col = anno_cols[anno_code]
       #temp_anno = t(apply(annotation, 2, rev))
       temp_anno = as.matrix(annotation)
+      #Handle NA's
+      if(is.na(col)){
+        col = "gray70"
+        temp_anno[is.na(temp_anno)] = as.numeric(names(anno_code))
+      }
       temp_anno[temp_anno != names(anno_code)] = NA
-      image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
-            axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE)
+
+      suppressWarnings(image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
+            axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE))
     }
 
     #Add grids
@@ -653,14 +677,10 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
       if(length(x) <= 4){
         n_col = 1
-      }else if(length(x) >= nrow(numMat)){
-        x_idx = as.integer(seq(1, length(x), length.out = 4))
-        x = x[order(as.numeric(names(x)))]
-        x = x[x_idx]
-        n_col = 1
       }else{
         n_col = (length(x) %/% 4)+1
       }
+      names(x)[is.na(names(x))] = "NA"
 
       lep = legend(x = x_axp, y = 1, legend = names(x),
                    col = x, border = NA,

@@ -13,7 +13,7 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   additionalFeatureCex1 = 0.9, additionalFeature2 = NULL,
   additionalFeaturePch2 = 20, additionalFeatureCol2 = "white",
   additionalFeatureCex2 = 0.9, colors = NULL,
-  removeNonMutated = TRUE, geneNamefont = 1.2,
+  removeNonMutated = TRUE, geneNamefont = 0.8,
   showSampleNames = FALSE, SampleNamefont = 1, legendFontSize = 1.2,
   titleFontSize = 1.5, keepGeneOrder = FALSE, bgCol = "#CCCCCC",
   borderCol = "white")

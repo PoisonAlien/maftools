@@ -184,13 +184,21 @@ Include `FAB_classification` from clinical data as one of the sample annotations
 oncoplot(maf = laml, clinicalFeatures = 'FAB_classification')
 ```
 
-More than one annotations can be included by passing them to the argument `clinicalFeatures`. Above plot can be further enhanced by sorting according to annotations.
+More than one annotations can be included by passing them to the argument `clinicalFeatures`. Above plot can be further enhanced by sorting according to annotations. Custom colors can be specified as a list of named vectors for each levels.
  
 ```{r}
+#Color coding for FAB classification
+fabcolors = RColorBrewer::brewer.pal(n = 8,name = 'Spectral')
+names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
+fabcolors = list(FAB_classification = fabcolors)
+
+print(fabcolors)
+
 oncoplot(
   maf = laml,
   clinicalFeatures = 'FAB_classification',
-  sortByAnnotation = TRUE
+  sortByAnnotation = TRUE,
+  annotationColor = fabcolors
 )
 ```
 

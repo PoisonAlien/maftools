@@ -108,7 +108,6 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     return(list(numMat, vc_col[om$vc]))
   }
 
-
   nm = t(apply(numMat, 2, rev))
   nm[nm == 0] = NA
   image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
@@ -120,8 +119,8 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     col = vc_col[vc_code]
     nm = t(apply(numMat, 2, rev))
     nm[nm != names(vc_code)] = NA
-    image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
-          xlab="", ylab="", col = col, add = TRUE)
+    suppressWarnings(image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
+          xlab="", ylab="", col = col, add = TRUE))
   }
 
   #Add blanks

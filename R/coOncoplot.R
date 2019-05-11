@@ -51,7 +51,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                       additionalFeature1 = NULL, additionalFeaturePch1 = 20, additionalFeatureCol1 = "white", additionalFeatureCex1 = 0.9,
                       additionalFeature2 = NULL, additionalFeaturePch2 = 20, additionalFeatureCol2 = "white", additionalFeatureCex2 = 0.9,
                        colors = NULL, removeNonMutated = TRUE,
-                       geneNamefont = 1.2, showSampleNames = FALSE, SampleNamefont = 1,
+                       geneNamefont = 0.8, showSampleNames = FALSE, SampleNamefont = 1,
                        legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder=FALSE,
                        bgCol = "#CCCCCC", borderCol = "white"){
 
@@ -75,13 +75,13 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
     m1Name = 'M1'
   }
 
-  m1Name = paste(m1Name, ' (n = ' , m1.sampleSize, ')',sep = '')
+  m1Name = paste(m1Name, ' (N = ' , m1.sampleSize, ')',sep = '')
 
   if(is.null(m2Name)){
     m2Name = 'M2'
   }
 
-  m2Name = paste(m2Name, ' (n = ' , m2.sampleSize, ')',sep = '')
+  m2Name = paste(m2Name, ' (N = ' , m2.sampleSize, ')',sep = '')
 
   if(is.null(colors)){
     vc_col = get_vcColors()
@@ -142,10 +142,11 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
     par(mar = c(1, 0, 3, 0))
   }
 
-  plot(NA, NA, xlim = c(0, 1), axes = FALSE,
-       xlab = "", ylab = "", ylim = c(1, length(genes)))
-  text(x = 0.5, y = 1:length(genes), labels = rev(genes),
-       adj = 0.5, font = 2, cex = geneNamefont)
+  nm = matrix(data = 1, nrow = 1, ncol = length(genes))
+  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
+        xlab="", ylab="", col = "white")
+  mtext(text = rev(genes), side = 2, adj = 0.5, at = 1:ncol(nm),
+        font = 3, line = -2, cex = geneNamefont, las = 2)
 
   if(!is.null(clinicalFeatures1) || !is.null(clinicalFeatures2)){
     plot.new()

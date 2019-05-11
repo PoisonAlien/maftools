@@ -431,7 +431,6 @@ plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
           lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4), widths = c(4, 1))
         }else{
-          print("I ma hee")
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,10,10), nrow = 4, ncol = 3, byrow = TRUE)
           lo = layout(mat = mat_lo, heights = c(12, 1, 4, 4), widths = c(1, 4, 1))
         }

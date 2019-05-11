@@ -49,9 +49,12 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
   #dat.genes = data.frame(dat[dat$Hugo_Symbol %in% genes])
   #suppressMessages(datm <- melt(dat.genes[,c('Hugo_Symbol', 't_vaf')]))
   dat.genes = dat[dat$Hugo_Symbol %in% genes]
-  suppressWarnings(datm <- data.table::melt(data = dat.genes[,.(Hugo_Symbol, t_vaf)]))
+  datm <- data.table::melt(data = dat.genes[,.(Hugo_Symbol, t_vaf)], id.vars = 'Hugo_Symbol', measure.vars = 't_vaf')
   #remove NA from vcf
   datm = datm[!is.na(value)]
+  if(nrow(datm) == 0){
+    stop("Nothing to plot.")
+  }
 
   #maximum vaf
   if(max(datm$value, na.rm = TRUE) > 1){
