@@ -1,12 +1,17 @@
 CHANGES IN VERSION 2.0.05
 -------------------------
 USER-LEVEL IMPROVEMENT
-    o Fix data.table melt value name in plotVaf. Issue: #311
     o Add more examples for oncoplot customization. Issue: #310
-    o Fix colors for NAs in oncoplot legend. Issue: #309
     o CoOncoplot - align gene names. Issue: #308
     o Added keepGeneOrder argument to plotVaf. Issue: #305
     o Added sampleOrder argument to gisticOncoPlot. Issue: #302
+
+BUG FIX
+    o SomatinInteractions - Do not ignore samples with no nonsyn variants. Issue: #318
+    o Do not convert spaces to underscores while parsing annotations. Issue: #314
+    o Fix errors in bubbleplot when the data contains no labels. Issue: #311
+    o Fix data.table melt value name in plotVaf. Issue: #311
+    o Fix colors for NAs in oncoplot legend. Issue: #309
 
 CHANGES IN VERSION 2.0.0
 -------------------------

@@ -30,7 +30,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
   }
 
   om = createOncoMatrix(m = maf, g = genes)
-  all.tsbs = as.character(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
+  all.tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
 
   mutMat = t(om$numericMatrix)
   missing.tsbs = all.tsbs[!all.tsbs %in% rownames(mutMat)]

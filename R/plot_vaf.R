@@ -52,6 +52,7 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
   datm <- data.table::melt(data = dat.genes[,.(Hugo_Symbol, t_vaf)], id.vars = 'Hugo_Symbol', measure.vars = 't_vaf')
   #remove NA from vcf
   datm = datm[!is.na(value)]
+  datm[,value := as.numeric(as.character(value))]
   if(nrow(datm) == 0){
     stop("Nothing to plot.")
   }

@@ -26,7 +26,7 @@
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
-#' @param annotationColor list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.
+#' @param annotationColor  Custom colors to use for `clinicalFeatures`. Must be a named list containing a named vector of colors. Default NULL. See example for more info.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param fill Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.
 #' @param colors named vector of colors for each Variant_Classification.
@@ -47,6 +47,7 @@
 #' @param annotationFontSize font size for annotations. Default 1.2
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file.
 #' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE. Not implemented yet!
+#' @param showTitle Default TRUE
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -70,7 +71,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
                      showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
-                     titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
+                     showTitle = TRUE, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
   if(!is.null(genes)){ #If user provides a gene list
     om = createOncoMatrix(m = maf, g = genes, add_missing = fill)
@@ -700,5 +701,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
   }
 
-  title(main = altStat, outer = TRUE, line = -1, cex.main = titleFontSize)
+  if(showTitle){
+    title(main = altStat, outer = TRUE, line = -1, cex.main = titleFontSize)
+  }
 }

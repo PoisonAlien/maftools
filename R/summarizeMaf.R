@@ -167,7 +167,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   colnames(sample.anno) = gsub(pattern = ' ', replacement = '_', x = colnames(sample.anno), fixed = TRUE) #replace spaces in column names for annotation data
   sample.anno = as.data.frame(apply(sample.anno, 2, function(y) trimws(y))) #remove trailing whitespaces
   sample.anno[sample.anno == ""] = NA #Replace blanks with NA
-  sample.anno = as.data.frame(apply(sample.anno, 2, function(y) gsub(pattern = " ", replacement = "_", x = y))) #replace spaces with _
+  #sample.anno = as.data.frame(apply(sample.anno, 2, function(y) gsub(pattern = " ", replacement = "_", x = y))) #replace spaces with _
   data.table::setDT(x = sample.anno)
   if(ncol(sample.anno) == 1){
     colnames(sample.anno)[1] = c("Tumor_Sample_Barcode")

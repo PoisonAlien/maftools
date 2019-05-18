@@ -17,7 +17,7 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
   groupAnnotationBySize = TRUE, annotationOrder = NULL,
   keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
   writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
-  titleFontSize = 1.5, legendFontSize = 1.2,
+  showTitle = TRUE, titleFontSize = 1.5, legendFontSize = 1.2,
   annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = "white",
   colbar_pathway = FALSE)
 }
@@ -57,7 +57,7 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
 \item{annotationDat}{If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
-\item{annotationColor}{list of colors to use for `clinicalFeatures`. Must be a named list. Default NULL.}
+\item{annotationColor}{Custom colors to use for `clinicalFeatures`. Must be a named list containing a named vector of colors. Default NULL. See example for more info.}
 
 \item{genesToIgnore}{do not show these genes in Oncoplot. Default NULL.}
 
@@ -90,6 +90,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{fontSize}{font size for gene names. Default 0.8.}
 
 \item{SampleNamefontSize}{font size for sample names. Default 1}
+
+\item{showTitle}{Default TRUE}
 
 \item{titleFontSize}{font size for title. Default 1.5}
 
