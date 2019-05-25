@@ -213,6 +213,10 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }
   vc_codes = om$vc #VC codes
 
+  if(nrow(numMat) == 1){
+    stop("Oncoplot requires at-least two genes for plottng.")
+  }
+
   #Plot layout
   plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar,
               drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = exprsTbl)
