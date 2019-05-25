@@ -2,20 +2,20 @@
 % Please edit documentation in R/mergeMafs.R
 \name{merge_mafs}
 \alias{merge_mafs}
-\title{Merge multiple maf files into a single MAF}
+\title{Merge multiple mafs into single MAF}
 \usage{
-merge_mafs(mafs, MAFobj = FALSE, ...)
+merge_mafs(mafs, verbose = TRUE, ...)
 }
 \arguments{
-\item{mafs}{a vector of maf files.}
+\item{mafs}{a list of \code{\link{MAF}} objects or data.frames or paths to MAF files.}
 
-\item{MAFobj}{If TRUE, returns result as an \code{\link{MAF}} object. Default FALSE}
+\item{verbose}{Default TRUE}
 
-\item{...}{additional arguments passed \code{\link{read.maf}}. Only applicable if MAFobj = TRUE.}
+\item{...}{additional arguments passed \code{\link{read.maf}}}
 }
 \value{
-data.table of merged MAFs or \code{\link{MAF}} object
+\code{\link{MAF}} object
 }
 \description{
-Merges multiple maf files into a single MAF by matching column names.
+Merges multiple maf files/objects/data.frames into a single MAF.
 }

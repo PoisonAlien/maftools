@@ -8,7 +8,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
       if(length(NCBI_Build) > 1){
         cat('--Mutiple reference builds found\n')
         NCBI_Build = do.call(paste, c(as.list(NCBI_Build), sep=";"))
-        message(NCBI_Build)
+        cat(NCBI_Build)
       }
     }
   }else{
@@ -22,7 +22,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
       Center = do.call(paste, c(as.list(Center), sep=";"))
       if(chatty){
         cat('--Mutiple centers found\n')
-        print(Center)
+        cat(Center)
       }
     }
   }else{

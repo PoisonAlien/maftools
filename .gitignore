@@ -6,3 +6,5 @@ proj.user
 .Rproj.user
 .icloud
 inst/doc
+vignettes/.gitignore
+.gitignore

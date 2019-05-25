@@ -1,6 +1,7 @@
 CHANGES IN VERSION 2.0.05
 -------------------------
 USER-LEVEL IMPROVEMENT
+    o merge_mafs - Merge multiple MAF objects, files. Issue: #329
     o Add more examples for oncoplot customization. Issue: #310
     o CoOncoplot - align gene names. Issue: #308
     o Added keepGeneOrder argument to plotVaf. Issue: #305

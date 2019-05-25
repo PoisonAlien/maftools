@@ -26,7 +26,7 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
     maf = maf[, variantId := paste(Chromosome, Start_Position, Tumor_Sample_Barcode, sep = ':')]
     if(nrow(maf[duplicated(variantId)]) > 0){
       if(chatty){
-        cat("\tRemoved ",  nrow(maf[duplicated(variantId)]) ," duplicated variants\n")
+        cat("--Removed",  nrow(maf[duplicated(variantId)]) ,"duplicated variants\n")
       }
       maf = maf[!duplicated(variantId)]
     }
