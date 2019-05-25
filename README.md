@@ -50,31 +50,31 @@ Simple usage: Just read maf file using `read.maf` and pass the resulting maf obj
 
 ### Stuffs maftools can do
 1. Analysis
-  * Detect cancer driver genes based on positional clustering of variants<sup>2</sup>.
-  * Detect Mutually exclusive set of genes<sup>3</sup>.
-  * Compare two MAF files (cohorts) to detect differentially mutated genes.
-  * Add pfam domains and summarize.
-  * Extract mutational signatures and compare them to validated signatures<sup>4</sup>.
-  * APOBEC Enrichment score estimation<sup>5</sup>.
-  * Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation<sup>6</sup>.
-  * Read and summarize GISTIC results.
+  * Detect cancer driver genes based on positional clustering of variants<sup>2</sup>
+  * Detect Mutually exclusive set of genes<sup>3</sup>
+  * Compare two MAF files (cohorts) to detect differentially mutated genes
+  * Add pfam domains and summarize
+  * Extract mutational signatures and compare them to validated signatures<sup>4</sup>
+  * APOBEC Enrichment score estimation<sup>5</sup>
+  * Tumor heterogenity and MATH (Mutant-Allele Tumor Heterogeneity) score estimation<sup>6</sup>
+  * Read and summarize GISTIC results
   * Pan-cancer analysis/comparisison
   * Survival analysis
   * Compare mutation load against all 33 TCGA cohorts
 2. Rich Visualizations
-  * Make oncoplots<sup>7</sup>.
-  * Make lollipop plots.
+  * Make oncoplots
+  * Make lollipop plots
   * Map variants on copy number (CBS) segments 
   * Forest plots
-  * Plot Transitions and Transversions. 
-  * Plot maf summary.
+  * Plot Transitions and Transversions
+  * Plot maf summary
   * CoOncoplots
   * Genecloud
   * Rainfall plots and change point detection
 3. Annotation
-  * Annotate variants locally using Oncotator API.
-  * Convert Annovar annotations into MAF.
-  * Convert ICGC simple somatic mutation format into MAF.
+  * Annotate variants locally using Oncotator API
+  * Convert Annovar annotations into MAF
+  * Convert ICGC simple somatic mutation format into MAF
 
 ### References
 
