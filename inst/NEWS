@@ -10,7 +10,7 @@ BUG FIX
     o Fix oncoplot removeNonMutated Error #325
     o SomatinInteractions - Do not ignore samples with no nonsyn variants. Issue: #318
     o Do not convert spaces to underscores while parsing annotations. Issue: #314
-    o Fix errors in bubbleplot when the data contains no labels. Issue: #311
+    o Fix errors in bubbleplot when the data contains no labels. Issue: #313
     o Fix data.table melt value name in plotVaf. Issue: #311
     o Fix colors for NAs in oncoplot legend. Issue: #309
 

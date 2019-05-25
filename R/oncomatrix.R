@@ -321,7 +321,7 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
   if(!is.null(lab_dat)){
     # points(x = lab_dat$x, y = lab_dat$y, cex = lab_dat$size_z,
     #        pch = 16, col = lab_dat$color_var)
-    if(nrow(lab_dat) < 2){
+    if(nrow(lab_dat) > 0 & nrow(lab_dat) < 2){
       text(x = lab_dat$x, y = lab_dat$y, labels = lab_dat$z_text, adj = 1, offset = 0.2, cex = text_size, col = lab_dat$color_var)
     }else if(nrow(lab_dat) >= 2){
       symbols(x = lab_dat$x, y = lab_dat$y, circles = lab_dat$size_z,
