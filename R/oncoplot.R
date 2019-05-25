@@ -133,7 +133,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
 
   if(!removeNonMutated){
-    tsb.include = matrix(data = 0, nrow = length(genes),
+    tsb.include = matrix(data = 0, nrow = nrow(numMat),
                          ncol = length(tsbs[!tsbs %in% colnames(numMat)]))
     colnames(tsb.include) = tsbs[!tsbs %in% colnames(numMat)]
     rownames(tsb.include) = rownames(numMat)
