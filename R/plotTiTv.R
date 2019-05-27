@@ -5,6 +5,7 @@
 #' @param plotType Can be 'bar', 'box' or 'both'. Defaults to 'both'
 #' @param color named vector of colors for each coversion class.
 #' @param showBarcodes Whether to include sample names for barplot
+#' @param sampleOrder Sample names in which the barplot should be ordered. Default NULL
 #' @param textSize fontsize if showBarcodes is TRUE. Deafult 2.
 #' @param baseFontSize font size. Deafult 1.
 #' @param axisTextSize text size x and y tick labels. Default c(1,1).

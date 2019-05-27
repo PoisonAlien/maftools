@@ -13,6 +13,8 @@ plotTiTv(res = NULL, plotType = "both", sampleOrder = NULL,
 
 \item{plotType}{Can be 'bar', 'box' or 'both'. Defaults to 'both'}
 
+\item{sampleOrder}{Sample names in which the barplot should be ordered. Default NULL}
+
 \item{color}{named vector of colors for each coversion class.}
 
 \item{showBarcodes}{Whether to include sample names for barplot}
