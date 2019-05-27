@@ -20,8 +20,8 @@
 #' @export
 
 
-plotTiTv = function(res = NULL, plotType = 'both',
-                    color = NULL, showBarcodes = FALSE, textSize = 2, baseFontSize = 1,
+plotTiTv = function(res = NULL, plotType = 'both', sampleOrder = NULL,
+                    color = NULL, showBarcodes = FALSE, textSize = 0.8, baseFontSize = 1,
                     axisTextSize = c(1, 1), plotNotch = FALSE){
 
   if(is.null(color)){
@@ -68,11 +68,19 @@ plotTiTv = function(res = NULL, plotType = 'both',
       par(mar = c(2, 4, 3, 3))
     }
 
+    if(!is.null(sampleOrder)){
+      sampleOrder = sampleOrder[sampleOrder %in% colnames(titv.frac.melt)]
+      if(length(sampleOrder) == 0){
+        stop("Sample names do not match")
+      }
+      titv.frac.melt = titv.frac.melt[,sampleOrder]
+    }
+
     b = barplot(titv.frac.melt, col = col[rownames(x = titv.frac.melt)],
                 names.arg = rep("", ncol(titv.frac.melt)),
                 axes = FALSE, space = 0.2, border = NA, lwd = 1.2)
     if(showBarcodes){
-      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 1, line = -1, las = 2, cex.axis = axisTextSize[1])
+      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 1, line = -1, las = 2, cex.axis = textSize)
     }
     axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2])
     mtext(side = 2, text = "% Mutations", font = 1, cex = baseFontSize, line = 2.5)
@@ -135,10 +143,18 @@ plotTiTv = function(res = NULL, plotType = 'both',
       par(mar = c(2, 4, 1, 1))
     }
 
+    if(!is.null(sampleOrder)){
+      sampleOrder = sampleOrder[sampleOrder %in% colnames(titv.frac.melt)]
+      if(length(sampleOrder) == 0){
+        stop("Sample names do not match")
+      }
+      titv.frac.melt = titv.frac.melt[,sampleOrder]
+    }
+
     b = barplot(titv.frac.melt, col = col[rownames(x = titv.frac.melt)], names.arg = rep("", ncol(titv.frac.melt)),
                 axes = FALSE, space = 0.2, border = NA)
     if(showBarcodes){
-      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 1, line = -1, las = 2, cex.axis = axisTextSize[1])
+      axis(side = 1, at = b, labels = colnames(titv.frac.melt), tick = FALSE, font = 1, line = -1, las = 2, cex.axis = textSize)
     }
     axis(side = 2, at = seq(0, 100, 25), las = 2, font = 1, lwd = 1.2, cex.axis = axisTextSize[2])
     mtext(side = 2, text = "% Mutations", font = 1, cex = baseFontSize, line = 2.5)

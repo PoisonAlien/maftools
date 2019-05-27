@@ -17,41 +17,37 @@
 
 titv = function(maf, useSyn = FALSE, plot = TRUE, file = NULL){
 
-  #Main data
-  mafDat = maf@data
-
-  if(useSyn){
-    #Synonymous variants
-    maf.silent = maf@maf.silent
-    mafDat = rbind(mafDat, maf.silent, fill = TRUE)
-  }
-
-  mafDat = mafDat[Variant_Type == 'SNP']
+  mafDat = subsetMaf(maf = maf, query = "Variant_Type == 'SNP'", mafObj = FALSE, includeSyn = useSyn, fields = "Variant_Type")
 
   if(nrow(mafDat) == 0){
     stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
   }
 
-  mafDat = mafDat[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
+  #mafDat = mafDat[,.(Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode)]
   mafDat$con = paste(mafDat[,Reference_Allele], mafDat[,Tumor_Seq_Allele2], sep = '>')
 
-  maf.con.summary = mafDat[,.N, by = .(Tumor_Sample_Barcode, con)]
   conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
   names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
   conv.class = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv')
   names(conv.class) = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G")
 
+  if(nrow(mafDat[!con %in% names(conv)]) > 0){
+    warning(paste0("Non standard Ti/Tv class: ", nrow(mafDat[!con %in% names(conv)]), immediate. = TRUE))
+    mafDat = mafDat[con %in% names(conv)]
+  }
+
+  maf.con.summary = mafDat[,.N, by = .(Tumor_Sample_Barcode, con)]
   maf.con.summary$con.class = conv[as.character(maf.con.summary$con)]
   # maf.con.summary$con.class = suppressWarnings(as.character(factor(maf.con.summary$con, levels = c("A-G", "T-C", "C-T", "G-A", "A-T", "T-A", "A-C", "T-G", "C-A", "G-T", "C-G", "G-C"),
   #                                                                  labels = c("T-C", "T-C", "C-T", "C-T", "T-A", "T-A", "T-G", "T-G", "C-A", "C-A", "C-G", "C-G"))))
 
   maf.con.class.summary = maf.con.summary[,sum(N), by = .(Tumor_Sample_Barcode, con.class)]
   colnames(maf.con.class.summary)[ncol(maf.con.class.summary)] = 'nVars'
-  suppressWarnings(maf.con.class.summary[,fract := (nVars/sum(nVars))*100, by = .(Tumor_Sample_Barcode)])
+  maf.con.class.summary[,fract := (nVars/sum(nVars))*100, by = .(Tumor_Sample_Barcode)]
 
+  maf.con.class.summary$TiTv = conv.class[maf.con.class.summary$con.class]
   maf.con.class.summary$con.class = factor(x = maf.con.class.summary$con.class,
                                            levels = c("C>A", "C>G", "C>T", "T>C", "T>A", "T>G"))
-  maf.con.class.summary$TiTv = conv.class[as.character(maf.con.class.summary$con.class)]
   maf.con.class.summary$TiTv = factor(x = maf.con.class.summary$TiTv, levels = c('Ti', 'Tv'))
   # maf.con.class.summary$TiTv = suppressWarnings(as.character(factor(x = maf.con.class.summary$con.class,
   #                                                                   levels = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G"), labels = c('Ti', 'Ti', 'Tv', 'Tv', 'Tv', 'Tv'))))

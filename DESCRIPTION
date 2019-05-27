@@ -1,7 +1,7 @@
 Package: maftools
 Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 2.0.05
+Version: 2.0.10
 Date: 2015-12-14
 Author: Anand Mayakonda <anand_mt@hotmail.com>
 Maintainer: Anand Mayakonda <anand_mt@hotmail.com>
