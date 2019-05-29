@@ -166,7 +166,19 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     #Add Variant-type annotations based on difference between ref and alt alleles
     cat("-Adding Variant_Type\n")
     ann[,ref_alt_diff := nchar(Ref) - nchar(Alt)]
-    ann[, Variant_Type := ifelse(ref_alt_diff == 0 , yes = "SNP", no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL"))]
+    #ann[, Variant_Type := ifelse(ref_alt_diff == 0 , yes = "SNP", no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL"))]
+    ann$Variant_Type = apply(ann[,.(Ref, Alt)], 1, function(x) {
+      xx = which(x == '-')
+      if(length(xx) == 0){
+        return("SNP")
+      }else if(names(xx) == 'Ref'){
+        return("INS")
+      }else if(names(xx) == 'Alt'){
+        return("DEL")
+      }else{
+        return(NA)
+      }
+    })
 
     #Frameshift_INDEL, Inframe_INDEL are annotated by annovar without INS or DEL status
     #Parse this based on difference between ref and alt alleles

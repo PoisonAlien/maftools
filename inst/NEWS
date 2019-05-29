@@ -1,6 +1,7 @@
 CHANGES IN VERSION 2.0.10
 -------------------------
     o Add argument for sample ordering in plotTiTv. Issue: #330
+    o Bug fix in annovartomaf which had caused wrong annotations for INDLS. Issue: #330
 
 CHANGES IN VERSION 2.0.05
 -------------------------
