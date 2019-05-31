@@ -4,6 +4,7 @@
 #' @param verbose Default TRUE
 #' @param ... additional arguments passed \code{\link{read.maf}}
 #' @return \code{\link{MAF}} object
+#' @export
 #'
 merge_mafs = function(mafs, verbose = TRUE, ...){
 
