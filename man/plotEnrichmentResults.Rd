@@ -4,9 +4,9 @@
 \alias{plotEnrichmentResults}
 \title{Plots results from clinicalEnrichment analysis}
 \usage{
-plotEnrichmentResults(enrich_res, pVal = 0.05, lvl_order = NULL,
-  cols = NULL, annoFontSize = 0.8, geneFontSize = 0.8,
-  legendFontSize = 0.8, showTitle = TRUE)
+plotEnrichmentResults(enrich_res, pVal = 0.05, cols = NULL,
+  annoFontSize = 0.8, geneFontSize = 0.8, legendFontSize = 0.8,
+  showTitle = TRUE)
 }
 \arguments{
 \item{enrich_res}{results from \code{\link{clinicalEnrichment}} or \code{\link{signatureEnrichment}}}

@@ -87,14 +87,15 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
                     x
                     })
   names(plot.dat) = names(tcga.cohort)
-  y_lims = range(log10(unlist(lapply(plot.dat, function(x) max(x[,V2], na.rm = TRUE)))))
-  y_lims = seq(y_lims[1], y_lims[2], length.out = 5)
-  #y_lims[1] = 0
-  y_at = pretty(y_lims)
+  y_lims = range(log10(data.table::rbindlist(l = plot.dat)[,V2]))
+  #y_lims = range(log10(unlist(lapply(plot.dat, function(x) max(x[,V2], na.rm = TRUE)))))
   y_max = ceiling(max(y_lims))
-  y_lims = range(y_at)
+  y_min = floor(min(y_lims))
+  y_lims = c(y_min, y_max)
+  y_at = pretty(y_lims)
 
-  par(mar = c(4, 3, 2, 1))
+
+  par(mar = c(4, 3, 1, 1))
   plot(NA, NA, xlim = c(0, length(plot.dat)), ylim = y_lims, axes = FALSE, xlab = NA, ylab = NA)
   rect(xleft = seq(0, length(plot.dat)-1, 1), ybottom = min(y_lims), xright = seq(1, length(plot.dat), 1),
        ytop = y_max, col = grDevices::adjustcolor(col = bg_col, alpha.f = 0.2),
