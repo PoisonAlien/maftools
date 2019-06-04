@@ -12,12 +12,13 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
   additionalFeatureCex = 0.9, annotationDat = NULL,
   annotationColor = NULL, genesToIgnore = NULL,
   showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE,
-  fill = FALSE, colors = NULL, sortByMutation = FALSE,
-  sortByAnnotation = FALSE, numericAnnoCol = NULL,
-  groupAnnotationBySize = TRUE, annotationOrder = NULL,
-  keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
-  writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
-  showTitle = TRUE, titleFontSize = 1.5, legendFontSize = 1.2,
+  fill = FALSE, cohortSize = NULL, colors = NULL,
+  sortByMutation = FALSE, sortByAnnotation = FALSE,
+  numericAnnoCol = NULL, groupAnnotationBySize = TRUE,
+  annotationOrder = NULL, keepGeneOrder = FALSE,
+  GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE,
+  fontSize = 0.8, SampleNamefontSize = 1, showTitle = TRUE,
+  titleFontSize = 1.5, legendFontSize = 1.2,
   annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = "white",
   colbar_pathway = FALSE)
 }
@@ -66,6 +67,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
 \item{fill}{Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.}
+
+\item{cohortSize}{Number of sequenced samples in the cohort. Default all samples from Cohort. You can manually specify the cohort size. Default \code{NULL}}
 
 \item{colors}{named vector of colors for each Variant_Classification.}
 
