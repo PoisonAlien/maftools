@@ -12,6 +12,7 @@
 #' @param fontSize Default 0.6
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param SampleNamefontSize font size for sample names. Default 10
+#' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @seealso \code{\link{OncogenicPathways}}
 #' @export
 #' @examples
@@ -19,7 +20,7 @@
 #' laml <- read.maf(maf = laml.maf)
 #' PlotOncogenicPathways(maf = laml, pathways = "RTK-RAS")
 PlotOncogenicPathways = function(maf, pathways = NULL, fullPathway = FALSE,
-                                 removeNonMutated = TRUE, tsgCol = "red", ogCol = "royalblue", fontSize = 0.6, showTumorSampleBarcodes = FALSE, SampleNamefontSize = 0.6){
+                                 removeNonMutated = TRUE, tsgCol = "red", ogCol = "royalblue", fontSize = 0.6, showTumorSampleBarcodes = FALSE, sampleOrder = NULL, SampleNamefontSize = 0.6){
 
   pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
   pathdb = data.table::fread(input = pathdb)
@@ -71,6 +72,15 @@ PlotOncogenicPathways = function(maf, pathways = NULL, fullPathway = FALSE,
     nm = t(apply(nm, 2, rev))
     nm[nm == 0] = NA
     nm[!is.na(nm)] = 1
+
+    if(!is.null(sampleOrder)){
+      sampleOrder = as.character(sampleOrder)
+      sampleOrder = sampleOrder[sampleOrder %in% rownames(nm)]
+      if(length(sampleOrder) == 0){
+        stop("None of the provided samples are present in the input MAF")
+      }
+      nm = nm[sampleOrder, ,drop = FALSE]
+    }
 
     if(showTumorSampleBarcodes){
       par(mar = c(4, 4, 2, 2), xpd = TRUE)

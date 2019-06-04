@@ -219,7 +219,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     mtext(text = rev(percent_alt), side = 4, at = 1:ncol(nm),
           font = 1, line = 0.4, cex = fontSize, las = 2, adj = 0)
     if(showBarcodes){
-      text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+      text(x =1:nrow(nm), y = 0.40,
            labels = rownames(nm), srt = 90, font = 1,
            cex = barcode_size, adj = 1)
     }
@@ -227,7 +227,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     mtext(text = rev(percent_alt), side = 2, at = 1:ncol(nm),
           font = 1, line = 0.4, cex = fontSize, las = 2, adj = 1)
     if(showBarcodes){
-      text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+      text(x =1:nrow(nm), y = 0.40,
            labels = rownames(nm), srt = 90, font = 1,
            cex = barcode_size, adj = 1)
     }

@@ -29,6 +29,7 @@
 #' @param annotationColor  Custom colors to use for `clinicalFeatures`. Must be a named list containing a named vector of colors. Default NULL. See example for more info.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param fill Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.
+#' @param cohortSize Number of sequenced samples in the cohort. Default all samples from Cohort. You can manually specify the cohort size. Default \code{NULL}
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
@@ -68,7 +69,7 @@
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
                      clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, colors = NULL,
+                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
                      showTitle = TRUE, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
@@ -129,7 +130,11 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }
 
   #Total samples
-  totSamps = as.numeric(maf@summary[3,summary])
+  if(is.null(cohortSize)){
+    totSamps = as.numeric(maf@summary[3,summary])
+  }else{
+    totSamps = cohortSize
+  }
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
 
   if(!removeNonMutated){
