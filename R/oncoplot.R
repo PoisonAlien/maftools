@@ -42,12 +42,14 @@
 #' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
 #' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param fontSize font size for gene names. Default 0.8.
+#' @param sepwd_genes Default 0.5
+#' @param sepwd_samples Default 0.5
 #' @param SampleNamefontSize font size for sample names. Default 1
 #' @param titleFontSize font size for title. Default 1.5
 #' @param legendFontSize font size for legend. Default 1.2
 #' @param annotationFontSize font size for annotations. Default 1.2
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file.
-#' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE. Not implemented yet!
+#' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE.
 #' @param showTitle Default TRUE
 #' @return None.
 #' @examples
@@ -69,9 +71,9 @@
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
                      clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = FALSE, cohortSize = NULL, colors = NULL,
+                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
-                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, fontSize = 0.8, SampleNamefontSize = 1,
+                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.5, fontSize = 0.8, SampleNamefontSize = 1,
                      showTitle = TRUE, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
   if(!is.null(genes)){ #If user provides a gene list
@@ -206,6 +208,18 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   percent_alt = paste0(round(100*(apply(numMat, 1, function(x) length(x[x!=0]))/totSamps)), "%")
 
   if(colbar_pathway){
+    samp_sum = getSampleSummary(subsetMaf(maf = maf, genes = genes))
+    samp_sum[,total := NULL]
+    if("CNV_total" %in% colnames(samp_sum)){
+      samp_sum[,CNV_total := NULL]
+    }
+
+    if(!includeColBarCN){
+      suppressWarnings(samp_sum[,Amp := NULL])
+      suppressWarnings(samp_sum[,Del := NULL])
+    }
+    data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
+    samp_sum = samp_sum[,-1]
     top_bar_data = t(samp_sum[colnames(numMat),,])
   }else{
     top_bar_data = t(samp_sum[colnames(numMat),,])
@@ -468,8 +482,8 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }
 
   #Add grids
-  abline(h = (1:ncol(nm)) + 0.5, col = borderCol)
-  abline(v = (1:nrow(nm)) + 0.5, col = borderCol)
+  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
+  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
 
   mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
         font = 3, line = 0.4, cex = fontSize, las = 2)
@@ -592,8 +606,8 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     #Add grids
-    abline(h = (1:ncol(nm)) + 0.5, col = "white")
-    abline(v = (1:nrow(nm)) + 0.5, col = "white")
+    abline(h = (1:ncol(nm)) + 0.5, col = "white", lwd = sepwd_genes)
+    abline(v = (1:nrow(nm)) + 0.5, col = "white", lwd = sepwd_samples)
     mtext(text = colnames(annotation), side = 4,
           font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
 

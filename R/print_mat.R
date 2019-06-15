@@ -4,7 +4,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
                      additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9,
                      annotationDat = NULL, annotationColor = NULL,
                      sortByAnnotation = FALSE, showBarcodes = FALSE,
-                     title = NULL, title_size = 1.2, barcode_size = 1){
+                     title = NULL, title_size = 1.2, barcode_size = 1, sepwd_samples = 0.1, sepwd_genes = 0.1){
 
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
   genes = as.character(genes)
@@ -209,8 +209,8 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   }
 
   #Add grids
-  abline(h = (1:ncol(nm)) + 0.5, col = borderCol)
-  abline(v = (1:nrow(nm)) + 0.5, col = borderCol)
+  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
+  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
   title(title, cex.main = title_size, outer = FALSE, font = 2)
 
   # mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
@@ -295,8 +295,8 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     }
 
     #Add grids
-    abline(h = (1:ncol(nm)) + 0.5, col = "white")
-    abline(v = (1:nrow(nm)) + 0.5, col = "white")
+    abline(h = (1:ncol(nm)) + 0.5, col = "white", lwd = sepwd_genes)
+    abline(v = (1:nrow(nm)) + 0.5, col = "white", lwd = sepwd_samples)
     if(plot2){
       mtext(text = colnames(annotation), side = 4,
             font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))

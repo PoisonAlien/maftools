@@ -18,6 +18,10 @@
 #' @param additionalFeaturePch2 Default 20
 #' @param additionalFeatureCol2 Default "white"
 #' @param additionalFeatureCex2 Default 0.9
+#' @param sepwd_genes1 Default 0.5
+#' @param sepwd_samples1 Default 0.5
+#' @param sepwd_genes2 Default 0.5
+#' @param sepwd_samples2 Default 0.5
 #' @param annotationFontSize font size for annotations Default 1.2
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
@@ -50,6 +54,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                        sortByAnnotation1 = FALSE, sortByAnnotation2 = FALSE,
                       additionalFeature1 = NULL, additionalFeaturePch1 = 20, additionalFeatureCol1 = "white", additionalFeatureCex1 = 0.9,
                       additionalFeature2 = NULL, additionalFeaturePch2 = 20, additionalFeatureCol2 = "white", additionalFeatureCex2 = 0.9,
+                      sepwd_genes1 = 0.5, sepwd_samples1 = 0.5, sepwd_genes2 = 0.5, sepwd_samples2 = 0.5,
                        colors = NULL, removeNonMutated = TRUE,
                        geneNamefont = 0.8, showSampleNames = FALSE, SampleNamefont = 1,
                        legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder=FALSE,
@@ -129,7 +134,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         title = m1Name, title_size = titleFontSize,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature1, additionalFeaturePch = additionalFeaturePch1,
-                        additionalFeatureCex = additionalFeatureCex1, additionalFeatureCol = additionalFeatureCol1)
+                        additionalFeatureCex = additionalFeatureCex1, additionalFeatureCol = additionalFeatureCol1, sepwd_genes = sepwd_genes1, sepwd_samples = sepwd_samples1)
 
 
   if(is.null(clinicalFeatures1) & !is.null(clinicalFeatures2)){
@@ -159,7 +164,8 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         title = m2Name, title_size = titleFontSize, plot2 = TRUE,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature2, additionalFeaturePch = additionalFeaturePch2,
-                        additionalFeatureCex = additionalFeatureCex2, additionalFeatureCol = additionalFeatureCol2)
+                        additionalFeatureCex = additionalFeatureCex2, additionalFeatureCol = additionalFeatureCol2,
+                        sepwd_genes = sepwd_genes2, sepwd_samples = sepwd_samples2)
 
   if(!is.null(clinicalFeatures1) & is.null(clinicalFeatures2)){
     plot.new()

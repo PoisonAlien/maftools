@@ -142,7 +142,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
     suppressWarnings(cnDat[, id := paste(Hugo_Symbol, Tumor_Sample_Barcode, sep=':')])
     cnDat = cnDat[!duplicated(id)]
     cnDat[,id := NULL]
-    maf = rbind(maf, cnDat, fill =TRUE)
+    maf = data.table::rbindlist(l = list(maf, cnDat), fill = TRUE, use.names = TRUE)
     maf$Tumor_Sample_barcode = factor(x = maf$Tumor_Sample_barcode,
                                       levels = unique(c(levels(maf$Tumor_Sample_barcode), unique(as.character(cnDat$Tumor_Sample_barcode)))))
   }

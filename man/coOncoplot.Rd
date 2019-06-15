@@ -12,8 +12,9 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   additionalFeaturePch1 = 20, additionalFeatureCol1 = "white",
   additionalFeatureCex1 = 0.9, additionalFeature2 = NULL,
   additionalFeaturePch2 = 20, additionalFeatureCol2 = "white",
-  additionalFeatureCex2 = 0.9, colors = NULL,
-  removeNonMutated = TRUE, geneNamefont = 0.8,
+  additionalFeatureCex2 = 0.9, sepwd_genes1 = 0.5,
+  sepwd_samples1 = 0.5, sepwd_genes2 = 0.5, sepwd_samples2 = 0.5,
+  colors = NULL, removeNonMutated = TRUE, geneNamefont = 0.8,
   showSampleNames = FALSE, SampleNamefont = 1, legendFontSize = 1.2,
   titleFontSize = 1.5, keepGeneOrder = FALSE, bgCol = "#CCCCCC",
   borderCol = "white")
@@ -58,6 +59,14 @@ coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 \item{additionalFeatureCol2}{Default "white"}
 
 \item{additionalFeatureCex2}{Default 0.9}
+
+\item{sepwd_genes1}{Default 0.5}
+
+\item{sepwd_samples1}{Default 0.5}
+
+\item{sepwd_genes2}{Default 0.5}
+
+\item{sepwd_samples2}{Default 0.5}
 
 \item{colors}{named vector of colors for each Variant_Classification.}
 

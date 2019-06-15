@@ -75,9 +75,9 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontS
   data.table::setDF(x = conf_int_g1)
   data.table::setDF(x = conf_int_g2)
 
-  par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=TRUE, mar = c(4,3,3.5,5)) #
+  par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=TRUE, mar = c(4,3,3.5,1)) #
   #plot(c(0, nrow(plot.dat)+15),c(0,0),xlim=c(0.5,33),las=2, ylim=c(-1,1),xlab="", xaxt="n", type="l")
-  b = barplot(height = plot.dat$g1_muts_fract, ylim = c(-yl_max, yl_max), axes = FALSE, border = 0.1, col = bar.cols)
+  b = barplot(height = plot.dat$g1_muts_fract, ylim = c(-1.25, yl_max), axes = FALSE, border = 0.1, col = bar.cols)
   #text(b, plot.dat$g1_muts_fract+0.03 , plot.dat$g1_title ,cex = annoFontSize, las = 2, srt=90, adj=0, xpd=TRUE, font = 1)
   axis(side = 2, at = seq(-1, 1, 0.25), labels = c(rev(seq(0, 1, 0.25)), seq(0, 1, 0.25)[2:5]),
        lwd = 1.2, font.axis = 2, cex = 1.5, font = 1)
@@ -97,9 +97,14 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontS
   }
   text(b, -conf_int_g2$Upper-0.03 , plot.dat$g2_title ,cex = annoFontSize, las = 2, srt=90, adj=1, xpd=TRUE, font = 1)
 
-  text(b, -1 , plot.dat$Hugo_Symbol ,cex = geneFontSize, las = 2, srt=45, adj=1, xpd=TRUE, font = 3)
+  text(b, -0.75 , plot.dat$Hugo_Symbol ,cex = geneFontSize, las = 2, srt = 90, adj = 1, xpd = TRUE, font = 3)
   #par(xpd = T, mar = par()$mar + c(0,0,0,7))
-  add_legend("topright", pt.lwd = 2,
+  if(length(legend.cols) <= 4){
+    n_col = 1
+  }else{
+    n_col = (length(legend.cols) %/% 4)+1
+  }
+  legend(x = 0, y = -1.1, pt.lwd = 2, ncol = n_col,
          legend = c(names(legend.cols), "Rest"), fill = c(legend.cols, "gray70"),
          bty = "n", cex = legendFontSize, border=NA, xpd = TRUE, text.font = 3)
   if(showTitle){
