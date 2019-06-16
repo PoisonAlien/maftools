@@ -7,6 +7,7 @@
 #' @param tcga_cohorts restrict tcga data to these cohorts.
 #' @param primarySite If TRUE uses primary site of cancer as labels instead of TCGA project IDs. Default FALSE.
 #' @param col color vector for length 2 TCGA cohorts and input MAF cohort. Default gray70 and black.
+#' @param bg_col background color. Default'#EDF8B1', '#2C7FB8'
 #' @param medianCol color for median line. Default red.
 #' @return data.table with median mutations per cohort
 #' @examples

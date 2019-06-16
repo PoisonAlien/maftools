@@ -96,8 +96,9 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
 
           #Perform pairwise fisher test for every gene
           prop.tbl = pairwise.fisher.test(x = cd$Genotype, g = cd$cf, p.adjust.method = "fdr")
-          ptbl = data.table::melt(prop.tbl$p.value)
-          data.table::setDT(ptbl)
+          ptbl = data.table::as.data.table(as.data.frame(prop.tbl$p.value), keep.rownames = TRUE)
+          ptbl = data.table::melt(ptbl, id.vars = "rn")
+          colnames(ptbl) = c("Var1", "Var2", "value")
           ptbl[,Hugo_Symbol := x][,Analysis := "Pairwise"]
           ptbl = ptbl[,.(Hugo_Symbol, Var1, Var2, value, Analysis)]
           colnames(ptbl) = c("Hugo_Symbol", "Feature_1", "Feature_2", "fdr", "Analysis")

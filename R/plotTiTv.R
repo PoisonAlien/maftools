@@ -37,6 +37,7 @@ plotTiTv = function(res = NULL, plotType = 'both', sampleOrder = NULL,
   names(conv.class) = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G")
   titv.frac.melt$TiTv = conv.class[as.character(titv.frac.melt$variable)]
 
+  data.table::setDT(x = res$TiTv.fractions)
   titv.contrib = suppressMessages(data.table::melt(res$TiTv.fractions, id = 'Tumor_Sample_Barcode'))
   titv.frac.melt$variable = factor(x = titv.frac.melt$variable,
                                    levels = c("T>C", "C>T", "T>A", "T>G", "C>A", "C>G"))

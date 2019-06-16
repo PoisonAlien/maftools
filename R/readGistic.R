@@ -96,7 +96,7 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
     ampGenes$cytoband = gsub(pattern = ' ', replacement = '_', x = ampGenes$cytoband)
     colnames(ampGenes) = c( 'cytoband',paste0( 'Amp_', colnames(ampGenes)[2:length(colnames(ampGenes))], '_',wpb))
 
-    data.table::setDF(x = ampGenes)
+    #data.table::setDF(x = ampGenes)
     ampGenes = suppressWarnings(data.table::melt(ampGenes, id.vars = 'cytoband'))
     data.table::setDT(ampGenes)
     #Remove empty values
@@ -123,7 +123,7 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
     delGenes$cytoband = gsub(pattern = ' ', replacement = '_', x = delGenes$cytoband)
     colnames(delGenes) = c( 'cytoband',paste0( 'Del_', colnames(delGenes)[2:length(colnames(delGenes))], '_',wpb))
 
-    data.table::setDF(x = delGenes)
+    #data.table::setDF(x = delGenes)
     delGenes = suppressWarnings(data.table::melt(delGenes, id.vars = 'cytoband'))
     data.table::setDT(delGenes)
 

@@ -24,6 +24,8 @@ tcgaCompare(maf, capture_size = NULL, tcga_capture_size = 50,
 
 \item{col}{color vector for length 2 TCGA cohorts and input MAF cohort. Default gray70 and black.}
 
+\item{bg_col}{background color. Default'#EDF8B1', '#2C7FB8'}
+
 \item{medianCol}{color for median line. Default red.}
 }
 \value{

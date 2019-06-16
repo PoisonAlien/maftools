@@ -72,7 +72,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv
   #--------------------------- titv summary plot -----------------
   titv = titv(maf = maf, useSyn = TRUE, plot = FALSE)
   titv.counts = titv$raw.counts
-  titv.sums = data.table::melt(colSums(titv.counts[,2:7, with =FALSE]))
+  titv.sums = data.frame(value = colSums(titv.counts[,2:7]), stringsAsFactors = FALSE)
   titv.sums$class = rownames(titv.sums)
   if(!rawcount){
     titv.sums$raw_value = titv.sums$value
