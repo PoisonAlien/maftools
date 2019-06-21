@@ -121,8 +121,10 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   res = summary(surv.km)
 
   surv.diff = survival::survdiff(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData)
+  surv.diff.pval = signif(1 - pchisq(surv.diff$chisq, length(surv.diff$n) - 1), digits = 3)
 
-  surv.diff.pval = round(1 - pchisq(surv.diff$chisq, length(surv.diff$n) - 1), digits = 5)
+  surv.cox = survival::coxph(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData)
+  hr = signif(1/exp(stats::coef(surv.cox)), digits = 3)
 
   surv.dat = data.table::data.table(Group = res$strata, Time = res$time, survProb = res$surv, survUp = res$upper, survLower = res$lower)
   surv.dat$Group = gsub(pattern = 'Group=', replacement = '', x = surv.dat$Group)
@@ -148,7 +150,7 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   legend(x = "topright", legend = c("Mutant", "WT"), col = col, bty = "n", lwd = 2, pch = 8)
 
   title(main = NA,
-        sub = paste0("P-value: ", surv.diff.pval), cex.main = 1, font.main= 4, col.main= "black",
+        sub = paste0("P-value: ", surv.diff.pval, "; ", "HR: ", hr), cex.main = 1, font.main= 4, col.main= "black",
         cex.sub = 1, font.sub = 3, col.sub = ifelse(test = surv.diff.pval < 0.05, yes = "red", no = "black"),
         line = 2.5, adj = 0)
   title(main = paste0(groupNames[1], " v/s ", groupNames[2]), adj = 0, font.main = 4)
