@@ -11,13 +11,13 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
   additionalFeaturePch = 20, additionalFeatureCol = "white",
   additionalFeatureCex = 0.9, annotationDat = NULL,
   annotationColor = NULL, genesToIgnore = NULL,
-  showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE,
-  fill = TRUE, cohortSize = NULL, colors = NULL,
-  sortByMutation = FALSE, sortByAnnotation = FALSE,
+  showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5,
+  removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
+  colors = NULL, sortByMutation = FALSE, sortByAnnotation = FALSE,
   numericAnnoCol = NULL, groupAnnotationBySize = TRUE,
   annotationOrder = NULL, keepGeneOrder = FALSE,
   GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE,
-  sepwd_genes = 0.5, sepwd_samples = 0.5, fontSize = 0.8,
+  sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8,
   SampleNamefontSize = 1, showTitle = TRUE, titleFontSize = 1.5,
   legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC",
   borderCol = "white", colbar_pathway = FALSE)
@@ -64,6 +64,10 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
 
+\item{barcode_mar}{Default 4}
+
+\item{gene_mar}{Default 5}
+
 \item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
 \item{fill}{Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.}
@@ -92,7 +96,7 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{sepwd_genes}{Default 0.5}
 
-\item{sepwd_samples}{Default 0.5}
+\item{sepwd_samples}{Default 0.25}
 
 \item{fontSize}{font size for gene names. Default 0.8.}
 

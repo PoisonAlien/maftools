@@ -5,7 +5,8 @@
 \title{Plot gistic results.}
 \usage{
 gisticOncoPlot(gistic = NULL, top = NULL,
-  showTumorSampleBarcodes = FALSE, clinicalData = NULL,
+  showTumorSampleBarcodes = FALSE, gene_mar = 5, barcode_mar = 6,
+  sepwd_genes = 0.5, sepwd_samples = 0.25, clinicalData = NULL,
   clinicalFeatures = NULL, sortByAnnotation = FALSE,
   sampleOrder = NULL, annotationColor = NULL, bandsToIgnore = NULL,
   removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6,
@@ -17,6 +18,14 @@ gisticOncoPlot(gistic = NULL, top = NULL,
 \item{top}{how many top cytobands to be drawn. defaults to all.}
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
+
+\item{gene_mar}{Default 5}
+
+\item{barcode_mar}{Default 6}
+
+\item{sepwd_genes}{Default 0.5}
+
+\item{sepwd_samples}{Default 0.25}
 
 \item{clinicalData}{data.frame with columns containing Tumor_Sample_Barcodes and rest of columns with annotations.}
 

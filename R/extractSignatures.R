@@ -75,9 +75,12 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
 
       nmf.sum = summary(nmfTry) # Get summary of estimates
       data.table::setDT(nmf.sum)
-      #print(nmf.sum)
-      nmf.sum$diff = c(0, diff(nmf.sum$cophenetic))
-      bestFit = nmf.sum[diff < 0, rank][1] #First point where cophenetic correlation coefficient starts decreasing
+
+      #Thanks Valentin for the below method for optimal rank estimation
+      sig_fit = smooth.spline(y = c(1, 1-diff(nmf.sum$cophenetic)), x = nmf.sum$rank)
+      sig_deriv = predict(object = sig_fit, deriv = 2)
+      sig_min = which(sig_deriv$y == min(sig_deriv$y))
+      bestFit = nmf.sum$rank[sig_min-1]
 
       par(mar = c(3, 3, 2, 1))
       plot(nmf.sum$rank, nmf.sum$cophenetic, axes = FALSE, pch = 16, col = "#D8B365", cex = 1, xlab = NA, ylab = NA, ylim = range(pretty(nmf.sum$cophenetic)))

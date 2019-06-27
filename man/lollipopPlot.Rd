@@ -64,7 +64,7 @@ lollipopPlot(maf, gene = NULL, AACol = NULL, labelPos = NULL,
 Nothing
 }
 \description{
-Draws lollipop plot of amino acid changes.
+Draws lollipop plot of amino acid changes. Protein domains are derived from PFAM database.
 }
 \details{
 This function by default looks for fields 'HGVSp_Short', 'AAChange' or 'Protein_Change' in maf file. One can also manually specify field name containing amino acid changes.

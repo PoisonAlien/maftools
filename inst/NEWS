@@ -1,6 +1,9 @@
 CHANGES IN VERSION 2.0.15
 -------------------------
-    o Add sepwd_genes, sepwd_samples to oncoplot. Issue: #340
+    o Update description for lollipopPlot with domain source. Issue #354
+    o Optimized method for rank estimation in signature analysis
+    o Add barcode_mar and gene_mar to oncoplot and gisticOncoPlot. Issue: #346
+    o Add sepwd_genes, sepwd_samples to oncoplot and gisticOncoPlot. Issue: #340 #260
     o Avoid plotting legend outside the margin. Issue: #337
     o Add argument for sample ordering in PlotOncogenicPathways. Issue: #332
     o Add cohortSize argument to oncoplot. Issue: #324

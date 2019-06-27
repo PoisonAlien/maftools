@@ -18,6 +18,8 @@
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
 #' @param includeColBarCN Whether to include CN in column bar plot. Default TRUE
 #' @param showTumorSampleBarcodes logical to include sample names.
+#' @param barcode_mar Default 4
+#' @param gene_mar Default 5
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
 #' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted.
 #' @param additionalFeaturePch Default 20
@@ -43,7 +45,7 @@
 #' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param fontSize font size for gene names. Default 0.8.
 #' @param sepwd_genes Default 0.5
-#' @param sepwd_samples Default 0.5
+#' @param sepwd_samples Default 0.25
 #' @param SampleNamefontSize font size for sample names. Default 1
 #' @param titleFontSize font size for title. Default 1.5
 #' @param legendFontSize font size for legend. Default 1.2
@@ -71,9 +73,9 @@
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
                      clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
+                     showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
-                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.5, fontSize = 0.8, SampleNamefontSize = 1,
+                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1,
                      showTitle = TRUE, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
   if(!is.null(genes)){ #If user provides a gene list
@@ -270,9 +272,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   #02: Draw top bar plot
   if(drawColBar){
     if(drawRowBar){
-      par(mar = c(0.25 , 5, 2, 3), xpd = TRUE)
+      par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
     }else{
-      par(mar = c(0.25 , 5, 2, 5), xpd = TRUE)
+      par(mar = c(0.25 , gene_mar, 2, 5), xpd = TRUE)
     }
 
     if(logColBar){
@@ -323,13 +325,13 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
 
   if(showTumorSampleBarcodes){
     if(!drawRowBar & !drawColBar){
-      par(mar = c(4, 1, 2.5, 0), xpd = TRUE)
+      par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
     }else if(!drawRowBar & drawColBar){
-      par(mar = c(4, 1, 0, 0), xpd = TRUE)
+      par(mar = c(barcode_mar, 1, 0, 0), xpd = TRUE)
     }else if(drawRowBar & !drawColBar){
-      par(mar = c(4, 1, 2.5, 0), xpd = TRUE)
+      par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
     } else{
-      par(mar = c(4, 1, 0, 0), xpd = TRUE)
+      par(mar = c(barcode_mar, 1, 0, 0), xpd = TRUE)
     }
   }else{
     if(!drawRowBar & !drawColBar){
@@ -356,23 +358,23 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   #04: Draw the main matrix
   if(showTumorSampleBarcodes){
     if(!drawRowBar & !drawColBar){
-      par(mar = c(4, 5, 2.5, 5), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 2.5, 5), xpd = TRUE)
     }else if(!drawRowBar & drawColBar){
-      par(mar = c(4, 5, 0, 3), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 0, 3), xpd = TRUE)
     }else if(drawRowBar & !drawColBar){
-      par(mar = c(4, 5, 2.5, 3), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 2.5, 3), xpd = TRUE)
     } else{
-      par(mar = c(4, 5, 0, 3), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 0, 3), xpd = TRUE)
     }
   }else{
     if(!drawRowBar & !drawColBar){
-      par(mar = c(0.5, 5, 2.5, 5), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 2.5, 5), xpd = TRUE)
     }else if(!drawRowBar & drawColBar){
-      par(mar = c(0.5, 5, 0, 5), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 0, 5), xpd = TRUE)
     }else if(drawRowBar & !drawColBar){
-      par(mar = c(0.5, 5, 2.5, 3), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 2.5, 3), xpd = TRUE)
     } else{
-      par(mar = c(0.5, 5, 0, 3), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 0, 3), xpd = TRUE)
     }
   }
 
@@ -499,9 +501,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   if(drawRowBar){
     if(showTumorSampleBarcodes){
       if(!drawRowBar || !drawColBar){
-        par(mar = c(4, 0, 2.5, 1), xpd = TRUE)
+        par(mar = c(barcode_mar, 0, 2.5, 1), xpd = TRUE)
       }else{
-        par(mar = c(4, 0, 0, 1), xpd = TRUE)
+        par(mar = c(barcode_mar, 0, 0, 1), xpd = TRUE)
       }
     }else{
       if(!drawRowBar || !drawColBar){
@@ -579,9 +581,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     if(!drawRowBar){
-      par(mar = c(0, 5, 0, 5), xpd = TRUE)
+      par(mar = c(0, gene_mar, 0, 5), xpd = TRUE)
     }else{
-      par(mar = c(0, 5, 0, 3), xpd = TRUE)
+      par(mar = c(0, gene_mar, 0, 3), xpd = TRUE)
     }
 
     image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
@@ -637,9 +639,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     if(!drawRowBar){
-      par(mar = c(0, 5, 0, 5), xpd = TRUE)
+      par(mar = c(0, gene_mar, 0, 5), xpd = TRUE)
     }else{
-      par(mar = c(0, 5, 0, 3), xpd = TRUE)
+      par(mar = c(0, gene_mar, 0, 3), xpd = TRUE)
     }
 
 

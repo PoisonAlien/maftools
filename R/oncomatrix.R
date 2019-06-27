@@ -479,6 +479,8 @@ plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
       }
     }
   }
+
+  lo
 }
 
 get_vcColors = function(alpha = 1){

@@ -19,6 +19,10 @@
 #' @param SampleNamefontSize font size for sample names. Default 0.6
 #' @param legendFontSize font size for legend. Default 1.2
 #' @param annotationFontSize font size for annotations. Default 1.2
+#' @param gene_mar Default 5
+#' @param barcode_mar Default 6
+#' @param sepwd_genes Default 0.5
+#' @param sepwd_samples Default 0.25
 #' @return None.
 #' @examples
 #' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
@@ -32,7 +36,7 @@
 
 
 gisticOncoPlot = function(gistic = NULL, top = NULL,
-                           showTumorSampleBarcodes = FALSE, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE, sampleOrder = NULL,
+                           showTumorSampleBarcodes = FALSE, gene_mar = 5, barcode_mar = 6, sepwd_genes = 0.5, sepwd_samples = 0.25, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE, sampleOrder = NULL,
                            annotationColor = NULL, bandsToIgnore = NULL,
                            removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2) {
 
@@ -122,15 +126,15 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
 
   if(is.null(clinicalFeatures)){
     if(showTumorSampleBarcodes){
-      par(mar = c(5, 6, 1, 2.5), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 1, 2.5), xpd = TRUE)
     }else{
-      par(mar = c(0.5, 6, 1, 2.5), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 1, 2.5), xpd = TRUE)
     }
   }else{
     if(showTumorSampleBarcodes){
-      par(mar = c(6, 6, 1, 5), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 1, 5), xpd = TRUE)
     }else{
-      par(mar = c(0.5, 6, 1, 5), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 1, 5), xpd = TRUE)
     }
   }
 
@@ -156,8 +160,8 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
   image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
 
   #Add grids
-  abline(h = (1:ncol(nm)) + 0.5, col = borderCol)
-  abline(v = (1:nrow(nm)) + 0.5, col = borderCol)
+  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
+  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
 
   mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
         font = 3, line = 0.4, cex = fontSize, las = 2)
@@ -166,7 +170,7 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
 
   if(showTumorSampleBarcodes){
     text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
-         labels = rownames(nm), srt = 45, font = 1, cex = SampleNamefontSize, adj = 1)
+         labels = rownames(nm), srt = 90, font = 1, cex = SampleNamefontSize, adj = 1)
   }
 
   #Plot annotations if any
@@ -196,7 +200,7 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
 
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
-    par(mar = c(0, 6, 0, 5), xpd = TRUE)
+    par(mar = c(0, gene_mar, 0, 5), xpd = TRUE)
 
     image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
           axes = FALSE, xaxt="n", yaxt="n", bty = "n",
@@ -214,8 +218,8 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
     }
 
     #Add grids
-    abline(h = (1:ncol(nm)) + 0.5, col = "white")
-    abline(v = (1:nrow(nm)) + 0.5, col = "white")
+    abline(h = (1:ncol(nm)) + 0.5, col = "white", lwd = sepwd_genes)
+    abline(v = (1:nrow(nm)) + 0.5, col = "white", lwd = sepwd_samples)
     mtext(text = colnames(annotation), side = 4,
           font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
   }

@@ -1,7 +1,7 @@
 Package: maftools
 Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 2.0.10
+Version: 2.0.15
 Date: 2015-12-14
 Author: person("Anand","Mayakonda", role = c("aut","cre"), email = "anand_mt@hotmail.com"), comment = c(ORCID = '0000-0003-1162-687X')
 Maintainer: Anand Mayakonda <anand_mt@hotmail.com>
