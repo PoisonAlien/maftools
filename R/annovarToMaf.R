@@ -163,6 +163,11 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       ann = data.table::rbindlist(l = list(ann_exonic, ann_res), use.names = TRUE, fill = TRUE)
     }
 
+    # In case of ANNOVAR results without non-exonic variants
+    if(nrow(ann_res) == 0){
+      ann = ann_exonic
+    }
+
     #Add Variant-type annotations based on difference between ref and alt alleles
     cat("-Adding Variant_Type\n")
     ann[,ref_alt_diff := nchar(Ref) - nchar(Alt)]
