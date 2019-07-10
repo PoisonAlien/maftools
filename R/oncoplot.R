@@ -327,7 +327,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     if(!drawRowBar & !drawColBar){
       par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
     }else if(!drawRowBar & drawColBar){
-      par(mar = c(barcode_mar, 1, 0, 0), xpd = TRUE)
+      par(mar = c(barcode_mar, 1, 0, 5), xpd = TRUE)
     }else if(drawRowBar & !drawColBar){
       par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
     } else{
@@ -337,7 +337,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     if(!drawRowBar & !drawColBar){
       par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
     }else if(!drawRowBar & drawColBar){
-      par(mar = c(0.5, 1, 0, 0), xpd = TRUE)
+      par(mar = c(0.5, 1, 0, 5), xpd = TRUE)
     }else if(drawRowBar & !drawColBar){
       par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
     } else{
@@ -360,7 +360,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     if(!drawRowBar & !drawColBar){
       par(mar = c(barcode_mar, gene_mar, 2.5, 5), xpd = TRUE)
     }else if(!drawRowBar & drawColBar){
-      par(mar = c(barcode_mar, gene_mar, 0, 3), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 0, 5), xpd = TRUE)
     }else if(drawRowBar & !drawColBar){
       par(mar = c(barcode_mar, gene_mar, 2.5, 3), xpd = TRUE)
     } else{
