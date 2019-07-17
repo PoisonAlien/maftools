@@ -1,5 +1,6 @@
 CHANGES IN VERSION 2.0.15
 -------------------------
+    o Bug fix with gisticChromPlot. Issue #365
     o Bug fix with plot alignment. Issue #360
     o Update description for lollipopPlot with domain source. Issue #354
     o Optimized method for rank estimation in signature analysis

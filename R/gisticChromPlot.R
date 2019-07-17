@@ -119,6 +119,7 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
   cyto_peaks_scores = data.table::foverlaps(y = gis.scores[,.(Chromosome, Start_Position_updated, End_Position_updated, amp)],
                                             x = mb[,.(Chromosome, Start_Position_updated, End_Position_updated, Cytoband)])
   cyto_peaks_scores = cyto_peaks_scores[order(Cytoband, abs(amp), decreasing = TRUE)][Cytoband %in% mb$Cytoband][!duplicated(Cytoband)]
+  cyto_peaks_scores = cyto_peaks_scores[complete.cases(cyto_peaks_scores)]
 
   if(nrow(cyto_peaks_scores) > 1){
     wordcloud::textplot(x = cyto_peaks_scores$Start_Position_updated, y = cyto_peaks_scores$amp,
