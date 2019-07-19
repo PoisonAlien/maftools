@@ -9,7 +9,6 @@
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/poisonalien/maftools.svg)](https://github.com/poisonalien/maftools/issues)
 [![Github Stars](https://img.shields.io/github/stars/poisonalien/maftools.svg?style=social&label=Github)](https://github.com/poisonalien/maftools)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2019--05--31-brightgreen.svg)](/commits/master)
 
 
 ## Introduction
