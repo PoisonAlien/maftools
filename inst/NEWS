@@ -1,5 +1,6 @@
 CHANGES IN VERSION 2.0.15
 -------------------------
+    o Bug fix in oncoplot with only 1 variant classification. Issue #367
     o Bug fix with gisticChromPlot. Issue #365
     o Bug fix with plot alignment. Issue #360
     o Update description for lollipopPlot with domain source. Issue #354

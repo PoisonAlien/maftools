@@ -181,7 +181,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     suppressWarnings(samp_sum[,Del := NULL])
   }
   data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
-  samp_sum = samp_sum[,-1]
+  samp_sum = samp_sum[,-1, drop = FALSE]
 
   #Parse annotations
   if(!is.null(clinicalFeatures)){
@@ -222,9 +222,9 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
     data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
     samp_sum = samp_sum[,-1]
-    top_bar_data = t(samp_sum[colnames(numMat),,])
+    top_bar_data = t(samp_sum[colnames(numMat),, drop = FALSE])
   }else{
-    top_bar_data = t(samp_sum[colnames(numMat),,])
+    top_bar_data = t(samp_sum[colnames(numMat),, drop = FALSE])
   }
 
   if(is.null(colors)){
@@ -291,6 +291,7 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     axis(side = 2, at = c(0, round(max(colSums(top_bar_data, na.rm = TRUE)))), las = 2, line = 0.5)
     for(i in 1:ncol(top_bar_data)){
       x = top_bar_data[,i]
+      names(x) = rownames(top_bar_data)
       x = x[!x == 0]
       if(length(x) > 0){
         rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
@@ -514,7 +515,12 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
     }
 
     if(is.null(mutsig)){
-      side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
+      #side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
+      side_bar_data = lapply(seq_len(nrow(numMat)), function(i) {
+        xi = numMat[i, ]
+        table(xi[!xi == 0])
+      })
+      names(side_bar_data) = rownames(numMat)
       plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, length(side_bar_data)),
            axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
 
