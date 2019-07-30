@@ -1,3 +1,7 @@
+CHANGES IN VERSION 2.0.16
+-------------------------
+    o Minor bug fix in extractSignatures. Issue #369
+
 CHANGES IN VERSION 2.0.15
 -------------------------
     o Bug fix in oncoplot with only 1 variant classification. Issue #367

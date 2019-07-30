@@ -76,11 +76,15 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
       nmf.sum = summary(nmfTry) # Get summary of estimates
       data.table::setDT(nmf.sum)
 
+      nmf.sum$diff = c(0, diff(nmf.sum$cophenetic))
+      bestFit = nmf.sum[diff < 0, rank][1] #First point where cophenetic correlation coefficient starts decreasing
+
       #Thanks Valentin for the below method for optimal rank estimation
-      sig_fit = smooth.spline(y = c(1, 1-diff(nmf.sum$cophenetic)), x = nmf.sum$rank)
-      sig_deriv = predict(object = sig_fit, deriv = 2)
-      sig_min = which(sig_deriv$y == min(sig_deriv$y))
-      bestFit = nmf.sum$rank[sig_min-1]
+      #Take second derivitive of fitted line for optimal rank
+      #sig_fit = smooth.spline(y = c(1, 1-diff(nmf.sum$cophenetic)), x = nmf.sum$rank)
+      #sig_deriv = predict(object = sig_fit, deriv = 2)
+      #sig_min = which(sig_deriv$y == min(sig_deriv$y))
+      #bestFit = nmf.sum$rank[sig_min-1]
 
       par(mar = c(3, 3, 2, 1))
       plot(nmf.sum$rank, nmf.sum$cophenetic, axes = FALSE, pch = 16, col = "#D8B365", cex = 1, xlab = NA, ylab = NA, ylim = range(pretty(nmf.sum$cophenetic)))
@@ -91,10 +95,9 @@ extractSignatures = function(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE, pa
       segments(x0 = bestFit, y0 = 0, x1 = bestFit, y1 = nmf.sum[rank == bestFit, cophenetic], lwd= 1, lty = 1, col = "maroon")
       title(main = "cophenetic metric", adj = 0, font.main = 4)
 
-
       #bestFit = nmf.sum[which(nmf.sum$cophenetic == max(nmf.sum$)),'rank'] #Get the best rank based on highest cophenetic correlation coefficient
       cat(paste('--Using ',bestFit, ' as the best-fit factorization rank\n', sep=''))
-      cat("--Consult elbow plot and re-consider the value if necessary\n")
+      warning("Consult elbow plot and re-consider the estimated number of signatures if necessary")
       n = as.numeric(bestFit)
       cat('--------------------------------------\n')
     }
