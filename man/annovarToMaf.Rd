@@ -5,8 +5,8 @@
 \title{Converts annovar annotations into MAF.}
 \usage{
 annovarToMaf(annovar, Center = NULL, refBuild = "hg19",
-  tsbCol = NULL, table = "refGene", basename = NULL, sep = "\\t",
-  MAFobj = FALSE, sampleAnno = NULL)
+  tsbCol = NULL, table = "refGene", ens2hugo = TRUE,
+  basename = NULL, sep = "\\t", MAFobj = FALSE, sampleAnno = NULL)
 }
 \arguments{
 \item{annovar}{input annovar annotation file. Can be vector of multiple files.}
@@ -18,6 +18,8 @@ annovarToMaf(annovar, Center = NULL, refBuild = "hg19",
 \item{tsbCol}{column name containing Tumor_Sample_Barcode or sample names in input file.}
 
 \item{table}{reference table used for gene-based annotations. Can be 'ensGene' or 'refGene'. Default 'refGene'}
+
+\item{ens2hugo}{If `table` is `ensGene`, setting this argument to `TRUE` converts all ensemble IDs to hugo symbols.}
 
 \item{basename}{If provided writes resulting MAF file to an output file.}
 

@@ -14,6 +14,7 @@
 #' @param refBuild NCBI_Build field in MAF file will be filled with this value. Default hg19.
 #' @param tsbCol column name containing Tumor_Sample_Barcode or sample names in input file.
 #' @param table reference table used for gene-based annotations. Can be 'ensGene' or 'refGene'. Default 'refGene'
+#' @param ens2hugo If `table` is `ensGene`, setting this argument to `TRUE` converts all ensemble IDs to hugo symbols.
 #' @param basename If provided writes resulting MAF file to an output file.
 #' @param sep field seperator for input file. Default tab seperated.
 #' @param MAFobj If TRUE, returns results as an \code{\link{MAF}} object.
@@ -26,7 +27,7 @@
 #' tsbCol = 'Tumor_Sample_Barcode', table = 'ensGene')
 #' @export
 
-annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', basename = NULL , sep = '\t', MAFobj = FALSE, sampleAnno = NULL){
+annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL, table = 'refGene', ens2hugo = TRUE, basename = NULL , sep = '\t', MAFobj = FALSE, sampleAnno = NULL){
 
   start_time = proc.time()
   cat("-Reading annovar files\n")
@@ -161,10 +162,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       ann_res[,Variant_Classification := annovar_values[Func.refGene]]
       #Merge exonic and non-exonic variants
       ann = data.table::rbindlist(l = list(ann_exonic, ann_res), use.names = TRUE, fill = TRUE)
-    }
-
-    # In case of ANNOVAR results without non-exonic variants
-    if(nrow(ann_res) == 0){
+    }else{
       ann = ann_exonic
     }
 
@@ -215,18 +213,19 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
 
   #Annovar ensGene doesn't provide HGNC gene symbols as Hugo_Symbol. We will change them manually.
   if(table == 'ensGene'){
-    ens = system.file('extdata', 'ensGenes.txt.gz', package = 'maftools')
-    cat('-Converting Ensemble Gene IDs into HGNC gene symbols\n')
-    ens = data.table::fread(file =  ens, sep = '\t', stringsAsFactors = FALSE)
+    if(ens2hugo){
+      ens = system.file('extdata', 'ensGenes.txt.gz', package = 'maftools')
+      cat('-Converting Ensemble Gene IDs into HGNC gene symbols\n')
+      ens = data.table::fread(file =  ens, sep = '\t', stringsAsFactors = FALSE)
 
-    ann = merge(ann, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)
-    ann[,ens_id := Hugo_Symbol] #Backup original ids
-    ann[,Hugo_Symbol := hgnc_symbol] #Add GHNC gene names
-    ann[,Entrez_Gene_Id := Entrez] #Add entrez identifiers.
-    cat('--Done. Original ensemble gene IDs are preserved under field name ens_id\n')
+      ann = merge(ann, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)
+      ann[,ens_id := Hugo_Symbol] #Backup original ids
+      ann[,Hugo_Symbol := hgnc_symbol] #Add GHNC gene names
+      ann[,Entrez_Gene_Id := Entrez] #Add entrez identifiers.
+      cat('--Done. Original ensemble gene IDs are preserved under field name ens_id\n')
+    }
   }
     ann[, ref_alt_diff := NULL]
-
 
   #Re-roganize columns
   colnames(ann)[which(colnames(ann) %in% c("Chr", "Start", "End", "Ref", "Alt"))] = c("Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2")
