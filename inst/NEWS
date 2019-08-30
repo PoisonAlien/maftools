@@ -1,6 +1,7 @@
 CHANGES IN VERSION 2.0.16
 -------------------------
     o Avoid conflict with plotly::layout with graphcis::layout. Issue: #387
+    o Update y-axis label for tcgaCompare plot. Issue: #366
 
 CHANGES IN VERSION 2.0.16
 -------------------------

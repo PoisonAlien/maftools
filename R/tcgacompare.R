@@ -114,7 +114,7 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
   axis(side = 2, at = y_at, las = 2, line = -1, tick = FALSE)
   axis(side = 1, at = seq(0.5, length(plot.dat)-0.5, 1), labels = names(plot.dat),
        las = 2, tick = FALSE, line = -1)
-  mtext(text = "log10 (Variants per sample)", side = 2, line = 1.2)
+  mtext(text = "Mutations per MB", side = 2, line = 1.2)
 
   tcga.cohort.med[, Median_Mutations_log10 := log10(Median_Mutations)]
   lapply(seq_len(nrow(tcga.cohort.med)), function(i){
