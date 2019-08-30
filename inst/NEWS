@@ -1,5 +1,9 @@
 CHANGES IN VERSION 2.0.16
 -------------------------
+    o Avoid conflict with plotly::layout with graphcis::layout. Issue: #387
+
+CHANGES IN VERSION 2.0.16
+-------------------------
     o Minor bug fix in extractSignatures. Issue #369
     o Added argument ens2hugo to annovarToMaf. Issue #372
 

@@ -105,7 +105,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
     }
   }
 
-  #Get matrix dimensions and legends to adjust plot layout
+  #Get matrix dimensions and legends to adjust plot graphics::layout
   nm1 = print_mat(maf = m1, genes = genes, removeNonMutated = removeNonMutated,
                   test = TRUE, colors = colors)
   nm1_ncol = ncol(nm1[[1]])
@@ -118,11 +118,11 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
   if(!is.null(clinicalFeatures1) || !is.null(clinicalFeatures2)){
     mat_lo = mat_lo = matrix(data = c(1,3,5,2,4,6,7,7,7), nrow = 3, ncol = 3, byrow = TRUE)
-    mat_lo = layout(mat = mat_lo,
+    mat_lo = graphics::layout(mat = mat_lo,
                     widths = c(6 * (nm1_ncol/nm2_ncol), 1.5, 6), heights = c(12, 3, 4))
   }else{
     mat_lo = matrix(data = c(1,2,3,4,4,4), nrow = 2, ncol = 3, byrow = TRUE)
-    mat_lo = layout(mat = mat_lo,
+    mat_lo = graphics::layout(mat = mat_lo,
                     widths = c(6 * (nm1_ncol/nm2_ncol), 1, 6), heights = c(12, 4))
   }
 
