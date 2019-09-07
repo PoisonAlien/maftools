@@ -3,7 +3,7 @@ Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
 Version: 2.0.20
 Date: 2015-12-14
-Author: person("Anand","Mayakonda", role = c("aut","cre"), email = "anand_mt@hotmail.com"), comment = c(ORCID = '0000-0003-1162-687X')
+Authors@R: person("Anand","Mayakonda", role = c("aut","cre"), email = "anand_mt@hotmail.com"), comment = c(ORCID = '0000-0003-1162-687X')
 Maintainer: Anand Mayakonda <anand_mt@hotmail.com>
 Description: Analyze and visualize Mutation Annotation Format (MAF) files from large scale sequencing studies. This package provides various functions to perform most commonly used analyses in cancer genomics and to create feature rich customizable visualzations with minimal effort.
 URL: https://github.com/PoisonAlien/maftools

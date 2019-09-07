@@ -120,6 +120,15 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
   }
 }
 
+update_vc_codes = function(om_op){
+  uniq_vc = as.character(unique(unlist(as.numeric(unlist(apply(om_op$numericMatrix, 2, unique))))))
+  missing_vc = uniq_vc[!uniq_vc %in% names(om_op$vc)]
+  temp_names = names(om_op$vc)
+  om_op$vc = c(om_op$vc,  rep("Complex_Event", length(missing_vc)))
+  names(om_op$vc) = c(temp_names, rep(missing_vc, length(missing_vc)))
+  om_op$vc
+}
+
 #---- This is small function to sort genes according to total samples in which it is mutated.
 sortByMutation = function(numMat, maf){
 
@@ -484,11 +493,11 @@ plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
 }
 
 get_vcColors = function(alpha = 1){
-  col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue')
+  col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue', '#7b7060')
   col = grDevices::adjustcolor(col = col, alpha.f = alpha)
   names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
                          'RNA','Splice_Site','Intron','Frame_Shift_Ins','Nonstop_Mutation','In_Frame_Del','ITD','In_Frame_Ins',
-                         'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del')
+                         'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del', 'Complex_Event')
   col
 }
 

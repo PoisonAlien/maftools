@@ -232,7 +232,8 @@ oncoplot = function(maf, top = 20, genes = NULL, mutsig = NULL, mutsigQval = 0.1
   }else{
     vc_col = colors
   }
-  vc_codes = om$vc #VC codes
+  #VC codes
+  vc_codes = update_vc_codes(om_op = om)
 
   if(nrow(numMat) == 1){
     stop("Oncoplot requires at-least two genes for plottng.")
