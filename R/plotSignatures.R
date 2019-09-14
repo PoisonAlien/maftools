@@ -9,7 +9,8 @@
 #' @param title_size size of title. Default 1.3
 #' @param axis_lwd axis width. Default 2.
 #' @param font_size font size. Default 1.2
-#' @param show_title Default TRUE
+#' @param show_title If TRUE compares signatures to COSMIC signatures and prints them as title
+#' @param sig_db Only applicable if show_title is TRUE. Can be \code{legacy} or \code{SBS}. Default \code{legacy}
 #' @param show_barcodes Default FALSE
 #' @param yaxisLim Default 0.3. If NA autoscales.
 #' @param ... further plot options passed to \code{\link{barplot}}
@@ -18,7 +19,7 @@
 #' @export
 #'
 plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL,
-                          font_size = 1.2, show_title = TRUE, axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, yaxisLim = 0.3, ...){
+                          font_size = 1.2, show_title = TRUE, sig_db = "legacy", axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, yaxisLim = 0.3, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
   contrib = nmfRes$contributions
@@ -64,24 +65,9 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
              cex = 1.2, pt.cex = 1.5, horiz = TRUE)
     }
   }else{
-    aetiology = structure(list(aetiology = c("spontaneous deamination of 5-methylcytosine",
-                                             "APOBEC Cytidine Deaminase (C>T)", "defects in DNA-DSB repair by HR",
-                                             "exposure to tobacco (smoking) mutagens", "Unknown", "defective DNA mismatch repair",
-                                             "UV exposure", "Unknown", "defects in polymerase-eta", "defects in polymerase POLE",
-                                             "exposure to alkylating agents", "Unknown", "APOBEC Cytidine Deaminase (C>G)",
-                                             "Unknown", "defective DNA mismatch repair", "Unknown", "Unknown",
-                                             "Unknown", "Unknown", "defective DNA mismatch repair", "unknown",
-                                             "exposure to aristolochic acid", "Unknown", "exposures to aflatoxin",
-                                             "Unknown", "defective DNA mismatch repair", "Unknown", "Unknown",
-                                             "exposure to tobacco (chewing) mutagens", "Unknown")), .Names = "aetiology", row.names = c("Signature_1",
-                                                                                                                                        "Signature_2", "Signature_3", "Signature_4", "Signature_5", "Signature_6",
-                                                                                                                                        "Signature_7", "Signature_8", "Signature_9", "Signature_10",
-                                                                                                                                        "Signature_11", "Signature_12", "Signature_13", "Signature_14",
-                                                                                                                                        "Signature_15", "Signature_16", "Signature_17", "Signature_18",
-                                                                                                                                        "Signature_19", "Signature_20", "Signature_21", "Signature_22",
-                                                                                                                                        "Signature_23", "Signature_24", "Signature_25", "Signature_26",
-                                                                                                                                        "Signature_27", "Signature_28", "Signature_29", "Signature_30"
-                                             ), class = "data.frame")
+    if(show_title){
+      comp_res = compareSignatures(nmfRes = nmfRes, verbose = FALSE, sig_db = sig_db)
+    }
 
     plotData = as.data.frame(t(conv.mat.nmf.signatures))
     nsigs = nrow(plotData)
@@ -95,10 +81,10 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
     par(mfrow = c(nsigs,1),oma = c(5,4,0,0) + 0.1, mar = c(0,0,2.5,0) + 0.1, las=1, tcl=-.25, font.main=4, xpd = NA)
 
     for(i in 1:nsigs){
-      ae.sig = names(which(coSineMat[i,] == max(coSineMat[i,])))
-      ae = as.character(aetiology[ae.sig,])
+      ae.bm = comp_res$best_match[[i]][2]
+      ae = comp_res$best_match[[i]][1]
       #ae = paste0("Aetiology: ", ae, " \n cosine-similarity: ", max(coSineMat[i,]))
-      ae = paste0(ae.sig, " like; cosine-similarity: ", round(max(coSineMat[i,]), digits = 3), " \n Aetiology: ", ae)
+      ae = paste0(ae.bm, " \n Aetiology: ", ae)
       d = as.matrix(plotData[i,])
       if(is.na(yaxisLim)){
         bh = ceiling(max(d, na.rm = TRUE) * 10)/10 #Bar height

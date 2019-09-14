@@ -6,8 +6,8 @@
 \usage{
 plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
   patient_order = NULL, font_size = 1.2, show_title = TRUE,
-  axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE,
-  yaxisLim = 0.3, ...)
+  sig_db = "legacy", axis_lwd = 2, title_size = 0.9,
+  show_barcodes = FALSE, yaxisLim = 0.3, ...)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
@@ -20,7 +20,9 @@ plotSignatures(nmfRes = NULL, contributions = FALSE, color = NULL,
 
 \item{font_size}{font size. Default 1.2}
 
-\item{show_title}{Default TRUE}
+\item{show_title}{If TRUE compares signatures to COSMIC signatures and prints them as title}
+
+\item{sig_db}{Only applicable if show_title is TRUE. Can be \code{legacy} or \code{SBS}. Default \code{legacy}}
 
 \item{axis_lwd}{axis width. Default 2.}
 

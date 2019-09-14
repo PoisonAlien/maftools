@@ -21,7 +21,7 @@ extractSignatures(mat, n = NULL, nTry = 6, plotBestFitRes = FALSE,
 \item{pConstant}{A small positive value to add to the matrix. Use it ONLY if the functions throws an \code{non-conformable arrays} error}
 }
 \value{
-a list with decomposed scaled signatures, signature contributions in each sample and a cosine similarity table against validated signatures.
+a list with decomposed scaled signatures, signature contributions in each sample and NMF object.
 }
 \description{
 Decompose a matrix of 96 substitution classes into \code{n} signatures.
@@ -38,5 +38,5 @@ laml.sign <- extractSignatures(mat = laml.tnm, plotBestFitRes = FALSE)
 }
 }
 \seealso{
-\code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
+\code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}} \code{\link{compareSignatures}}
 }
