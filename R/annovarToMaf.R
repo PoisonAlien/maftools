@@ -84,7 +84,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     #If multiple genes are assigned, used the first entry (which correpsonds to closest gene)
     ann[, Hugo_Symbol := unlist(data.table::tstrsplit(Gene.refGene, split = ";", keep = 1))]
 
-    #Annovar to MAF mappings
+    #Annovar to MAF mappings (http://annovar.openbioinformatics.org/en/latest/user-guide/gene/)
     annovar_values = c(
       exonic = "RNA",
       splicing = "Splice_Site",
@@ -116,47 +116,54 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       ncRNA_splicing = "RNA"
     )
 
-    #Exonic variants
-    cat("-Processing Exonic variants\n")
     ann_exonic = ann[Func.refGene %in% 'exonic']
-    #Choose first entry for mixed annotations (e.g; exonic;splicing)
-    ann_exonic[, Func.refGene := data.table::tstrsplit(x = as.character(ann_exonic$Func.refGene), split = ";", keep = 1)]
-    cat("--Adding Variant_Classification\n")
-    ann_exonic[,Variant_Classification := annovar_values[ExonicFunc.refGene]]
-
-    #Parse aa-change for exonic variants
-    cat("--Parsing aa-change\n")
-    aa_change = unlist(data.table::tstrsplit(x = as.character(ann_exonic$AAChange.refGene),split = ',', fixed = TRUE, keep = 1))
-    aa_tbl = lapply(aa_change, function(x){
-      x = unlist(strsplit(x = x, split = ":", fixed = TRUE))
-
-      if(length(x) == 5){
-        #column contains the gene name, the transcript identifier, exon, tx-change, aa-change
-        #If these entries are missing, fill them with NAs
-        tx = x[2]
-        exon = x[3]
-        txChange = x[4]
-        aaChange = x[5]
-      }else{
-        tx = NA
-        exon = NA
-        txChange = NA
-        aaChange = NA
-      }
-
-      data.table::data.table(tx, exon, txChange, aaChange)
-    })
-    aa_tbl = data.table::rbindlist(l = aa_tbl)
-
-    if(length(aa_change) != nrow(ann_exonic)){
-      stop("Something went wrong parsing aa-change")
+    ann_res = ann[!Func.refGene %in% 'exonic']
+    if(nrow(ann_exonic) ==0 & nrow(ann_res) == 0){
+      stop("No suitable exonic or intronic variants found!")
     }
-    ann_exonic = cbind(ann_exonic, aa_tbl)
+
+    #Exonic variants
+    if(nrow(ann_exonic) > 0){
+      cat("-Processing Exonic variants\n")
+
+      #Choose first entry for mixed annotations (e.g; exonic;splicing)
+      ann_exonic[, Func.refGene := data.table::tstrsplit(x = as.character(ann_exonic$Func.refGene), split = ";", keep = 1)]
+      cat("--Adding Variant_Classification\n")
+      ann_exonic[,Variant_Classification := annovar_values[ExonicFunc.refGene]]
+
+      #Parse aa-change for exonic variants
+      cat("--Parsing aa-change\n")
+      aa_change = unlist(data.table::tstrsplit(x = as.character(ann_exonic$AAChange.refGene),split = ',', fixed = TRUE, keep = 1))
+      aa_tbl = lapply(aa_change, function(x){
+        x = unlist(strsplit(x = x, split = ":", fixed = TRUE))
+
+        if(length(x) == 5){
+          #column contains the gene name, the transcript identifier, exon, tx-change, aa-change
+          #If these entries are missing, fill them with NAs
+          tx = x[2]
+          exon = x[3]
+          txChange = x[4]
+          aaChange = x[5]
+        }else{
+          tx = NA
+          exon = NA
+          txChange = NA
+          aaChange = NA
+        }
+
+        data.table::data.table(tx, exon, txChange, aaChange)
+      })
+      aa_tbl = data.table::rbindlist(l = aa_tbl)
+
+      if(length(aa_change) != nrow(ann_exonic)){
+        stop("Something went wrong parsing aa-change")
+      }
+      ann_exonic = cbind(ann_exonic, aa_tbl)
+    }
 
     #Non-exonic variants
-    cat("-Processing Non-exonic variants\n")
-    ann_res = ann[!Func.refGene %in% 'exonic']
     if(nrow(ann_res) > 0){
+      cat("-Processing Non-exonic variants\n")
       ann_res[, Func.refGene := data.table::tstrsplit(x = as.character(ann_res$Func.refGene), split = ";", keep = 1)]
       cat("--Adding Variant_Classification\n")
       ann_res[,Variant_Classification := annovar_values[Func.refGene]]
@@ -173,7 +180,11 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     ann$Variant_Type = apply(ann[,.(Ref, Alt)], 1, function(x) {
       xx = which(x == '-')
       if(length(xx) == 0){
-        return("SNP")
+        if(any(nchar(x) > 1)){
+          return("MNP")
+        }else{
+          return("SNP")
+        }
       }else if(names(xx) == 'Ref'){
         return("INS")
       }else if(names(xx) == 'Alt'){
@@ -182,6 +193,15 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
         return(NA)
       }
     })
+
+    #Annotate MNPs as Unknown VC
+    ann_mnps = ann[Variant_Type %in% "MNP"]
+    if(nrow(ann_mnps) > 0){
+      ann = ann[!Variant_Type %in% "MNP"]
+      ann_mnps[,Variant_Classification := "Unknown"]
+      ann = rbind(ann, ann_mnps)
+      rm(ann_mnps)
+    }
 
     #Frameshift_INDEL, Inframe_INDEL are annotated by annovar without INS or DEL status
     #Parse this based on difference between ref and alt alleles
