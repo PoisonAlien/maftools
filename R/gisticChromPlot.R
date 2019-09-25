@@ -67,9 +67,9 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
   chr.tbl$color = rep(c('black','white'), length=nrow(chr.tbl))
 
   y_lims = pretty(gis.scores[,amp], na.rm = TRUE)
-  gis.scores$Variant_Classification = factor(x = gis.scores$Variant_Classification, levels = c("neutral", "Amp", "Del"))
+  gis.scores$Variant_Classification = factor(x = as.character(gis.scores$Variant_Classification), levels = c("neutral", "Amp", "Del"))
 
-  gis.scores = split(gis.scores, as.factor(as.character(gis.scores$Variant_Classification)))
+  gis.scores = split(gis.scores, as.factor(gis.scores$Variant_Classification))
 
   par(mar = c(2, 4, 2, 1))
   plot(NA, NA, xlim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), ylim = range(y_lims),
