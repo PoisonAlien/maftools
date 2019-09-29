@@ -461,25 +461,47 @@ plotApobecDiff(tnm = laml.tnm, maf = laml, pVal = 0.2)
 ```
 
 ### Signature analysis
-`extractSignatures` uses non-negative matrix factorization to decompose nx96 dimension matrix into r signatures, where n is the number of samples from input MAF [11](#references). By default function runs nmf on 6 ranks and chooses the best possible value based on maximum cophenetic-correlation coefficient. It is also possible to manually specify r. Once decomposed, signatures are compared against known signatures derived from [Alexandrov et.al](http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html), and cosine similarity is calculated to identify best match.
+Signature analysis includes following steps.
 
+  1. `estimateSignatures` - which runs NMF on a range of values and measures the goodness of fit - in terms of [Cophenetic correlation](https://en.wikipedia.org/wiki/Cophenetic_correlation).
+  2. `plotCophenetic` - which draws an elblow plot and helps you to decide optimal number of signatures. Best possible signature is the value at which Cophenetic correlation drops significantly.
+  3. `extractSignatures` - uses non-negative matrix factorization to decompose the matrix into `n` signatures. `n` is chosen based on the above two steps. In case if you already have a good estimate of `n`, you can skip above two steps.
+  4. `compareSignatures` - extracted signatures from above step can be compared to known signatures[11](#references) from [COSMIC](https://cancer.sanger.ac.uk/cosmic/signatures/SBS/) database, and cosine similarity is calculated to identify best match.
+  5. `plotSignatures` - plots signatures
 
+```{r, echo=FALSE}
+par(mar = c(2, 2, 2, 1))
+plot(NA, xlim = c(1, 10), ylim = c(0, 30), frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA)
+rect(xleft = 3, ybottom = 28, xright = 7, ytop = 30, col = grDevices::adjustcolor("gray70", alpha.f = 0.6), lwd = 1.2, border = "maroon")
+text(x = 5, y = 29, labels = "MAF", font = 2)
+arrows(x0 = 5, y0 = 28, x1 = 5, y1 = 26, length = 0.1, lwd = 2)
+text(x = 5, y = 25, labels = "trinucleotideMatrix()", font = 3)
+arrows(x0 = 5, y0 = 24, x1 = 5, y1 = 21, length = 0.1, lwd = 2)
+text(x = 5, y = 20, labels = "estimateSignatures()", font = 3)
+arrows(x0 = 5, y0 = 19, x1 = 5, y1 = 16, length = 0.1, lwd = 2)
+text(x = 5, y = 15, labels = "plotCophenetic()", font = 3)
+arrows(x0 = 5, y0 = 14, x1 = 5, y1 = 11, length = 0.1, lwd = 2)
+text(x = 5, y = 10, labels = "extractSignatures()", font = 3)
+arrows(x0 = 5, y0 = 9, x1 = 5, y1 = 6, length = 0.1, lwd = 2)
+text(x = 5, y = 5, labels = "compareSignatures()", font = 3)
+arrows(x0 = 5, y0 = 4, x1 = 5, y1 = 1, length = 0.1, lwd = 2)
+text(x = 5, y = 0, labels = "plotSignatures()", font = 3)
+```
+
+Note: In previous versions, `extractSignatures` used to take care of above steps automatically. After versions 2.2.0, main function is split inot above 5 stpes for user flexibility.
+
+To keep vignette run time minimal, below example is run with `nTry = 4`.
 ```{r, fig.height=5, fig.width=5, eval=FALSE, message=FALSE}
-#Run main function with maximum 6 signatures. 
 library('NMF')
-laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
+laml.sign = estimateSignatures(mat = laml.tnm, nTry = 4)
 ```
 
 ```{r, fig.height=3, fig.width=3, eval=TRUE, message=FALSE, echo=FALSE, include=FALSE}
 #Run main function with maximum 6 signatures. 
 library('NMF')
-laml.sign = extractSignatures(mat = laml.tnm, n = 2, plotBestFitRes = FALSE, pConstant = 0.1)
+laml.sign = estimateSignatures(mat = laml.tnm, nTry = 4, pConstant = 0.1, plotBestFitRes = FALSE)
 ```
 
-<<<<<<< HEAD
-```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
-plotSignatures(laml.sign, title_size = 0.8, )
-=======
 Draw elbow plot to visualize and estimate optimal number of signatures from above results.
 ```{r, fig.width=3, fig.height=3}
 plotCophenetic(res = laml.sign)
@@ -491,21 +513,37 @@ Once `n` is estimated, we can run the main function.
 
 ```{r, eval=FALSE}
 extractSignatures(mat = laml.tnm, n = 3)
->>>>>>> 4b144a2... Update signature analysis
 ```
 
-`extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overfitted/underfitted, it is also possible to be re-run `extractSignatures` by manually specifying r.
+```{r, echo=FALSE}
+laml.sig = extractSignatures(mat = laml.tnm, n = 3, pConstant = 0.1)
+```
 
-Once decomposed, signatures are compared against known and validated signatures from Sanger [11](#references). See [here](http://cancer.sanger.ac.uk/cosmic/signatures) for list of validated signatures. In the above example, 2 signatures are derived, which are similar to validated Signature-1 and Signature-5. Signature_1 is a result of elevated rate of spontaneous deamination of 5-methyl-cytosine, resulting in C>T transitions and predominantly occurs at NpCpG trinucleotide, which is a most common process in AML [12](#references). 
+Compare detected signatures to known signatures from COSMIC database.
+```{r}
+#Compate against original 30 signatures 
+laml.og30.cosm = compareSignatures(nmfRes = laml.sig, sig_db = "legacy")
+#Compate against updated version3 60 signatures 
+laml.v3.cosm = compareSignatures(nmfRes = laml.sig, sig_db = "SBS")
+```
 
-Full table of cosine similarities against validated signatures are also returned, which can be further analysed. Below plot shows comparison of similarities of detected signatures against validated signatures.
+`compareSignatures` returns full table of cosine similarities against COSMIC signatures, which can be further analysed. Below plot shows comparison of similarities of detected signatures against validated signatures.
 
 ```{r, fig.width=7, fig.height=2.5, fig.align='center'}
 library('pheatmap')
-pheatmap::pheatmap(mat = laml.sign$coSineSimMat, cluster_rows = FALSE, main = "cosine similarity against validated signatures")
+pheatmap::pheatmap(mat = laml.og30.cosm$cosine_similarities, cluster_rows = FALSE, main = "cosine similarity against validated signatures")
 ```
 
-NOTE: Should you receive an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the "NMF" library and re-run.
+Finally plot signatures
+```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
+maftools::plotSignatures(nmfRes = laml.sig, title_size = 0.8)
+```
+
+NOTE: 
+
+1. Should you receive an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `NMF` library and re-run.
+
+2. If either `extractSignatures` or `estimateSignatures` stops in between, its possibly due to low mutation counts in the matrix. In that case rerun the functions with `pConstant` argument set to small positive value (e.g, 0.1).
 
 ### Signature enrichment analysis
 Signatures can further be assigned to samples and enrichment analysis can be performd using `signatureEnrichment` funtion, which identifies mutations enriched in every signature identified. 
@@ -516,7 +554,7 @@ colnames(laml.sign$contributions) = as.character(getSampleSummary(x = laml)[,Tum
 
 
 ```{r, fig.height=3.5, fig.width=5, warning=FALSE}
-laml.se = signatureEnrichment(maf = laml, sig_res = laml.sign)
+laml.se = signatureEnrichment(maf = laml, sig_res = laml.sig)
 ```
 
 Above results can be visualzied similar to clinical enrichments.
@@ -527,28 +565,6 @@ plotEnrichmentResults(enrich_res = laml.se, pVal = 0.05)
 
 
 # Variant Annotations
-## Annotating variants using Oncotator
-We can also annotate variants using [oncotator](http://www.broadinstitute.org/oncotator/) API [14](#references). `oncotate` function quires oncotator web api to annotate given set of variants and converts them into MAF format. Input should be a five column file with chr, start, end, ref_allele, alt_allele. However, it can contain other information such as sample names (Tumor_Sample_Barcode), read counts, vaf information and so on, but only first five columns will be used, rest of the columns will be attached at the end of the table.
-
-```{r}
-var.file = system.file('extdata', 'variants.tsv', package = 'maftools')
-#This is what input looks like
-var = read.delim(var.file, sep = '\t')
-head(var)
-```
-
-```{r, results='hide', eval=F, message=F}
-#Annotate 
-var.maf = oncotate(maflite = var.file, header = TRUE)
-```
-
-```{r, eval = F}
-#Results from oncotate. First 20 columns.
-var.maf[1:10, 1:20, with = FALSE]
-```
-
-NOTE: This is quite time consuming if input is big.
-
 ## Converting annovar output to MAF
 Annovar is one of the most widely used Variant Annotation tool in Genomics [17](#references). Annovar output is generally in a tabular format with various annotation columns. This function converts such annovar output files into MAF. This function requires that annovar was run with gene based annotation as a first operation, before including any filter or region based annotations.
 

@@ -21,10 +21,6 @@ somaticInteractions(maf, top = 25, genes = NULL, pvalue = c(0.05,
 
 \item{geneOrder}{Plot the results in given order. Default NULL.}
 
-\item{findPathways}{Uses all mutually exclusive set of genes to further identify altered pathways. Default TRUE}
-
-\item{kMax}{Default 3. maximum gene set size if findPathways is TRUE. This is time consuming for > 3.}
-
 \item{fontSize}{cex for gene names. Default 0.8}
 
 \item{verbose}{Default TRUE}
@@ -33,7 +29,7 @@ somaticInteractions(maf, top = 25, genes = NULL, pvalue = c(0.05,
 list of data.tables
 }
 \description{
-Performs Pair-wise Fisher's Exact test to detect mutually exclusive or co-occuring events. Also identifies gene sets mutated significantly.
+Performs Pair-wise Fisher's Exact test to detect mutually exclusive or co-occuring events.
 }
 \details{
 This function and plotting is inspired from genetic interaction analysis performed in the published study combining gene expression and mutation data in MDS. See reference for details.
