@@ -1,5 +1,6 @@
 CHANGES IN VERSION 2.0.16
 -------------------------
+    o gisticChromPlot bug fix. Issue: #392
     o annovarToMaf bug fix for results without exonic variants. Issue: #388
     o Avoid conflict with plotly::layout with graphcis::layout. Issue: #387
     o Fix side-bar heights in Oncoplot with copy-number data. Issue: #383

@@ -511,10 +511,6 @@ Best possible value is the one at which the correlation value on the y-axis drop
 
 Once `n` is estimated, we can run the main function.
 
-```{r, eval=FALSE}
-extractSignatures(mat = laml.tnm, n = 3)
-```
-
 ```{r, echo=FALSE}
 laml.sig = extractSignatures(mat = laml.tnm, n = 3, pConstant = 0.1)
 ```
