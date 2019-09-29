@@ -470,14 +470,28 @@ library('NMF')
 laml.sign = extractSignatures(mat = laml.tnm, nTry = 6, plotBestFitRes = FALSE)
 ```
 
-```{r, fig.height=5, fig.width=5, eval=TRUE, message=FALSE, echo=FALSE}
+```{r, fig.height=3, fig.width=3, eval=TRUE, message=FALSE, echo=FALSE, include=FALSE}
 #Run main function with maximum 6 signatures. 
 library('NMF')
 laml.sign = extractSignatures(mat = laml.tnm, n = 2, plotBestFitRes = FALSE, pConstant = 0.1)
 ```
 
+<<<<<<< HEAD
 ```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
 plotSignatures(laml.sign, title_size = 0.8, )
+=======
+Draw elbow plot to visualize and estimate optimal number of signatures from above results.
+```{r, fig.width=3, fig.height=3}
+plotCophenetic(res = laml.sign)
+```
+
+Best possible value is the one at which the correlation value on the y-axis drops significantly. In this case it appears to be at `n = 3`. LAML is not an ideal example for signature analysis with its low mutation rate, but for solid tumors with higher mutation burden one could expect more signatures, provided sufficient number of samples.
+
+Once `n` is estimated, we can run the main function.
+
+```{r, eval=FALSE}
+extractSignatures(mat = laml.tnm, n = 3)
+>>>>>>> 4b144a2... Update signature analysis
 ```
 
 `extractSignatures` gives a warning that no mutations are found for class A[T>G]C conversions. This is possible when the number of samples are low or in tumors with low mutation rate, such as in this case of Leukemia. In this scenario, a small positive value is added to avoid computational difficulties. It also prints other statistics for range of values that was tried, and chooses the rank with highest cophenetic metric (for above example r=2). Above stats should give an estimate of range of best possible r values and in case the chosen r is overfitted/underfitted, it is also possible to be re-run `extractSignatures` by manually specifying r.
