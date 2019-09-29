@@ -14,7 +14,6 @@
 #' add = TRUE, useSyn = TRUE)
 #' laml.sign <- estimateSignatures(mat = laml.tnm, plotBestFitRes = FALSE)
 #' }
-#' @import NMF
 #' @importFrom grDevices pdf boxplot.stats dev.off
 #' @seealso \code{\link{plotCophenetic}} \code{\link{extractSignatures}} \code{\link{trinucleotideMatrix}}
 #' @export

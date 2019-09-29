@@ -1,6 +1,7 @@
 #' Compares identified denovo mutational signatures to known COSMIC signatures
 #'
 #' @description Takes results from \code{\link{extractSignatures}} and compares them known COSMIC signatures. Two COSMIC databases are used for comparisons - "legacy" which includes 30 signaures, and "SBS" - which includes updated/refined 65 signatures
+#' @details SBS signature database was obtained from https://www.synapse.org/#!Synapse:syn11738319.7
 #'
 #' @param nmfRes results from \code{\link{extractSignatures}}
 #' @param sig_db can be \code{legacy} or \code{SBS}. Default \code{legacy}
@@ -18,7 +19,7 @@ compareSignatures = function(nmfRes, sig_db = "legacy", verbose = TRUE){
     sigs = sigs_db$db
     aetiology = sigs_db$aetiology
   }else{
-    sigs_db = readRDS(file = system.file('extdata', 'SBS_exome_signatures.RDs', package = 'maftools'))
+    sigs_db = readRDS(file = system.file('extdata', 'SBS_signatures.RDs', package = 'maftools'))
     sigs = sigs_db$db
     aetiology = sigs_db$aetiology
   }

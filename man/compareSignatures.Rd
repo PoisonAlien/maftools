@@ -19,6 +19,9 @@ list containing cosine smilarities, aetiologies if available, and best match.
 \description{
 Takes results from \code{\link{extractSignatures}} and compares them known COSMIC signatures. Two COSMIC databases are used for comparisons - "legacy" which includes 30 signaures, and "SBS" - which includes updated/refined 65 signatures
 }
+\details{
+SBS signature database was obtained from https://www.synapse.org/#!Synapse:syn11738319.7
+}
 \seealso{
 \code{\link{trinucleotideMatrix}} \code{\link{extractSignatures}} \code{\link{plotSignatures}}
 }

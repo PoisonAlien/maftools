@@ -16,7 +16,6 @@
 #' add = TRUE, useSyn = TRUE)
 #' laml.sign <- extractSignatures(mat = laml.tnm, plotBestFitRes = FALSE)
 #' }
-#' @import NMF
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}} \code{\link{compareSignatures}}
 #' @export
 
