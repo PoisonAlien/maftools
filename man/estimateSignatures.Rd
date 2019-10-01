@@ -12,7 +12,7 @@ estimateSignatures(mat, nTry = 6, parallel = 4, pConstant = NULL,
 
 \item{nTry}{Maximum number of signatures to try. Default 6.}
 
-\item{parallel}{Default 4. Number of cores to use. See note on \code{\link{nmf}} for MAC users.}
+\item{parallel}{Default 4. Number of cores to use.}
 
 \item{pConstant}{A small positive value to add to the matrix. Use it ONLY if the functions throws an \code{non-conformable arrays} error}
 

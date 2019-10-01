@@ -299,9 +299,26 @@ Survival analysis is an essential part of cohort based sequencing projects. Func
 
 Our annotation data already contains survival information and in case you have survival data stored in a separate table provide them via argument `clinicalData`
 
+### Mutation in any given genes
 ```{r, fig.width=5, fig.height=5}
 #Survival analysis based on grouping of DNMT3A mutation status
 mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
+```
+
+### Predict genesets associated with survival
+Identify set of genes which results in poor survival
+
+```{r}
+#Using top 20 mutated genes to identify a set of genes (of size 2) to predict poor prognostic groups
+prog_geneset = survGroup(maf = laml, top = 20, geneSetSize = 2, time = "days_to_last_followup", Status = "Overall_Survival_Status", verbose = FALSE)
+
+print(prog_geneset)
+```
+
+Above results show a combination (N = 2) of genes which are associated with poor survival (P < 0.05). We can draw KM curve for above results with the function `mafSurvGroup`
+
+```{r, fig.width=5, fig.height=5}
+mafSurvGroup(maf = laml, geneSet = c("DNMT3A", "FLT3"), time = "days_to_last_followup", Status = "Overall_Survival_Status")
 ```
 
 ## Comparing two cohorts (MAFs)
