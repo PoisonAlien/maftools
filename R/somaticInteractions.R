@@ -18,7 +18,7 @@
 #' @return list of data.tables
 #' @export
 
-somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = FALSE, geneOrder = NULL, findPathways = TRUE, kMax = 3, fontSize = 0.8, verbose = TRUE){
+somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = FALSE, geneOrder = NULL, fontSize = 0.8, verbose = TRUE){
 
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]

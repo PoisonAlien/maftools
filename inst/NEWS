@@ -1,92 +1,20 @@
-CHANGES IN VERSION 2.0.16
+CHANGES IN VERSION 2.2.0
 -------------------------
-    o Feature: survival analysis for all mutated genes. Issue: #396
+NEW FUNCTIONS
+    o survGroup - Predict genes/genesets associated with survival. Issue: #396
+
+SIGNIFICANT USER-LEVEL IMPROVEMENT
+    o Signature analysis has been modified to be more flexible. It now consits of three functions namely:
+        o `estimateSignatures` - which measures cophenetic correlation metric (a measure of goodness of fit) for a range of values
+        o `plotCophenetic` - which draws an elbow plot of cophenetic correlation metric from `estimateSignatures` and helps to decide an optimal number of signature `(n)`.
+        o `extractSignatures` - which then extracts final `n` signatures
+    o `compareSignatures` now has two databases of known signatures. Classic 30 signatures and newer 67 SBS signatures from COSMIC.
+    o `findPathways` argument in `somaticInteractions` function has been deprecated
+
+BUG FIX
     o gisticChromPlot bug fix. Issue: #392
     o annovarToMaf bug fix for results without exonic variants. Issue: #388
     o Avoid conflict with plotly::layout with graphcis::layout. Issue: #387
     o Fix side-bar heights in Oncoplot with copy-number data. Issue: #383
     o Update y-axis label for tcgaCompare plot. Issue: #366
     o annovarToMaf annotating variants with MNPs. Issue: #335
-
-CHANGES IN VERSION 2.0.16
--------------------------
-    o Minor bug fix in extractSignatures. Issue #369
-    o Added argument ens2hugo to annovarToMaf. Issue #372
-
-CHANGES IN VERSION 2.0.15
--------------------------
-    o Bug fix in oncoplot with only 1 variant classification. Issue #367
-    o Bug fix with gisticChromPlot. Issue #365
-    o Bug fix with plot alignment. Issue #360
-    o Update description for lollipopPlot with domain source. Issue #354
-    o Optimized method for rank estimation in signature analysis
-    o Add barcode_mar and gene_mar to oncoplot and gisticOncoPlot. Issue: #346
-    o Add sepwd_genes, sepwd_samples to oncoplot and gisticOncoPlot. Issue: #340 #260
-    o Avoid plotting legend outside the margin. Issue: #337
-    o Add argument for sample ordering in PlotOncogenicPathways. Issue: #332
-    o Add cohortSize argument to oncoplot. Issue: #324
-    o coOncoPlot: showing sample names has no effect. Issue: #306
-
-CHANGES IN VERSION 2.0.10
--------------------------
-    o Add argument for sample ordering in plotTiTv. Issue: #330
-    o Bug fix in annovartomaf which caused wrong annotations for INDLS. Issue: #330
-
-CHANGES IN VERSION 2.0.05
--------------------------
-USER-LEVEL IMPROVEMENT
-    o merge_mafs - Merge multiple MAF objects, files. Issue: #329
-    o Add more examples for oncoplot customization. Issue: #310
-    o CoOncoplot - align gene names. Issue: #308
-    o Added keepGeneOrder argument to plotVaf. Issue: #305
-    o Added sampleOrder argument to gisticOncoPlot. Issue: #302
-
-BUG FIX
-    o Fix oncoplot removeNonMutated Error #325
-    o SomatinInteractions - Do not ignore samples with no nonsyn variants. Issue: #318
-    o Do not convert spaces to underscores while parsing annotations. Issue: #314
-    o Fix errors in bubbleplot when the data contains no labels. Issue: #313
-    o Fix data.table melt value name in plotVaf. Issue: #311
-    o Fix colors for NAs in oncoplot legend. Issue: #309
-
-CHANGES IN VERSION 2.0.0
--------------------------
-SIGNIFICANT USER-LEVEL IMPROVEMENT
-    o Oncoplot, oncostrip and coOncoplot code has been migrated from ComplexHeatmap to base graphics. Default values for some arguments have been changed.
-    o Changed default value for mafObj argument in subsetMaf to TRUE. Issue: #235
-    o All ggplots are migrated to base graphics for consistancy
-    o TCGA mutations per sample used for tcgaCompare are updated to more stable MC3 cohort from deprecated broad firehose.
-
-IMPROVEMENTS:
-    o tcgaCompare now accpets comparing against user specifc cohorts. Issue: #229
-    o Add missing genes and samples to oncoplot even when they are not altered. Issue: #254
-    o Added MTRNR2L8 protein structure to pfam database. Issue: #255
-    o Added addtionalFeature argument to oncoplots. Issue: #270
-    o Added log scale option for summary and oncoplots. Issue: #273
-    o Made protein domain db compatible with R version < 3.5 Issue: #276
-    o Added draw `draw_titv`, and `exprsTbl` argument to oncoplot
-    o Additional edits with TMB visualization and additionalFeatures Issue: #289
-    o Cooncoplot improvements Issue: #296
-
-BUG FIX
-    o Oncoplot annotationOrder bug fix. Issue: #293
-    o Update code for AnnovarToMaf. PR #288, #234
-    o fixed handling of Status in survival. PR #274
-    o Fix swapped confidance intervals in mafCompare function Issue: #269
-    o update docs, and vectorized code Issue: #266 #267
-    o Improve oncoplot annotations for numeric class Issue: #263 and #203
-    o In annovarToMaf read the .tsv file considering the header. PR #259
-    o Fix legend title order. Issue: #253
-    o GISTIC sample size issue fix. Issue: #249
-    o Bug fix for oncoplots with CNV data. Issue: #240
-    o Better error handling in plotApobecDiff with no SMGs. Issue: #232
-    o Bug fix that caused signature extraction to terminate in case of zero mutations. Issue: #228
-    o Bug fix due to missing levels contingency tables in clinical enrichment. Issue: #225
-    o Add showTumorSampleBarcodes to PlotOncogenicPathways. Issue: #214
-    o Cleanup docs for Oncoplot. Issue: #207
-    o Implemented `isNumeric` and `groupAnnotationBySize` to improve sorting. Issue: #207
-    o Fix ComplexHeatmap update. Issue: #205 #210
-    o plotmafSummary addStats bug fix Issue: #204
-    o Rainfall plot data.table null fix. Issue: #201
-    o Support non human BSgenome. Issue: #197
-    o SampleID bug fix. Issue: #153
