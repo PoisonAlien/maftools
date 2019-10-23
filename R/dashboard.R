@@ -19,7 +19,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv
   vcs = t(vcs)
 
   lo = matrix(data = 1:6, nrow = 2, byrow = TRUE)
-  layout(mat = lo, heights = c(3.5, 3), widths = c(3, 2, 2))
+  graphics::layout(mat = lo, heights = c(3.5, 3), widths = c(3, 2, 2))
   par(cex.axis = fontSize, font = 3, cex.main = titleSize[1], lwd = 1.2)
 
   #--------------------------- variant classification plot -----------------

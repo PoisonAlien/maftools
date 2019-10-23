@@ -79,7 +79,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
 
   ylims = round(seq(min(summary(maf.snp[,diff]), na.rm = TRUE),
                     max(summary(maf.snp[,diff]), na.rm = TRUE), length.out = 4), 2)
-  layout(mat = matrix(data = c(1, 2), nrow = 2, byrow = T), heights= c(4, 1))
+  graphics::layout(mat = matrix(data = c(1, 2), nrow = 2, byrow = T), heights= c(4, 1))
   par(mar = c(1, 4, 2, 0))
   plot(NA, NA,
       axes = FALSE, xlab = NA, ylab = NA,

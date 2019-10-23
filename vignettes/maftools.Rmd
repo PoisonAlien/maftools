@@ -247,13 +247,6 @@ Many disease causing genes in cancer are co-occurring or show strong exclusivene
 somaticInteractions(maf = laml, top = 25, pvalue = c(0.05, 0.1))
 ```
 
-We can visualize the above results using `oncostrip`. For example, in above analysis, gene set TP53, FLT3 and RUNX1 show a strong exclusiveness with each other a p-value of 4.8e-5. 
-
-```{r, fig.height=2.3,fig.width=8,fig.align='center'}
-oncostrip(maf = laml, genes = c('TP53', 'FLT3', 'RUNX1'))
-```
-
-
 ## Detecting cancer driver genes based on positional clustering
 maftools has a function `oncodrive` which identifies cancer genes (driver) from a given MAF. `oncodrive` is a based on algorithm [oncodriveCLUST](http://bg.upf.edu/group/projects/oncodrive-clust.php) which was originally implemented in Python. Concept is based on the fact that most of the variants in cancer causing genes are enriched at few specific loci (aka hot-spots). This method takes advantage of such positions to identify cancer genes. If you use this function, please cite [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full) [7](#references).
 
@@ -505,7 +498,7 @@ arrows(x0 = 5, y0 = 4, x1 = 5, y1 = 1, length = 0.1, lwd = 2)
 text(x = 5, y = 0, labels = "plotSignatures()", font = 3)
 ```
 
-Note: In previous versions, `extractSignatures` used to take care of above steps automatically. After versions 2.2.0, main function is split inot above 5 stpes for user flexibility.
+***Note:*** In previous versions, `extractSignatures` used to take care of above steps automatically. After versions 2.2.0, main function is split inot above 5 stpes for user flexibility.
 
 To keep vignette run time minimal, below example is run with `nTry = 4`.
 ```{r, fig.height=5, fig.width=5, eval=FALSE, message=FALSE}
@@ -552,7 +545,7 @@ Finally plot signatures
 maftools::plotSignatures(nmfRes = laml.sig, title_size = 0.8)
 ```
 
-NOTE: 
+***NOTE:***
 
 1. Should you receive an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `NMF` library and re-run.
 
@@ -662,7 +655,6 @@ devtools::install_github(repo = "PoisonAlien/TCGAmutations")
 3.	Mermel, C.H. et al. GISTIC2.0 facilitates sensitive and confident localization of the targets of focal somatic copy-number alteration in human cancers. Genome Biol 12, R41 (2011).
 4.	Olshen, A.B., Venkatraman, E.S., Lucito, R. & Wigler, M. Circular binary segmentation for the analysis of array-based DNA copy number data. Biostatistics 5, 557-72 (2004).
 5.	Alexandrov, L.B. et al. Signatures of mutational processes in human cancer. Nature 500, 415-21 (2013).
-6.	Leiserson, M.D., Wu, H.T., Vandin, F. & Raphael, B.J. CoMEt: a statistical approach to identify combinations of mutually exclusive alterations in cancer. Genome Biol 16, 160 (2015).
 7.	Tamborero, D., Gonzalez-Perez, A. & Lopez-Bigas, N. OncodriveCLUST: exploiting the positional clustering of somatic mutations to identify cancer genes. Bioinformatics 29, 2238-44 (2013).
 8.	Dees, N.D. et al. MuSiC: identifying mutational significance in cancer genomes. Genome Res 22, 1589-98 (2012).
 9. Lawrence MS, Stojanov P, Mermel CH, Robinson JT, Garraway LA, Golub TR, Meyerson M, Gabriel SB, Lander ES, Getz G: Discovery and saturation analysis of cancer genes across 21 tumour types. Nature 2014, 505:495-501.
@@ -687,7 +679,7 @@ sessionInfo()
 If you have any issues, bug reports or feature requests please feel free to raise an [issue](https://github.com/PoisonAlien/maftools/issues) on [GitHub](https://github.com/PoisonAlien/maftools) page.
 
 ## acknowledgements
-
+  * Thanks to [Shixiang Wang](https://github.com/ShixiangWang) fot many bug fixes, improvements, feature requests, and contribution to overall package maintenance
   * Thanks to [Ryan Morin](https://github.com/rdmorin) for crucial bug fixes
   * Thanks to [Peter Ellis](https://twitter.com/ellis2013nz) for beautiful [markdown template](http://ellisp.github.io/blog/2017/09/09/rmarkdown)
   * `somaticInteractions` plot is inspired from the article [Combining gene mutation with gene expression data improves outcome prediction in myelodysplastic syndromes](https://www.nature.com/articles/ncomms6901). Thanks to authors for making source code available.

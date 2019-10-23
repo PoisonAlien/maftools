@@ -40,7 +40,7 @@ plotVaf(maf, vafCol = NULL, genes = NULL, top = 10,
 Nothing.
 }
 \description{
-Plots vaf distribution of genes as a boxplot.
+Plots vaf distribution of genes as a boxplot. Each dot in the jitter is a variant.
 }
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

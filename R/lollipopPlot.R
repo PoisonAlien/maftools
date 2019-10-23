@@ -278,7 +278,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   col = col[unique(as.character(prot.snp.sumamry[,Variant_Classification]))]
 
   lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
-  layout(mat = lo, heights = c(4, 1.25))
+  graphics::layout(mat = lo, heights = c(4, 1.25))
 
   par(mar = c(1, 2.5, 2, 1))
   plot(0, 0, pch = NA, ylim = c(0, 6.5), xlim = c(0, len), axes = FALSE, xlab = NA, ylab = NA)

@@ -80,7 +80,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL, color = NULL,
     names(color) = c(m1Name, m2Name)
   }
 
-  layout(mat = matrix(c(1, 2, 3, 4, 5, 5, 5, 5), byrow = TRUE, ncol = 4, nrow = 2), widths = c(4, 1, 1), heights = c(6, 1.2))
+  graphics::layout(mat = matrix(c(1, 2, 3, 4, 5, 5, 5, 5), byrow = TRUE, ncol = 4, nrow = 2), widths = c(4, 1, 1), heights = c(6, 1.2))
   par(mar = c(3, 1, 3, 5))
   plot(rep(0, nrow(m.sigs)), 1:nrow(m.sigs), xlim = c(-lim, lim), axes = FALSE, pch = NA, xlab = "", ylab = "", ylim = c(0.5, nrow(m.sigs)))
   segments(x0 = m.sigs$log10OR_low, y0 = 1:nrow(m.sigs), x1 = m.sigs$log10OR_high, y1 = 1:nrow(m.sigs), lwd = lineWidth, color[m.sigs$flow])

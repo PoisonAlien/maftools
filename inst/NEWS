@@ -1,7 +1,11 @@
 CHANGES IN VERSION 2.2.0
 -------------------------
 NEW FUNCTIONS
-    o survGroup - Predict genes/genesets associated with survival. Issue: #396
+    o `survGroup`, `mafSurvGroup` - Predict genes/genesets associated with survival. Issue: #396
+
+DEPRECATED
+    o `oncotate` - Oncotator is no longer supported by Broad. Issue: #403 #384 #381
+    o `findPathways` argument in `somaticInteractions` function has been deprecated
 
 SIGNIFICANT USER-LEVEL IMPROVEMENT
     o Signature analysis has been modified to be more flexible. It now consits of three functions namely:
@@ -9,12 +13,11 @@ SIGNIFICANT USER-LEVEL IMPROVEMENT
         o `plotCophenetic` - which draws an elbow plot of cophenetic correlation metric from `estimateSignatures` and helps to decide an optimal number of signature `(n)`.
         o `extractSignatures` - which then extracts final `n` signatures
     o `compareSignatures` now has two databases of known signatures. Classic 30 signatures and newer 67 SBS signatures from COSMIC.
-    o `findPathways` argument in `somaticInteractions` function has been deprecated
 
 BUG FIX
-    o gisticChromPlot bug fix. Issue: #392
-    o annovarToMaf bug fix for results without exonic variants. Issue: #388
-    o Avoid conflict with plotly::layout with graphcis::layout. Issue: #387
+    o `gisticChromPlot` bug fix. Issue: #392
+    o `annovarToMaf` bug fix for results without exonic variants. Issue: #388
+    o Avoid conflict with `plotly::layout` with `graphcis::layout`. Issue: #387 #202
     o Fix side-bar heights in Oncoplot with copy-number data. Issue: #383
-    o Update y-axis label for tcgaCompare plot. Issue: #366
-    o annovarToMaf annotating variants with MNPs. Issue: #335
+    o Update y-axis label for `tcgaCompare` plot. Issue: #366
+    o `annovarToMaf` annotating variants with MNPs. Issue: #335
