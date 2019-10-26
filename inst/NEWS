@@ -1,7 +1,8 @@
 CHANGES IN VERSION 2.2.0
 -------------------------
-NEW FUNCTIONS
+NEW FUNCTIONS AND FEATURES
     o `survGroup`, `mafSurvGroup` - Predict genes/genesets associated with survival. Issue: #396
+    o New argument `altered` in `oncoplot` to plot top genes based on CNV or mutation. Default is `FALSE`. Issue: #405
 
 DEPRECATED
     o `oncotate` - Oncotator is no longer supported by Broad. Issue: #403 #384 #381

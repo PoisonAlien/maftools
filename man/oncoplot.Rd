@@ -4,13 +4,13 @@
 \alias{oncoplot}
 \title{draw an oncoplot}
 \usage{
-oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
-  mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE,
-  includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
-  clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL,
-  additionalFeaturePch = 20, additionalFeatureCol = "white",
-  additionalFeatureCex = 0.9, annotationDat = NULL,
-  annotationColor = NULL, genesToIgnore = NULL,
+oncoplot(maf, top = 20, genes = NULL, altered = FALSE,
+  mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE,
+  drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE,
+  logColBar = FALSE, clinicalFeatures = NULL, exprsTbl = NULL,
+  additionalFeature = NULL, additionalFeaturePch = 20,
+  additionalFeatureCol = "white", additionalFeatureCex = 0.9,
+  annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
   showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5,
   removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
   colors = NULL, sortByMutation = FALSE, sortByAnnotation = FALSE,
@@ -28,6 +28,8 @@ oncoplot(maf, top = 20, genes = NULL, mutsig = NULL,
 \item{top}{how many top genes to be drawn. defaults to 20.}
 
 \item{genes}{Just draw oncoplot for these genes. Default NULL.}
+
+\item{altered}{Default FALSE. Chooses top genes based on muatation status. If \code{TRUE} chooses top genes based alterations (CNV or mutation).}
 
 \item{mutsig}{Mutsig resuts if availbale. Usually file named sig_genes.txt If provided plots significant genes and correpsonding Q-values as side row-bar. Default NULL.}
 
