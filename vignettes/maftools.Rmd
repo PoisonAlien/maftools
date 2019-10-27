@@ -30,7 +30,7 @@ If you find this tool useful, please cite:
 ***
 **_Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. 
 Maftools: efficient and comprehensive analysis of somatic variants in cancer. 
-[Genome Resarch](https://doi.org/10.1101/gr.239244.118)_**
+[Genome Resarch](https://doi.org/10.1101/gr.239244.118) [PMID: 30341162](https://www.ncbi.nlm.nih.gov/pubmed/30341162)_**
 
 ***
 
