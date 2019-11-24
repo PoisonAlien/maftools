@@ -10,7 +10,14 @@
 #' @param pvalue Default c(0.05, 0.01) p-value threshold. You can provide two values for upper and lower threshold.
 #' @param returnAll If TRUE returns test statistics for all pair of tested genes. Default FALSE, returns for only genes below pvalue threshold.
 #' @param fontSize cex for gene names. Default 0.8
-#' @param verbose Default TRUE
+#' @param showSigSymbols Default TRUE. Heighlight significant pairs
+#' @param showCounts Default TRUE. Include number of events in the plot
+#' @param countstats Default `all`. Can be `all` or `sig`
+#' @param countType Default `cooccur`. Can be `all`, `cooccur`, `mutexcl`
+#' @param countsFontSize Default 0.8
+#' @param countsFontColor Default `black`
+#' @param colPal colPalBrewer palettes. See RColorBrewer::display.brewer.all() for details
+#'
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
@@ -18,7 +25,10 @@
 #' @return list of data.tables
 #' @export
 
-somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = FALSE, geneOrder = NULL, fontSize = 0.8, verbose = TRUE){
+somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
+                               geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
+                               showCounts = FALSE, countstats = 'sig', countType = 'all',
+                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG"){
 
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
@@ -51,16 +61,15 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
   oddsRatio <- oddsGenes <- sapply(1:ncol(mutMat), function(i) sapply(1:ncol(mutMat), function(j) {f<- try(fisher.test(mutMat[,i], mutMat[,j]), silent=TRUE); if(class(f)=="try-error") f=NA else f$estimate} ))
   rownames(interactions) = colnames(interactions) = rownames(oddsRatio) = colnames(oddsRatio) = colnames(mutMat)
 
-  if(returnAll){
-    sigPairs = which(x = 10^-abs(interactions) < 1, arr.ind = TRUE)
-  }else{
-    sigPairs = which(x = 10^-abs(interactions) < max(pvalue), arr.ind = TRUE)
-  }
+  sigPairs = which(x = 10^-abs(interactions) < 1, arr.ind = TRUE)
+  sigPairs2 = which(x = 10^-abs(interactions) >= 1, arr.ind = TRUE)
+  #return(list(interactions, sigPairs))
 
   if(nrow(sigPairs) < 1){
     stop("No meaningful interactions found.")
   }
 
+  sigPairs = rbind(sigPairs, sigPairs2)
   sigPairsTbl = data.table::rbindlist(
                           lapply(X = seq_along(1:nrow(sigPairs)), function(i) {
                                   x = sigPairs[i,]
@@ -81,17 +90,23 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
   sigPairsTbl = sigPairsTbl[!gene1 == gene2] #Remove doagonal elements
   sigPairsTbl$Event = ifelse(test = sigPairsTbl$oddsRatio > 1, yes = "Co_Occurence", no = "Mutually_Exclusive")
   sigPairsTbl$pair = apply(X = sigPairsTbl[,.(gene1, gene2)], MARGIN = 1, FUN = function(x) paste(sort(unique(x)), collapse = ", "))
+  sigPairsTbl[,event_ratio := `01`+`10`]
+  sigPairsTbl[,event_ratio := paste0(`11`, '/', event_ratio)]
   sigPairsTblSig = sigPairsTbl[order(as.numeric(pValue))][!duplicated(pair)]
 
   #Source code borrowed from: https://www.nature.com/articles/ncomms6901
   if(nrow(interactions) >= 5){
-    interactions[10^-abs(interactions) > max(pvalue)] = 0
+    #interactions[10^-abs(interactions) > max(pvalue)] = 0
     diag(interactions) <- 0
     m <- nrow(interactions)
     n <- ncol(interactions)
 
-    interactions[interactions < -4] = -4
-    interactions[interactions > 4] = 4
+    col_pal = RColorBrewer::brewer.pal(9, colPal)
+    col_pal = grDevices::colorRampPalette(colors = col_pal)
+    col_pal = col_pal(m*n)
+
+    #interactions[interactions < -4] = -4
+    #interactions[interactions > 4] = 4
 
     if(!is.null(geneOrder)){
       if(!all(rownames(interactions) %in% geneOrder)){
@@ -99,50 +114,110 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
       }
       interactions = interactions[geneOrder, geneOrder]
     }
-    # r = interactions
-    # rd = hclust(dist(r))$order
-    # cd = hclust(dist(t(r)))$order
-    # interactions = interactions[rd, , drop = FALSE]
-    # interactions = interactions[,rd, drop = FALSE]
 
-    interactions[lower.tri(x = interactions)] = NA
+    interactions[lower.tri(x = interactions, diag = TRUE)] = NA
 
-    par(bty="n", mgp = c(2,.5,0), mar = c(2, 4, 3, 5)+.1, las=2, tcl=-.33)
-    image(x=1:n, y=1:m, interactions, col=RColorBrewer::brewer.pal(9,"PiYG"),
-          breaks = c(-4:0-.Machine$double.eps,0:4), xaxt="n", yaxt="n",
-          xlab="",ylab="", xlim=c(0, n+4), ylim=c(0, n+4))
+    gene_sum = getGeneSummary(x = maf)[Hugo_Symbol %in% rownames(interactions), .(Hugo_Symbol, MutatedSamples)]
+    data.table::setDF(gene_sum, rownames = gene_sum$Hugo_Symbol)
+    gene_sum = gene_sum[rownames(interactions),]
+    if(!all(rownames(gene_sum) == rownames(interactions))){
+      stop(paste0("Row mismatches!"))
+    }
+    if(!all(rownames(gene_sum) == colnames(interactions))){
+      stop(paste0("Column mismatches!"))
+    }
+    rownames(gene_sum) = paste0(apply(gene_sum, 1, paste, collapse = ' ['), ']')
+
+    par(bty="n", mar = c(1, 4, 4, 2)+.1, las=2, fig = c(0, 1, 0, 1))
+
+    image(x=1:n, y=1:m, interactions, col = col_pal,
+          xaxt="n", yaxt="n",
+          xlab="",ylab="", xlim=c(0, n+1), ylim=c(0, n+1))
     abline(h=0:n+.5, col="white", lwd=.5)
     abline(v=0:n+.5, col="white", lwd=.5)
 
-    mtext(side = 2, at = 1:m, text = colnames(interactions), cex = fontSize, font = 3)
-    mtext(side = 3, at = 1:n, text = colnames(interactions), las = 2, line = -2, cex = fontSize, font = 3)
+    mtext(side = 2, at = 1:m, text = rownames(gene_sum), cex = fontSize, font = 3)
+    mtext(side = 3, at = 1:n, text = rownames(gene_sum), cex = fontSize, font = 3)
+    #text(x = 1:m, y = rep(n+0.5, length(n)), labels = rownames(gene_sum), srt = 90, adj = 0, font = 3, cex = fontSize)
 
-    #q <- p.adjust(10^-abs(interactions), method="BH")
-    #p <- p.adjust(10^-abs(interactions), method="holm")
-    #w = arrayInd(which(interactions < .05), rep(m,2))
-    #points(w, pch=".", col="white", cex=1.5)
-    w = arrayInd(which(10^-abs(interactions) < min(pvalue)), rep(m,2))
-    points(w, pch="*", col="black")
-    w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
-    points(w, pch=".", col="black")
+    if(showCounts){
+      countstats = match.arg(arg = countstats, choices = c("all", "sig"))
+      countType = match.arg(arg = countType, choices = c("all", "cooccur", "mutexcl"))
+
+      if(countstats == 'sig'){
+        w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
+        for(i in 1:nrow(w)){
+          g1 = rownames(interactions)[w[i, 1]]
+          g2 = colnames(interactions)[w[i, 2]]
+          g12 = paste(sort(c(g1, g2)), collapse = ', ')
+          if(countType == 'all'){
+            e = sigPairsTblSig[pValue < max(pvalue)][pair %in% g12, event_ratio]
+          }else if(countType == 'cooccur'){
+            e = sigPairsTblSig[pValue < max(pvalue)][Event %in% "Co_Occurence"][pair %in% g12, `11`]
+          }else if(countType == 'mutexcl'){
+            e = sigPairsTblSig[pValue < max(pvalue)][Event %in% "Mutually_Exclusive"][pair %in% g12, `11`]
+          }
+          if(length(e) == 0){
+            e = 0
+          }
+          text(w[i,1], w[i,2], labels = e, font = 3, col = countsFontColor, cex = countsFontSize)
+        }
+      }else if(countstats == 'all'){
+        w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
+        w2 = arrayInd(which(10^-abs(interactions) >= max(pvalue)), rep(m,2))
+        w = rbind(w, w2)
+        #print(w)
+        for(i in 1:nrow(w)){
+          g1 = rownames(interactions)[w[i, 1]]
+          g2 = colnames(interactions)[w[i, 2]]
+          g12 = paste(sort(c(g1, g2)), collapse = ', ')
+          if(countType == 'all'){
+            e = sigPairsTblSig[pair %in% g12, event_ratio]
+          }else if(countType == 'cooccur'){
+            e = sigPairsTblSig[pair %in% g12, `11`]
+          }else if(countType == 'mutexcl'){
+            e = sigPairsTblSig[pair %in% g12, `01` + `10`]
+          }
+          if(length(e) == 0){
+            e = 0
+          }
+          text(w[i,1], w[i,2], labels = e, font = 3, col = countsFontColor, cex = countsFontSize)
+        }
+      }
+    }
+
+    if(showSigSymbols){
+      w = arrayInd(which(10^-abs(interactions) < min(pvalue)), rep(m,2))
+      points(w, pch="*", col="black")
+      w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
+      points(w, pch=".", col="black")
+    }
+
+    if(showSigSymbols){
+      points(x = n-2, y = 0.7*n, pch = "*", cex = 2)
+      text(x = n-2, y = 0.7*n, paste0("P < ", min(pvalue)), pos=4, cex = 0.9, adj = 0)
+      points(x = n-2, y = 0.65*n, pch = ".", cex = 2)
+      text(x = n-2, y = 0.65*n, paste0("P < ", max(pvalue)), pos=4, cex = 0.9)
+    }
+
     #image(y = 1:8 +6, x=rep(n,2)+c(2,2.5)+1, z=matrix(c(1:8), nrow=1), col=brewer.pal(8,"PiYG"), add=TRUE)
-    image(y = seq(0.5*nrow(interactions), 0.9*nrow(interactions), length.out = 8), x=rep(n,2)+c(2,2.5)+1, z=matrix(c(1:8), nrow=1), col = RColorBrewer::brewer.pal(8,"PiYG"), add=TRUE)
-    #axis(side = 4, at = seq(1,7) + 6.5,  tcl=-.15, label=seq(-3, 3), las=1, lwd=.5)
-    atLims = seq(0.5*nrow(interactions), 0.9*nrow(interactions), length.out = 7)
-    axis(side = 4, at = atLims,  tcl=-.15, labels =c(3:1, 0, 1:3), las=1, lwd=.5)
-    mtext(side=4, at = median(atLims), "-log10 (p-value)", las=3, cex = 0.9, line = 3, font = 2)
+    par(fig = c(0.4, 0.7, 0, 0.4), new = TRUE)
+    image(
+      x = c(0.8, 1),
+      y = seq(0, 1, length.out = 200),
+      z = matrix(seq(0,1,length.out = 200), nrow = 1),
+      col = col_pal, xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, xlab = NA, ylab = NA
+    )
 
-    par(xpd=NA)
-    text(x=n+2.2, y= max(atLims)+1.2, "Co-occurence", pos=4, cex = 0.9, font = 2)
-    text(x=n+2.2, y = min(atLims)-1.2, "Exclusive", pos=4, cex = 0.9, font = 2)
-
-    points(x = n+1, y = 0.2*n, pch = "*", cex = 2)
-    text(x = n+1, y = 0.2*n, paste0(" p < ", min(pvalue)), pos=4, cex = 0.9, font = 2)
-    points(x = n+1, y = 0.1*n, pch = ".", cex = 2)
-    text(x = n+1, y = 0.1*n, paste0("p < ", max(pvalue)), pos=4, cex = 0.9)
+    #atLims = seq(nrow(interactions), 0.9*nrow(interactions), length.out = 7)
+    atLims = seq(0, 1, length.out = 7)
+    axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurance)"), lwd=.5, cex.axis = 0.8, line = 0.2)
+    text(x = 0.4, y = 0.5, labels = "-log10(P-value)", srt = 90)
+    #mtext(side=4, at = median(atLims), "-log10 (p-value)", las=3, cex = 0.9, line = 2.5, font = 1)
   }
 
-  sigPairsTblSig[,pair := NULL]
-
+  if(!returnAll){
+    sigPairsTblSig = sigPairsTblSig[pValue < min(pvalue)]
+  }
   return(sigPairsTblSig)
 }

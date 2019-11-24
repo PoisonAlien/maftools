@@ -242,7 +242,7 @@ plotCBSsegments(cbsFile = tcga.ab.009.seg)
 ## Somatic Interactions
 Many disease causing genes in cancer are co-occurring or show strong exclusiveness in their mutation pattern. Such mutually exclusive or co-occurring set of genes can be detected using `somaticInteractions` function, which performs pair-wise Fisher's Exact test to detect such significant pair of genes. `somaticInteractions` function also uses `cometExactTest` to identify potentially altered gene sets involving >2 two genes  [6](#references).
 
-```{r, message=FALSE}
+```{r, message=FALSE, fig.height=5, fig.width=5}
 #exclusive/co-occurance event analysis on top 10 mutated genes. 
 somaticInteractions(maf = laml, top = 25, pvalue = c(0.05, 0.1))
 ```
