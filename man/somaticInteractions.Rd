@@ -6,7 +6,7 @@
 \usage{
 somaticInteractions(maf, top = 25, genes = NULL, pvalue = c(0.05,
   0.01), returnAll = TRUE, geneOrder = NULL, fontSize = 0.8,
-  showSigSymbols = TRUE, showCounts = FALSE, countstats = "sig",
+  showSigSymbols = TRUE, showCounts = FALSE, countStats = "sig",
   countType = "all", countsFontSize = 0.8, countsFontColor = "black",
   colPal = "BrBG")
 }
@@ -29,7 +29,7 @@ somaticInteractions(maf, top = 25, genes = NULL, pvalue = c(0.05,
 
 \item{showCounts}{Default TRUE. Include number of events in the plot}
 
-\item{countstats}{Default `all`. Can be `all` or `sig`}
+\item{countStats}{Default `all`. Can be `all` or `sig`}
 
 \item{countType}{Default `cooccur`. Can be `all`, `cooccur`, `mutexcl`}
 

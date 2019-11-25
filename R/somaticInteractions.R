@@ -12,7 +12,7 @@
 #' @param fontSize cex for gene names. Default 0.8
 #' @param showSigSymbols Default TRUE. Heighlight significant pairs
 #' @param showCounts Default TRUE. Include number of events in the plot
-#' @param countstats Default `all`. Can be `all` or `sig`
+#' @param countStats Default `all`. Can be `all` or `sig`
 #' @param countType Default `cooccur`. Can be `all`, `cooccur`, `mutexcl`
 #' @param countsFontSize Default 0.8
 #' @param countsFontColor Default `black`
@@ -27,7 +27,7 @@
 
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
                                geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
-                               showCounts = FALSE, countstats = 'sig', countType = 'all',
+                               showCounts = FALSE, countStats = 'sig', countType = 'all',
                                countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG"){
 
   if(is.null(genes)){
@@ -88,6 +88,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
                         }), fill = TRUE)
 
   sigPairsTbl = sigPairsTbl[!gene1 == gene2] #Remove doagonal elements
+  sigPairsTbl[is.na(sigPairsTbl)] = 0
   sigPairsTbl$Event = ifelse(test = sigPairsTbl$oddsRatio > 1, yes = "Co_Occurence", no = "Mutually_Exclusive")
   sigPairsTbl$pair = apply(X = sigPairsTbl[,.(gene1, gene2)], MARGIN = 1, FUN = function(x) paste(sort(unique(x)), collapse = ", "))
   sigPairsTbl[,event_ratio := `01`+`10`]
@@ -141,10 +142,10 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     #text(x = 1:m, y = rep(n+0.5, length(n)), labels = rownames(gene_sum), srt = 90, adj = 0, font = 3, cex = fontSize)
 
     if(showCounts){
-      countstats = match.arg(arg = countstats, choices = c("all", "sig"))
+      countStats = match.arg(arg = countStats, choices = c("all", "sig"))
       countType = match.arg(arg = countType, choices = c("all", "cooccur", "mutexcl"))
 
-      if(countstats == 'sig'){
+      if(countStats == 'sig'){
         w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
         for(i in 1:nrow(w)){
           g1 = rownames(interactions)[w[i, 1]]
@@ -162,7 +163,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
           }
           text(w[i,1], w[i,2], labels = e, font = 3, col = countsFontColor, cex = countsFontSize)
         }
-      }else if(countstats == 'all'){
+      }else if(countStats == 'all'){
         w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
         w2 = arrayInd(which(10^-abs(interactions) >= max(pvalue)), rep(m,2))
         w = rbind(w, w2)
