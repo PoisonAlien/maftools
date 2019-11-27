@@ -37,6 +37,7 @@ math.score = function(maf, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075){
       }
     }else{
       colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
+      dat[, t_vaf := as.numeric(as.character(t_vaf))]
     }
   }
 
