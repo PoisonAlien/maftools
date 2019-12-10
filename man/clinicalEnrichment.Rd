@@ -4,8 +4,13 @@
 \alias{clinicalEnrichment}
 \title{Performs mutational enrichment analysis for a given clinical feature.}
 \usage{
-clinicalEnrichment(maf, clinicalFeature = NULL, annotationDat = NULL,
-  minMut = 5, useCNV = TRUE)
+clinicalEnrichment(
+  maf,
+  clinicalFeature = NULL,
+  annotationDat = NULL,
+  minMut = 5,
+  useCNV = TRUE
+)
 }
 \arguments{
 \item{maf}{\code{\link{MAF}} object}

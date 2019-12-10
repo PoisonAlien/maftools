@@ -4,8 +4,13 @@
 \alias{plotClusters}
 \title{Plot density plots from clutering results.}
 \usage{
-plotClusters(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE,
-  colors = NULL)
+plotClusters(
+  clusters,
+  tsb = NULL,
+  genes = NULL,
+  showCNvars = FALSE,
+  colors = NULL
+)
 }
 \arguments{
 \item{clusters}{clustering results from \code{\link{inferHeterogeneity}}}

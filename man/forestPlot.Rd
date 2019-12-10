@@ -4,8 +4,15 @@
 \alias{forestPlot}
 \title{Draw forest plot for differences betweeen cohorts.}
 \usage{
-forestPlot(mafCompareRes, pVal = 0.05, fdr = NULL, color = NULL,
-  geneFontSize = 1.2, titleSize = 1.2, lineWidth = 2.2)
+forestPlot(
+  mafCompareRes,
+  pVal = 0.05,
+  fdr = NULL,
+  color = NULL,
+  geneFontSize = 1.2,
+  titleSize = 1.2,
+  lineWidth = 2.2
+)
 }
 \arguments{
 \item{mafCompareRes}{results from \code{\link{mafCompare}}}

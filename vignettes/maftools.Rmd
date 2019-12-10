@@ -503,13 +503,13 @@ text(x = 5, y = 0, labels = "plotSignatures()", font = 3)
 To keep vignette run time minimal, below example is run with `nTry = 4`.
 ```{r, fig.height=5, fig.width=5, eval=FALSE, message=FALSE}
 library('NMF')
-laml.sign = estimateSignatures(mat = laml.tnm, nTry = 4)
+laml.sign = estimateSignatures(mat = laml.tnm, nTry = 6)
 ```
 
-```{r, fig.height=3, fig.width=3, eval=TRUE, message=FALSE, echo=FALSE, include=FALSE}
+```{r, fig.height=3, fig.width=3, eval=TRUE, message=TRUE, echo=FALSE, include=FALSE}
 #Run main function with maximum 6 signatures. 
 library('NMF')
-laml.sign = estimateSignatures(mat = laml.tnm, nTry = 4, pConstant = 0.1, plotBestFitRes = FALSE)
+laml.sign = estimateSignatures(mat = laml.tnm, nTry = 6, pConstant = 0.1, plotBestFitRes = FALSE)
 ```
 
 Draw elbow plot to visualize and estimate optimal number of signatures from above results.
@@ -521,7 +521,7 @@ Best possible value is the one at which the correlation value on the y-axis drop
 
 Once `n` is estimated, we can run the main function.
 
-```{r, echo=FALSE}
+```{r}
 laml.sig = extractSignatures(mat = laml.tnm, n = 3, pConstant = 0.1)
 ```
 
@@ -679,7 +679,7 @@ sessionInfo()
 If you have any issues, bug reports or feature requests please feel free to raise an [issue](https://github.com/PoisonAlien/maftools/issues) on [GitHub](https://github.com/PoisonAlien/maftools) page.
 
 ## acknowledgements
-  * Thanks to [Shixiang Wang](https://github.com/ShixiangWang) fot many bug fixes, improvements, feature requests, and contribution to overall package maintenance
+  * Thanks to [Shixiang Wang](https://github.com/ShixiangWang) for many bug fixes, improvements, feature requests, and contribution to overall package maintenance
   * Thanks to [Ryan Morin](https://github.com/rdmorin) for crucial bug fixes
   * Thanks to [Peter Ellis](https://twitter.com/ellis2013nz) for beautiful [markdown template](http://ellisp.github.io/blog/2017/09/09/rmarkdown)
   * `somaticInteractions` plot is inspired from the article [Combining gene mutation with gene expression data improves outcome prediction in myelodysplastic syndromes](https://www.nature.com/articles/ncomms6901). Thanks to authors for making source code available.

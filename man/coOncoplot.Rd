@@ -4,20 +4,42 @@
 \alias{coOncoplot}
 \title{Draw two oncoplots side by side for cohort comparision.}
 \usage{
-coOncoplot(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
-  clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
-  annotationColor1 = NULL, annotationColor2 = NULL,
-  annotationFontSize = 1.2, sortByAnnotation1 = FALSE,
-  sortByAnnotation2 = FALSE, additionalFeature1 = NULL,
-  additionalFeaturePch1 = 20, additionalFeatureCol1 = "white",
-  additionalFeatureCex1 = 0.9, additionalFeature2 = NULL,
-  additionalFeaturePch2 = 20, additionalFeatureCol2 = "white",
-  additionalFeatureCex2 = 0.9, sepwd_genes1 = 0.5,
-  sepwd_samples1 = 0.5, sepwd_genes2 = 0.5, sepwd_samples2 = 0.5,
-  colors = NULL, removeNonMutated = TRUE, geneNamefont = 0.8,
-  showSampleNames = FALSE, SampleNamefont = 1, legendFontSize = 1.2,
-  titleFontSize = 1.5, keepGeneOrder = FALSE, bgCol = "#CCCCCC",
-  borderCol = "white")
+coOncoplot(
+  m1,
+  m2,
+  genes = NULL,
+  m1Name = NULL,
+  m2Name = NULL,
+  clinicalFeatures1 = NULL,
+  clinicalFeatures2 = NULL,
+  annotationColor1 = NULL,
+  annotationColor2 = NULL,
+  annotationFontSize = 1.2,
+  sortByAnnotation1 = FALSE,
+  sortByAnnotation2 = FALSE,
+  additionalFeature1 = NULL,
+  additionalFeaturePch1 = 20,
+  additionalFeatureCol1 = "white",
+  additionalFeatureCex1 = 0.9,
+  additionalFeature2 = NULL,
+  additionalFeaturePch2 = 20,
+  additionalFeatureCol2 = "white",
+  additionalFeatureCex2 = 0.9,
+  sepwd_genes1 = 0.5,
+  sepwd_samples1 = 0.5,
+  sepwd_genes2 = 0.5,
+  sepwd_samples2 = 0.5,
+  colors = NULL,
+  removeNonMutated = TRUE,
+  geneNamefont = 0.8,
+  showSampleNames = FALSE,
+  SampleNamefont = 1,
+  legendFontSize = 1.2,
+  titleFontSize = 1.5,
+  keepGeneOrder = FALSE,
+  bgCol = "#CCCCCC",
+  borderCol = "white"
+)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}

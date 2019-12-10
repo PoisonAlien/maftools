@@ -25,7 +25,7 @@
 #' subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), fields = 'i_TumorVAF_WU')
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
+subsetMaf = function(maf, tsb = NULL, genes = NULL, fields = NULL, query = NULL, clinQuery = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
 
 
   if(length(restrictTo) > 1){
