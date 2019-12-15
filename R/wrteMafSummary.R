@@ -25,7 +25,7 @@ write.mafSummary = function(maf, basename = NULL){
   #write summary
   write.table(x = maf@summary,file = paste(basename,'_summary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
   #write main maf
-  data.table::fwrite(x = subsetMaf(maf = maf, mafObj = FALSE, includeSyn = TRUE),
+  data.table::fwrite(x = data.table::rbindlist(list(maf@data, maf@maf.silent), use.names = TRUE, fill = TRUE),
                      file = paste(basename,'_maftools.maf', sep=''), sep='\t',
                      quote = FALSE, row.names = FALSE)
 }

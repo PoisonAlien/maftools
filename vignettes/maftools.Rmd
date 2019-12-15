@@ -500,19 +500,18 @@ text(x = 5, y = 0, labels = "plotSignatures()", font = 3)
 
 ***Note:*** In previous versions, `extractSignatures` used to take care of above steps automatically. After versions 2.2.0, main function is split inot above 5 stpes for user flexibility.
 
-To keep vignette run time minimal, below example is run with `nTry = 4`.
 ```{r, fig.height=5, fig.width=5, eval=FALSE, message=FALSE}
 library('NMF')
 laml.sign = estimateSignatures(mat = laml.tnm, nTry = 6)
 ```
 
-```{r, fig.height=3, fig.width=3, eval=TRUE, message=TRUE, echo=FALSE, include=FALSE}
+```{r, fig.height=3, fig.width=3, eval=TRUE, message=TRUE, echo=FALSE}
 #Run main function with maximum 6 signatures. 
 library('NMF')
 laml.sign = estimateSignatures(mat = laml.tnm, nTry = 6, pConstant = 0.1, plotBestFitRes = FALSE)
 ```
 
-Draw elbow plot to visualize and estimate optimal number of signatures from above results.
+Draw elbow plot to visualize and decide optimal number of signatures from above results.
 ```{r, fig.width=3, fig.height=3}
 plotCophenetic(res = laml.sign)
 ```
@@ -521,7 +520,11 @@ Best possible value is the one at which the correlation value on the y-axis drop
 
 Once `n` is estimated, we can run the main function.
 
-```{r}
+```{r, eval=FALSE}
+laml.sig = extractSignatures(mat = laml.tnm, n = 3)
+```
+
+```{r, eval=TRUE, echo=FALSE}
 laml.sig = extractSignatures(mat = laml.tnm, n = 3, pConstant = 0.1)
 ```
 
@@ -642,6 +645,16 @@ subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), mafObj = FALSE,query = "Varia
 subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'), mafObj = FALSE, query = "Variant_Classification == 'Splice_Site'", fields = 'i_transcript_name')
 ```
 
+### Subsetting by clinical data
+
+Use `clinQuery` argument in `subsetMaf` to select samples of interest based on their clinical features.
+
+```{r}
+#Select all samples with FAB clasification M4 in clinical data 
+laml_m4 = subsetMaf(maf = laml, clinQuery = "FAB_classification %in% 'M4'")
+```
+
+
 # Pre-compiled TCGA MAF objects
 There is also an R data package containing pre-compiled TCGA MAF objects from TCGA firehose and TCGA [MC3](https://gdc.cancer.gov/about-data/publications/mc3-2017) projects, particularly helpful for those working with TCGA mutation data. Every dataset is stored as an MAF object containing somatic mutations along with clinical information. Due to Bioconductor package size limits and other difficulties, this was not submitted to Bioconductor. However, you can still download [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) package from GitHub. 
 
@@ -678,7 +691,7 @@ sessionInfo()
 ## Github
 If you have any issues, bug reports or feature requests please feel free to raise an [issue](https://github.com/PoisonAlien/maftools/issues) on [GitHub](https://github.com/PoisonAlien/maftools) page.
 
-## acknowledgements
+## Acknowledgements
   * Thanks to [Shixiang Wang](https://github.com/ShixiangWang) for many bug fixes, improvements, feature requests, and contribution to overall package maintenance
   * Thanks to [Ryan Morin](https://github.com/rdmorin) for crucial bug fixes
   * Thanks to [Peter Ellis](https://twitter.com/ellis2013nz) for beautiful [markdown template](http://ellisp.github.io/blog/2017/09/09/rmarkdown)

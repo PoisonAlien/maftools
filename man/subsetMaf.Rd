@@ -2,15 +2,15 @@
 % Please edit documentation in R/subsetMaf.R
 \name{subsetMaf}
 \alias{subsetMaf}
-\title{Subset MAF}
+\title{Subset MAF objects}
 \usage{
 subsetMaf(
   maf,
   tsb = NULL,
   genes = NULL,
-  fields = NULL,
   query = NULL,
   clinQuery = NULL,
+  fields = NULL,
   mafObj = TRUE,
   includeSyn = TRUE,
   isTCGA = FALSE,
@@ -25,9 +25,11 @@ subsetMaf(
 
 \item{genes}{subset by these genes}
 
-\item{fields}{include only these fields along with necessary fields in the output}
-
 \item{query}{query string. e.g, "Variant_Classification == 'Missense_Mutation'" returns only Missense variants.}
+
+\item{clinQuery}{query by clinical variable.}
+
+\item{fields}{include only these fields along with necessary fields in the output}
 
 \item{mafObj}{returns output as MAF class \code{\link{MAF-class}}. Default TRUE}
 
