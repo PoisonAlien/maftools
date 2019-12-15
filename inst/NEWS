@@ -2,9 +2,9 @@ CHANGES IN VERSION 2.2.10
 -------------------------
 BUG FIX
     o Avoid in place class conversion for data.frames Issue: #432
+    o Fix vignette entry Issue: #442
 
 ENHANCEMENTS
-    o Fix vignette entry Issue: #442
     o Improvised estimateSignatures function Issue: #433
     o Added clinQuery argument to `subsetMaf` function Issue: #423
     o Improvised somaticInteractions. Better plot and displays counts Issue: #418, #420
