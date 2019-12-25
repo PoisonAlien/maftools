@@ -1,7 +1,7 @@
 Package: maftools
 Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 2.2.10
+Version: 2.2.20
 Date: 2015-12-14
 Authors@R: 
     person(given = "Anand",
@@ -22,7 +22,7 @@ Imports:
     wordcloud,
     grDevices,
     survival
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8
 Suggests: knitr, rmarkdown, BSgenome, Biostrings, NMF, mclust
 VignetteBuilder: knitr
