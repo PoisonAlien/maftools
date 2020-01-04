@@ -54,6 +54,7 @@
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file.
 #' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE.
 #' @param showTitle Default TRUE
+#' @param titleText Custom title. Default `NULL`
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -77,7 +78,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
                      showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1,
-                     showTitle = TRUE, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
+                     showTitle = TRUE, titleText = NULL, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
   if(!is.null(genes)){ #If user provides a gene list
     om = createOncoMatrix(m = maf, g = genes, add_missing = fill)
@@ -739,6 +740,10 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   }
 
   if(showTitle){
-    title(main = altStat, outer = TRUE, line = -1, cex.main = titleFontSize)
+    if(is.null(titleText)){
+      title(main = altStat, outer = TRUE, line = -1, cex.main = titleFontSize)
+    }else{
+      title(main = titleText, outer = TRUE, line = -1, cex.main = titleFontSize)
+    }
   }
 }

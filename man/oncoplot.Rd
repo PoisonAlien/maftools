@@ -46,6 +46,7 @@ oncoplot(
   fontSize = 0.8,
   SampleNamefontSize = 1,
   showTitle = TRUE,
+  titleText = NULL,
   titleFontSize = 1.5,
   legendFontSize = 1.2,
   annotationFontSize = 1.2,
@@ -137,6 +138,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{SampleNamefontSize}{font size for sample names. Default 1}
 
 \item{showTitle}{Default TRUE}
+
+\item{titleText}{Custom title. Default `NULL`}
 
 \item{titleFontSize}{font size for title. Default 1.5}
 

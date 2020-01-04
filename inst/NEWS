@@ -1,6 +1,7 @@
 CHANGES IN VERSION 2.2.20
 -------------------------
 ENHANCEMENTS
+    o Added `titleText` argument to `oncoplot` Issue: #448
     o Highlight mutated genes on gisticChromplot Issue: #443
 
 CHANGES IN VERSION 2.2.10
