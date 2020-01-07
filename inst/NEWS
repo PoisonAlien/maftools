@@ -1,5 +1,8 @@
 CHANGES IN VERSION 2.2.20
 -------------------------
+BUG FIX
+    o plotMafSummary with single sample Issue: #449
+
 ENHANCEMENTS
     o Added `titleText` argument to `oncoplot` Issue: #448
     o Highlight mutated genes on gisticChromplot Issue: #443

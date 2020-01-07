@@ -15,7 +15,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv
 
   data.table::setDF(vcs)
   rownames(x = vcs) = vcs$Tumor_Sample_Barcode
-  vcs = vcs[,-1]
+  vcs = vcs[,-1, drop = FALSE]
   vcs = t(vcs)
 
   lo = matrix(data = 1:6, nrow = 2, byrow = TRUE)
@@ -185,7 +185,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv
 
   data.table::setDF(gs.dat)
   rownames(gs.dat) = gs.dat$Hugo_Symbol
-  gs.dat = gs.dat[,-1]
+  gs.dat = gs.dat[,-1, drop = FALSE]
   gs.dat = t(gs.dat)
   gs.dat = gs.dat[names(sort(rowSums(gs.dat), decreasing = TRUE)),, drop = FALSE]
   gs.dat = gs.dat[,names(sort(colSums(gs.dat))), drop = FALSE]
