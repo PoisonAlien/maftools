@@ -263,9 +263,9 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
         stringsAsFactors = FALSE
       )
       exprsTbl = rbind(exprsTbl, temp_data)
-      exprsTbl = exprsTbl[rownames(numMat),]
     }
-    exprsTbl = exprsTbl[genes,, drop = FALSE]
+    exprsTbl = exprsTbl[rownames(numMat),, drop = FALSE]
+    #exprsTbl = exprsTbl[genes,, drop = FALSE]
 
     exprs_bar_lims = c(0, round(max(exprsTbl$exprn, na.rm = TRUE), digits = 2))
 
