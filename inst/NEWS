@@ -2,6 +2,8 @@ CHANGES IN VERSION 2.2.20
 -------------------------
 BUG FIX
     o plotMafSummary with single sample Issue: #449
+    o Duplicated color code Issue: #452
+    o oncoplot with exprsTbl leads to wrong alignment Issue: #451
 
 ENHANCEMENTS
     o Added `titleText` argument to `oncoplot` Issue: #448
