@@ -14,7 +14,7 @@ readSegs = function(seg){
   return(seg)
 }
 
-#--- Map mutaions from maf onto copynumber segments
+#--- Map mutations from maf onto copynumber segments
 mapMutsToSegs = function(seg, maf, tsb, build = 'hg19'){
 
   #onlyContigs = as.character(seq(1:22))
