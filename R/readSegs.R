@@ -3,14 +3,14 @@ readSegs = function(seg){
   seg = suppressWarnings(data.table::fread(input = seg, sep = '\t', stringsAsFactors = FALSE, header = TRUE))
   #seg$Sample = gsub(pattern = '-', replacement = '.', x = seg$Sample)
 
-  #Replace chr x and y with numeric value (23 and 24) for better ordering
-  seg$Chromosome = gsub(pattern = 'chr', replacement = '', x = seg$Chromosome, fixed = TRUE)
-  seg$Chromosome = gsub(pattern = 'X', replacement = '23', x = seg$Chromosome, fixed = TRUE)
-  seg$Chromosome = gsub(pattern = 'Y', replacement = '24', x = seg$Chromosome, fixed = TRUE)
-
-  seg$Chromosome = as.character(seg$Chromosome)
+  # Make chromosomes into ordered factors
+  chromLevels <- c(1:22, 'X', 'Y')
+  if( all( grepl( pattern = '^chr', x = seg$Chromosome) ) ){
+    chromLevels <-  paste0( 'chr', chromLevels)
+  }
+  seg$Chromosome = as.factor(seg$Chromosome, levels = chromLevels)
   colnames(seg)[2:4] = c('Chromosome', 'Start_Position', 'End_Position')
-  data.table::setkey(x = seg, Chromosome, Start_Position, End_Position)
+  data.table::setkey(x = seg, Chromosome, Start_Position, End_Position) 
   return(seg)
 }
 
@@ -37,13 +37,12 @@ mapMutsToSegs = function(seg, maf, tsb, build = 'hg19'){
   tsb.dat = tsb.dat[!Variant_Type %in% 'CNV']
 
   tsb.dat = tsb.dat[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode)]
-  tsb.dat$Chromosome = gsub(pattern = 'X', replacement = '23', x = tsb.dat$Chromosome, fixed = TRUE)
-  tsb.dat$Chromosome = gsub(pattern = 'Y', replacement = '24', x = tsb.dat$Chromosome, fixed = TRUE)
-#   tsb.dat$Chromosome = gsub(pattern = 'chr', replacement = '', x = tsb.dat$Chromosome, fixed = TRUE)
-  tsb.dat$Chromosome = as.character(tsb.dat$Chromosome)
-#   tsb.dat = tsb.dat[!Chromosome %in% c('X', 'Y')]
-#   tsb.dat = tsb.dat[Chromosome %in% onlyContigs]
-
+  chromLevels <- c(1:22, 'X', 'Y')
+  if( all( grepl( pattern = '^chr', x = tsb.dat$Chromosome) ) ){
+    chromLevels <-  paste0( 'chr', chromLevels)
+  }
+  tsb.dat$Chromosome = as.factor(tsb.dat$Chromosome, levels = chromLevels)
+  
   tsb.dat = data.table::foverlaps(x = tsb.dat, y = seg.dat, by.x = c('Chromosome', 'Start_Position', 'End_Position'))
   tsb.dat = tsb.dat[,.(Hugo_Symbol, Chromosome, i.Start_Position, i.End_Position,
                        Tumor_Sample_Barcode, Start_Position, End_Position, Segment_Mean, Start_Position_updated, End_Position_updated)]
@@ -84,13 +83,13 @@ transformSegments = function(segmentedData, build = 'hg19'){
   segmentedData[,Start_Position := as.numeric(as.character(Start_Position))]
   segmentedData[,End_Position := as.numeric(as.character(End_Position))]
 
-  #Replace chr x and y with numeric value (23 and 24) for better ordering
-  segmentedData$Chromosome = gsub(pattern = 'chr', replacement = '', x = segmentedData$Chromosome, fixed = TRUE)
-  segmentedData$Chromosome = gsub(pattern = 'X', replacement = '23', x = segmentedData$Chromosome, fixed = TRUE)
-  segmentedData$Chromosome = gsub(pattern = 'Y', replacement = '24', x = segmentedData$Chromosome, fixed = TRUE)
-
-  segmentedData$Chromosome = factor(x = segmentedData$Chromosome, levels = 1:24, labels = 1:24)
-
+  #Convert Chromosomes to ordered factors for better ordering
+  chromLevels <- c(1:22, 'X', 'Y')
+  if( all( grepl( pattern = '^chr', x = segmentedData$Chromosome) ) ){
+    chromLevels <-  paste0( 'chr', chromLevels)
+  }
+  segmentedData$Chromosome = factor(segmentedData$Chromosome, levels = chromLevels)
+  
   segmentedData = segmentedData[order(Chromosome, Start_Position, decreasing = FALSE)]
 
   seg.spl = split(segmentedData, segmentedData$Chromosome)
@@ -124,8 +123,8 @@ plotCBSchr = function(segData, chr, tsb){
     stop(paste('Sample',tsb, 'not found in segmentation file'))
   }
 
-  seg.dat = seg[Chromosome == chr]
-
+  seg.dat = seg[as.character(Chromosome) == chr]
+  
 }
 
 #--- Plot complete segments
@@ -173,7 +172,8 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL, y_lims = NUL
   names(chr.colors) = chr.lvls
 
   if(is.null(y_lims)){
-    y_lims = pretty(round(range(seg.spl.transformed$Segment_Mean, na.rm = TRUE, finite = TRUE), digits = 2))
+    y_lims = pretty(round(range(seg.spl.transformed$Segment_Mean, na.rm = TRUE, finite = TRUE), 
+                          digits = 2))
   }
 
   par(mar = c(3, 3, 2, 1))
