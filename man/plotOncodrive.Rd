@@ -4,8 +4,14 @@
 \alias{plotOncodrive}
 \title{Plots results from \code{oncodrive}}
 \usage{
-plotOncodrive(res = NULL, fdrCutOff = 0.05, useFraction = FALSE,
-  colCode = NULL, bubbleSize = 1, labelSize = 1)
+plotOncodrive(
+  res = NULL,
+  fdrCutOff = 0.05,
+  useFraction = FALSE,
+  colCode = NULL,
+  bubbleSize = 1,
+  labelSize = 1
+)
 }
 \arguments{
 \item{res}{results from \code{\link{oncodrive}}}

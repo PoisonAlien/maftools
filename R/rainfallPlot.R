@@ -79,7 +79,7 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
 
   ylims = round(seq(min(summary(maf.snp[,diff]), na.rm = TRUE),
                     max(summary(maf.snp[,diff]), na.rm = TRUE), length.out = 4), 2)
-  layout(mat = matrix(data = c(1, 2), nrow = 2, byrow = T), heights= c(4, 1))
+  graphics::layout(mat = matrix(data = c(1, 2), nrow = 2, byrow = T), heights= c(4, 1))
   par(mar = c(1, 4, 2, 0))
   plot(NA, NA,
       axes = FALSE, xlab = NA, ylab = NA,
@@ -98,10 +98,10 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
     if(nrow(maf.cpt) == 0){
       message('No changepoints detected!')
     }else{
-      maf.snp[,id := paste0(Chromosome, ':', Start_Position)]
+      maf.snp[,id := paste0(as.numeric(Chromosome), ':', Start_Position)]
       maf.snp = maf.snp[!diff %in% 0]
       maf.snp[,minDiff := min(diff), by = .(Chromosome)]
-      maf.cpt[,id := paste0(Chromosome, ':', Start_Position)]
+      maf.cpt[,id := paste0(as.numeric(Chromosome), ':', Start_Position)]
       maf.cpt = merge(maf.snp[,.(id, Start_Position_updated, End_Position_updated, minDiff)], maf.cpt[,.(id)])
       maf.cpt[,pos := (End_Position_updated - Start_Position_updated)/2]
       arrows(x0 = maf.cpt$Start_Position_updated, y0 = 0, x1 = maf.cpt$Start_Position_updated,
@@ -116,9 +116,10 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
                col = col, border = NA, bty = "n",
               pch = 19, xpd = TRUE, xjust = 0, yjust = 0, cex = 1, ncol= 4) #ncol= 2
 
-  if(savePlot){
-    pdf(file = paste(tsb, 'rainfallPlot.pdf', sep = '_'),
-                       height = height, width = width, paper = "special", bg = "white")
+  if(savePlot){ 
+    dev.copy( pdf, file = paste(tsb, 'rainfallPlot.pdf', sep = '_'),
+              height = height, width = width, paper = "special", bg = "white")
+    dev.off()
   }
-
+  
 }

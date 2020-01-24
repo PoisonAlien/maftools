@@ -118,10 +118,10 @@ gisticOncoPlot = function(gistic = NULL, top = NULL,
   #Plot layout
   if(is.null(clinicalFeatures)){
     mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
-    lo = layout(mat = mat_lo, heights = c(12, 2))
+    lo = graphics::layout(mat = mat_lo, heights = c(12, 2))
   }else{
     mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-    lo = layout(mat = mat_lo, heights = c(12, 1, 4))
+    lo = graphics::layout(mat = mat_lo, heights = c(12, 1, 4))
   }
 
   if(is.null(clinicalFeatures)){

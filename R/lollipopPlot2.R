@@ -65,7 +65,7 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
   col2 = col[as.character(m2.lp[[1]][,Variant_Classification])]
 
   lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
-  layout(mat = lo, heights = c(4, 1.25))
+  graphics::layout(mat = lo, heights = c(4, 1.25))
 
   par(mar = c(2, 2.5, 2, 1))
   plot(0, 0, xlim = c(0, max(m1.lp[[2]], na.rm = TRUE)+10), ylim = c(-6.5, 6.5), axes = FALSE, pch = NA, xlab = "", ylab = "")

@@ -4,10 +4,21 @@
 \alias{plotCBSsegments}
 \title{Plots segmented copy number data.}
 \usage{
-plotCBSsegments(cbsFile = NULL, maf = NULL, tsb = NULL,
-  savePlot = FALSE, ylims = NULL, seg_size = 0.1, width = 6,
-  height = 3, genes = NULL, ref.build = "hg19", writeTable = FALSE,
-  removeXY = FALSE, color = NULL)
+plotCBSsegments(
+  cbsFile = NULL,
+  maf = NULL,
+  tsb = NULL,
+  savePlot = FALSE,
+  ylims = NULL,
+  seg_size = 0.1,
+  width = 6,
+  height = 3,
+  genes = NULL,
+  ref.build = "hg19",
+  writeTable = FALSE,
+  removeXY = FALSE,
+  color = NULL
+)
 }
 \arguments{
 \item{cbsFile}{CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).}

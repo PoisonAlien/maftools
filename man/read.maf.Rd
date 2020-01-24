@@ -4,11 +4,21 @@
 \alias{read.maf}
 \title{Read MAF files.}
 \usage{
-read.maf(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE,
-  useAll = TRUE, gisticAllLesionsFile = NULL,
-  gisticAmpGenesFile = NULL, gisticDelGenesFile = NULL,
-  gisticScoresFile = NULL, cnLevel = "all", cnTable = NULL,
-  isTCGA = FALSE, vc_nonSyn = NULL, verbose = TRUE)
+read.maf(
+  maf,
+  clinicalData = NULL,
+  removeDuplicatedVariants = TRUE,
+  useAll = TRUE,
+  gisticAllLesionsFile = NULL,
+  gisticAmpGenesFile = NULL,
+  gisticDelGenesFile = NULL,
+  gisticScoresFile = NULL,
+  cnLevel = "all",
+  cnTable = NULL,
+  isTCGA = FALSE,
+  vc_nonSyn = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{maf}{tab delimited MAF file. File can also be gz compressed. Required. Alternatively, you can also provide already read MAF file as a dataframe.}

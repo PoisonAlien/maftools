@@ -4,9 +4,14 @@
 \alias{icgcSimpleMutationToMAF}
 \title{Converts ICGC Simple Somatic Mutation format file to MAF}
 \usage{
-icgcSimpleMutationToMAF(icgc, basename = NA, MAFobj = FALSE,
-  clinicalData = NULL, removeDuplicatedVariants = TRUE,
-  addHugoSymbol = FALSE)
+icgcSimpleMutationToMAF(
+  icgc,
+  basename = NA,
+  MAFobj = FALSE,
+  clinicalData = NULL,
+  removeDuplicatedVariants = TRUE,
+  addHugoSymbol = FALSE
+)
 }
 \arguments{
 \item{icgc}{Input data in ICGC Simple Somatic Mutation format. Can be gz compressed.}

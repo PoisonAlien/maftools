@@ -130,7 +130,8 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
       cat('-Processing copy number data\n')
     }
     if(is.data.frame(cnTable)){
-      cnDat = data.table::setDT(cnTable)
+      cnDat = data.table::copy(cnTable)
+      data.table::setDT(x = cnDat)
     }else{
       cnDat = data.table::fread(input = cnTable, sep = '\t', stringsAsFactors = FALSE, header = TRUE, colClasses = 'character')
     }

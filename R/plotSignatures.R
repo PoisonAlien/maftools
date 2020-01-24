@@ -40,7 +40,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
     cols = RColorBrewer::brewer.pal(n = 8, name = 'Set2')
 
     if(show_barcodes){
-      lo = layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
+      lo = graphics::layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
       par(mar = c(6, 4, 2, 1))
       b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
       axis(side = 1, at = b, labels = colnames(contrib), lwd = 2, cex.axis = font_size,
@@ -53,7 +53,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
              border = NA, bty = "n", pch = 15, xpd = TRUE, ncol = 1,
              cex = 1.2, pt.cex = 1.5, horiz = TRUE)
     }else{
-      lo = layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
+      lo = graphics::layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
       par(mar = c(3, 4, 2, 1))
       b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
       axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 1, las = 2, cex.axis = 0.9)

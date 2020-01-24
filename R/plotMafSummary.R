@@ -70,7 +70,7 @@ plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRU
 
     #--------------------------- variant per sample plot -----------------
 
-    layout(mat = matrix(c(1, 1, 2, 2, 3, 3), nrow = 3, byrow = TRUE), heights = c(4, 4, 3))
+    graphics::layout(mat = matrix(c(1, 1, 2, 2, 3, 3), nrow = 3, byrow = TRUE), heights = c(4, 4, 3))
     if(showBarcodes){
       par(mar = c(7, 2, 3, 1))
       b = barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg =  rep("", ncol(vcs)))

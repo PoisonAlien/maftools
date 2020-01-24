@@ -8,7 +8,9 @@
 #' @param cytobandOffset if scores.gistic file is given use this to adjust cytoband size.
 #' @param txtSize label size for lables
 #' @param cytobandTxtSize label size for cytoband
-#' @examples
+#' @param maf an optional maf object
+#' @param mutGenes mutated genes from maf object to be highlighted
+#' @examples mutGenesTxtSize Default 0.6
 #' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
@@ -19,7 +21,8 @@
 #' @export
 
 gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
-                           color = NULL, ref.build = "hg19", cytobandOffset = 0.01, txtSize = 0.8, cytobandTxtSize = 0.6){
+                           color = NULL, ref.build = "hg19", cytobandOffset = 0.01, txtSize = 0.8, cytobandTxtSize = 0.6,
+                           maf = NULL, mutGenes = NULL, mutGenesTxtSize = 0.6) {
 
   g = getCytobandSummary(gistic)
   g = g[qvalues < fdrCutOff]
@@ -71,7 +74,11 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
 
   gis.scores = split(gis.scores, as.factor(gis.scores$Variant_Classification))
 
-  par(mar = c(2, 4, 2, 1))
+  if(!is.null(maf)){
+    layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1, byrow = TRUE), heights = c(5, 1))
+  }
+
+  par(mar = c(0, 4, 1, 1))
   plot(NA, NA, xlim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), ylim = range(y_lims),
        axes = FALSE, xlab = NA, ylab = NA)
   abline(v = chr.tbl$end, h = y_lims, lty = 2, col = grDevices::adjustcolor("gray70", 0.25))
@@ -128,4 +135,31 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
     text(x = cyto_peaks_scores$Start_Position_updated, y = cyto_peaks_scores$amp,
          labels = cyto_peaks_scores$Cytoband, font = 3, cex = txtSize)
   }
+
+  if(!is.null(maf)){
+    par(mar = c(0, 4, 0, 1))
+    plot(NA, NA, xlim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), ylim = c(0, 1),
+         axes = FALSE, xlab = NA, ylab = NA)
+    mut_dat = transformSegments(segmentedData = maf@data[,.(Chromosome, Start_Position, End_Position, Hugo_Symbol)], build = ref.build)
+    mut_dat = mut_dat[Hugo_Symbol %in% mutGenes][!duplicated(Hugo_Symbol)]
+
+    data.table::setkey(x = mut_dat, Chromosome, Start_Position, End_Position)
+    data.table::setkey(x = gis.scores, Chromosome, Start_Position, End_Position)
+    mut_dat = data.table::foverlaps(y = gis.scores, x = mut_dat, mult = "first")
+    color = c(color, 'neutral' = 'black')
+
+    if(nrow(mut_dat) == 0){
+      warning("Could not find mutations")
+    }else{
+      if(nrow(mut_dat) > 1){
+        wordcloud::textplot(x = mut_dat$Start_Position_updated, y = rep(0.8, nrow(mut_dat)),
+                            words = mut_dat$Hugo_Symbol, new = FALSE, font = 3, srt = 90,
+                            cex = mutGenesTxtSize, xpd = TRUE, adj = 1, col = color[as.character(mut_dat$Variant_Classification)])
+      }else{
+        text(x = mut_dat$Start_Position_updated, y = 0, labels = mut_dat$Hugo_Symbol,
+             srt = 90, cex = mutGenesTxtSize, xpd = TRUE, col = color[as.character(mut_dat$Variant_Classification)], font = 3, adj = 0, xpd = TRUE)
+      }
+    }
+  }
+  #return(mut_dat)
 }

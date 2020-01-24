@@ -50,7 +50,7 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
     tsb_nclust = as.numeric(unique(tsb.dat[!cluster %in% c("outlier", "CN_altered"),cluster]))
     lo_mat = matrix(c(tsb_nclust, max(tsb_nclust)+1) , ncol = 1)
     #return(lo_mat)
-    layout(mat = lo_mat, heights = c(rep(0.5, length(tsb_nclust)), 4))
+    graphics::layout(mat = lo_mat, heights = c(rep(0.5, length(tsb_nclust)), 4))
 
     tsb.dat.spl = split(tsb.dat, as.factor(as.character(tsb.dat$cluster)))
     for(cl in seq_along(tsb_nclust)){

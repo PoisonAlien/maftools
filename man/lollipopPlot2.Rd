@@ -4,11 +4,26 @@
 \alias{lollipopPlot2}
 \title{Compare two lollipop plots}
 \usage{
-lollipopPlot2(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL,
-  m1_name = NULL, m2_name = NULL, m1_label = NULL, m2_label = NULL,
-  refSeqID = NULL, proteinID = NULL, labPosAngle = 0,
-  labPosSize = 0.9, colors = NULL, axisTextSize = c(1, 1),
-  pointSize = 1.2, domainLabelSize = 1, legendTxtSize = 1)
+lollipopPlot2(
+  m1,
+  m2,
+  gene = NULL,
+  AACol1 = NULL,
+  AACol2 = NULL,
+  m1_name = NULL,
+  m2_name = NULL,
+  m1_label = NULL,
+  m2_label = NULL,
+  refSeqID = NULL,
+  proteinID = NULL,
+  labPosAngle = 0,
+  labPosSize = 0.9,
+  colors = NULL,
+  axisTextSize = c(1, 1),
+  pointSize = 1.2,
+  domainLabelSize = 1,
+  legendTxtSize = 1
+)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}

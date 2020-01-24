@@ -146,7 +146,8 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     }
     sample.anno = data.table::data.table(Tumor_Sample_Barcode = maf.tsbs)
   }else if(is.data.frame(x = anno)){
-      sample.anno  = data.table::setDT(anno)
+    sample.anno = data.table::copy(x = anno)
+    data.table::setDT(sample.anno)
       if(!'Tumor_Sample_Barcode' %in% colnames(sample.anno)){
         message(paste0('Available fields in provided annotations..'))
         print(colnames(sample.anno))

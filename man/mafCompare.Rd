@@ -4,8 +4,7 @@
 \alias{mafCompare}
 \title{compare two cohorts (MAF).}
 \usage{
-mafCompare(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5,
-  useCNV = TRUE)
+mafCompare(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}

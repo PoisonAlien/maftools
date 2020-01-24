@@ -106,9 +106,6 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   clinicalData$Time = suppressWarnings( as.numeric(as.character(clinicalData$Time)) )
   clinicalData$Status = suppressWarnings( as.integer(clinicalData$Status) )
   clinicalData$Group = ifelse(test = clinicalData$Tumor_Sample_Barcode %in% genesTSB, yes = groupNames[1], no = groupNames[2])
-  clin.mut.dat = clinicalData[,.(medianTime = median(Time, na.rm = TRUE),N = .N), Group][order(Group)]
-  message("Median survival..")
-  print(clin.mut.dat)
 
   clinicalData$Time = ifelse(test = is.infinite(clinicalData$Time), yes = NA, no = clinicalData$Time)
 
@@ -117,6 +114,10 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
                    " samples with NA's"))
     clinicalData = clinicalData[!is.na(Time)][!is.na(Status)]
   }
+  clin.mut.dat = clinicalData[,.(medianTime = median(Time, na.rm = TRUE),N = .N), Group][order(Group)]
+  message("Median survival..")
+  print(clin.mut.dat)
+
   surv.km = survival::survfit(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData, conf.type = "log-log")
   res = summary(surv.km)
 

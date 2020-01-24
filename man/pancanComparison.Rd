@@ -4,9 +4,16 @@
 \alias{pancanComparison}
 \title{Perform PacCancer analysis}
 \usage{
-pancanComparison(mutsigResults, qval = 0.1, cohortName = "input",
-  inputSampleSize = NULL, label = 1, genesToLabel = NULL,
-  pointSize = 0.1, labelSize = 0.8)
+pancanComparison(
+  mutsigResults,
+  qval = 0.1,
+  cohortName = "input",
+  inputSampleSize = NULL,
+  label = 1,
+  genesToLabel = NULL,
+  pointSize = 0.1,
+  labelSize = 0.8
+)
 }
 \arguments{
 \item{mutsigResults}{MutSig results (usually sig_genes.txt). Can be gz compressed.}

@@ -85,27 +85,45 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
     }
   }
 
-  if(!is.null(capture_size)){
-    maf.mutload[,total := total/capture_size]
-    tcga.cohort[,total := total/tcga_capture_size]
+  if(is.null(capture_size)){
+    tcga.cohort = rbind(tcga.cohort, maf.mutload)
+    pt.test = pairwise.t.test(x = tcga.cohort$total, g = tcga.cohort$cohort, p.adjust.method = "fdr")
+    pt.test.pval = as.data.frame(pt.test$p.value)
+    data.table::setDT(x = pt.test.pval, keep.rownames = TRUE)
+    colnames(pt.test.pval)[1] = 'Cohort'
+    message("Performing pairwise t-test for differences in mutation burden..")
+    pt.test.pval = data.table::melt(pt.test.pval, id.vars = "Cohort")
+    colnames(pt.test.pval) = c("Cohort1", "Cohort2", "Pval")
+    tcga.cohort[, plot_total := total]
+  }else{
+    message(paste0("Capture size [TCGA]:  ", tcga_capture_size))
+    message(paste0("Capture size [Input]: ", capture_size))
+    maf.mutload[,total_perMB := total/capture_size]
+    tcga.cohort[,total_perMB := total/tcga_capture_size]
+    tcga.cohort = rbind(tcga.cohort, maf.mutload)
+    message("Performing pairwise t-test for differences in mutation burden (per MB)..")
+    pt.test = pairwise.t.test(x = tcga.cohort$total_perMB, g = tcga.cohort$cohort, p.adjust.method = "fdr")
+    pt.test.pval = as.data.frame(pt.test$p.value)
+    data.table::setDT(x = pt.test.pval, keep.rownames = TRUE)
+    colnames(pt.test.pval)[1] = 'Cohort'
+    pt.test.pval = data.table::melt(pt.test.pval, id.vars = "Cohort")
+    colnames(pt.test.pval) = c("Cohort1", "Cohort2", "Pval")
+    tcga.cohort[, plot_total := total_perMB]
   }
 
-  tcga.cohort = rbind(tcga.cohort, maf.mutload)
-
-  tcga.cohort.med = tcga.cohort[,.(.N, median(total)),cohort][order(V2, decreasing = TRUE)]
-
+  #Median mutations
+  tcga.cohort.med = tcga.cohort[,.(.N, median(plot_total)),cohort][order(V2, decreasing = TRUE)]
   tcga.cohort$cohort = factor(x = tcga.cohort$cohort,levels = tcga.cohort.med$cohort)
   colnames(tcga.cohort.med) = c('Cohort', 'Cohort_Size', 'Median_Mutations')
-
   tcga.cohort$TCGA = ifelse(test = tcga.cohort$cohort %in% cohortName,
                             yes = 'Input', no = 'TCGA')
-  #return(tcga.cohort)
 
+  #Plotting data
   tcga.cohort = split(tcga.cohort, as.factor(tcga.cohort$cohort))
   plot.dat = lapply(seq_len(length(tcga.cohort)), function(i){
                     x = tcga.cohort[[i]]
                     x = data.table::data.table(rev(seq(i-1, i, length.out = nrow(x))),
-                                                   x[order(total, decreasing = T), total],
+                                                   x[order(plot_total, decreasing = TRUE), plot_total],
                                                x[,TCGA])
                     x
                     })
@@ -117,16 +135,20 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
   }
 
   #y_lims = range(log10(unlist(lapply(plot.dat, function(x) max(x[,V2], na.rm = TRUE)))))
-  y_max = ceiling(max(y_lims))
   y_min = floor(min(y_lims))
+  y_max = ceiling(max(y_lims))
   y_lims = c(y_min, y_max)
   y_at = pretty(y_lims)
 
-  par(mar = c(4, 3, 2, 1))
-  plot(NA, NA, xlim = c(0, length(plot.dat)), ylim = y_lims, axes = FALSE, xlab = NA, ylab = NA)
+  print(head(plot.dat$SKCM))
+  par(mar = c(4, 3, 2.5, 1))
+  plot(NA, NA, xlim = c(0, length(plot.dat)), ylim = y_lims, axes = FALSE, xlab = NA, ylab = NA, frame.plot = TRUE)
+  rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = grDevices::adjustcolor(col = "gray", alpha.f = 0.1))
   rect(xleft = seq(0, length(plot.dat)-1, 1), ybottom = min(y_lims), xright = seq(1, length(plot.dat), 1),
        ytop = y_max, col = grDevices::adjustcolor(col = bg_col, alpha.f = 0.2),
        border = NA)
+  #rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = grDevices::adjustcolor(col = bg_col, alpha.f = 0.2))
+
   abline(h = pretty(y_lims), lty = 2, col = "gray70")
   #abline(v = seq(1, length(plot.dat)), lty = 1, col = "gray70")
   lapply(seq_len(length(plot.dat)), function(i){
@@ -145,28 +167,36 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
       }
     }
   })
-  axis(side = 2, at = y_at, las = 2, line = -1, tick = FALSE)
+
   samp_sizes = lapply(plot.dat, nrow)
   axis(side = 1, at = seq(0.5, length(plot.dat)-0.5, 1), labels = names(plot.dat),
-       las = 2, tick = FALSE, line = -1)
+       las = 2, tick = FALSE, line = -0.8)
   axis(side = 3, at = seq(0.5, length(plot.dat)-0.5, 1), labels = unlist(samp_sizes),
-       las = 2, tick = FALSE, line = -1.2, font = 3)
+       las = 2, tick = FALSE, line = -0.8, font = 3)
+
+  tcga.cohort.med[, Median_Mutations_log10 := log10(Median_Mutations)]
+
   if(logscale){
     if(is.null(capture_size)){
-      mtext(text = "TMB", side = 2, line = 1.2)
+      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^y_at)
+      mtext(text = "log10 TMB", side = 2, line = 1.5)
+      #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations", "Median_Mutations_perMB")
     }else{
-      mtext(text = "TMB log10(per MB)", side = 2, line = 1.2)
+      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^y_at)
+      mtext(text = "log10 TMB (per MB)", side = 2, line = 1.5)
+      #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations_perMB", "Median_Mutations_perMB_log10")
     }
   }else{
     if(is.null(capture_size)){
+      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE)
       mtext(text = "TMB", side = 2, line = 1.2)
+      #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations", "Median_Mutations_perMB")
     }else{
-      mtext(text = "TMB log10", side = 2, line = 1.6)
+      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE)
+      mtext(text = "TMB (per MB)", side = 2, line = 1.6)
     }
   }
 
-
-  tcga.cohort.med[, Median_Mutations_log10 := log10(Median_Mutations)]
   if(logscale){
     lapply(seq_len(nrow(tcga.cohort.med)), function(i){
       segments(x0 = i-1, x1 = i, y0 = tcga.cohort.med[i, Median_Mutations_log10],
@@ -179,5 +209,9 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
     })
   }
 
-  tcga.cohort.med
+  tcga.cohort = data.table::rbindlist(l = tcga.cohort)
+  tcga.cohort[, plot_total := NULL]
+  tcga.cohort[, TCGA := NULL]
+  pt.test.pval = pt.test.pval[!is.na(Pval)][order(Pval, decreasing = FALSE)]
+  list(median_mutation_burden = tcga.cohort.med, mutation_burden_perSample = tcga.cohort, pairwise_t_test = pt.test.pval)
 }

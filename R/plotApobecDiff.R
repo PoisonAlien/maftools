@@ -78,7 +78,7 @@ plotApobecDiff = function(tnm, maf, pVal = 0.05, title_size = 1, axis_lwd = 1, f
 
   pieCol  = c("#084594", "#9ECAE1")
 
-  layout(matrix(c(1,2,3,1,4,4), 2, 3, byrow = TRUE), widths=c(2, 2, 2))
+  graphics::layout(matrix(c(1,2,3,1,4,4), 2, 3, byrow = TRUE), widths=c(2, 2, 2))
   par(bty="n", mgp = c(0.5,0.5,0), mar = c(2,3.5,4,0) + 0.1, las=1, tcl=-.25, font.main=4, xpd=NA)
 
   yp = as.integer(pretty(log10(sub.tbl[,n_mutations])))
