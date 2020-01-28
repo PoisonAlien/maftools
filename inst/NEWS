@@ -1,9 +1,11 @@
 CHANGES IN VERSION 2.2.20
 -------------------------
 BUG FIX
+    o Avoid wrongly naming columns in `annovarToMaf` Issue: #457
     o Duplicated color code Issue: #452
     o oncoplot with exprsTbl leads to wrong alignment Issue: #451
     o plotMafSummary with single sample Issue: #449
+    o Avoid empty spaces and quoates while reading funcotator MAF Issue: #403 #397
 
 ENHANCEMENTS
     o Pairwise t-test and muttaional load in `tcgaCompare` Issue: #453

@@ -248,7 +248,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     ann[, ref_alt_diff := NULL]
 
   #Re-roganize columns
-  colnames(ann)[which(colnames(ann) %in% c("Chr", "Start", "End", "Ref", "Alt"))] = c("Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2")
+  colnames(ann)[match(c("Chr", "Start", "End", "Ref", "Alt"), colnames(ann))] = c("Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2")
   ord1 = colnames(x = ann)[colnames(x = ann) %in% c("Hugo_Symbol", "Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2", "Variant_Classification", "Variant_Type", "Tumor_Sample_Barcode", "tx", "exon", "txChange", "aaChange")]
   ord2 = colnames(x = ann)[!colnames(x = ann) %in% c("Hugo_Symbol", "Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2", "Variant_Classification", "Variant_Type", "Tumor_Sample_Barcode", "tx", "exon", "txChange", "aaChange")]
   ann = ann[,c(ord1, ord2), with = FALSE]

@@ -45,18 +45,32 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
       cat('-Reading\n')
     }
 
-    if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = FALSE)))){
-      #If system is Linux use fread, else use gz connection to read gz file.
-      if(Sys.info()[['sysname']] == 'Windows'){
-        maf.gz = gzfile(description = maf, open = 'r')
-        suppressWarnings(maf <- data.table::as.data.table(read.csv(file = maf.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = "#")))
-        close(maf.gz)
-      } else{
-        maf = suppressWarnings(data.table::fread(cmd = paste('zcat <', maf), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol"))
-      }
-    } else{
-      suppressWarnings(maf <- data.table::fread(input = maf, sep = "\t", stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol"))
-    }
+    maf <-
+      data.table::fread(
+        file = maf,
+        sep = "\t",
+        stringsAsFactors = FALSE,
+        verbose = FALSE,
+        data.table = TRUE,
+        showProgress = TRUE,
+        header = TRUE,
+        fill = TRUE,
+        skip = "Hugo_Symbol",
+        quote = ""
+      )
+
+    # if(as.logical(length(grep(pattern = 'gz$', x = maf, fixed = FALSE)))){
+    #   #If system is Linux use fread, else use gz connection to read gz file.
+    #   if(Sys.info()[['sysname']] == 'Windows'){
+    #     maf.gz = gzfile(description = maf, open = 'r')
+    #     suppressWarnings(maf <- data.table::as.data.table(read.csv(file = maf.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = "#")))
+    #     close(maf.gz)
+    #   } else{
+    #     maf = suppressWarnings(data.table::fread(cmd = paste('zcat <', maf), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol", quote = ""))
+    #   }
+    # } else{
+    #   suppressWarnings(maf <- data.table::fread(input = maf, sep = "\t", stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol", quote = ""))
+    # }
   }
 
   #2. validate MAF file
