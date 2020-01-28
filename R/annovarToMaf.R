@@ -176,23 +176,18 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     #Add Variant-type annotations based on difference between ref and alt alleles
     cat("-Adding Variant_Type\n")
     ann[,ref_alt_diff := nchar(Ref) - nchar(Alt)]
-    #ann[, Variant_Type := ifelse(ref_alt_diff == 0 , yes = "SNP", no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL"))]
-    ann$Variant_Type = apply(ann[,.(Ref, Alt)], 1, function(x) {
-      xx = which(x == '-')
-      if(length(xx) == 0){
-        if(any(nchar(x) > 1)){
-          return("MNP")
-        }else{
-          return("SNP")
-        }
-      }else if(names(xx) == 'Ref'){
-        return("INS")
-      }else if(names(xx) == 'Alt'){
-        return("DEL")
-      }else{
-        return(NA)
-      }
-    })
+    ann[, Variant_Type := ifelse(ref_alt_diff == 0 , yes = "SNP", no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL"))]
+
+    #Check for MNPs (they are neither INDELS nor SNPs)
+    ann$Variant_Type = ifelse(
+        test = ann$Variant_Type == "SNP",
+        yes = ifelse(
+          test = nchar(ann$Ref) > 1,
+          yes = "MNP",
+          no = "SNP"
+        ),
+        no = ann$Variant_Type
+      )
 
     #Annotate MNPs as Unknown VC
     ann_mnps = ann[Variant_Type %in% "MNP"]
