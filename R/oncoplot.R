@@ -21,6 +21,7 @@
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param barcode_mar Default 4
 #' @param gene_mar Default 5
+#' @param legend_height Height of plotting area for legend. Default 4
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
 #' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted.
 #' @param additionalFeaturePch Default 20
@@ -75,7 +76,7 @@
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
                      clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
+                     showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, legend_height = 4, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1,
                      showTitle = TRUE, titleText = NULL, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
@@ -247,7 +248,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
   #Plot layout
   plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar,
-              drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = exprsTbl)
+              drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = exprsTbl, legend_height = legend_height)
 
   #01: Draw scale axis for expression table
   if(!is.null(exprsTbl)){

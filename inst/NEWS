@@ -11,6 +11,7 @@ ENHANCEMENTS
     o Pairwise t-test and muttaional load in `tcgaCompare` Issue: #453
     o Added `titleText` argument to `oncoplot` Issue: #448
     o Highlight mutated genes on gisticChromplot Issue: #443
+    o Added `legend_height` argument to `oncoplot` Issue: #346
 
 CHANGES IN VERSION 2.2.10
 -------------------------

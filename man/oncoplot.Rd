@@ -28,6 +28,7 @@ oncoplot(
   showTumorSampleBarcodes = FALSE,
   barcode_mar = 4,
   gene_mar = 5,
+  legend_height = 4,
   removeNonMutated = TRUE,
   fill = TRUE,
   cohortSize = NULL,
@@ -102,6 +103,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{barcode_mar}{Default 4}
 
 \item{gene_mar}{Default 5}
+
+\item{legend_height}{Height of plotting area for legend. Default 4}
 
 \item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
