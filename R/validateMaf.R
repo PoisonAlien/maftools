@@ -85,6 +85,12 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
     }
   }
 
+  # Check type of variant position
+  if (any(!is.numeric(maf$Start_Position), !is.numeric(maf$End_Position))) {
+    maf$Start_Position = as.integer(maf$Start_Position)
+    maf$End_Position = as.integer(maf$End_Position)
+  }
+
   # Set Factors
   maf$Tumor_Sample_Barcode = as.factor(maf$Tumor_Sample_Barcode)
 
