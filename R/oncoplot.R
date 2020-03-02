@@ -23,9 +23,9 @@
 #' @param gene_mar Default 5
 #' @param legend_height Height of plotting area for legend. Default 4
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
-#' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted.
+#' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted. Provide a list of values for highlighting more than one features
 #' @param additionalFeaturePch Default 20
-#' @param additionalFeatureCol Default "white"
+#' @param additionalFeatureCol Default "gray70"
 #' @param additionalFeatureCex Default 0.9
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
@@ -75,7 +75,7 @@
 #' @seealso \code{\link{oncostrip}}
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
-                     clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
+                     clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, legend_height = 4, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1,
@@ -457,38 +457,87 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   #Draw if any additional features are requested
   additionalFeature_legend = FALSE
   if(!is.null(additionalFeature)){
-    if(length(additionalFeature) < 2){
-      stop("additionalFeature must be of length two. See ?oncoplot for details.")
-    }
-    af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = additionalFeature[1], includeSyn = FALSE, mafObj = FALSE)
-    if(length(which(colnames(af_dat) == additionalFeature[1])) == 0){
-      message(paste0("Column ", additionalFeature[1], " not found in maf. Here are available fields.."))
-      print(getFields(maf))
-      stop()
-    }
-    colnames(af_dat)[which(colnames(af_dat) == additionalFeature[1])] = 'temp_af'
-    af_dat = af_dat[temp_af %in% additionalFeature[2]]
-    if(nrow(af_dat) == 0){
-      warning(paste0("No samples are enriched for ", additionalFeature[2], " in ", additionalFeature[1]))
+    #If its a list, multi features to be mapped
+    if(is.list(additionalFeature)){
+      for(af_idx in seq_along(additionalFeature)){
+        af = additionalFeature[[af_idx]]
+        if(length(af) < 2){
+          stop("additionalFeature must be of length two. See ?oncoplot for details.")
+        }
+        af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = af[1], includeSyn = FALSE, mafObj = FALSE)
+        if(length(which(colnames(af_dat) == af[1])) == 0){
+          message(paste0("Column ", af[1], " not found in maf. Here are available fields.."))
+          print(getFields(maf))
+          stop()
+        }
+        colnames(af_dat)[which(colnames(af_dat) == af[1])] = 'temp_af'
+        af_dat = af_dat[temp_af %in% af[2]]
+        if(nrow(af_dat) == 0){
+          warning(paste0("No samples are enriched for ", af[2], " in ", af[1]))
+        }else{
+          af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
+          af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
+          nm = t(apply(numMat, 2, rev))
+
+          if(length(additionalFeaturePch) != length(additionalFeature)){
+            warning("Provided pch for additional features are recycled")
+            additionalFeaturePch = rep(additionalFeaturePch, length(additionalFeature))
+          }
+
+          if(length(additionalFeatureCol) != length(additionalFeature)){
+            warning("Provided colors for additional features are recycled")
+            additionalFeatureCol = rep(additionalFeatureCol, length(additionalFeature))
+          }
+
+          lapply(seq_len(nrow(af_mat)), function(i){
+            af_i = af_mat[i,, drop = FALSE]
+            af_i_genes = colnames(af_i)[which(af_i > 0)]
+            af_i_sample = rownames(af_i)
+
+            lapply(af_i_genes, function(ig){
+              af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
+                                  which(colnames(nm) == ig)),
+                                nrow = 1)
+              points(af_i_mat, pch = additionalFeaturePch[af_idx], col= additionalFeatureCol[af_idx], cex = additionalFeatureCex)
+            })
+          })
+          additionalFeature_legend = TRUE
+        }
+      }
     }else{
-      af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
-      af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
+      if(length(additionalFeature) < 2){
+        stop("additionalFeature must be of length two. See ?oncoplot for details.")
+      }
+      af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = additionalFeature[1], includeSyn = FALSE, mafObj = FALSE)
+      if(length(which(colnames(af_dat) == additionalFeature[1])) == 0){
+        message(paste0("Column ", additionalFeature[1], " not found in maf. Here are available fields.."))
+        print(getFields(maf))
+        stop()
+      }
+      colnames(af_dat)[which(colnames(af_dat) == additionalFeature[1])] = 'temp_af'
+      af_dat = af_dat[temp_af %in% additionalFeature[2]]
+      if(nrow(af_dat) == 0){
+        warning(paste0("No samples are enriched for ", additionalFeature[2], " in ", additionalFeature[1]))
+      }else{
+        af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
+        af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
 
-      nm = t(apply(numMat, 2, rev))
+        nm = t(apply(numMat, 2, rev))
 
-      lapply(seq_len(nrow(af_mat)), function(i){
-        af_i = af_mat[i,, drop = FALSE]
-        af_i_genes = colnames(af_i)[which(af_i > 0)]
-        af_i_sample = rownames(af_i)
+        lapply(seq_len(nrow(af_mat)), function(i){
+          af_i = af_mat[i,, drop = FALSE]
+          af_i_genes = colnames(af_i)[which(af_i > 0)]
+          af_i_sample = rownames(af_i)
 
-        lapply(af_i_genes, function(ig){
-          af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
-                              which(colnames(nm) == ig)),
-                            nrow = 1)
-          points(af_i_mat, pch = additionalFeaturePch, col= additionalFeatureCol, cex = additionalFeatureCex)
+          lapply(af_i_genes, function(ig){
+            af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
+                                which(colnames(nm) == ig)),
+                              nrow = 1)
+            points(af_i_mat, pch = additionalFeaturePch, col= additionalFeatureCol, cex = additionalFeatureCex)
+          })
         })
-      })
-      additionalFeature_legend = TRUE
+        additionalFeature_legend = TRUE
+      }
     }
   }
 
@@ -698,9 +747,17 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   leg_classes = vc_col[vc_codes[2:length(vc_codes)]]
   leg_classes_pch = rep(15, length(leg_classes))
   if(additionalFeature_legend){
-    leg_classes = c(leg_classes,"gray70")
-    names(leg_classes)[length(leg_classes)] = paste(additionalFeature, collapse = ":")
-    leg_classes_pch = c(leg_classes_pch, additionalFeaturePch)
+    if(is.list(additionalFeature)){
+      for(af_i in seq_along(additionalFeature)){
+        leg_classes = c(leg_classes, additionalFeatureCol[af_i])
+        names(leg_classes)[length(leg_classes)] = paste(additionalFeature[[af_i]], collapse = ":")
+        leg_classes_pch = c(leg_classes_pch, additionalFeaturePch[af_i])
+      }
+    }else{
+      leg_classes = c(leg_classes, additionalFeatureCol)
+      names(leg_classes)[length(leg_classes)] = paste(additionalFeature, collapse = ":")
+      leg_classes_pch = c(leg_classes_pch, additionalFeaturePch)
+    }
   }
 
   lep = legend("topleft", legend = names(leg_classes),
