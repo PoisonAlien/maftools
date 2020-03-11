@@ -1,4 +1,4 @@
-get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, proteinID = NULL, defaultYaxis = FALSE){
+get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, proteinID = NULL, defaultYaxis = FALSE, verbose = TRUE){
 
   if(is.null(geneID)){
     stop('Please provide a gene name.')
@@ -15,7 +15,9 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
     pchange = c('HGVSp_Short', 'Protein_Change', 'AAChange')
     if(pchange[pchange %in% colnames(mut)] > 0){
       pchange = suppressWarnings(pchange[pchange %in% colnames(mut)][1])
-      message(paste0("Assuming protein change information are stored under column ", pchange,". Use argument AACol to override if necessary."))
+      if(verbose){
+        message(paste0("Assuming protein change information are stored under column ", pchange,". Use argument AACol to override if necessary."))
+      }
       colnames(mut)[which(colnames(mut) == pchange)] = 'AAChange'
     }else{
       message('Available fields:')
@@ -28,7 +30,8 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
 
   prot.dat = mut[Hugo_Symbol %in% geneID, .(Variant_Type, Variant_Classification, AAChange)]
   if(nrow(prot.dat) == 0){
-    stop(paste(geneID, 'does not seem to have any mutations!', sep=' '))
+    return(NULL)
+    #stop(paste(geneID, 'does not seem to have any mutations!', sep=' '))
   }
 
   prot = gff[HGNC %in% geneID]
@@ -44,14 +47,20 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
   } else{
     txs = unique(prot$refseq.ID)
     if(length(txs) > 1){
-      message(paste(length(txs), ' transcripts available. Use arguments refSeqID or proteinID to manually specify tx name.', sep = ''))
-      print(prot[!duplicated(protein.ID),.(HGNC, refseq.ID, protein.ID, aa.length)])
+      if(verbose){
+        message(paste(length(txs), ' transcripts available. Use arguments refSeqID or proteinID to manually specify tx name.', sep = ''))
+        print(prot[!duplicated(protein.ID),.(HGNC, refseq.ID, protein.ID, aa.length)])
+      }
       prot = prot[which(prot$aa.length == max(prot$aa.length)),]
       if(length(unique(prot$refseq.ID)) > 1){
         prot = prot[which(prot$refseq.ID == unique(prot[,refseq.ID])[1]),]
-        message(paste('Using longer transcript', unique(prot[,refseq.ID])[1], 'for now.', sep=' '))
+        if(verbose){
+          message(paste('Using longer transcript', unique(prot[,refseq.ID])[1], 'for now.', sep=' '))
+        }
       } else{
-        message(paste('Using longer transcript', unique(prot[,refseq.ID])[1], 'for now.', sep=' '))
+        if(verbose){
+          message(paste('Using longer transcript', unique(prot[,refseq.ID])[1], 'for now.', sep=' '))
+        }
       }
     }
   }
@@ -89,7 +98,10 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
   prot.dat[,pos := abs(pos)]
 
   if(nrow( prot.dat[is.na(pos)]) > 0){
-    message(paste('Removed', nrow( prot.dat[is.na(prot.dat$pos),]), 'mutations for which AA position was not available', sep = ' '))
+    if(verbose){
+      message(paste('Removed', nrow( prot.dat[is.na(prot.dat$pos),]), 'mutations for which AA position was not available', sep = ' '))
+    }
+
     #print(prot.dat[is.na(pos)])
     prot.dat = prot.dat[!is.na(pos)]
   }

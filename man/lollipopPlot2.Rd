@@ -19,10 +19,12 @@ lollipopPlot2(
   labPosAngle = 0,
   labPosSize = 0.9,
   colors = NULL,
+  alpha = 1,
   axisTextSize = c(1, 1),
   pointSize = 1.2,
   domainLabelSize = 1,
-  legendTxtSize = 1
+  legendTxtSize = 1,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -61,6 +63,8 @@ lollipopPlot2(
 \item{domainLabelSize}{text size for domain labels. Default 1.}
 
 \item{legendTxtSize}{Default 1.}
+
+\item{verbose}{Default TRUE}
 }
 \description{
 Compare two lollipop plots
