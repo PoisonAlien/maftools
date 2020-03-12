@@ -37,6 +37,10 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
+  }else{
+    if(verbose){
+      message(paste0("Gene: ", gene))
+    }
   }
 
   m1.lp = get_lp_data(maf = m1, geneID = gene, AACol = AACol1, refSeqID = refSeqID, proteinID = proteinID, verbose = verbose)
