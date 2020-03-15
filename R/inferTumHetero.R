@@ -75,10 +75,13 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
 
     seg.tsbs = unique(seg.dat[,Sample])
 
-    if(length(seg.tsbs[!seg.tsbs %in% tsb]) > 0){
+    if(sum(!tsb %in% seg.tsbs) > 0){
       message("CN data for following samples not found. Ignoring them ..")
-      print(seg.tsbs[!seg.tsbs %in% tsb])
-      seg.tsbs = seg.tsbs[seg.tsbs %in% tsb]
+      print(tsb[!tsb %in% seg.tsbs])
+      seg.tsbs = tsb[tsb %in% seg.tsbs]
+    } else {
+      ## This is used to keep data for selected samples
+      seg.tsbs = tsb
     }
 
     if(length(seg.tsbs) > 0){
@@ -120,29 +123,29 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
 
   for(i in 1:length(tsb)){
 
-    message(paste('Processing ', tsb[i],'..', sep=''))
+    message('Processing ', tsb[i], '..')
 
     tsb.dat = dat.tsb[Tumor_Sample_Barcode %in% tsb[i]]
     tsb.dat = tsb.dat[!is.na(tsb.dat$t_vaf),]
+
+    #nvm this. Variable for later use
+    tempCheck = 0
+
+    if(!is.null(segFile)){
+      if(tsb[i] %in% seg.tsbs){
+        seg = seg.dat[Sample %in% tsb[i]]
+        #Map copynumber and variants; filter variants on CN altered regions.
+        seg.res = filterCopyNumber(seg, tsb.dat, tempCheck, tsb[i])
+        tsb.dat = seg.res[[1]]
+        tsb.dat.cn.vars = seg.res[[2]]
+        tempCheck = seg.res[[3]]
+      }
+    }
 
     if(nrow(tsb.dat) < 3){
       #Less than 3 variants might not be useful.
       message('Too few mutations for clustering. Skipping..')
     }else{
-      #nvm this. Variable for later use
-      tempCheck = 0
-
-      if(!is.null(segFile)){
-        if(tsb[i] %in% seg.tsbs){
-          seg = seg.dat[Sample %in% tsb[i]]
-          #Map copynumber and variants; filter variants on CN altered regions.
-          seg.res = filterCopyNumber(seg, tsb.dat, tempCheck, tsb[i])
-          tsb.dat = seg.res[[1]]
-          tsb.dat.cn.vars = seg.res[[2]]
-          tempCheck = seg.res[[3]]
-        }
-      }
-
       #cluster
       if(dirichlet){
         #Awesome blog post on non-finite mixture models
@@ -172,9 +175,13 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
     }
   }
 
-  #Caluclate cluster means
-  clust.dat.mean = clust.dat[,mean(t_vaf), by = .(Tumor_Sample_Barcode, cluster)]
-  colnames(clust.dat.mean)[ncol(clust.dat.mean)] = 'meanVaf'
+  if (is.null(clust.dat)) {
+    message("No result, this is basically caused by no copy number neutral variants,\n you may re-run this without copy number data.")
+  } else {
+    #Caluclate cluster means
+    clust.dat.mean = clust.dat[,mean(t_vaf), by = .(Tumor_Sample_Barcode, cluster)]
+    colnames(clust.dat.mean)[ncol(clust.dat.mean)] = 'meanVaf'
 
-  return(list(clusterData = clust.dat, clusterMeans = clust.dat.mean))
+    return(list(clusterData = clust.dat, clusterMeans = clust.dat.mean))
+  }
 }

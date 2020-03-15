@@ -19,7 +19,7 @@ filterCopyNumber = function(seg, tsb.dat, tempCheck, tsb){
     }
 
     #Remove copy number altered variants.
-    tsb.dat.cn.vars = tsb.dat[!CN >1.5 & CN < 2.5]
+    tsb.dat.cn.vars = tsb.dat[!(CN >1.5 & CN < 2.5)]
     if(nrow(tsb.dat.cn.vars) > 0){
       message('Copy number altered variants:')
       tsb.dat.cn.vars$cluster = 'CN_altered'
