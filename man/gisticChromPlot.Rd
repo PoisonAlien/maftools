@@ -38,6 +38,8 @@ gisticChromPlot(
 \item{maf}{an optional maf object}
 
 \item{mutGenes}{mutated genes from maf object to be highlighted}
+
+\item{mutGenesTxtSize}{Default 0.6}
 }
 \value{
 nothing
@@ -46,7 +48,6 @@ nothing
 A genomic plot with segments highlighting signififcant Amplifications and Deletion regions.
 }
 \examples{
-mutGenesTxtSize Default 0.6
 all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
 amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")

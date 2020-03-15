@@ -508,7 +508,7 @@ laml.sign = estimateSignatures(mat = laml.tnm, nTry = 6)
 ```{r, fig.height=3, fig.width=3, eval=TRUE, message=FALSE, echo=FALSE, include=FALSE}
 #Run main function with maximum 6 signatures. 
 library('NMF')
-laml.sign = estimateSignatures(mat = laml.tnm, nTry = 6, pConstant = 0.1, plotBestFitRes = FALSE)
+laml.sign = estimateSignatures(mat = laml.tnm, nTry = 6, pConstant = 0.1, plotBestFitRes = FALSE, parallel = 2)
 ```
 
 Draw elbow plot to visualize and decide optimal number of signatures from above results.
@@ -525,7 +525,7 @@ laml.sig = extractSignatures(mat = laml.tnm, n = 3)
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
-laml.sig = extractSignatures(mat = laml.tnm, n = 3, pConstant = 0.1)
+laml.sig = extractSignatures(mat = laml.tnm, n = 3, pConstant = 0.1,  parallel = 2)
 ```
 
 Compare detected signatures to known signatures from COSMIC database.

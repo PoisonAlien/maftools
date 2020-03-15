@@ -12,9 +12,12 @@
 #' @return a list with decomposed scaled signatures, signature contributions in each sample and NMF object.
 #' @examples
 #' \dontrun{
-#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'hg19.fa', prefix = 'chr',
+#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+#' laml <- read.maf(maf = laml.maf)
+#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19', prefix = 'chr',
 #' add = TRUE, useSyn = TRUE)
-#' laml.sign <- extractSignatures(mat = laml.tnm, plotBestFitRes = FALSE)
+#' library("NMF")
+#' laml.sign <- extractSignatures(mat = laml.tnm, plotBestFitRes = FALSE, n = 2, pConstant = 0.01)
 #' }
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}} \code{\link{compareSignatures}}
 #' @export

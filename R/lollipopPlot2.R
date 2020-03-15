@@ -14,6 +14,7 @@
 #' @param labPosAngle angle for labels. Defaults to horizonal 0 degree labels. Set to 90 for vertical; 45 for diagonal labels.
 #' @param labPosSize Text size for labels. Default 3
 #' @param colors named vector of colors for each Variant_Classification. Default NULL.
+#' @param alpha color adjustment. Default 1
 #' @param axisTextSize text size for axis labels. Default 1.
 #' @param pointSize size of lollipop heads. Default 1.2
 #' @param domainLabelSize text size for domain labels. Default 1.

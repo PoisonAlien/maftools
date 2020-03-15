@@ -56,6 +56,8 @@ lollipopPlot2(
 
 \item{colors}{named vector of colors for each Variant_Classification. Default NULL.}
 
+\item{alpha}{color adjustment. Default 1}
+
 \item{axisTextSize}{text size for axis labels. Default 1.}
 
 \item{pointSize}{size of lollipop heads. Default 1.2}

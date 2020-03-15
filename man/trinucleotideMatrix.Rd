@@ -54,6 +54,8 @@ One-sided Fisher's Exact test is performed to determine the enrichment of APOBEC
 }
 \examples{
 \dontrun{
+laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
+laml <- read.maf(maf = laml.maf)
 laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19',
 prefix = 'chr', add = TRUE, useSyn = TRUE)
 }

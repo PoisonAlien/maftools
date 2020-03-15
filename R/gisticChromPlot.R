@@ -10,7 +10,8 @@
 #' @param cytobandTxtSize label size for cytoband
 #' @param maf an optional maf object
 #' @param mutGenes mutated genes from maf object to be highlighted
-#' @examples mutGenesTxtSize Default 0.6
+#' @param mutGenesTxtSize Default 0.6
+#' @examples
 #' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
