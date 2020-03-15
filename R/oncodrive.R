@@ -24,6 +24,8 @@
 
 oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGenes = 100, bgEstimate = TRUE, ignoreGenes = NULL){
 
+  warning("Oncodrive has been superseeded by OncodriveCLUSTL. See http://bg.upf.edu/group/projects/oncodrive-clust.php")
+
   #Proetin Length source
   gl = system.file('extdata', 'prot_len.txt.gz', package = 'maftools')
 

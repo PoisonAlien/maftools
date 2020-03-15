@@ -2,6 +2,7 @@ CHANGES IN VERSION 2.2.20
 -------------------------
 BUG FIX
     o lollipopPlot2 error with zero mutation Issue: #480
+    o PR #473
     o Avoid wrongly naming columns in `annovarToMaf` Issue: #457
     o Duplicated color code Issue: #452
     o oncoplot with exprsTbl leads to wrong alignment Issue: #451

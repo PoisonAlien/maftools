@@ -252,8 +252,12 @@ maftools has a function `oncodrive` which identifies cancer genes (driver) from 
 
 ```{r, fig.align='default', fig.width=7,fig.height=5, message=F,results='hide', eval=T}
 laml.sig = oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5, pvalMethod = 'zscore')
+```
+
+```{r}
 head(laml.sig)
 ```
+
 
 We can plot the results using `plotOncodrive`.
 ```{r, fig.align='left', fig.width=5, fig.height=4}
