@@ -11,6 +11,7 @@
 #' @param maf an optional maf object
 #' @param mutGenes mutated genes from maf object to be highlighted
 #' @param mutGenesTxtSize Default 0.6
+#' @param y_lims Deafult NULL. A vector upper and lower y-axis limits
 #' @examples
 #' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
@@ -23,7 +24,7 @@
 
 gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
                            color = NULL, ref.build = "hg19", cytobandOffset = 0.01, txtSize = 0.8, cytobandTxtSize = 0.6,
-                           maf = NULL, mutGenes = NULL, mutGenesTxtSize = 0.6) {
+                           maf = NULL, mutGenes = NULL, y_lims = NULL, mutGenesTxtSize = 0.6) {
 
   g = getCytobandSummary(gistic)
   g = g[qvalues < fdrCutOff]
@@ -70,7 +71,12 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
   chr.tbl = data.table::data.table(chr = chr.labels, start = c(1, chr.lens.cumsum[1:length(chr.lens.cumsum)-1]), end = chr.lens.cumsum)
   chr.tbl$color = rep(c('black','white'), length=nrow(chr.tbl))
 
-  y_lims = pretty(gis.scores[,amp], na.rm = TRUE)
+  if(is.null(y_lims)){
+    y_lims = pretty(gis.scores[,amp], na.rm = TRUE)
+  }else{
+    y_lims = pretty(y_lims, na.rm = TRUE)
+  }
+
   gis.scores$Variant_Classification = factor(x = as.character(gis.scores$Variant_Classification), levels = c("neutral", "Amp", "Del"))
 
   gis.scores = split(gis.scores, as.factor(gis.scores$Variant_Classification))

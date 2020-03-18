@@ -15,6 +15,7 @@ gisticChromPlot(
   cytobandTxtSize = 0.6,
   maf = NULL,
   mutGenes = NULL,
+  y_lims = NULL,
   mutGenesTxtSize = 0.6
 )
 }
@@ -38,6 +39,8 @@ gisticChromPlot(
 \item{maf}{an optional maf object}
 
 \item{mutGenes}{mutated genes from maf object to be highlighted}
+
+\item{y_lims}{Deafult NULL. A vector upper and lower y-axis limits}
 
 \item{mutGenesTxtSize}{Default 0.6}
 }
