@@ -17,6 +17,10 @@ ENHANCEMENTS
     o Highlight mutated genes on gisticChromplot Issue: #443
     o Added `legend_height` argument to `oncoplot` Issue: #346
 
+NEW FUNCTIONS AND FEATURES
+    o `coBarplot` side-by-side barplot for maf comparison Issue: #486
+
+
 CHANGES IN VERSION 2.2.10
 -------------------------
 BUG FIX
