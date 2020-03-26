@@ -2,6 +2,8 @@
 #' @details Draws two barplots side by side to display difference between two cohorts.
 #' @param m1 first \code{\link{MAF}} object
 #' @param m2 second \code{\link{MAF}} object
+#' @param genes genes to be drawn. Default takes top 5 mutated genes.
+#' @param orderBy Order genes by mutation rate in `m1` or `m2`. Default `NULL`, keeps the same order of `genes`
 #' @param m1Name optional name for first cohort
 #' @param m2Name optional name for second cohort
 #' @param colors named vector of colors for each Variant_Classification.
@@ -27,8 +29,7 @@
 #' dev.off()
 #' @return Returns nothing. Just draws plot.
 #'
-coBarplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL, colors = NULL, normalize = TRUE,
-                     yLims = NULL, borderCol = "gray", titleSize = 1, geneSize = 0.8,
+coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name = NULL, colors = NULL, normalize = TRUE, yLims = NULL, borderCol = "gray", titleSize = 1, geneSize = 0.8,
                      showPct = TRUE, pctSize = 0.7, axisSize = 0.8, legendTxtSize = 1){
 
   if(is.null(genes)){
@@ -61,6 +62,15 @@ coBarplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL, colors 
   m2.missing = genes[!genes %in% rownames(gs2.load)]
   if(length(m2.missing) > 0){
     gs2.load = rbind(gs2.load, data.frame(row.names = m2.missing, AlteredSamples = rep(0, length(m2.missing)), stringsAsFactors = FALSE))
+  }
+
+  if(!is.null(orderBy)){
+    orderBy = match.arg(arg = orderBy, choices = c("m1", "m2"), several.ok = FALSE)
+    if(orderBy == "m1"){
+      genes = rev(rownames(gs1.load[order(gs1.load$AlteredSamples, decreasing = TRUE),, drop = FALSE]))
+    }else if(orderBy == "m2"){
+      genes = rev(rownames(gs2.load[order(gs2.load$AlteredSamples, decreasing = TRUE),, drop = FALSE]))
+    }
   }
 
   m1.gs = t(m1.gs[genes,,drop = FALSE])

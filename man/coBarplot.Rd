@@ -8,6 +8,7 @@ coBarplot(
   m1,
   m2,
   genes = NULL,
+  orderBy = NULL,
   m1Name = NULL,
   m2Name = NULL,
   colors = NULL,
@@ -26,6 +27,10 @@ coBarplot(
 \item{m1}{first \code{\link{MAF}} object}
 
 \item{m2}{second \code{\link{MAF}} object}
+
+\item{genes}{genes to be drawn. Default takes top 5 mutated genes.}
+
+\item{orderBy}{Order genes by mutation rate in `m1` or `m2`. Default `NULL`, keeps the same order of `genes`}
 
 \item{m1Name}{optional name for first cohort}
 

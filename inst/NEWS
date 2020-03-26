@@ -10,6 +10,7 @@ BUG FIX
     o Avoid empty spaces and quoates while reading funcotator MAF Issue: #403 #397
 
 ENHANCEMENTS
+    o Added startgain and startlost to `annovarToMaf` Issue: #487
     o `y_lims` argument in gisticChromPlot Issue: #485
     o Added support for highlighting multiple additionalFeatures Issue: #476
     o Pairwise t-test and muttaional load in `tcgaCompare` Issue: #453

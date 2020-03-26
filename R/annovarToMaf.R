@@ -88,7 +88,6 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     annovar_values = c(
       exonic = "RNA",
       splicing = "Splice_Site",
-      ncRNA = "RNA",
       UTR5 = "5'UTR",
       UTR3 = "3'UTR",
       intronic = "Intron",
@@ -101,6 +100,8 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       `frameshift substitution` = "Frameshift_INDEL",
       stopgain = "Nonsense_Mutation",
       stoploss = "Nonstop_Mutation",
+      startloss = "Translation_Start_Site",
+      startgain = "Unknown", #Can not properly map MAF classification. Setting it to Unknown
       `nonframeshift insertion` = "In_Frame_Ins",
       `nonframeshift deletion` = "In_Frame_Del",
       `nonframeshift block substitution` = "Inframe_INDEL",
