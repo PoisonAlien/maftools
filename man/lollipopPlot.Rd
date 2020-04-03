@@ -17,6 +17,7 @@ lollipopPlot(
   proteinID = NULL,
   repel = FALSE,
   collapsePosLabel = TRUE,
+  showLegend = TRUE,
   legendTxtSize = 0.8,
   labPosAngle = 0,
   domainLabelSize = 0.8,
@@ -24,6 +25,8 @@ lollipopPlot(
   printCount = FALSE,
   colors = NULL,
   domainColors = NULL,
+  domainBorderCol = "black",
+  bgBorderCol = "black",
   labelOnlyUniqueDoamins = TRUE,
   defaultYaxis = FALSE,
   titleSize = c(1.2, 1),
@@ -55,6 +58,8 @@ lollipopPlot(
 
 \item{collapsePosLabel}{Collapses overlapping labels at same position. Default TRUE}
 
+\item{showLegend}{Default TRUE}
+
 \item{legendTxtSize}{Text size for legend. Default 0.8}
 
 \item{labPosAngle}{angle for labels. Defaults to horizonal 0 degree labels. Set to 90 for vertical; 45 for diagonal labels.}
@@ -68,6 +73,10 @@ lollipopPlot(
 \item{colors}{named vector of colors for each Variant_Classification. Default NULL.}
 
 \item{domainColors}{Manual colors for protein domains}
+
+\item{domainBorderCol}{Default "black". Set to NA to remove.}
+
+\item{bgBorderCol}{Default "black". Set to NA to remove.}
 
 \item{labelOnlyUniqueDoamins}{Default TRUE only labels unique doamins.}
 

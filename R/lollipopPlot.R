@@ -14,6 +14,7 @@
 #' @param proteinID RefSeq protein identifier for \code{gene} if known.
 #' @param repel If points are too close to each other, use this option to repel them. Default FALSE. Warning: naive method, might make plot ugly in case of too many variants!
 #' @param collapsePosLabel Collapses overlapping labels at same position. Default TRUE
+#' @param showLegend Default TRUE
 #' @param legendTxtSize Text size for legend. Default 0.8
 #' @param labPosAngle angle for labels. Defaults to horizonal 0 degree labels. Set to 90 for vertical; 45 for diagonal labels.
 #' @param domainLabelSize text size for domain labels. Default 0.8
@@ -25,6 +26,8 @@
 #' @param defaultYaxis If FALSE, just labels min and maximum y values on y axis.
 #' @param pointSize size of lollipop heads. Default 1.5
 #' @param titleSize font size for title and subtitle. Default c(1.2, 1)
+#' @param domainBorderCol Default "black". Set to NA to remove.
+#' @param bgBorderCol Default "black". Set to NA to remove.
 #' @return Nothing
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -35,8 +38,8 @@
 
 lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosSize = 0.9, showMutationRate = TRUE,
                         showDomainLabel = TRUE, cBioPortal = FALSE, refSeqID = NULL, proteinID = NULL,
-                        repel = FALSE, collapsePosLabel = TRUE, legendTxtSize = 0.8, labPosAngle = 0, domainLabelSize = 0.8, axisTextSize = c(1, 1),
-                        printCount = FALSE, colors = NULL, domainColors = NULL, labelOnlyUniqueDoamins = TRUE, defaultYaxis = FALSE, titleSize = c(1.2, 1), pointSize = 1.5){
+                        repel = FALSE, collapsePosLabel = TRUE, showLegend = TRUE, legendTxtSize = 0.8, labPosAngle = 0, domainLabelSize = 0.8, axisTextSize = c(1, 1),
+                        printCount = FALSE, colors = NULL, domainColors = NULL, domainBorderCol = "black", bgBorderCol = "black", labelOnlyUniqueDoamins = TRUE, defaultYaxis = FALSE, titleSize = c(1.2, 1), pointSize = 1.5){
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
@@ -235,6 +238,8 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
     if(nrow(labDat) == 0){
       message(paste0("Position ",labelPos, " doesn't seem to be mutated. Here are the mutated foci."))
+      print(prot.snp.sumamry[,.(pos, conv, count, Variant_Classification)][order(pos)])
+      stop()
       #return(prot.snp.sumamry[,.(mutations = sum(count)), pos][order(mutations, decreasing = TRUE)])
     }
 
@@ -277,12 +282,17 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
   col = col[unique(as.character(prot.snp.sumamry[,Variant_Classification]))]
 
-  lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
-  graphics::layout(mat = lo, heights = c(4, 1.25))
+  if(showLegend){
+    lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
+    graphics::layout(mat = lo, heights = c(4, 1.25))
+    par(mar = c(1, 2.5, 2, 1))
+  }else{
+    par(mar = c(2.5, 2.5, 2, 1))
+  }
 
-  par(mar = c(1, 2.5, 2, 1))
+
   plot(0, 0, pch = NA, ylim = c(0, 6.5), xlim = c(0, len), axes = FALSE, xlab = NA, ylab = NA)
-  rect(xleft = 0, ybottom = 0.2, xright = len, ytop = 0.8, col = "gray70", border = "gray70")
+  rect(xleft = 0, ybottom = 0.2, xright = len, ytop = 0.8, col = "gray70", border = bgBorderCol)
   axis(side = 1, at = xlimPos, labels = xlimPos, lwd = 1.2, font = 1,
        cex.axis = axisTextSize[1], line = -0.4)
   axis(side = 2, at = lim.pos, labels = lim.lab, lwd = 1.2, font = 1, las = 2,
@@ -291,7 +301,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   segments(x0 = prot.snp.sumamry[,pos2], y0 = 0.8, x1 = prot.snp.sumamry[,pos2], y1 = prot.snp.sumamry[,count2-0.03], lwd = 1.2, col = "gray70")
   point_cols = col[as.character(prot.snp.sumamry$Variant_Classification)]
   points(x = prot.snp.sumamry[,pos2], y = prot.snp.sumamry[,count2], col = point_cols, pch = 16, cex = pointSize)
-  rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = domain_cols, border = NA)
+  rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = domain_cols, border = domainBorderCol)
 
   title(main = cbioSubTitle, adj = 0, font.main = 2, cex.main = titleSize[1], line = 0.8)
   title(main = unique(prot[,refseq.ID]), adj = 0, font.main = 1, line = -0.5, cex.main = titleSize[2])
@@ -310,28 +320,30 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
          font = 1, srt = labPosAngle, cex = labPosSize)
   }
 
-  par(mar = c(0, 0.5, 1, 0), xpd = TRUE)
+  if(showLegend){
+    par(mar = c(0, 0.5, 1, 0), xpd = TRUE)
 
-  plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
-  lep = legend("topleft", legend = names(col), col = col,  bty = "n", border=NA,
-               xpd = TRUE, text.font = 1, pch = 16, xjust = 0, yjust = 0,
-               cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
-               pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
+    plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
+    lep = legend("topleft", legend = names(col), col = col,  bty = "n", border=NA,
+                 xpd = TRUE, text.font = 1, pch = 16, xjust = 0, yjust = 0,
+                 cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
+                 pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
 
-  x_axp = 0+lep$rect$w
+    x_axp = 0+lep$rect$w
 
-  if(!showDomainLabel){
-    if(length(domain_cols) <= 4){
-      n_col = 1
-    }else{
-      n_col = (length(domain_cols) %/% 4)+1
+    if(!showDomainLabel){
+      if(length(domain_cols) <= 4){
+        n_col = 1
+      }else{
+        n_col = (length(domain_cols) %/% 4)+1
+      }
+
+      lep = legend(x = x_axp, y = 1, legend = names(domain_cols),
+                   col = domain_cols, border = NA,
+                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+                   cex = legendTxtSize, title = "Domains",
+                   title.adj = 0, pt.cex = 1.2 * legendTxtSize)
     }
-
-    lep = legend(x = x_axp, y = 1, legend = names(domain_cols),
-                 col = domain_cols, border = NA,
-                 ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                 cex = legendTxtSize, title = "Domains",
-                 title.adj = 0, pt.cex = 1.2 * legendTxtSize)
   }
 
   if(printCount){
