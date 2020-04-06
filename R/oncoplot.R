@@ -431,7 +431,13 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
       nm_temp[ce_idx] = 0
       image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
             yaxt="n", xlab="", ylab="", col = vc_col[ce[2]], add = TRUE)
-      points(ce_idx, pch= 15, col= vc_col[ce[1]])
+
+      ce_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
+      for(i in seq_len(nrow(ce_idx))){
+        rowi = ce_idx[i,1]
+        coli = ce_idx[i,2]
+        rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col[ce[1]], border = NA, lwd = 0)
+      }
     }
   }
 
@@ -443,7 +449,12 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     nm_temp[amp_idx] = 0
     image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
           yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
-    points(amp_idx, pch= 15, col= vc_col['Amp'], cex = 1.5)
+    amp_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
+    for(i in seq_len(nrow(amp_idx))){
+      rowi = amp_idx[i,1]
+      coli = amp_idx[i,2]
+      rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col['Amp'], border = NA, lwd = 0)
+    }
   }
 
   if(nrow(del_idx) > 0){
@@ -451,7 +462,12 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     nm_temp[del_idx] = 0
     image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
           yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
-    points(del_idx, pch= 15, col= vc_col['Del'], cex = 1.5)
+    del_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
+    for(i in seq_len(nrow(del_idx))){
+      rowi = del_idx[i,1]
+      coli = del_idx[i,2]
+      rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col['Del'], border = NA, lwd = 0)
+    }
   }
 
   #Draw if any additional features are requested

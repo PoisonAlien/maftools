@@ -3,6 +3,7 @@
 
 - lollipopPlot2 error with zero mutation Issue: [#480](https://github.com/PoisonAlien/maftools/issues/480)
 - `inferHeterogeneity` PR [#473](https://github.com/PoisonAlien/maftools/issues/473)
+- `oncoplot` cnv crosses border [#472](https://github.com/PoisonAlien/maftools/issues/472)
 - Avoid wrongly naming columns in `annovarToMaf` Issue: [#457](https://github.com/PoisonAlien/maftools/issues/457)
 - Duplicated color code Issue: [#452](https://github.com/PoisonAlien/maftools/issues/452)
 - oncoplot with exprsTbl leads to wrong alignment Issue: [#451](https://github.com/PoisonAlien/maftools/issues/451)
