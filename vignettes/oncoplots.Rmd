@@ -217,6 +217,25 @@ Note that first argument (Tumor_Seq_Allele2) must a be column in MAF file, and s
 getFields(x = laml)
 ```
 
+## Group by Pathways
+### Auto grouping
+Genes can be auto grouped based on their Biological processess by setting `pathways = 'auto'`
+```{r}
+oncoplot(maf = laml, top = 20, pathways = 'auto', gene_mar = 8, fontSize = 0.6)
+```
+
+### Custom pathways
+A custom pathway list can also be provided in the form of a two column tsv file or a data.frame containing gene names and their corresponding pathway.
+
+```{r}
+my_path = data.table::data.table(Gene = c("TP53", "WT1", "DNMT3A", "IDH1", "IDH2", "RUNX1", "CEBPA"), Pathway = c("Tumor Suppressors", "DNA methylation", 'DNA methylation', 'DNA methylation', 'DNA methylation', 'Myeloid TF', 'Myeloid TF'))
+
+print(my_path)
+
+oncoplot(maf = laml, top = 20, pathways = my_path, gene_mar = 6, fontSize = 0.6)
+```
+
+
 ## Combining everything
 
 ```{r, fig.height = 8, fig.width = 10}

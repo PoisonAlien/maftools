@@ -23,6 +23,7 @@
 #' @param gene_mar Default 5
 #' @param legend_height Height of plotting area for legend. Default 4
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
+#' @param pathways Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`
 #' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted. Provide a list of values for highlighting more than one features
 #' @param additionalFeaturePch Default 20
 #' @param additionalFeatureCol Default "gray70"
@@ -75,7 +76,7 @@
 #' @seealso \code{\link{oncostrip}}
 #' @export
 oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
-                     clinicalFeatures = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
+                     clinicalFeatures = NULL, pathways = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, legend_height = 4, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1,
@@ -238,12 +239,70 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     vc_col = get_vcColors()
   }else{
     vc_col = colors
+    if(!"pathway" %in% names(vc_col)){
+      vc_col = c(vc_col, "pathway" = "#535C68FF")
+    }
   }
   #VC codes
   vc_codes = update_vc_codes(om_op = om)
 
   if(nrow(numMat) == 1){
     stop("Oncoplot requires at-least two genes for plottng.")
+  }
+
+  if(!is.null(pathways)){
+    vc_codes = c(vc_codes, '99' = 'pathway')
+    if(is(pathways, 'data.frame')){
+      colnames(pathways)[1:2] = c('Gene', 'Pathway')
+      data.table::setDT(x = pathways)
+      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
+    }else if(file.exists(pathways)){
+      pathways = data.table::fread(file = pathways)
+      colnames(pathways)[1:2] = c('Gene', 'Pathway')
+      data.table::setDT(x = pathways)
+      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
+    }else{
+      pathways = system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
+      pathways = data.table::fread(file = pathways, skip = "Gene")
+      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
+      pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
+    }
+
+    #Order genes in matrix by most frequently altered gene, followed by pathway size
+    temp_dat = data.table::data.table(Gene = rownames(numMat), percent_alt)
+    temp_dat = merge(temp_dat, pathways, all.x = TRUE)
+    temp_dat[is.na(temp_dat)] = "Unknown"
+    temp_dat$pct_alt = as.numeric(gsub(pattern = "%", replacement = "", x = temp_dat$percent_alt))
+    temp_dat = split(temp_dat, as.factor(as.character(temp_dat$Pathway)))
+
+    temp_dat_freq = lapply(temp_dat, function(x){
+      data.table::data.table(n = nrow(x), max_alt = max(x$pct_alt))
+    })
+    temp_dat_freq = data.table::rbindlist(l = temp_dat_freq, use.names = TRUE, fill = TRUE, idcol = "Pathway")
+    temp_dat_ord = temp_dat_freq[order(max_alt, n, decreasing = TRUE)][, Pathway]
+    temp_dat = lapply(temp_dat, function(x){x[order(pct_alt, decreasing = TRUE)]})[temp_dat_ord]
+
+    if("Unknown" %in% names(temp_dat)){
+      temp_dat_ord = c(grep(pattern = "Unknown", x = names(temp_dat), invert = TRUE, value = TRUE), "Unknown")
+      temp_dat = temp_dat[temp_dat_ord]
+    }
+
+    nm = lapply(seq_along(temp_dat), function(i){
+      x = numMat[temp_dat[[i]]$Gene,, drop = FALSE]
+      x = rbind(x, apply(x, 2, function(y) ifelse(test = sum(y) == 0, yes = 0, no = 99)))
+      rownames(x)[nrow(x)] = names(temp_dat)[i]
+      x
+    })
+    numMat = do.call(rbind, nm)
+
+    #Add pathway information to the character matrix
+    mat_origin_path = rownames(numMat)[!rownames(numMat) %in% rownames(mat_origin)]
+    mat_origin_path = numMat[mat_origin_path,, drop = FALSE]
+    mat_origin_path[mat_origin_path == 0] = ""
+    mat_origin_path[mat_origin_path == "99"] = "pathway"
+    mat_origin_path = mat_origin_path[,colnames(mat_origin), drop = FALSE]
+    mat_origin = rbind(mat_origin, mat_origin_path)
+    mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
   }
 
   #Plot layout
@@ -279,6 +338,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
   #02: Draw top bar plot
   if(drawColBar){
+    top_bar_data = top_bar_data[,colnames(numMat), drop = FALSE]
     if(drawRowBar){
       par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
     }else{
@@ -397,7 +457,9 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     vc_code = vc_codes_temp[i]
     col = vc_col[vc_code]
     nm = t(apply(numMat, 2, rev))
+    #print(names(vc_code))
     nm[nm != names(vc_code)] = NA
+    #print(paste0(vc_code, " ", col))
     #Suppress warning due to min/max applied to a vector of NAs; Issue: #286
     #This is an harmless warning as matrix is looped over all VC's and missing VC's form NA's (which are plotted in gray)
     suppressWarnings(image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
@@ -409,12 +471,24 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   nm[nm != 0] = NA
   image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
 
+
   #Add CNVs if any
   mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
   if(writeMatrix){
     write.table(mat_origin, "onco_matrix.txt", sep = "\t", quote = FALSE)
   }
   mo = t(apply(mat_origin, 2, rev))
+
+  # mutBorder = TRUE
+  # return(numMat)
+  # if(mutBorder){
+  #   mut_idx = which(mo == "", arr.ind = TRUE)
+  #   for(i in seq_len(nrow(mut_idx))){
+  #     rowi = mut_idx[i,1]
+  #     coli = mut_idx[i,2]
+  #     rect(xleft = coli-0.5, ybottom = rowi-0.5, xright = coli+0.5, ytop = rowi+0.5, border = TRUE, lwd = 1)
+  #   }
+  # }
 
   ##Complex events (mutated as well as CN altered)
   complex_events = unique(grep(pattern = ";", x = mo, value = TRUE))
@@ -560,6 +634,25 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   #Add grids
   abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
   abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
+
+  #Add boxes if pathways are opted
+  if(!is.null(pathways)){
+    temp_dat = lapply(seq_along(temp_dat), function(i){
+      data.table::rbindlist(list(temp_dat[[i]], data.table::data.table(Gene = names(temp_dat)[i])), use.names = TRUE, fill = TRUE)
+    })
+    temp_dat = data.table::rbindlist(l = temp_dat, use.names = TRUE, fill = TRUE)
+    #return(temp_dat)
+    temp_dat[, row_id := nrow(temp_dat):1]
+    temp_dat = split(temp_dat, as.factor(temp_dat$Pathway))
+    lapply(temp_dat, function(td){
+      rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = "#535c68", lwd = 2)
+    })
+
+    #New percent alt with pathways
+    percent_alt = rev(paste0(apply(nm, 2, function(x){
+      round(length(x[is.na(x)])/totSamps * 100)
+    }), "%"))
+  }
 
   mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
         font = 3, line = 0.4, cex = fontSize, las = 2)

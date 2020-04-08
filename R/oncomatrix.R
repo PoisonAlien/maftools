@@ -494,11 +494,11 @@ plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
 }
 
 get_vcColors = function(alpha = 1){
-  col = c(RColorBrewer::brewer.pal(11, name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue', '#7b7060')
+  col = c(RColorBrewer::brewer.pal(11, name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black', 'violet', 'royalblue', '#7b7060', '#535c68')
   col = grDevices::adjustcolor(col = col, alpha.f = alpha)
   names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','IGR','Missense_Mutation','Silent','Nonsense_Mutation',
                          'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Del','ITD','In_Frame_Ins',
-                         'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del', 'Complex_Event')
+                         'Translation_Start_Site',"Multi_Hit", 'Amp', 'Del', 'Complex_Event', 'pathway')
   col
 }
 

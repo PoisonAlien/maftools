@@ -17,6 +17,7 @@ oncoplot(
   draw_titv = FALSE,
   logColBar = FALSE,
   clinicalFeatures = NULL,
+  pathways = NULL,
   exprsTbl = NULL,
   additionalFeature = NULL,
   additionalFeaturePch = 20,
@@ -80,6 +81,8 @@ oncoplot(
 \item{logColBar}{Plot top bar plot on log10 scale. Default \code{FALSE}.}
 
 \item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
+
+\item{pathways}{Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`}
 
 \item{exprsTbl}{Expression values if availble. Must be a data.frame with two columns containing to gene names and expression values.}
 
