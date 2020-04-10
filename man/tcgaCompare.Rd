@@ -14,6 +14,7 @@ tcgaCompare(
   col = c("gray70", "black"),
   bg_col = c("#EDF8B1", "#2C7FB8"),
   medianCol = "red",
+  decreasing = FALSE,
   logscale = TRUE,
   rm_hyper = FALSE
 )
@@ -36,6 +37,8 @@ tcgaCompare(
 \item{bg_col}{background color. Default'#EDF8B1', '#2C7FB8'}
 
 \item{medianCol}{color for median line. Default red.}
+
+\item{decreasing}{Default FALSE. Cohorts are arranged in increasing mutation burden.}
 
 \item{logscale}{Default TRUE}
 

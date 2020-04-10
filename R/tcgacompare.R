@@ -10,6 +10,7 @@
 #' @param bg_col background color. Default'#EDF8B1', '#2C7FB8'
 #' @param medianCol color for median line. Default red.
 #' @param logscale Default TRUE
+#' @param decreasing Default FALSE. Cohorts are arranged in increasing mutation burden.
 #' @param rm_hyper Remove hyper mutated samples (outliers)? Default FALSE
 #' @return data.table with median mutations per cohort
 #' @examples
@@ -18,7 +19,7 @@
 #' tcgaCompare(maf = laml, cohortName = "AML")
 #' @export
 
-tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortName = NULL, tcga_cohorts = NULL, primarySite = FALSE, col = c('gray70', 'black'), bg_col = c('#EDF8B1', '#2C7FB8'), medianCol = 'red', logscale = TRUE, rm_hyper = FALSE){
+tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortName = NULL, tcga_cohorts = NULL, primarySite = FALSE, col = c('gray70', 'black'), bg_col = c('#EDF8B1', '#2C7FB8'), medianCol = 'red', decreasing = FALSE, logscale = TRUE, rm_hyper = FALSE){
 
   tcga.cohort = system.file('extdata', 'tcga_cohort.txt.gz', package = 'maftools')
 
@@ -112,7 +113,7 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
   }
 
   #Median mutations
-  tcga.cohort.med = tcga.cohort[,.(.N, median(plot_total)),cohort][order(V2, decreasing = TRUE)]
+  tcga.cohort.med = tcga.cohort[,.(.N, median(plot_total)),cohort][order(V2, decreasing = decreasing)]
   tcga.cohort$cohort = factor(x = tcga.cohort$cohort,levels = tcga.cohort.med$cohort)
   colnames(tcga.cohort.med) = c('Cohort', 'Cohort_Size', 'Median_Mutations')
   tcga.cohort$TCGA = ifelse(test = tcga.cohort$cohort %in% cohortName,
