@@ -24,7 +24,7 @@
 
 ## NEW FUNCTIONS AND FEATURES
 
+- `tcgaDriverBP` Compare genes to known TCGA drivers and their biological pathways
+- `vafComapre` plots vaf distribution of target genes from two cohorts Issue: [#495](https://github.com/PoisonAlien/maftools/issues/495)
 - `coBarplot` side-by-side barplot for maf comparison Issue: [#486](https://github.com/PoisonAlien/maftools/issues/486)
 - Now you can group genes in `oncoplot` by specific pathways. This can be done by setting `pathways = 'auto'` or by providing a two column data.frame/tsv-file with Gene names and their corresponding pathway belongings.
-
-

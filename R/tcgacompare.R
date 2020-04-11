@@ -141,7 +141,7 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
   y_lims = c(y_min, y_max)
   y_at = pretty(y_lims)
 
-  par(mar = c(4, 3, 2.5, 1))
+  par(mar = c(4, 3, 2.5, 1.5))
   plot(NA, NA, xlim = c(0, length(plot.dat)), ylim = y_lims, axes = FALSE, xlab = NA, ylab = NA, frame.plot = TRUE)
   rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = grDevices::adjustcolor(col = "gray", alpha.f = 0.1))
   rect(xleft = seq(0, length(plot.dat)-1, 1), ybottom = min(y_lims), xright = seq(1, length(plot.dat), 1),
@@ -179,21 +179,21 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
   if(logscale){
     if(is.null(capture_size)){
       axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^y_at)
-      mtext(text = "log10 TMB", side = 2, line = 1.5)
+      mtext(text = "log10 TMB", side = 4)
       #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations", "Median_Mutations_perMB")
     }else{
       axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^y_at)
-      mtext(text = "log10 TMB (per MB)", side = 2, line = 1.5)
+      mtext(text = "log10 TMB (per MB)", side = 4)
       #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations_perMB", "Median_Mutations_perMB_log10")
     }
   }else{
     if(is.null(capture_size)){
       axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE)
-      mtext(text = "TMB", side = 2, line = 1.2)
+      mtext(text = "TMB", side = 4, line = 1.2)
       #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations", "Median_Mutations_perMB")
     }else{
       axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE)
-      mtext(text = "TMB (per MB)", side = 2, line = 1.6)
+      mtext(text = "TMB (per MB)", side = 4)
     }
   }
 

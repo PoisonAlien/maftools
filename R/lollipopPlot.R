@@ -8,7 +8,7 @@
 #' @param labelPos Amino acid positions to label. If 'all', labels all variants.
 #' @param labPosSize Text size for labels. Default 0.9
 #' @param showMutationRate Whether to show the somatic mutation rate on the title. Default TRUE
-#' @param showDomainLabel Label domains within the plot. Default TRUE. If FALSE they will be annotated in legend.
+#' @param showDomainLabel Label domains within the plot. Default TRUE. If `FALSE`` domains are annotated in legend.
 #' @param cBioPortal Adds annotations similar to cBioPortals MutationMapper and collapse Variants into Truncating and rest.
 #' @param refSeqID RefSeq transcript identifier for \code{gene} if known.
 #' @param proteinID RefSeq protein identifier for \code{gene} if known.
@@ -18,10 +18,11 @@
 #' @param legendTxtSize Text size for legend. Default 0.8
 #' @param labPosAngle angle for labels. Defaults to horizonal 0 degree labels. Set to 90 for vertical; 45 for diagonal labels.
 #' @param domainLabelSize text size for domain labels. Default 0.8
+#' @param roundedRect Default TRUE. If `TRUE` domains are drawn with rounded corners. Requires \code{berryFunctions}
 #' @param axisTextSize text size x and y tick labels. Default c(1,1).
 #' @param printCount If TRUE, prints number of summarized variants for the given protein.
 #' @param colors named vector of colors for each Variant_Classification. Default NULL.
-#' @param domainColors Manual colors for protein domains
+#' @param domainAlpha Default 1
 #' @param labelOnlyUniqueDoamins Default TRUE only labels unique doamins.
 #' @param defaultYaxis If FALSE, just labels min and maximum y values on y axis.
 #' @param pointSize size of lollipop heads. Default 1.5
@@ -37,9 +38,9 @@
 #' @export
 
 lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosSize = 0.9, showMutationRate = TRUE,
-                        showDomainLabel = TRUE, cBioPortal = FALSE, refSeqID = NULL, proteinID = NULL,
+                        showDomainLabel = TRUE, cBioPortal = FALSE, refSeqID = NULL, proteinID = NULL, roundedRect = TRUE,
                         repel = FALSE, collapsePosLabel = TRUE, showLegend = TRUE, legendTxtSize = 0.8, labPosAngle = 0, domainLabelSize = 0.8, axisTextSize = c(1, 1),
-                        printCount = FALSE, colors = NULL, domainColors = NULL, domainBorderCol = "black", bgBorderCol = "black", labelOnlyUniqueDoamins = TRUE, defaultYaxis = FALSE, titleSize = c(1.2, 1), pointSize = 1.5){
+                        printCount = FALSE, colors = NULL, domainAlpha = 1, domainBorderCol = "black", bgBorderCol = "black", labelOnlyUniqueDoamins = TRUE, defaultYaxis = FALSE, titleSize = c(1.2, 1), pointSize = 1.5){
 
   if(is.null(gene)){
     stop('Please provide a gene name.')
@@ -135,10 +136,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
     col = c('Truncating' = col[1], 'Missense' = col[2], 'In-frame' = col[3])
   }else{
     if(is.null(colors)){
-      col = c(RColorBrewer::brewer.pal(12,name = "Paired"), RColorBrewer::brewer.pal(11,name = "Spectral")[1:3],'black')
-      col = grDevices::adjustcolor(col = col, alpha.f = 0.7)
-      names(col) = names = c('Nonstop_Mutation','Frame_Shift_Del','Silent','Missense_Mutation','IGR','Nonsense_Mutation',
-                             'RNA','Splice_Site','Intron','Frame_Shift_Ins','In_Frame_Dell','In_Frame_Del','ITD','In_Frame_Ins','Translation_Start_Site',"Multi_Hit")
+      col = get_vcColors(alpha = 0.7, named = TRUE)
     }else{
       col = colors
     }
@@ -267,17 +265,14 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   #-----------------------------------
   #Base
   domains = unique(prot[,Label])
-  #print(prot)
-  domain_cols = c(RColorBrewer::brewer.pal(8, name = "Accent"),
-                  RColorBrewer::brewer.pal(12, name = "Set3"),
-                  RColorBrewer::brewer.pal(8, name = "Set1"))
+  domain_cols = get_domain_cols()
 
   if(length(domains) > length(domain_cols)){
     domain_cols = sample(colours(), size = length(domains), replace = FALSE)
   }
 
   domain_cols = domain_cols[1:length(domains)]
-  #domain_cols = grDevices::adjustcolor(col = domain_cols, alpha.f = 0.75)
+  domain_cols = grDevices::adjustcolor(col = domain_cols, alpha.f = domainAlpha)
   names(domain_cols) = domains
 
   col = col[unique(as.character(prot.snp.sumamry[,Variant_Classification]))]
@@ -292,7 +287,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
 
 
   plot(0, 0, pch = NA, ylim = c(0, 6.5), xlim = c(0, len), axes = FALSE, xlab = NA, ylab = NA)
-  rect(xleft = 0, ybottom = 0.2, xright = len, ytop = 0.8, col = "gray70", border = bgBorderCol)
+  rect(xleft = 0, ybottom = 0.2, xright = len, ytop = 0.8, col = "#95a5a6", border = bgBorderCol)
   axis(side = 1, at = xlimPos, labels = xlimPos, lwd = 1.2, font = 1,
        cex.axis = axisTextSize[1], line = -0.4)
   axis(side = 2, at = lim.pos, labels = lim.lab, lwd = 1.2, font = 1, las = 2,
@@ -301,7 +296,21 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   segments(x0 = prot.snp.sumamry[,pos2], y0 = 0.8, x1 = prot.snp.sumamry[,pos2], y1 = prot.snp.sumamry[,count2-0.03], lwd = 1.2, col = "gray70")
   point_cols = col[as.character(prot.snp.sumamry$Variant_Classification)]
   points(x = prot.snp.sumamry[,pos2], y = prot.snp.sumamry[,count2], col = point_cols, pch = 16, cex = pointSize)
-  rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = domain_cols, border = domainBorderCol)
+
+  prot[, domainCol := domain_cols[prot[, Label]]]
+  if(roundedRect){
+    if(requireNamespace("berryFunctions", quietly = TRUE)){
+      for(i in 1:nrow(prot)){
+        berryFunctions::roundedRect(xleft = prot[i,Start], ybottom = 0.1, xright = prot[i,End], ytop = 0.9, col = prot[i, domainCol], border = domainBorderCol, rounding = 0.08)
+      }
+    }else{
+      #warning("Package berryFunctions needed for roundedRect to work. Please install it and try again.")
+      rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = prot[,domainCol], border = domainBorderCol)
+    }
+  }else{
+    rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = prot[,domainCol], border = domainBorderCol)
+  }
+
 
   title(main = cbioSubTitle, adj = 0, font.main = 2, cex.main = titleSize[1], line = 0.8)
   title(main = unique(prot[,refseq.ID]), adj = 0, font.main = 1, line = -0.5, cex.main = titleSize[2])

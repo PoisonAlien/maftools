@@ -236,7 +236,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   }
 
   if(is.null(colors)){
-    vc_col = get_vcColors()
+    vc_col = get_vcColors(websafe = FALSE)
   }else{
     vc_col = colors
     if(!"pathway" %in% names(vc_col)){

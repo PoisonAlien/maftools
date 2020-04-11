@@ -22,6 +22,9 @@ lollipopPlot2(
   alpha = 1,
   axisTextSize = c(1, 1),
   pointSize = 1.2,
+  roundedRect = TRUE,
+  showDomainLabel = TRUE,
+  domainBorderCol = "black",
   domainLabelSize = 1,
   legendTxtSize = 1,
   verbose = TRUE
@@ -61,6 +64,12 @@ lollipopPlot2(
 \item{axisTextSize}{text size for axis labels. Default 1.}
 
 \item{pointSize}{size of lollipop heads. Default 1.2}
+
+\item{roundedRect}{Default FALSE. If `TRUE` domains are drawn with rounded corners. Requires \code{berryFunctions}}
+
+\item{showDomainLabel}{Label domains within the plot. Default TRUE. If FALSE domains are annotated in legend.}
+
+\item{domainBorderCol}{Default "black". Set to NA to remove.}
 
 \item{domainLabelSize}{text size for domain labels. Default 1.}
 

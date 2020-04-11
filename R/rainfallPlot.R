@@ -50,8 +50,9 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
   maf.snp = maf.snp[complete.cases(diff)]
 
   if(is.null(color)){
-    col = RColorBrewer::brewer.pal(n = 6, name = 'Set1')
-    names(col) = c('C>T', 'C>G', 'C>A', 'T>C', 'T>A', 'T>G')
+    #col = RColorBrewer::brewer.pal(n = 6, name = 'Set1')
+    col = get_titvCol()
+    #names(col) = c('C>T', 'C>G', 'C>A', 'T>C', 'T>A', 'T>G')
   }else{
     col = color
   }

@@ -15,6 +15,7 @@ lollipopPlot(
   cBioPortal = FALSE,
   refSeqID = NULL,
   proteinID = NULL,
+  roundedRect = TRUE,
   repel = FALSE,
   collapsePosLabel = TRUE,
   showLegend = TRUE,
@@ -24,7 +25,7 @@ lollipopPlot(
   axisTextSize = c(1, 1),
   printCount = FALSE,
   colors = NULL,
-  domainColors = NULL,
+  domainAlpha = 1,
   domainBorderCol = "black",
   bgBorderCol = "black",
   labelOnlyUniqueDoamins = TRUE,
@@ -46,13 +47,15 @@ lollipopPlot(
 
 \item{showMutationRate}{Whether to show the somatic mutation rate on the title. Default TRUE}
 
-\item{showDomainLabel}{Label domains within the plot. Default TRUE. If FALSE they will be annotated in legend.}
+\item{showDomainLabel}{Label domains within the plot. Default TRUE. If `FALSE`` domains are annotated in legend.}
 
 \item{cBioPortal}{Adds annotations similar to cBioPortals MutationMapper and collapse Variants into Truncating and rest.}
 
 \item{refSeqID}{RefSeq transcript identifier for \code{gene} if known.}
 
 \item{proteinID}{RefSeq protein identifier for \code{gene} if known.}
+
+\item{roundedRect}{Default TRUE. If `TRUE` domains are drawn with rounded corners. Requires \code{berryFunctions}}
 
 \item{repel}{If points are too close to each other, use this option to repel them. Default FALSE. Warning: naive method, might make plot ugly in case of too many variants!}
 
@@ -72,7 +75,7 @@ lollipopPlot(
 
 \item{colors}{named vector of colors for each Variant_Classification. Default NULL.}
 
-\item{domainColors}{Manual colors for protein domains}
+\item{domainAlpha}{Default 1}
 
 \item{domainBorderCol}{Default "black". Set to NA to remove.}
 
