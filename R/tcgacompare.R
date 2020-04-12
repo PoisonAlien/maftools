@@ -176,24 +176,32 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
 
   tcga.cohort.med[, Median_Mutations_log10 := log10(Median_Mutations)]
 
+  if (decreasing) {
+    sidePos = 2
+    linePos = 1.6
+  } else {
+    sidePos = 2 # 4 is bad
+    linePos = 1.6
+  }
+
   if(logscale){
     if(is.null(capture_size)){
-      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^y_at)
-      mtext(text = "log10 TMB", side = 4)
+      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^(y_at))
+      mtext(text = "TMB", side = sidePos, line = linePos)
       #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations", "Median_Mutations_perMB")
     }else{
-      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^y_at)
-      mtext(text = "log10 TMB (per MB)", side = 4)
+      axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE, labels = 10^(y_at))
+      mtext(text = "TMB (per MB)", side = sidePos, line = linePos)
       #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations_perMB", "Median_Mutations_perMB_log10")
     }
   }else{
     if(is.null(capture_size)){
       axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE)
-      mtext(text = "TMB", side = 4, line = 1.2)
+      mtext(text = "TMB", side = sidePos, line = linePos)
       #colnames(tcga.cohort.med) = c("Cohort", "Cohort_Size", "Median_Mutations", "Median_Mutations_perMB")
     }else{
       axis(side = 2, at = y_at, las = 2, line = -0.6, tick = FALSE)
-      mtext(text = "TMB (per MB)", side = 4)
+      mtext(text = "TMB (per MB)", side = sidePos, line = linePos)
     }
   }
 
