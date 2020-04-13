@@ -17,7 +17,12 @@
 #' @param countsFontSize Default 0.8
 #' @param countsFontColor Default `black`
 #' @param colPal colPalBrewer palettes. See RColorBrewer::display.brewer.all() for details
-#'
+#' @param showSum show [sum] with gene names in plot, Default TRUE
+#' @param colNC Number of different colors in the palette, minimum 3, default 9
+#' @param nShiftSymbols shift if positive shift SigSymbols by n to the left, default = 5
+#' @param sigSymbolsSize size of symbols in the matrix and in legend
+#' @param sigSymbolsFontSize size of font in legends
+#' @param pvSymbols vector of pch numbers for symbols of p-value thresholds c(high, low)    
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
@@ -28,7 +33,7 @@
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
                                geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
                                showCounts = FALSE, countStats = 'sig', countType = 'all',
-                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG"){
+                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", showSum = TRUE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42)){
 
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
@@ -102,7 +107,8 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     m <- nrow(interactions)
     n <- ncol(interactions)
 
-    col_pal = RColorBrewer::brewer.pal(9, colPal)
+    
+    col_pal = RColorBrewer::brewer.pal(colNC, colPal)
     col_pal = grDevices::colorRampPalette(colors = col_pal)
     col_pal = col_pal(m*n)
 
@@ -127,7 +133,10 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     if(!all(rownames(gene_sum) == colnames(interactions))){
       stop(paste0("Column mismatches!"))
     }
-    rownames(gene_sum) = paste0(apply(gene_sum, 1, paste, collapse = ' ['), ']')
+    if(showSum){
+      rownames(gene_sum) = paste0(apply(gene_sum, 1, paste, collapse = ' ['), ']')
+    }
+    
 
     par(bty="n", mar = c(1, 4, 4, 2)+.1, las=2, fig = c(0, 1, 0, 1))
 
@@ -189,16 +198,16 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
     if(showSigSymbols){
       w = arrayInd(which(10^-abs(interactions) < min(pvalue)), rep(m,2))
-      points(w, pch="*", col="black")
+      points(w, pch=pvSymbols[2], col="black", cex = sigSymbolsSize)
       w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
-      points(w, pch=".", col="black")
+      points(w, pch=pvSymbols[1], col="black", cex = sigSymbolsSize)
     }
 
     if(showSigSymbols){
-      points(x = n-2, y = 0.7*n, pch = "*", cex = 2)
-      text(x = n-2, y = 0.7*n, paste0("P < ", min(pvalue)), pos=4, cex = 0.9, adj = 0)
-      points(x = n-2, y = 0.65*n, pch = ".", cex = 2)
-      text(x = n-2, y = 0.65*n, paste0("P < ", max(pvalue)), pos=4, cex = 0.9)
+      points(x = n-nShiftSymbols, y = 0.7*n, pch = pvSymbols[2], cex = sigSymbolsSize) # "*"
+      text(x = n-nShiftSymbols, y = 0.7*n, paste0(" P < ", min(pvalue)), pos=4, cex = sigSymbolsFontSize, adj = 0)
+      points(x = n-nShiftSymbols, y = 0.65*n, pch = pvSymbols[1], cex = sigSymbolsSize) # "."
+      text(x = n-nShiftSymbols, y = 0.65*n, paste0(" P < ", max(pvalue)), pos=4, cex = sigSymbolsFontSize)
     }
 
     #image(y = 1:8 +6, x=rep(n,2)+c(2,2.5)+1, z=matrix(c(1:8), nrow=1), col=brewer.pal(8,"PiYG"), add=TRUE)
@@ -212,8 +221,8 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
     #atLims = seq(nrow(interactions), 0.9*nrow(interactions), length.out = 7)
     atLims = seq(0, 1, length.out = 7)
-    axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurance)"), lwd=.5, cex.axis = 0.8, line = 0.2)
-    text(x = 0.4, y = 0.5, labels = "-log10(P-value)", srt = 90)
+    axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurance)"), lwd=.5, cex.axis = sigSymbolsFontSize, line = 0.2)
+    text(x = 0.4, y = 0.5, labels = "-log10(P-value)", srt = 90, cex = sigSymbolsFontSize)
     #mtext(side=4, at = median(atLims), "-log10 (p-value)", las=3, cex = 0.9, line = 2.5, font = 1)
   }
 
