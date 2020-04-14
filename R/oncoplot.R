@@ -17,6 +17,7 @@
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
+#--' @param drawExtraBar Choose one clinical indicator(Numeric) to plot barplot for each sample when `drawColBar` is TRUE. Default NULL
 #' @param includeColBarCN Whether to include CN in column bar plot. Default TRUE
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param barcode_mar Default 4
@@ -44,12 +45,14 @@
 #' @param groupAnnotationBySize Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
+#--' @param drawBox logical whether to draw a box around main matrix. Default FALSE
 #' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
 #' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param fontSize font size for gene names. Default 0.8.
 #' @param sepwd_genes Default 0.5
 #' @param sepwd_samples Default 0.25
 #' @param SampleNamefontSize font size for sample names. Default 1
+#--' @param anno_height The height of annotation legend. Default 1
 #' @param titleFontSize font size for title. Default 1.5
 #' @param legendFontSize font size for legend. Default 1.2
 #' @param annotationFontSize font size for annotations. Default 1.2
@@ -75,11 +78,11 @@
 #' oncoplot(maf = laml, colors = col, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
 #' @seealso \code{\link{oncostrip}}
 #' @export
-oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE,
+oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE, drawExtraBar = NULL,
                      clinicalFeatures = NULL, pathways = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, legend_height = 4, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
-                     sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE,
-                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1,
+                     sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE, drawBox = FALSE,
+                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1, anno_height = 1,
                      showTitle = TRUE, titleText = NULL, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
 
   if(!is.null(genes)){ #If user provides a gene list
@@ -306,7 +309,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   }
 
   #Plot layout
-  plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar,
+  plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar, anno_height = anno_height,
               drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = exprsTbl, legend_height = legend_height)
 
   #01: Draw scale axis for expression table
@@ -337,7 +340,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   }
 
   #02: Draw top bar plot
-  if(drawColBar){
+  if(drawColBar & is.null(drawExtraBar)){
     top_bar_data = top_bar_data[,colnames(numMat), drop = FALSE]
     if(drawRowBar){
       par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
@@ -369,6 +372,28 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     if(logColBar){
       mtext(text = "(log10)", side = 2, line = 2, cex = 0.6)
     }
+  }else if(!is.null(drawExtraBar) & drawColBar){
+    # Draw extra clinical data in top
+    if(drawRowBar){
+      par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
+    }else{
+      par(mar = c(0.25 , gene_mar, 2, 5), xpd = TRUE)
+    }
+
+    extdata <- data.frame(maf@clinical.data)[,c("Tumor_Sample_Barcode", drawExtraBar)]
+    rownames(extdata) <- extdata$Tumor_Sample_Barcode
+    extdata <- extdata[colnames(top_bar_data),]
+    extdata[, drawExtraBar] <- as.numeric(as.character(extdata[, drawExtraBar]))
+
+    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = c(0, max(extdata[,drawExtraBar])),
+         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
+    axis(side = 2, at = c(0, round(max(extdata[,drawExtraBar]))), las = 2, line = 0.5)
+
+    for(i in 1:nrow(extdata)){
+      graphics::rect(xleft = i-1, xright = i-0.1, ybottom = 0, ytop = as.numeric(extdata[i, drawExtraBar]),
+                     col = "#33A02CFF", border = NA, lwd = 0)
+    }
+    title(ylab = drawExtraBar, font = 1, cex.lab = legendFontSize)
   }
 
   #03: Draw scale for side bar plot
@@ -635,6 +660,11 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
   abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
 
+  #Add box border
+  if (drawBox) {
+    box(lty = 'solid', col = 'grey', lwd = 2)
+  }
+
   #Add boxes if pathways are opted
   if(!is.null(pathways)){
     temp_dat = lapply(seq_along(temp_dat), function(i){
@@ -873,7 +903,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
                col = leg_classes, border = NA, bty = "n",
                ncol= 2, pch = leg_classes_pch, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
 
-  x_axp = 0+lep$rect$w
+  x_axp0 = 0+lep$rect$w
 
   if(!is.null(clinicalFeatures)){
 
@@ -888,12 +918,26 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
       }
       names(x)[is.na(names(x))] = "NA"
 
-      lep = legend(x = x_axp, y = 1, legend = names(x),
-                   col = x, border = NA,
-                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                   cex = annotationFontSize, title = rev(names(annotation))[i],
-                   title.adj = 0)
-      x_axp = x_axp + lep$rect$w
+      if (i %% 5 == 1) {
+        x_axp = x_axp0
+      }
+
+      # lep = legend(x = x_axp, y = 1, legend = names(x),
+      #              col = x, border = NA,
+      #              ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+      #              cex = annotationFontSize, title = rev(names(annotation))[i],
+      #              title.adj = 0)
+      # x_axp = x_axp + lep$rect$w
+
+      y_axp = 1 - i %/% 5.0001 * 0.4
+
+      leps = legend(x = x_axp, y = y_axp, legend = names(x),
+                    col = x, border = NA, text.width = 0.15, x.intersp = 0.5,
+                    ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+                    cex = annotationFontSize, title = rev(names(annotation))[i],
+                    title.adj = 0)
+
+      x_axp = x_axp + leps$rect$w/1.2
 
     }
   }
