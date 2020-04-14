@@ -17,7 +17,7 @@
 #' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
-#--' @param drawExtraBar Choose one clinical indicator(Numeric) to plot barplot for each sample when `drawColBar` is TRUE. Default NULL
+#' @param drawExtraBar Choose one clinical indicator(Numeric) to plot barplot for each sample when `drawColBar` is TRUE. Default NULL
 #' @param includeColBarCN Whether to include CN in column bar plot. Default TRUE
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param barcode_mar Default 4
@@ -45,14 +45,14 @@
 #' @param groupAnnotationBySize Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.
 #' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
 #' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
-#--' @param drawBox logical whether to draw a box around main matrix. Default FALSE
+#' @param drawBox logical whether to draw a box around main matrix. Default FALSE
 #' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
 #' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param fontSize font size for gene names. Default 0.8.
 #' @param sepwd_genes Default 0.5
 #' @param sepwd_samples Default 0.25
 #' @param SampleNamefontSize font size for sample names. Default 1
-#--' @param anno_height The height of annotation legend. Default 1
+#' @param anno_height The height of annotation legend. Default 1
 #' @param titleFontSize font size for title. Default 1.5
 #' @param legendFontSize font size for legend. Default 1.2
 #' @param annotationFontSize font size for annotations. Default 1.2
@@ -385,13 +385,13 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     extdata <- extdata[colnames(top_bar_data),]
     extdata[, drawExtraBar] <- as.numeric(as.character(extdata[, drawExtraBar]))
 
-    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = c(0, max(extdata[,drawExtraBar])),
+    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = c(0, max(extdata[,drawExtraBar], na.rm = TRUE)),
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
-    axis(side = 2, at = c(0, round(max(extdata[,drawExtraBar]))), las = 2, line = 0.5)
+    axis(side = 2, at = c(0, round(max(extdata[,drawExtraBar], na.rm = TRUE))), las = 2, line = 0.5)
 
     for(i in 1:nrow(extdata)){
       graphics::rect(xleft = i-1, xright = i-0.1, ybottom = 0, ytop = as.numeric(extdata[i, drawExtraBar]),
-                     col = "#33A02CFF", border = NA, lwd = 0)
+                     col = "#535c68", border = NA, lwd = 0)
     }
     title(ylab = drawExtraBar, font = 1, cex.lab = legendFontSize)
   }
@@ -662,7 +662,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
   #Add box border
   if (drawBox) {
-    box(lty = 'solid', col = 'grey', lwd = 2)
+    box(lty = 'solid', col = '#535c68', lwd = 2)
   }
 
   #Add boxes if pathways are opted
