@@ -16,6 +16,7 @@ oncoplot(
   includeColBarCN = TRUE,
   draw_titv = FALSE,
   logColBar = FALSE,
+  drawExtraBar = NULL,
   clinicalFeatures = NULL,
   pathways = NULL,
   exprsTbl = NULL,
@@ -40,6 +41,7 @@ oncoplot(
   groupAnnotationBySize = TRUE,
   annotationOrder = NULL,
   keepGeneOrder = FALSE,
+  drawBox = FALSE,
   GeneOrderSort = TRUE,
   sampleOrder = NULL,
   writeMatrix = FALSE,
@@ -47,6 +49,7 @@ oncoplot(
   sepwd_samples = 0.25,
   fontSize = 0.8,
   SampleNamefontSize = 1,
+  anno_height = 1,
   showTitle = TRUE,
   titleText = NULL,
   titleFontSize = 1.5,
@@ -79,6 +82,8 @@ oncoplot(
 \item{draw_titv}{logical Includes TiTv plot. \code{FALSE}}
 
 \item{logColBar}{Plot top bar plot on log10 scale. Default \code{FALSE}.}
+
+\item{drawExtraBar}{Choose one clinical indicator(Numeric) to plot barplot for each sample when `drawColBar` is TRUE. Default NULL}
 
 \item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
 
@@ -129,6 +134,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{keepGeneOrder}{logical whether to keep order of given genes. Default FALSE, order according to mutation frequency}
 
+\item{drawBox}{logical whether to draw a box around main matrix. Default FALSE}
+
 \item{GeneOrderSort}{logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE}
 
 \item{sampleOrder}{Manually speify sample names for oncolplot ordering. Default NULL.}
@@ -142,6 +149,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{fontSize}{font size for gene names. Default 0.8.}
 
 \item{SampleNamefontSize}{font size for sample names. Default 1}
+
+\item{anno_height}{The height of annotation legend. Default 1}
 
 \item{showTitle}{Default TRUE}
 

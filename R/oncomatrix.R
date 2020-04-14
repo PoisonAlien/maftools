@@ -346,22 +346,22 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
 
 #Get plot layout for oncoplot
 plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
-                       drawColBar = TRUE, draw_titv = FALSE, exprsTbl = NULL, legend_height = 4){
+                       drawColBar = TRUE, draw_titv = FALSE, exprsTbl = NULL, legend_height = 4, anno_height = 1){
 
   if(is.null(clinicalFeatures)){
     if(draw_titv){
       if(!drawRowBar & !drawColBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 4, legend_height))
+          mat_lo = matrix(data = c(1,2,3,rep(0,3)), nrow = 3, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(12, 4, legend_height), widths = c(4,0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
           lo = graphics::layout(mat = mat_lo, heights = c(12, 4, legend_height), widths = c(1, 4))
         }
       }else if(!drawRowBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2,3, 4), nrow = 4, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, 4, legend_height))
+          mat_lo = matrix(data = c(1,2,3, 4,rep(0,4)), nrow = 4, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, 4, legend_height), widths = c(4, 0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
           lo = graphics::layout(mat = mat_lo, heights = c(4, 12, 4, legend_height), widths = c(1, 4))
@@ -386,16 +386,16 @@ plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
     }else{
       if(!drawRowBar & !drawColBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, legend_height))
+          mat_lo = matrix(data = c(1,2,rep(0,2)), nrow = 2, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(12, legend_height), widths = c(4, 0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,3), nrow = 2, ncol = 2, byrow = TRUE)
           lo = graphics::layout(mat = mat_lo, heights = c(12, legend_height), widths = c(1, 4))
         }
       }else if(!drawRowBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, legend_height))
+          mat_lo = matrix(data = c(1,2,3,rep(0,3)), nrow = 3, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, legend_height), widths = c(4, 0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
           lo = graphics::layout(mat = mat_lo, heights = c(4, 12, legend_height), widths = c(1, 4))
@@ -422,69 +422,69 @@ plot_layout = function(clinicalFeatures = NULL, drawRowBar = TRUE,
     if(draw_titv){
       if(!drawRowBar & !drawColBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, 4, legend_height))
+          mat_lo = matrix(data = c(1,2,3,4,rep(0,4)), nrow = 4, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, 4, legend_height), widths = c(4, 0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, 4, legend_height), widths = c(1, 4))
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, 4, legend_height), widths = c(1, 4))
         }
       }else if(!drawRowBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2,3,4,5), nrow = 5, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, 1, 4, legend_height))
+          mat_lo = matrix(data = c(1,2,3,4,5,rep(0,5)), nrow = 5, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, anno_height, 4, legend_height), widths = c(4, 0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,9), nrow = 5, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, 1, 4, legend_height), widths = c(1, 4))
+          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, anno_height, 4, legend_height), widths = c(1, 4))
         }
       }else if(!drawColBar){
         if(is.null(exprsTbl)){
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, 4, legend_height), widths = c(4, 1))
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, 4, legend_height), widths = c(4, 1))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,10,10), nrow = 4, ncol = 3, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, 4, legend_height), widths = c(1, 4, 1))
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, 4, legend_height), widths = c(1, 4, 1))
         }
       }else{
         if(is.null(exprsTbl)){
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,9), nrow = 5, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, 4, legend_height))
+          lo = graphics::layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, anno_height, 4, legend_height))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,11,12,13,13,13), nrow = 5, ncol = 3, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, widths = c(1, 4, 1), heights = c(4, 12, 1, 4, legend_height))
+          lo = graphics::layout(mat = mat_lo, widths = c(1, 4, 1), heights = c(4, 12, anno_height, 4, legend_height))
         }
       }
     }else{
       if(!drawRowBar & !drawColBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, legend_height))
+          mat_lo = matrix(data = c(1,2,3,rep(0,3)), nrow = 3, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, legend_height), widths = c(4, 0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, legend_height), widths = c(1, 4))
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, legend_height), widths = c(1, 4))
         }
       }else if(!drawRowBar){
         if(is.null(exprsTbl)){
-          mat_lo = matrix(data = c(1,2,3,4), nrow = 4, ncol = 1, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, 1, legend_height))
+          mat_lo = matrix(data = c(1,2,3,4,rep(0,4)), nrow = 4, ncol = 2, byrow = FALSE)
+          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, anno_height, legend_height), widths = c(4, 0.5))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, 1, legend_height), widths = c(1, 4))
+          lo = graphics::layout(mat = mat_lo, heights = c(4, 12, anno_height, legend_height), widths = c(1, 4))
         }
       }else if(!drawColBar){
         if(is.null(exprsTbl)){
           mat_lo = matrix(data = c(1,2,3,4,5,5), nrow = 3, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, legend_height), widths = c(4, 1))
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, legend_height), widths = c(4, 1))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,7,7), nrow = 3, ncol = 3, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, heights = c(12, 1, legend_height), widths = c(1, 4, 1))
+          lo = graphics::layout(mat = mat_lo, heights = c(12, anno_height, legend_height), widths = c(1, 4, 1))
         }
       }else{
         if(is.null(exprsTbl)){
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,7), nrow = 4, ncol = 2, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, 1, legend_height))
+          lo = graphics::layout(mat = mat_lo, widths = c(4, 1), heights = c(4, 12, anno_height, legend_height))
         }else{
           mat_lo = matrix(data = c(1,2,3,4,5,6,7,8,9,10,10,10), nrow = 4, ncol = 3, byrow = TRUE)
-          lo = graphics::layout(mat = mat_lo, widths = c(1, 4, 1), heights = c(4, 12, 1, legend_height))
+          lo = graphics::layout(mat = mat_lo, widths = c(1, 4, 1), heights = c(4, 12, anno_height, legend_height))
         }
       }
     }
