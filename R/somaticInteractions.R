@@ -221,7 +221,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
     #atLims = seq(nrow(interactions), 0.9*nrow(interactions), length.out = 7)
     atLims = seq(0, 1, length.out = 7)
-    axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurance)"), lwd=.5, cex.axis = sigSymbolsFontSize, line = 0.2)
+    axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurence)"), lwd=.5, cex.axis = sigSymbolsFontSize, line = 0.2)
     text(x = 0.4, y = 0.5, labels = "-log10(P-value)", srt = 90, cex = sigSymbolsFontSize)
     #mtext(side=4, at = median(atLims), "-log10 (p-value)", las=3, cex = 0.9, line = 2.5, font = 1)
   }
