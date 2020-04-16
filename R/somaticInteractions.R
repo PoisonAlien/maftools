@@ -22,7 +22,7 @@
 #' @param nShiftSymbols shift if positive shift SigSymbols by n to the left, default = 5
 #' @param sigSymbolsSize size of symbols in the matrix and in legend
 #' @param sigSymbolsFontSize size of font in legends
-#' @param pvSymbols vector of pch numbers for symbols of p-value thresholds c(high, low)    
+#' @param pvSymbols vector of pch numbers for symbols of p-value for upper and lower thresholds c(upper, lower)    
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
@@ -32,9 +32,9 @@
 
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
                                geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
-                               showCounts = FALSE, countStats = 'sig', countType = 'all',
+                               showCounts = FALSE, countStats = 'all', countType = 'all',
                                countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", showSum = TRUE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42)){
-
+  #browser()
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
   }
@@ -137,12 +137,20 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
       rownames(gene_sum) = paste0(apply(gene_sum, 1, paste, collapse = ' ['), ']')
     }
     
-
     par(bty="n", mar = c(1, 4, 4, 2)+.1, las=2, fig = c(0, 1, 0, 1))
 
-    image(x=1:n, y=1:m, interactions, col = col_pal,
+    # adjust breaks for colors according to predefined legend values
+    minLog10pval = 3
+    breaks <- seq(-minLog10pval,minLog10pval,length.out=m*n+1)
+    #replace extreme values with the predefined minLog10pval values (and avoid white colored squares)
+    interactions4plot  = interactions
+    interactions4plot[interactions4plot < (-minLog10pval)] = -minLog10pval
+    interactions4plot[interactions4plot > minLog10pval] = minLog10pval
+   
+    image(x=1:n, y=1:m, interactions4plot, col = col_pal,
           xaxt="n", yaxt="n",
-          xlab="",ylab="", xlim=c(0, n+1), ylim=c(0, n+1))
+          xlab="",ylab="", xlim=c(0, n+1), ylim=c(0, n+1), breaks=breaks)
+
     abline(h=0:n+.5, col="white", lwd=.5)
     abline(v=0:n+.5, col="white", lwd=.5)
 
@@ -199,7 +207,8 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     if(showSigSymbols){
       w = arrayInd(which(10^-abs(interactions) < min(pvalue)), rep(m,2))
       points(w, pch=pvSymbols[2], col="black", cex = sigSymbolsSize)
-      w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
+      #w = arrayInd(which(10^-abs(interactions) < max(pvalue)), rep(m,2))
+      w = arrayInd(which((10^-abs(interactions) < max(pvalue)) & (10^-abs(interactions) > min(pvalue))), rep(m,2))
       points(w, pch=pvSymbols[1], col="black", cex = sigSymbolsSize)
     }
 
