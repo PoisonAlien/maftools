@@ -14,11 +14,17 @@ somaticInteractions(
   fontSize = 0.8,
   showSigSymbols = TRUE,
   showCounts = FALSE,
-  countStats = "sig",
+  countStats = "all",
   countType = "all",
   countsFontSize = 0.8,
   countsFontColor = "black",
-  colPal = "BrBG"
+  colPal = "BrBG",
+  showSum = TRUE,
+  colNC = 9,
+  nShiftSymbols = 5,
+  sigSymbolsSize = 2,
+  sigSymbolsFontSize = 0.9,
+  pvSymbols = c(46, 42)
 )
 }
 \arguments{
@@ -49,6 +55,18 @@ somaticInteractions(
 \item{countsFontColor}{Default `black`}
 
 \item{colPal}{colPalBrewer palettes. See RColorBrewer::display.brewer.all() for details}
+
+\item{showSum}{show [sum] with gene names in plot, Default TRUE}
+
+\item{colNC}{Number of different colors in the palette, minimum 3, default 9}
+
+\item{nShiftSymbols}{shift if positive shift SigSymbols by n to the left, default = 5}
+
+\item{sigSymbolsSize}{size of symbols in the matrix and in legend}
+
+\item{sigSymbolsFontSize}{size of font in legends}
+
+\item{pvSymbols}{vector of pch numbers for symbols of p-value for upper and lower thresholds c(upper, lower)}
 }
 \value{
 list of data.tables
