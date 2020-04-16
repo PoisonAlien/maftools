@@ -558,6 +558,15 @@ Finally plot signatures
 maftools::plotSignatures(nmfRes = laml.sig, title_size = 0.8)
 ```
 
+If you fancy 3D barpots, you can install `barplot3d` package and visualize the results with `legoplot3d` function.
+```{r}
+library("barplot3d")
+#Visualize first signature
+sig1 = laml.sig$signatures[,1]
+barplot3d::legoplot3d(contextdata = sig1, labels = FALSE, scalexy = 0.01, sixcolors = "sanger", alpha = 0.5)
+```
+
+
 ***NOTE:***
 
 1. Should you receive an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `NMF` library and re-run.

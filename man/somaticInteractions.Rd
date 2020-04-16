@@ -24,7 +24,8 @@ somaticInteractions(
   nShiftSymbols = 5,
   sigSymbolsSize = 2,
   sigSymbolsFontSize = 0.9,
-  pvSymbols = c(46, 42)
+  pvSymbols = c(46, 42),
+  limitColorBreaks = FALSE
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ somaticInteractions(
 \item{sigSymbolsFontSize}{size of font in legends}
 
 \item{pvSymbols}{vector of pch numbers for symbols of p-value for upper and lower thresholds c(upper, lower)}
+
+\item{limitColorBreaks}{limit color to extreme values. Default FALSE}
 }
 \value{
 list of data.tables
