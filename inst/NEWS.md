@@ -12,6 +12,7 @@
 
 ## ENHANCEMENTS
 
+- Added `showSum`, `colNC`, `nShiftSymbols`, `sigSymbolsSize`, `sigSymbolsFontSize`, `pvSymbols` arguments to `somaticInteractions` PR: [#505](https://github.com/PoisonAlien/maftools/pull/505) Thanks [zmiimz](https://github.com/zmiimz)
 - Added `anno_height`, `drawBox`, `drawExtraBar` arguments to `oncoplot` PR: [#501](https://github.com/PoisonAlien/maftools/pull/501) Thanks [Kai Gu](https://github.com/kaigu1990)
 - Added `decreasing` argument to `tcgaComapre` Issue: [#497](https://github.com/PoisonAlien/maftools/issues/497)
 - Added startgain and startlost to `annovarToMaf` Issue: [#487](https://github.com/PoisonAlien/maftools/issues/487)
