@@ -22,7 +22,7 @@ Imports:
     wordcloud,
     grDevices,
     survival
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8
 Suggests: knitr, rmarkdown, BSgenome, Biostrings, NMF, mclust, berryFunctions
 VignetteBuilder: knitr
