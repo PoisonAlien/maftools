@@ -1,7 +1,7 @@
 # CHANGES IN VERSION 2.4.00
 ## BUG FIXES
 
-- lollipopPlot2 error with zero mutation Issue: [#480](https://github.com/PoisonAlien/maftools/issues/480)
+- `lollipopPlot2` error with zero mutation Issue: [#480](https://github.com/PoisonAlien/maftools/issues/480)
 - `inferHeterogeneity` PR [#473](https://github.com/PoisonAlien/maftools/issues/473)
 - `oncoplot` cnv crosses border [#472](https://github.com/PoisonAlien/maftools/issues/472)
 - Avoid wrongly naming columns in `annovarToMaf` Issue: [#457](https://github.com/PoisonAlien/maftools/issues/457)
@@ -12,6 +12,7 @@
 
 ## ENHANCEMENTS
 
+- `OncogenicPathways` improvements Issue: [#505](https://github.com/PoisonAlien/maftools/pull/509)
 - Added `showSum`, `colNC`, `nShiftSymbols`, `sigSymbolsSize`, `sigSymbolsFontSize`, `pvSymbols` arguments to `somaticInteractions` PR: [#505](https://github.com/PoisonAlien/maftools/pull/505) Thanks [zmiimz](https://github.com/zmiimz)
 - Added `anno_height`, `drawBox`, `drawExtraBar` arguments to `oncoplot` PR: [#501](https://github.com/PoisonAlien/maftools/pull/501) Thanks [Kai Gu](https://github.com/kaigu1990)
 - Added `decreasing` argument to `tcgaComapre` Issue: [#497](https://github.com/PoisonAlien/maftools/issues/497)
@@ -26,7 +27,8 @@
 
 ## NEW FUNCTIONS AND FEATURES
 
+- `setdiffMAF` and `intersectMAF`. Set operations for MAF files. PR: [#508](https://github.com/PoisonAlien/maftools/pull/508) Thanks [Shixiang Wang](https://github.com/ShixiangWang)
 - `tcgaDriverBP` Compare genes to known TCGA drivers and their biological pathways
-- `vafComapre` plots vaf distribution of target genes from two cohorts Issue: [#495](https://github.com/PoisonAlien/maftools/issues/495)
+- `vafCompare` plots vaf distribution of target genes from two cohorts Issue: [#495](https://github.com/PoisonAlien/maftools/issues/495)
 - `coBarplot` side-by-side barplot for maf comparison Issue: [#486](https://github.com/PoisonAlien/maftools/issues/486)
 - Now you can group genes in `oncoplot` by specific pathways. This can be done by setting `pathways = 'auto'` or by providing a two column data.frame/tsv-file with Gene names and their corresponding pathway belongings.

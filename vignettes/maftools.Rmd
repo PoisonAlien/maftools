@@ -559,7 +559,7 @@ maftools::plotSignatures(nmfRes = laml.sig, title_size = 0.8)
 ```
 
 If you fancy 3D barpots, you can install `barplot3d` package and visualize the results with `legoplot3d` function.
-```{r}
+```{r, eval=FALSE}
 library("barplot3d")
 #Visualize first signature
 sig1 = laml.sig$signatures[,1]

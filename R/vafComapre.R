@@ -15,7 +15,7 @@
 #' @param ncols Number of genes drawn per row. Default 4
 #' @export
 
-vafComapre = function(m1, m2, genes = NULL, top = 5, vafCol1 = NULL, vafCol2 = NULL,
+vafCompare = function(m1, m2, genes = NULL, top = 5, vafCol1 = NULL, vafCol2 = NULL,
                       m1Name = "M1", m2Name = "M2", cols = c("#2196F3", "#4CAF50"), sigvals = TRUE, nrows = NULL, ncols = NULL){
 
   if(is.null(genes)){
@@ -32,7 +32,7 @@ vafComapre = function(m1, m2, genes = NULL, top = 5, vafCol1 = NULL, vafCol2 = N
         dat1[,t_vaf := as.numeric(as.character(t_alt_count))/(as.numeric(as.character(t_ref_count)) + as.numeric(as.character(t_alt_count)))]
       }else{
         print(colnames(dat1))
-        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+        stop('t_vaf field is missing from M1. Use vafCol to manually specify vaf column name.')
       }
     }else{
       colnames(dat1)[which(colnames(dat1) == vafCol1)] = 't_vaf'
@@ -52,7 +52,7 @@ vafComapre = function(m1, m2, genes = NULL, top = 5, vafCol1 = NULL, vafCol2 = N
         dat2[,t_vaf := as.numeric(as.character(t_alt_count))/(as.numeric(as.character(t_ref_count)) + as.numeric(as.character(t_alt_count)))]
       }else{
         print(colnames(dat2))
-        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+        stop('t_vaf field is missing from M2. Use vafCol to manually specify vaf column name.')
       }
     }else{
       colnames(dat2)[which(colnames(dat2) == vafCol2)] = 't_vaf'
