@@ -1,114 +1,138 @@
 #' Set Operations for MAF objects
 #' @param x the first `MAF` object.
 #' @param y the second `MAF` object.
+#' @param mafObj Return output as an `MAF` object. Default `TRUE`
+#' @param refAltMatch Set operations are done by matching ref and alt alleles in addition to loci (Default). Id FALSE only loci (chr, start, end positions) are matched.
 #' @param ... other parameters passing to `subsetMaf` for subsetting operations.
-#' @name setMaf
+#' @rdname setMaf
+#' @export
+#' @return subset table or an object of class \code{\link{MAF-class}}. If no overlaps found returns `NULL`
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' x <- subsetMaf(maf = laml, tsb = c('TCGA-AB-3009'))
 #' y <- subsetMaf(maf = laml, tsb = c('TCGA-AB-2933'))
 #' setdiffMAF(x, y)
-#' intersectMAF(x, y)
-#' # This is similar to merge_mafs()
-#' unionMAF(x, y)
-NULL
-
-
-#' @rdname setMaf
-setdiffMAF <- function(x, y, mafObj = TRUE, ...) {
+#' intersectMAF(x, y) #Should return NULL due to no common variants
+setdiffMAF <- function(x, y, mafObj = TRUE, refAltMatch = TRUE, ...) {
  stopifnot(inherits(x, "MAF"), inherits(y, "MAF"))
 
   args = list(...)
-  if (length(args) == 0) {
-    maf_x = rbind(x@data, x@maf.silent)
-    maf_y = rbind(y@data, y@maf.silent)
-  } else {
-    maf_x = subsetMaf(x, mafObj = FALSE, ...)
-    maf_y = subsetMaf(y, mafObj = FALSE, ...)
+  if(length(args) > 0) {
+    x = subsetMaf(x, mafObj = FALSE, ...)
+    y = subsetMaf(y, mafObj = FALSE, ...)
   }
 
-  maf_x[, Label := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Type)]
-  maf_y[, Label := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Type)]
+  if(refAltMatch){
+    maf_x = data.table::rbindlist(l = list(nonsyn = x@data, syn = x@maf.silent), use.names = TRUE, fill = TRUE, idcol = "maf_slot")
+    data.table::setkey(x = maf_x, Chromosome, Start_Position, End_Position)
+    maf_y = data.table::rbindlist(l = list(y@data, y@maf.silent), use.names = TRUE, fill = TRUE)[,.(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2)]
+    data.table::setkey(x = maf_y, Chromosome, Start_Position, End_Position)
+    maf_x[, variant_ID := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, sep = ":")]
+    maf_y[, variant_ID := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, sep = ":")]
+  }else{
+    maf_x = data.table::rbindlist(l = list(nonsyn = x@data, syn = x@maf.silent), use.names = TRUE, fill = TRUE, idcol = "maf_slot")
+    data.table::setkey(x = maf_x, Chromosome, Start_Position, End_Position)
+    maf_y = data.table::rbindlist(l = list(y@data, y@maf.silent), use.names = TRUE, fill = TRUE)[,.(Chromosome, Start_Position, End_Position)]
+    data.table::setkey(x = maf_y, Chromosome, Start_Position, End_Position)
+    maf_x[, variant_ID := paste(Chromosome, Start_Position, End_Position, sep = ":")]
+    maf_y[, variant_ID := paste(Chromosome, Start_Position, End_Position, sep = ":")]
+  }
 
-  set = setdiff(maf_x$Label, maf_y$Label)
+  #Use faster character in vector operation
+  maf_x_unique = maf_x[!maf_x$variant_ID %chin% maf_y$variant_ID]
 
-  if (length(set) == 0) {
-    message("No variants left.")
+  if (nrow(maf_x_unique) == 0) {
+    warning("No X specific entries found!")
     return(NULL)
   }
 
-  maf_x = maf_x[Label %in% set]
-  maf_x$Label = NULL
+  maf_x_unique[,variant_ID := NULL]
+  maf_x_unique = droplevels.data.frame(maf_x_unique)
 
   if (!mafObj) {
-    maf_x
+    maf_x_unique
   } else {
-    return(read.maf(maf_x, clinicalData = x@clinical.data, verbose = FALSE))
-  }
-}
+    maf_x_unique = split(maf_x_unique, f = maf_x_unique$maf_slot)
+    maf_x_unique[['syn']][,maf_slot := NULL]
+    maf_x_unique[['nonsyn']][,maf_slot := NULL]
+    mafSummary = summarizeMaf(maf = maf_x_unique[["nonsyn"]], anno = x@clinical.data, chatty = FALSE)
 
-#' @rdname setMaf
-unionMAF <- function(x, y, mafObj = TRUE, ...) {
-  stopifnot(inherits(x, "MAF"), inherits(y, "MAF"))
-
-  args = list(...)
-
-  if (length(args) == 0) {
-    maf_x = rbind(x@data, x@maf.silent)
-    maf_y = rbind(y@data, y@maf.silent)
-  } else {
-    maf_x = subsetMaf(x, mafObj = FALSE, ...)
-    maf_y = subsetMaf(y, mafObj = FALSE, ...)
+    maf_x_unique = MAF(data = maf_x_unique[['nonsyn']], variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+            variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
+            summary = mafSummary$summary, maf.silent = maf_x_unique[['syn']], clinical.data = droplevels(mafSummary$sample.anno))
   }
 
-  maf = unique(rbind(maf_x, maf_y, fill = TRUE))
-
-  if (!mafObj) {
-    return(maf)
-  } else {
-    cli_merged = rbind(x@clinical.data, y@clinical.data)
-    return(read.maf(maf, clinicalData = cli_merged, verbose = FALSE))
-  }
-
+  maf_x_unique
 }
 
 
 #' @rdname setMaf
-#'
-intersectMAF <- function(x, y, mafObj = TRUE, ...) {
+#' @export
+intersectMAF <- function(x, y, refAltMatch = TRUE, mafObj = TRUE, ...) {
   stopifnot(inherits(x, "MAF"), inherits(y, "MAF"))
 
   args = list(...)
-  if (length(args) == 0) {
-    maf_x = rbind(x@data, x@maf.silent)
-    maf_y = rbind(y@data, y@maf.silent)
-  } else {
-    maf_x = subsetMaf(x, mafObj = FALSE, ...)
-    maf_y = subsetMaf(y, mafObj = FALSE, ...)
+  if(length(args) > 0) {
+    x = subsetMaf(x, mafObj = FALSE, ...)
+    y = subsetMaf(y, mafObj = FALSE, ...)
   }
 
-  maf_x[, Label := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Type)]
-  maf_y[, Label := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Type)]
+  if(refAltMatch){
+    maf_x = data.table::rbindlist(l = list(nonsyn = x@data, syn = x@maf.silent), use.names = TRUE, fill = TRUE, idcol = "maf_slot")
+    data.table::setkey(x = maf_x, Chromosome, Start_Position, End_Position)
+    maf_y = data.table::rbindlist(l = list(y@data, y@maf.silent), use.names = TRUE, fill = TRUE)[,.(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2)]
+    data.table::setkey(x = maf_y, Chromosome, Start_Position, End_Position)
+    maf_x[, variant_ID := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, sep = ":")]
+    maf_y[, variant_ID := paste(Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, sep = ":")]
+  }else{
+    maf_x = data.table::rbindlist(l = list(nonsyn = x@data, syn = x@maf.silent), use.names = TRUE, fill = TRUE, idcol = "maf_slot")
+    data.table::setkey(x = maf_x, Chromosome, Start_Position, End_Position)
+    maf_y = data.table::rbindlist(l = list(y@data, y@maf.silent), use.names = TRUE, fill = TRUE)[,.(Chromosome, Start_Position, End_Position)]
+    data.table::setkey(x = maf_y, Chromosome, Start_Position, End_Position)
+    maf_x[, variant_ID := paste(Chromosome, Start_Position, End_Position, sep = ":")]
+    maf_y[, variant_ID := paste(Chromosome, Start_Position, End_Position, sep = ":")]
+  }
 
-  set = intersect(maf_x$Label, maf_y$Label)
-  if (length(set) == 0) {
-    message("No common variants found.")
+  #Use faster character in vector operation
+  maf_x_common = maf_x[maf_x$variant_ID %chin% maf_y$variant_ID]
+
+  if (nrow(maf_x_common) == 0) {
+    warning("No common entries found!")
     return(NULL)
   }
 
-  maf_x = maf_x[Label %in% set]
-  maf_x$Label = NULL
-  maf_y = maf_y[Label %in% set]
-  maf_y$Label = NULL
+  maf_x_common[,variant_ID := NULL]
+  maf_x_common = droplevels.data.frame(maf_x_common)
 
-
-  maf = rbind(maf_x, maf_y, fill = TRUE)
   if (!mafObj) {
-    return(maf)
+    maf_x_common
   } else {
-    cli_merged = rbind(x@clinical.data, y@clinical.data)
-    return(read.maf(maf, clinicalData = cli_merged, verbose = FALSE))
+    maf_x_common = split(maf_x_common, f = maf_x_common$maf_slot)
+    maf_x_common[['syn']][,maf_slot := NULL]
+    maf_x_common[['nonsyn']][,maf_slot := NULL]
+    mafSummary = summarizeMaf(maf = maf_x_common[["nonsyn"]], anno = x@clinical.data, chatty = FALSE)
+
+    maf_x_common = MAF(data = maf_x_common[['nonsyn']], variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+                       variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
+                       summary = mafSummary$summary, maf.silent = maf_x_common[['syn']], clinical.data = droplevels(mafSummary$sample.anno))
   }
 
+  maf_x_common
+
+}
+
+.mafSetKeys = function(maf){
+  maf@data[,Chromosome := as.character(Chromosome)]
+  maf@data[,Start_Position := as.numeric(as.character(Start_Position))]
+  maf@data[,End_Position := as.numeric(as.character(End_Position))]
+
+  maf@maf.silent[,Chromosome := as.character(Chromosome)]
+  maf@maf.silent[,Start_Position := as.numeric(as.character(Start_Position))]
+  maf@maf.silent[,End_Position := as.numeric(as.character(End_Position))]
+
+  data.table::setkey(x = maf@data, Chromosome, Start_Position, End_Position)
+  data.table::setkey(x = maf@maf.silent, Chromosome, Start_Position, End_Position)
+
+  maf
 }
