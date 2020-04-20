@@ -134,7 +134,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
     gisticIp = gisticIp[!duplicated(id)]
     gisticIp[,id := NULL]
 
-    maf = rbind(maf, gisticIp, fill =TRUE)
+    maf = data.table::rbindlist(list(maf, gisticIp), fill = TRUE, use.names = TRUE)
     maf$Tumor_Sample_barcode = factor(x = maf$Tumor_Sample_barcode,
                                       levels = unique(c(levels(maf$Tumor_Sample_barcode), unique(as.character(gisticIp$Tumor_Sample_barcode)))))
 
@@ -176,7 +176,7 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
   m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
           variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
           summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = mafSummary$sample.anno)
-
+  #m = mafSetKeys(maf = m)
 
   if(verbose){
     cat("-Finished in",data.table::timetaken(start_time),"\n")

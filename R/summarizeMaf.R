@@ -29,6 +29,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     Center = NA
   }
 
+
   #nGenes
   nGenes = length(unique(maf[,Hugo_Symbol]))
   maf.tsbs = levels(maf[,Tumor_Sample_Barcode])
