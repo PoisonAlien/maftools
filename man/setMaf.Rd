@@ -18,6 +18,8 @@ intersectMAF(x, y, mafObj = TRUE, ...)
 
 \item{y}{the second `MAF` object.}
 
+\item{mafObj}{returns output as `MAF` object. Default `TRUE`.}
+
 \item{...}{other parameters passing to `subsetMaf` for subsetting operations.}
 }
 \description{
@@ -26,10 +28,19 @@ Set Operations for MAF objects
 \examples{
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml <- read.maf(maf = laml.maf)
-x <- subsetMaf(maf = laml, tsb = c('TCGA-AB-3009'))
-y <- subsetMaf(maf = laml, tsb = c('TCGA-AB-2933'))
+## Generate two example MAF objects
+x <- subsetMaf(maf = laml, tsb = c('TCGA-AB-2816'), genes = c("DNMT3A", "FLT3"))
+x@data
+y <- subsetMaf(maf = laml, tsb = c('TCGA-AB-2802'), genes = c("DNMT3A", "FLT3"))
+y@data
+
+setdiffMAF(x, y, mafObj = FALSE)
 setdiffMAF(x, y)
+
+intersectMAF(x, y, mafObj = FALSE)
 intersectMAF(x, y)
+
 # This is similar to merge_mafs()
+unionMAF(x, y, mafObj = FALSE)
 unionMAF(x, y)
 }

@@ -1,21 +1,32 @@
 #' Set Operations for MAF objects
 #' @param x the first `MAF` object.
 #' @param y the second `MAF` object.
+#' @param mafObj returns output as `MAF` object. Default `TRUE`.
 #' @param ... other parameters passing to `subsetMaf` for subsetting operations.
 #' @name setMaf
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' x <- subsetMaf(maf = laml, tsb = c('TCGA-AB-3009'))
-#' y <- subsetMaf(maf = laml, tsb = c('TCGA-AB-2933'))
+#' ## Generate two example MAF objects
+#' x <- subsetMaf(maf = laml, tsb = c('TCGA-AB-2816'), genes = c("DNMT3A", "FLT3"))
+#' x@data
+#' y <- subsetMaf(maf = laml, tsb = c('TCGA-AB-2802'), genes = c("DNMT3A", "FLT3"))
+#' y@data
+#'
+#' setdiffMAF(x, y, mafObj = FALSE)
 #' setdiffMAF(x, y)
+#'
+#' intersectMAF(x, y, mafObj = FALSE)
 #' intersectMAF(x, y)
+#'
 #' # This is similar to merge_mafs()
+#' unionMAF(x, y, mafObj = FALSE)
 #' unionMAF(x, y)
 NULL
 
 
 #' @rdname setMaf
+#' @export
 setdiffMAF <- function(x, y, mafObj = TRUE, ...) {
  stopifnot(inherits(x, "MAF"), inherits(y, "MAF"))
 
@@ -49,6 +60,7 @@ setdiffMAF <- function(x, y, mafObj = TRUE, ...) {
 }
 
 #' @rdname setMaf
+#' @export
 unionMAF <- function(x, y, mafObj = TRUE, ...) {
   stopifnot(inherits(x, "MAF"), inherits(y, "MAF"))
 
@@ -75,7 +87,7 @@ unionMAF <- function(x, y, mafObj = TRUE, ...) {
 
 
 #' @rdname setMaf
-#'
+#' @export
 intersectMAF <- function(x, y, mafObj = TRUE, ...) {
   stopifnot(inherits(x, "MAF"), inherits(y, "MAF"))
 
