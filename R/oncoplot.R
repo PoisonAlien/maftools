@@ -892,24 +892,16 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
   leg_classes = vc_col[vc_codes[2:length(vc_codes)]]
   leg_classes_pch = rep(15, length(leg_classes))
   if(additionalFeature_legend){
-    if(is.list(additionalFeature)){
-      for(af_i in seq_along(additionalFeature)){
-        leg_classes = c(leg_classes, additionalFeatureCol[af_i])
-        names(leg_classes)[length(leg_classes)] = paste(additionalFeature[[af_i]], collapse = ":")
-        leg_classes_pch = c(leg_classes_pch, additionalFeaturePch[af_i])
-      }
-    }else{
-      leg_classes = c(leg_classes, additionalFeatureCol)
-      names(leg_classes)[length(leg_classes)] = paste(additionalFeature, collapse = ":")
-      leg_classes_pch = c(leg_classes_pch, additionalFeaturePch)
-    }
+    leg_classes = c(leg_classes,"gray70")
+    names(leg_classes)[length(leg_classes)] = paste(additionalFeature, collapse = ":")
+    leg_classes_pch = c(leg_classes_pch, additionalFeaturePch)
   }
 
   lep = legend("topleft", legend = names(leg_classes),
                col = leg_classes, border = NA, bty = "n",
                ncol= 2, pch = leg_classes_pch, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
 
-  x_axp0 = 0+lep$rect$w
+  x_axp = 0+lep$rect$w
 
   if(!is.null(clinicalFeatures)){
 
@@ -924,26 +916,12 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
       }
       names(x)[is.na(names(x))] = "NA"
 
-      if (i %% 5 == 1) {
-        x_axp = x_axp0
-      }
-
-      # lep = legend(x = x_axp, y = 1, legend = names(x),
-      #              col = x, border = NA,
-      #              ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-      #              cex = annotationFontSize, title = rev(names(annotation))[i],
-      #              title.adj = 0)
-      # x_axp = x_axp + lep$rect$w
-
-      y_axp = 1 - i %/% 5.0001 * 0.4
-
-      leps = legend(x = x_axp, y = y_axp, legend = names(x),
-                    col = x, border = NA, text.width = 0.15, x.intersp = 0.5,
-                    ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                    cex = annotationFontSize, title = rev(names(annotation))[i],
-                    title.adj = 0)
-
-      x_axp = x_axp + leps$rect$w/1.2
+      lep = legend(x = x_axp, y = 1, legend = names(x),
+                   col = x, border = NA,
+                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+                   cex = annotationFontSize, title = rev(names(annotation))[i],
+                   title.adj = 0)
+      x_axp = x_axp + lep$rect$w
 
     }
   }
