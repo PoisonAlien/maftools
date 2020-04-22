@@ -12,6 +12,8 @@ tcgaDriverBP(m, genes = NULL, top = 20, fontSize = 0.7)
 \item{genes}{genes to compare. Default `NULL`.}
 
 \item{top}{Top number of genes to use. Mutually exclusive with `genes` argument. Default 20}
+
+\item{fontSize}{Default 0.7}
 }
 \description{
 A small function which uses known cancer driver genes and their associatd pathways from TCGA cohorts. See reference for details

@@ -36,4 +36,4 @@
 - Oncoplot gains `rightBarData` and `leftBarData` arguments for user specific side bar plots.
 
 ## Deprecated
-- `geneCloud`
+- `geneCloud` and `pancanComparison`
