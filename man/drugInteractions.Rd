@@ -20,7 +20,7 @@ drugInteractions(
 
 \item{genes}{Manually specify gene list}
 
-\item{plotType}{Can be bar, pie, or wordCloud. Default bar plot.}
+\item{plotType}{Can be bar, pie Default bar plot.}
 
 \item{drugs}{Check for known/reported drugs. Default FALSE}
 

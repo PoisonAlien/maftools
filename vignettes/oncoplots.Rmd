@@ -43,7 +43,8 @@ laml = read.maf(maf = laml.maf,
 ```
 
 ## Including Transition/Transversions into oncoplot
-```{r, fig.height = 7, fig.width = 10}
+```{r}
+#By default the function plots top20 mutated genes
 oncoplot(maf = laml, draw_titv = TRUE)
 ```
 
@@ -144,44 +145,45 @@ oncoplot(maf = laml.plus.cn, top = 5)
 ```
 
 
-## Including significance values
-This data should be a data.frame or a tsv file with two required columns titled `gene` and `q`.
+## Bar plots
 
-For example, including mutsig `q` values into oncoplot.
+`leftBarData`, `rightBarData` and `topBarData` arguments can be used to display additional values as barplots. Below example demonstrates adding gene expression values and mutsig q-values as left and right side bars respectivelly.
+
 
 ```{r, fig.height=7,fig.width=10, eval=T, fig.align='left'}
-#MutSig results
+#Selected AML driver genes
+aml_genes = c("TP53", "WT1", "PHF6", "DNMT3A", "DNMT3B", "TET1", "TET2", "IDH1", "IDH2", "FLT3", "KIT", "KRAS", "NRAS", "RUNX1", "CEBPA", "ASXL1", "EZH2", "KDM6A")
+
+#Variant allele frequcnies (Right bar plot)
+aml_genes_vaf = subsetMaf(maf = laml, genes = aml_genes, fields = "i_TumorVAF_WU", mafObj = FALSE)[,mean(i_TumorVAF_WU, na.rm = TRUE), Hugo_Symbol]
+head(aml_genes_vaf)
+
+#MutSig results (Right bar plot)
 laml.mutsig = system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
+laml.mutsig = data.table::fread(input = laml.mutsig)[,.(gene, q)]
+laml.mutsig[,q := -log10(q)] #transoform to log10
+head(laml.mutsig)
+
 
 oncoplot(
   maf = laml,
-  mutsig = laml.mutsig,
-  mutsigQval = 0.01,
+  genes = aml_genes,
+  leftBarData = aml_genes_vaf,
+  leftBarLims = c(0, 100),
+  rightBarData = laml.mutsig,
+  rightBarLims = c(0, 20)
 )
 ```
 
-## Including expression (or any) values
-Similar to significance values included as right bar plot, it's also possible to include expression (or any sort of continuous) data to left side of the plot
-
-```{r}
-#Dummy expression values for top 20 genes 
-set.seed(seed = 1024)
-exprs_tbl = data.frame(genes = getGeneSummary(x = laml)[1:20, Hugo_Symbol],
-                       exprn = rnorm(n = 10, mean = 12, sd = 5))
-head(exprs_tbl)
-
-oncoplot(maf = laml, exprsTbl = exprs_tbl)
-```
-
 ## Including annotations
-Annotations are usually stored in `clinical.data` slot of MAF.
+Annotations are stored in `clinical.data` slot of MAF.
 ```{r}
 getClinicalData(x = laml)
 ```
 
 Include `FAB_classification` from clinical data as one of the sample annotations. 
 ```{r}
-oncoplot(maf = laml, clinicalFeatures = 'FAB_classification')
+oncoplot(maf = laml, genes = aml_genes, clinicalFeatures = 'FAB_classification')
 ```
 
 More than one annotations can be included by passing them to the argument `clinicalFeatures`. Above plot can be further enhanced by sorting according to annotations. Custom colors can be specified as a list of named vectors for each levels.
@@ -195,7 +197,7 @@ fabcolors = list(FAB_classification = fabcolors)
 print(fabcolors)
 
 oncoplot(
-  maf = laml,
+  maf = laml, genes = aml_genes,
   clinicalFeatures = 'FAB_classification',
   sortByAnnotation = TRUE,
   annotationColor = fabcolors
@@ -207,7 +209,7 @@ If you prefer to highlight mutations by a specific attribute, you can use `addit
 
 Example: Highlight all mutations where alt allele is C. 
 ```{r}
-oncoplot(maf = laml,
+oncoplot(maf = laml, genes = aml_genes,
          additionalFeature = c("Tumor_Seq_Allele2", "C"))
 ```
 
@@ -218,21 +220,14 @@ getFields(x = laml)
 ```
 
 ## Group by Pathways
-### Auto grouping
-Genes can be auto grouped based on their Biological processess by setting `pathways = 'auto'`
-```{r}
-oncoplot(maf = laml, top = 20, pathways = 'auto', gene_mar = 8, fontSize = 0.6)
-```
-
-### Custom pathways
-A custom pathway list can also be provided in the form of a two column tsv file or a data.frame containing gene names and their corresponding pathway.
+Genes can be auto grouped based on their Biological processess by setting `pathways = 'auto'` or by providing custom pathway list in the form of a two column tsv file or a data.frame containing gene names and their corresponding pathway.
 
 ```{r}
-my_path = data.table::data.table(Gene = c("TP53", "WT1", "DNMT3A", "IDH1", "IDH2", "RUNX1", "CEBPA"), Pathway = c("Tumor Suppressors", "DNA methylation", 'DNA methylation', 'DNA methylation', 'DNA methylation', 'Myeloid TF', 'Myeloid TF'))
+pathways = data.frame(Genes = c("TP53", "WT1", "PHF6", "DNMT3A", "DNMT3B", "TET1", "TET2", "IDH1", "IDH2", "FLT3", "KIT", "KRAS", "NRAS", "RUNX1", "CEBPA", "ASXL1", "EZH2", "KDM6A"), Pathway = rep(c("TSG", "DNAm", "Signalling", "TFs", "ChromMod"), c(3, 6, 4, 2, 3)), stringsAsFactors = FALSE)
 
-print(my_path)
+head(pathways)
 
-oncoplot(maf = laml, top = 20, pathways = my_path, gene_mar = 6, fontSize = 0.6)
+oncoplot(maf = laml, pathways = pathways, gene_mar = 8, fontSize = 0.6)
 ```
 
 
@@ -242,12 +237,13 @@ oncoplot(maf = laml, top = 20, pathways = my_path, gene_mar = 6, fontSize = 0.6)
 oncoplot(
   maf = laml.plus.gistic,
   draw_titv = TRUE,
+  pathways = pathways,
   clinicalFeatures = c('FAB_classification', 'Overall_Survival_Status'),
-  additionalFeature = c("Tumor_Seq_Allele2", "C"),
   sortByAnnotation = TRUE,
-  mutsig = laml.mutsig,
-  exprsTbl = exprs_tbl,
-  logColBar = TRUE
+  additionalFeature = c("Tumor_Seq_Allele2", "C"),
+  leftBarData = aml_genes_vaf,
+  leftBarLims = c(0, 100),
+  rightBarData = laml.mutsig[,.(gene, q)],
 )
 ```
 

@@ -4,12 +4,14 @@
 \alias{tcgaDriverBP}
 \title{Compare genes to known TCGA drivers and their biological pathways}
 \usage{
-tcgaDriverBP(m, top = 50)
+tcgaDriverBP(m, genes = NULL, top = 20, fontSize = 0.7)
 }
 \arguments{
 \item{m}{an \code{\link{MAF}} object}
 
-\item{top}{Top number of genes to use. Default 50}
+\item{genes}{genes to compare. Default `NULL`.}
+
+\item{top}{Top number of genes to use. Mutually exclusive with `genes` argument. Default 20}
 }
 \description{
 A small function which uses known cancer driver genes and their associatd pathways from TCGA cohorts. See reference for details

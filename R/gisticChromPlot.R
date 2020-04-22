@@ -135,13 +135,8 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
   cyto_peaks_scores = cyto_peaks_scores[order(Cytoband, abs(amp), decreasing = TRUE)][Cytoband %in% mb$Cytoband][!duplicated(Cytoband)]
   cyto_peaks_scores = cyto_peaks_scores[complete.cases(cyto_peaks_scores)]
 
-  if(nrow(cyto_peaks_scores) > 1){
-    wordcloud::textplot(x = cyto_peaks_scores$Start_Position_updated, y = cyto_peaks_scores$amp,
-                        words = cyto_peaks_scores$Cytoband, new = FALSE, font = 3, cex = txtSize)
-  }else{
-    text(x = cyto_peaks_scores$Start_Position_updated, y = cyto_peaks_scores$amp,
-         labels = cyto_peaks_scores$Cytoband, font = 3, cex = txtSize)
-  }
+  text(x = cyto_peaks_scores$Start_Position_updated, y = cyto_peaks_scores$amp,
+       labels = cyto_peaks_scores$Cytoband, font = 3, cex = txtSize)
 
   if(!is.null(maf)){
     par(mar = c(0, 4, 0, 1))
@@ -158,14 +153,8 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
     if(nrow(mut_dat) == 0){
       warning("Could not find mutations")
     }else{
-      if(nrow(mut_dat) > 1){
-        wordcloud::textplot(x = mut_dat$Start_Position_updated, y = rep(0.8, nrow(mut_dat)),
-                            words = mut_dat$Hugo_Symbol, new = FALSE, font = 3, srt = 90,
-                            cex = mutGenesTxtSize, xpd = TRUE, adj = 1, col = color[as.character(mut_dat$Variant_Classification)])
-      }else{
-        text(x = mut_dat$Start_Position_updated, y = 0, labels = mut_dat$Hugo_Symbol,
-             srt = 90, cex = mutGenesTxtSize, xpd = TRUE, col = color[as.character(mut_dat$Variant_Classification)], font = 3, adj = 0, xpd = TRUE)
-      }
+      text(x = mut_dat$Start_Position_updated, y = 0, labels = mut_dat$Hugo_Symbol,
+           srt = 90, cex = mutGenesTxtSize, xpd = TRUE, col = color[as.character(mut_dat$Variant_Classification)], font = 3, adj = 0, xpd = TRUE)
     }
   }
   #return(mut_dat)

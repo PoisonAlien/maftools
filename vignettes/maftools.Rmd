@@ -94,6 +94,9 @@ There are accessor methods to access the useful slots from MAF object.
 ```{r}
 #Typing laml shows basic summary of MAF file.
 laml
+```
+
+````{r, eval=FALSE}
 #Shows sample summry.
 getSampleSummary(laml)
 #Shows gene summary.
@@ -108,14 +111,15 @@ write.mafSummary(maf = laml, basename = 'laml')
 
 # Visualization
 ## Plotting MAF summary.
-We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. We can add either mean or median line to the stacked barplot to display average/median number of variants across the cohort.
+We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. 
+
 ```{r,fig.height=5, fig.width=6}
 plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
 ## Oncoplots
 ### Drawing oncoplots
-Better representation of maf file can be shown as oncoplots, also known as waterfall plots. Side barplot and top barplots can be controlled by `drawRowBar` and `drawColBar` arguments respectively.
+Better representation of maf file can be shown as oncoplots, also known as waterfall plots. 
 
 ```{r, fig.align='left',fig.height=5,fig.width=10, fig.align='left'}
 #oncoplot for top ten mutated genes.
@@ -125,13 +129,6 @@ oncoplot(maf = laml, top = 10)
 NOTE: Variants annotated as `Multi_Hit` are those genes which are mutated more than once in the same sample.
 
 For more details on customisation see the [Customizing oncoplots](http://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/oncoplots.html) vignette.
-
-## Oncostrip
-We can visualize any set of genes using `oncostrip` function, which draws mutations in each sample similar to [OncoPrinter tool](http://www.cbioportal.org/faq.jsp#what-are-oncoprints) on [cBioPortal](http://www.cbioportal.org/index.do). `oncostrip` can be used to draw any number of genes using `top` or `genes` arguments.
-
-```{r, fig.height=2.4,fig.width=8,fig.align='left'}
-oncostrip(maf = laml, genes = c('DNMT3A','NPM1', 'RUNX1'))
-```
 
 ## Transition and Transversions.
 `titv` function classifies SNPs into [Transitions and Transversions](http://www.mun.ca/biology/scarr/Transitions_vs_Transversions.html) and returns a list of summarized tables in various ways. Summarized data can also be visualized as a boxplot showing overall distribution of six different conversions and as a stacked barplot showing fraction of conversions in each sample.
@@ -143,20 +140,20 @@ plotTiTv(res = laml.titv)
 ```
 
 ## Lollipop plots for amino acid changes
-Lollipop plots are simple and most effective way showing mutation spots on protein structure. Many oncogenes have a preferential sites which are mutated more often than any other locus. These spots are considered to be mutational hot-spots and lollipop plots can be used to display them along with rest of the mutations. We can draw such plots using the function `lollipopPlot`. This function requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all available fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argument `AACol`. This function also returns the plot as a ggplot object, which user can later modify if needed.
+`lollipopPlot` function requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all available fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argument `AACol`. 
 
 ```{r,fig.align='left', fig.width=6, fig.height=3}
 #lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
 lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', showMutationRate = TRUE)
 ```
 
-Note that `lollipopPlot` warns user on availability of different transcripts for the given gene. If we know the transcript id before hand, we can specify it as `refSeqID` or `proteinID`. By default lollipopPlot uses the longer isoform.
+By default lollipopPlot uses the longest isoform of the gene.
 
 ### Labelling points.
 We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. 
 
 ```{r,fig.align='left', fig.width=6, fig.height=3}
-lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change', labelPos = 816, refSeqID = 'NM_000222')
+lollipopPlot(maf = laml, gene = 'DNMT3A', showDomainLabel = FALSE, labelPos = 882)
 ```
 
 ## Rainfall plots
@@ -174,7 +171,7 @@ rainfallPlot(maf = brca, detectChangePoints = TRUE, pointSize = 0.6)
 "Kataegis" are defined as those genomic segments containing six or more consecutive mutations with an average inter-mutation distance of less than or equal to 1,00 bp [5](#references).
 
 ## Compare mutation load against TCGA cohorts
-TCGA contains over 30 different cancer cohorts and median mutation load across them varies from as low as 7 per exome (Pheochromocytoma and Paraganglioma arising from Adrenal Gland) to as high as 315 per exome (Skin Cutaneoys Melanoma). It is informative to see how mutation load in given maf stands against TCGA cohorts. This can can be achieved with the function `tcgaComapre` which draws distribution of variants compiled from over 10,000 WXS samples across 33 TCGA landmark cohorts. Plot generated is [similar](http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F1.html) to the one described in Alexandrov et al [5](#references). 
+`tcgaCompare` uses mutation load from TCGA [MC3](https://gdc.cancer.gov/about-data/publications/mc3-2017) for comparing muttaion burden against 33 TCGA cohorts. Plot generated is [similar](http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F1.html) to the one described in Alexandrov et al [5](#references). 
 
 ```{r, fig.align='left', fig.height=5, fig.width=12, message=FALSE, results='hide'}
 laml.mutload = tcgaCompare(maf = laml, cohortName = 'Example-LAML')
@@ -185,13 +182,6 @@ This function plots Variant Allele Frequencies as a boxplot which quickly helps 
 
 ```{r, fig.align='left', fig.height=4, fig.width=4}
 plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU')
-```
-
-## Genecloud
-We can plot word cloud plot for mutated genes with the function `geneCloud`. Size of each gene is proportional to the total number of samples in which it is mutated/altered.
-
-```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
-geneCloud(input = laml, minMut = 3)
 ```
 
 # Processing copy-number data
@@ -240,7 +230,7 @@ plotCBSsegments(cbsFile = tcga.ab.009.seg)
 
 # Analysis
 ## Somatic Interactions
-Many disease causing genes in cancer are co-occurring or show strong exclusiveness in their mutation pattern. Such mutually exclusive or co-occurring set of genes can be detected using `somaticInteractions` function, which performs pair-wise Fisher's Exact test to detect such significant pair of genes. `somaticInteractions` function also uses `cometExactTest` to identify potentially altered gene sets involving >2 two genes  [6](#references).
+Mutually exclusive or co-occurring set of genes can be detected using `somaticInteractions` function, which performs pair-wise Fisher's Exact test to detect such significant pair of genes. 
 
 ```{r, message=FALSE, fig.height=5, fig.width=5}
 #exclusive/co-occurance event analysis on top 10 mutated genes. 
@@ -257,7 +247,6 @@ laml.sig = oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5, pvalMetho
 ```{r}
 head(laml.sig)
 ```
-
 
 We can plot the results using `plotOncodrive`.
 ```{r, fig.align='left', fig.width=5, fig.height=4}
@@ -277,19 +266,6 @@ laml.pfam$proteinSummary[,1:7, with = FALSE]
 laml.pfam$domainSummary[,1:3, with = FALSE]
 ```
 
-Above plot and results shows AdoMet_MTases domain is frequently mutated, but number genes with this domain is just one (DNMT3A) compared to other domains such as 7tm_1 domain, which is mutated across 24 different genes. This shows the importance of mutations in methyl transfer domains in Leukemia.
-
-
-## Pan-Cancer comparison
-Lawrence et al performed MutSigCV analysis on 21 cancer cohorts and identified over 200 genes to be significantly mutated which consists of previously un-subscribed  novel genes [9](#references). Their results show only few genes are mutated in multiple cohort while many of them are tissue/cohort specific. We can compare mutSig results against this pan-can list of significantly mutated genes to see genes specifically mutated in given cohort. This function requires MutSigCV results (usually named sig_genes.txt) as an input.
-
-```{r, fig.width=5, fig.height=4}
-#MutsigCV results for TCGA-AML
-laml.mutsig <- system.file("extdata", "LAML_sig_genes.txt.gz", package = "maftools")
-pancanComparison(mutsigResults = laml.mutsig, qval = 0.1, cohortName = 'LAML', inputSampleSize = 200, label = 1)
-```
-
-Above results show genes such as CEBPa, TET2 and WT1 are specifically mutated in Leukemia.
 
 ## Survival analysis
 Survival analysis is an essential part of cohort based sequencing projects. Function `mafSurvive` performs survival analysis and draws kaplan meier curve by grouping samples based on mutation status of user defined gene(s) or manually provided samples those make up a group. This function requires input data to contain Tumor_Sample_Barcode (make sure they match to those in MAF file), binary event (1/0) and time to event. 
@@ -538,7 +514,7 @@ laml.sig = extractSignatures(mat = laml.tnm, n = 3)
 laml.sig = extractSignatures(mat = laml.tnm, n = 3, pConstant = 0.1,  parallel = 2)
 ```
 
-Compare detected signatures to known signatures from COSMIC database.
+Compare detected signatures to COSMIC [Legacy](https://cancer.sanger.ac.uk/cosmic/signatures_v2) or [SBS](https://cancer.sanger.ac.uk/cosmic/signatures_v2) signature database.
 ```{r}
 #Compate against original 30 signatures 
 laml.og30.cosm = compareSignatures(nmfRes = laml.sig, sig_db = "legacy")
@@ -555,7 +531,7 @@ pheatmap::pheatmap(mat = laml.og30.cosm$cosine_similarities, cluster_rows = FALS
 
 Finally plot signatures
 ```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
-maftools::plotSignatures(nmfRes = laml.sig, title_size = 0.8)
+maftools::plotSignatures(nmfRes = laml.sig, title_size = 0.8, sig_db = "SBS")
 ```
 
 If you fancy 3D barpots, you can install `barplot3d` package and visualize the results with `legoplot3d` function.

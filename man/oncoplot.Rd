@@ -9,17 +9,18 @@ oncoplot(
   top = 20,
   genes = NULL,
   altered = FALSE,
-  mutsig = NULL,
-  mutsigQval = 0.1,
+  rightBarData = NULL,
+  rightBarLims = NULL,
   drawRowBar = TRUE,
   drawColBar = TRUE,
   includeColBarCN = TRUE,
   draw_titv = FALSE,
   logColBar = FALSE,
-  drawExtraBar = NULL,
+  topBarData = NULL,
   clinicalFeatures = NULL,
   pathways = NULL,
-  exprsTbl = NULL,
+  leftBarData = NULL,
+  leftBarLims = NULL,
   additionalFeature = NULL,
   additionalFeaturePch = 20,
   additionalFeatureCol = "gray70",
@@ -69,13 +70,13 @@ oncoplot(
 
 \item{altered}{Default FALSE. Chooses top genes based on muatation status. If \code{TRUE} chooses top genes based alterations (CNV or mutation).}
 
-\item{mutsig}{Mutsig resuts if availbale. Usually file named sig_genes.txt If provided plots significant genes and correpsonding Q-values as side row-bar. Default NULL.}
+\item{rightBarData}{Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.}
 
-\item{mutsigQval}{Q-value to choose significant genes from mutsig results. Default 0.1}
+\item{rightBarLims}{limits for `rightBarData`. Default `NULL`.}
 
-\item{drawRowBar}{logical plots barplot for each gene. Default \code{TRUE}.}
+\item{drawRowBar}{logical. Plots righ barplot for each gene. Default \code{TRUE}.}
 
-\item{drawColBar}{logical plots barplot for each sample. Default \code{TRUE}.}
+\item{drawColBar}{logical plots top barplot for each sample. Default \code{TRUE}.}
 
 \item{includeColBarCN}{Whether to include CN in column bar plot. Default TRUE}
 
@@ -83,13 +84,15 @@ oncoplot(
 
 \item{logColBar}{Plot top bar plot on log10 scale. Default \code{FALSE}.}
 
-\item{drawExtraBar}{Choose one clinical indicator(Numeric) to plot barplot for each sample when `drawColBar` is TRUE. Default NULL}
+\item{topBarData}{Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.}
 
 \item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
 
 \item{pathways}{Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`}
 
-\item{exprsTbl}{Expression values if availble. Must be a data.frame with two columns containing to gene names and expression values.}
+\item{leftBarData}{Data for leftside barplot. Must be a data.frame with two columns containing gene names and values. Default `NULL`}
+
+\item{leftBarLims}{limits for `leftBarData`. Default `NULL`.}
 
 \item{additionalFeature}{a vector of length two indicating column name in the MAF and the factor level to be highlighted. Provide a list of values for highlighting more than one features}
 
@@ -108,9 +111,9 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
 
-\item{barcode_mar}{Default 4}
+\item{barcode_mar}{Margin width for sample names. Default 4}
 
-\item{gene_mar}{Default 5}
+\item{gene_mar}{Margin width for gene names. Default 5}
 
 \item{legend_height}{Height of plotting area for legend. Default 4}
 
@@ -142,15 +145,15 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{writeMatrix}{writes character coded matrix used to generate the plot to an output file.}
 
-\item{sepwd_genes}{Default 0.5}
+\item{sepwd_genes}{size of lines seperating genes. Default 0.5}
 
-\item{sepwd_samples}{Default 0.25}
+\item{sepwd_samples}{size of lines seperating samples. Default 0.25}
 
 \item{fontSize}{font size for gene names. Default 0.8.}
 
 \item{SampleNamefontSize}{font size for sample names. Default 1}
 
-\item{anno_height}{The height of annotation legend. Default 1}
+\item{anno_height}{Height of plotting area for sample annotations. Default 1}
 
 \item{showTitle}{Default TRUE}
 

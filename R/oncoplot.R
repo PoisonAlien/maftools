@@ -10,52 +10,53 @@
 #' @param top how many top genes to be drawn. defaults to 20.
 #' @param genes Just draw oncoplot for these genes. Default NULL.
 #' @param altered Default FALSE. Chooses top genes based on muatation status. If \code{TRUE} chooses top genes based alterations (CNV or mutation).
-#' @param mutsig Mutsig resuts if availbale. Usually file named sig_genes.txt If provided plots significant genes and correpsonding Q-values as side row-bar. Default NULL.
-#' @param exprsTbl Expression values if availble. Must be a data.frame with two columns containing to gene names and expression values.
-#' @param mutsigQval Q-value to choose significant genes from mutsig results. Default 0.1
-#' @param drawRowBar logical plots barplot for each gene. Default \code{TRUE}.
-#' @param drawColBar logical plots barplot for each sample. Default \code{TRUE}.
-#' @param draw_titv logical Includes TiTv plot. \code{FALSE}
+#' @param drawColBar logical plots top barplot for each sample. Default \code{TRUE}.
+#' @param drawRowBar logical. Plots righ barplot for each gene. Default \code{TRUE}.
+#' @param leftBarData Data for leftside barplot. Must be a data.frame with two columns containing gene names and values. Default `NULL`
+#' @param leftBarLims limits for `leftBarData`. Default `NULL`.
+#' @param topBarData Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.
+#' @param rightBarData Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.
+#' @param rightBarLims limits for `rightBarData`. Default `NULL`.
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
-#' @param drawExtraBar Choose one clinical indicator(Numeric) to plot barplot for each sample when `drawColBar` is TRUE. Default NULL
 #' @param includeColBarCN Whether to include CN in column bar plot. Default TRUE
-#' @param showTumorSampleBarcodes logical to include sample names.
-#' @param barcode_mar Default 4
-#' @param gene_mar Default 5
-#' @param legend_height Height of plotting area for legend. Default 4
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
+#' @param annotationColor  Custom colors to use for `clinicalFeatures`. Must be a named list containing a named vector of colors. Default NULL. See example for more info.
+#' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
+#' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param pathways Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`
+#' @param draw_titv logical Includes TiTv plot. \code{FALSE}
+#' @param showTumorSampleBarcodes logical to include sample names.
+#' @param barcode_mar Margin width for sample names. Default 4
+#' @param gene_mar Margin width for gene names. Default 5
+#' @param anno_height Height of plotting area for sample annotations. Default 1
+#' @param legend_height Height of plotting area for legend. Default 4
+#' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort
+#' @param groupAnnotationBySize Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.
+#' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
+#' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
+#' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
+#' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
+#' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param additionalFeature a vector of length two indicating column name in the MAF and the factor level to be highlighted. Provide a list of values for highlighting more than one features
 #' @param additionalFeaturePch Default 20
 #' @param additionalFeatureCol Default "gray70"
 #' @param additionalFeatureCex Default 0.9
-#' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
-#' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
-#' @param annotationColor  Custom colors to use for `clinicalFeatures`. Must be a named list containing a named vector of colors. Default NULL. See example for more info.
 #' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
 #' @param fill Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.
 #' @param cohortSize Number of sequenced samples in the cohort. Default all samples from Cohort. You can manually specify the cohort size. Default \code{NULL}
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
-#' @param sortByMutation Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.
-#' @param sortByAnnotation logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort
 #' @param numericAnnoCol color palette used for numeric annotations. Default 'YlOrBr' from RColorBrewer
-#' @param groupAnnotationBySize Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.
-#' @param annotationOrder Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.
-#' @param keepGeneOrder logical whether to keep order of given genes. Default FALSE, order according to mutation frequency
 #' @param drawBox logical whether to draw a box around main matrix. Default FALSE
-#' @param GeneOrderSort logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE
-#' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
 #' @param fontSize font size for gene names. Default 0.8.
-#' @param sepwd_genes Default 0.5
-#' @param sepwd_samples Default 0.25
 #' @param SampleNamefontSize font size for sample names. Default 1
-#' @param anno_height The height of annotation legend. Default 1
 #' @param titleFontSize font size for title. Default 1.5
 #' @param legendFontSize font size for legend. Default 1.2
 #' @param annotationFontSize font size for annotations. Default 1.2
+#' @param sepwd_genes size of lines seperating genes. Default 0.5
+#' @param sepwd_samples size of lines seperating samples. Default 0.25
 #' @param writeMatrix writes character coded matrix used to generate the plot to an output file.
 #' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE.
 #' @param showTitle Default TRUE
@@ -78,8 +79,8 @@
 #' oncoplot(maf = laml, colors = col, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
 #' @seealso \code{\link{oncostrip}}
 #' @export
-oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL, mutsigQval = 0.1, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE, drawExtraBar = NULL,
-                     clinicalFeatures = NULL, pathways = NULL, exprsTbl = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
+oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData = NULL, rightBarLims = NULL, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE, topBarData = NULL,
+                     clinicalFeatures = NULL, pathways = NULL, leftBarData = NULL, leftBarLims = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
                      showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, legend_height = 4, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
                      sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE, drawBox = FALSE,
                      GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1, anno_height = 1,
@@ -89,27 +90,24 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     om = createOncoMatrix(m = maf, g = genes, add_missing = fill)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
-  } else if(!is.null(mutsig)){ #If user provides significant gene table (e.g; mutsig results)
+  } else if(!is.null(pathways)){ #If user provides pathway list
 
-    if(as.logical(length(grep(pattern = 'gz$', x = mutsig, fixed = FALSE)))){
-      #If system is Linux use fread, else use gz connection to read gz file.
-      if(Sys.info()[['sysname']] == 'Windows'){
-        mutsigResults.gz = gzfile(description = mutsig, open = 'r')
-        suppressWarnings(ms <- data.table::as.data.table(read.csv(file = mutsigResults.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE, comment.char = '#')))
-        close(mutsigResults.gz)
-      } else{
-        ms = suppressWarnings(data.table::fread(cmd = paste('zcat <', mutsig), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE))
-      }
-    } else{
-      ms = data.table::fread(input = mutsig, sep = '\t', stringsAsFactors = FALSE, header = TRUE)
+    if(is(pathways, 'data.frame')){
+      colnames(pathways)[1:2] = c('Gene', 'Pathway')
+      data.table::setDT(x = pathways)
+      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
+    }else if(file.exists(pathways)){
+      pathways = data.table::fread(file = pathways)
+      colnames(pathways)[1:2] = c('Gene', 'Pathway')
+      data.table::setDT(x = pathways)
+      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
+    }else{
+      pathways = system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
+      pathways = data.table::fread(file = pathways, skip = "Gene")
+      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
+      pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
     }
-
-    ms$q = as.numeric(gsub(pattern = "^<", replacement = "", x = as.character(ms$q)))
-    mach.epsi = .Machine$double.eps
-    ms$q = ifelse(test = ms$q == 0, yes = mach.epsi, no = ms$q)
-    ms[,FDR := -log10(as.numeric(as.character(q)))]
-    ms.smg = ms[q < as.numeric(as.character(mutsigQval))]
-    genes = as.character(ms[as.numeric(as.character(q)) < mutsigQval, gene])
+    genes = as.character(pathways$Gene)
 
     om = createOncoMatrix(m = maf, g = genes)
     numMat = om$numericMatrix
@@ -117,16 +115,11 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
     #Check for any missing genes and ignore them if necessary
     if(length(genes[!genes %in% rownames(numMat)]) > 0){
-      message('Following genes from MutSig results are not available in MAF:')
+      message('Missing following genes from provided pathways')
       print(genes[!genes %in% rownames(numMat)])
       message('Ignoring them.')
       genes = genes[genes %in% rownames(numMat)]
-      ms.smg = ms.smg[gene %in% genes]
     }
-
-    ms.smg = ms.smg[,.(gene, FDR)]
-    ms.smg = data.frame(row.names = ms.smg$gene, FDR = ms.smg$FDR)
-    ms.smg = ms.smg[rownames(numMat),,drop = FALSE]
   }else { #If user does not provide gene list or MutSig results, draw TOP (default 20) genes
     if(altered){
       genes = getGeneSummary(x = maf)[order(AlteredSamples, decreasing = TRUE)][1:top, Hugo_Symbol]
@@ -255,21 +248,6 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
   if(!is.null(pathways)){
     vc_codes = c(vc_codes, '99' = 'pathway')
-    if(is(pathways, 'data.frame')){
-      colnames(pathways)[1:2] = c('Gene', 'Pathway')
-      data.table::setDT(x = pathways)
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-    }else if(file.exists(pathways)){
-      pathways = data.table::fread(file = pathways)
-      colnames(pathways)[1:2] = c('Gene', 'Pathway')
-      data.table::setDT(x = pathways)
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-    }else{
-      pathways = system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
-      pathways = data.table::fread(file = pathways, skip = "Gene")
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-      pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
-    }
 
     #Order genes in matrix by most frequently altered gene, followed by pathway size
     temp_dat = data.table::data.table(Gene = rownames(numMat), percent_alt)
@@ -310,14 +288,14 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
   #Plot layout
   plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar, anno_height = anno_height,
-              drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = exprsTbl, legend_height = legend_height)
+              drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = leftBarData, legend_height = legend_height)
 
-  #01: Draw scale axis for expression table
-  if(!is.null(exprsTbl)){
-    colnames(exprsTbl) = c('genes', 'exprn')
-    data.table::setDF(x = exprsTbl, rownames = as.character(exprsTbl$genes))
+  #01: Draw scale axis for left barplot table
+  if(!is.null(leftBarData)){
+    colnames(leftBarData) = c('genes', 'exprn')
+    data.table::setDF(x = leftBarData, rownames = as.character(leftBarData$genes))
 
-    missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(exprsTbl)]
+    missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(leftBarData)]
     if(length(missing_samps) > 0){
       temp_data = data.frame(
         row.names = missing_samps,
@@ -325,12 +303,16 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
         exprn = rep(0, length(missing_samps)),
         stringsAsFactors = FALSE
       )
-      exprsTbl = rbind(exprsTbl, temp_data)
+      leftBarData = rbind(leftBarData, temp_data)
     }
-    exprsTbl = exprsTbl[rownames(numMat),, drop = FALSE]
-    #exprsTbl = exprsTbl[genes,, drop = FALSE]
+    leftBarData = leftBarData[rownames(numMat),, drop = FALSE]
+    #leftBarData = leftBarData[genes,, drop = FALSE]
 
-    exprs_bar_lims = c(0, round(max(exprsTbl$exprn, na.rm = TRUE), digits = 2))
+    if(is.null(leftBarLims)){
+      exprs_bar_lims = round(range(leftBarData$exprn, na.rm = TRUE), digits = 2)
+    }else{
+      exprs_bar_lims = leftBarLims
+    }
 
     if(drawColBar){
       par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
@@ -340,7 +322,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   }
 
   #02: Draw top bar plot
-  if(drawColBar & is.null(drawExtraBar)){
+  if(drawColBar & is.null(topBarData)){
     top_bar_data = top_bar_data[,colnames(numMat), drop = FALSE]
     if(drawRowBar){
       par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
@@ -372,7 +354,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     if(logColBar){
       mtext(text = "(log10)", side = 2, line = 2, cex = 0.6)
     }
-  }else if(!is.null(drawExtraBar) & drawColBar){
+  }else if(!is.null(topBarData) & drawColBar){
     # Draw extra clinical data in top
     if(drawRowBar){
       par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
@@ -380,33 +362,68 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
       par(mar = c(0.25 , gene_mar, 2, 5), xpd = TRUE)
     }
 
-    extdata <- data.frame(maf@clinical.data)[,c("Tumor_Sample_Barcode", drawExtraBar)]
-    rownames(extdata) <- extdata$Tumor_Sample_Barcode
-    extdata <- extdata[colnames(top_bar_data),]
-    extdata[, drawExtraBar] <- as.numeric(as.character(extdata[, drawExtraBar]))
+    if(is.data.frame(topBarData)){
+      extdata = data.table::copy(x = topBarData)
+      colnames(extdata)[1] = "Tumor_Sample_Barcode"
+      rownames(extdata) <- extdata$Tumor_Sample_Barcode
+    }else{
+      message("Top barplot data is derived from clinical column: ", topBarData)
+      extdata <- data.frame(maf@clinical.data)[,c("Tumor_Sample_Barcode", topBarData)]
+      rownames(extdata) <- extdata$Tumor_Sample_Barcode
+    }
 
-    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = c(0, max(extdata[,drawExtraBar], na.rm = TRUE)),
+    topbar_title = colnames(extdata)[2]
+
+    colnames(extdata)[2] = "barheights"
+    extdata[, "barheights"] <- as.numeric(as.character(extdata[, "barheights"]))
+
+    if(!all(colnames(top_bar_data) %in% rownames(extdata))){
+      missing_topbars = colnames(top_bar_data)[!colnames(top_bar_data) %in% rownames(extdata)]
+      warning("Missing column barplot data for ",  length(missing_topbars), " samples")
+      extdata = rbind(extdata, data.frame(row.names = missing_topbars, Tumor_Sample_Barcode = missing_topbars, barheights = 0,stringsAsFactors = FALSE))
+    }
+
+    extdata <- extdata[colnames(top_bar_data),]
+
+    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = range(extdata[,"barheights"], na.rm = TRUE),
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
-    axis(side = 2, at = c(0, round(max(extdata[,drawExtraBar], na.rm = TRUE))), las = 2, line = 0.5)
+    axis(side = 2, at = round(range(extdata[,"barheights"], na.rm = TRUE)), las = 2, line = 0.5)
 
     for(i in 1:nrow(extdata)){
-      graphics::rect(xleft = i-1, xright = i-0.1, ybottom = 0, ytop = as.numeric(extdata[i, drawExtraBar]),
+      graphics::rect(xleft = i-1, xright = i-0.1, ybottom = 0, ytop = as.numeric(extdata[i, "barheights"]),
                      col = "#535c68", border = NA, lwd = 0)
     }
-    title(ylab = drawExtraBar, font = 1, cex.lab = legendFontSize)
+    title(ylab = topbar_title, font = 1, cex.lab = legendFontSize, xpd = TRUE)
   }
 
-  #03: Draw scale for side bar plot
+  #03: Draw scale for right barplot
   if(drawRowBar){
-    if(is.null(mutsig)){
+    if(is.null(rightBarData)){
       side_bar_lims = c(0, max(unlist(apply(numMat, 1, function(x) cumsum(table(x[x!=0])))), na.rm = TRUE))
     }else{
-      side_bar_lims = c(0, round(max(ms.smg$FDR, na.rm = TRUE), digits = 2))
+      colnames(rightBarData) = c('genes', 'exprn')
+      data.table::setDF(x = rightBarData, rownames = as.character(rightBarData$genes))
+
+      missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(rightBarData)]
+      if(length(missing_samps) > 0){
+        temp_data = data.frame(
+          row.names = missing_samps,
+          genes = missing_samps,
+          exprn = rep(0, length(missing_samps)),
+          stringsAsFactors = FALSE
+        )
+        rightBarData = rbind(rightBarData, temp_data)
+      }
+      rightBarData = rightBarData[rownames(numMat),, drop = FALSE]
+
+      if(is.null(rightBarLims)){
+        side_bar_lims = round(range(rightBarData$exprn, na.rm = TRUE), digits = 2)
+      }else{
+        side_bar_lims = rightBarLims
+      }
+
     }
 
-    if(is.infinite(side_bar_lims[2])){
-      side_bar_lims[2] = 1
-    }
     if(drawColBar){
       par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
       plot(x = NA, y = NA, type = "n", axes = FALSE,
@@ -415,7 +432,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   }
 
   #Draw expression barplot
-  if(!is.null(exprsTbl)){
+  if(!is.null(leftBarData)){
 
   if(showTumorSampleBarcodes){
     if(!drawRowBar & !drawColBar){
@@ -439,12 +456,12 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     }
   }
 
-    plot(x = NA, y = NA, type = "n", xlim = rev(-exprs_bar_lims), ylim = c(0, nrow(exprsTbl)),
+    plot(x = NA, y = NA, type = "n", xlim = rev(-exprs_bar_lims), ylim = c(0, nrow(leftBarData)),
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
-    for(i in 1:nrow(exprsTbl)){
-      x = rev(exprsTbl$exprn)[i]
+    for(i in 1:nrow(leftBarData)){
+      x = rev(leftBarData$exprn)[i]
       rect(ybottom = i-1, xleft = -x, ytop = i-0.1,
-           xright = 0, col = "gray70", border = NA, lwd = 0)
+           xright = 0, col = "#535c68", border = NA, lwd = 0)
     }
     axis(side = 3, at = rev(-exprs_bar_lims), outer = FALSE, line = 0.25, labels = rev(exprs_bar_lims))
   }
@@ -504,17 +521,6 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
   }
   mo = t(apply(mat_origin, 2, rev))
 
-  # mutBorder = TRUE
-  # return(numMat)
-  # if(mutBorder){
-  #   mut_idx = which(mo == "", arr.ind = TRUE)
-  #   for(i in seq_len(nrow(mut_idx))){
-  #     rowi = mut_idx[i,1]
-  #     coli = mut_idx[i,2]
-  #     rect(xleft = coli-0.5, ybottom = rowi-0.5, xright = coli+0.5, ytop = rowi+0.5, border = TRUE, lwd = 1)
-  #   }
-  # }
-
   ##Complex events (mutated as well as CN altered)
   complex_events = unique(grep(pattern = ";", x = mo, value = TRUE))
 
@@ -567,6 +573,29 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
       coli = del_idx[i,2]
       rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col['Del'], border = NA, lwd = 0)
     }
+  }
+
+  #Add grids
+  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
+  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
+
+  #Add boxes if pathways are opted
+  if(!is.null(pathways)){
+    temp_dat = lapply(seq_along(temp_dat), function(i){
+      data.table::rbindlist(list(temp_dat[[i]], data.table::data.table(Gene = names(temp_dat)[i])), use.names = TRUE, fill = TRUE)
+    })
+    temp_dat = data.table::rbindlist(l = temp_dat, use.names = TRUE, fill = TRUE)
+    #return(temp_dat)
+    temp_dat[, row_id := nrow(temp_dat):1]
+    temp_dat = split(temp_dat, as.factor(temp_dat$Pathway))
+    lapply(temp_dat, function(td){
+      rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = "#535c68", lwd = 2)
+    })
+
+    #New percent alt with pathways
+    percent_alt = rev(paste0(apply(nm, 2, function(x){
+      round(length(x[is.na(x)])/totSamps * 100)
+    }), "%"))
   }
 
   #Draw if any additional features are requested
@@ -656,32 +685,9 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
     }
   }
 
-  #Add grids
-  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
-  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
-
   #Add box border
   if (drawBox) {
     box(lty = 'solid', col = '#535c68', lwd = 2)
-  }
-
-  #Add boxes if pathways are opted
-  if(!is.null(pathways)){
-    temp_dat = lapply(seq_along(temp_dat), function(i){
-      data.table::rbindlist(list(temp_dat[[i]], data.table::data.table(Gene = names(temp_dat)[i])), use.names = TRUE, fill = TRUE)
-    })
-    temp_dat = data.table::rbindlist(l = temp_dat, use.names = TRUE, fill = TRUE)
-    #return(temp_dat)
-    temp_dat[, row_id := nrow(temp_dat):1]
-    temp_dat = split(temp_dat, as.factor(temp_dat$Pathway))
-    lapply(temp_dat, function(td){
-      rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = "#535c68", lwd = 2)
-    })
-
-    #New percent alt with pathways
-    percent_alt = rev(paste0(apply(nm, 2, function(x){
-      round(length(x[is.na(x)])/totSamps * 100)
-    }), "%"))
   }
 
   mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
@@ -694,7 +700,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
          labels = rownames(nm), srt = 90, font = 1, cex = SampleNamefontSize, adj = 1)
   }
 
-  #05: Draw side bar plot
+  #05: Draw right side barplot
   if(drawRowBar){
     if(showTumorSampleBarcodes){
       if(!drawRowBar || !drawColBar){
@@ -710,7 +716,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
       }
     }
 
-    if(is.null(mutsig)){
+    if(is.null(rightBarData)){
       #side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
       side_bar_data = lapply(seq_len(nrow(numMat)), function(i) {
         xi = numMat[i, ]
@@ -731,12 +737,12 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
     }else{
 
-      plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, nrow(ms.smg)),
+      plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, nrow(rightBarData)),
            axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
-      for(i in 1:nrow(ms.smg)){
-        x = rev(ms.smg$FDR)[i]
-        rect(ybottom = i-1, xleft = 0, ytop = i-0.1,
-             xright = x, col = "gray70", border = NA, lwd = 0)
+      for(i in 1:nrow(rightBarData)){
+        x = rev(rightBarData$exprn)[i]
+        rect(ybottom = i-1, xleft = x, ytop = i-0.1,
+             xright = 0, col = "#535c68", border = NA, lwd = 0)
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
     }
@@ -778,7 +784,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
 
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
-    if(!is.null(exprsTbl)){
+    if(!is.null(leftBarData)){
       plot.new()
     }
 
@@ -836,7 +842,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, mutsig = NULL,
       titv_dat = titv_dat[,colnames(numMat)]
     }
 
-    if(!is.null(exprsTbl)){
+    if(!is.null(leftBarData)){
      plot.new()
     }
 

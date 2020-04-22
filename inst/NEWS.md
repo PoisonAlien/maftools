@@ -27,8 +27,13 @@
 
 ## NEW FUNCTIONS AND FEATURES
 
+- `tmb` Simple tumor mutation burden estimation function.
 - `setdiffMAF` and `intersectMAF`. Set operations for MAF files. PR: [#508](https://github.com/PoisonAlien/maftools/pull/508) Thanks [Shixiang Wang](https://github.com/ShixiangWang)
 - `tcgaDriverBP` Compare genes to known TCGA drivers and their biological pathways
 - `vafCompare` plots vaf distribution of target genes from two cohorts Issue: [#495](https://github.com/PoisonAlien/maftools/issues/495)
 - `coBarplot` side-by-side barplot for maf comparison Issue: [#486](https://github.com/PoisonAlien/maftools/issues/486)
-- Now you can group genes in `oncoplot` by specific pathways. This can be done by setting `pathways = 'auto'` or by providing a two column data.frame/tsv-file with Gene names and their corresponding pathway belongings.
+- Group genes in `oncoplot` by specific pathways. This can be done by setting `pathways = 'auto'` or by providing a two column data.frame/tsv-file with Gene names and their corresponding pathway belongings.
+- Oncoplot gains `rightBarData` and `leftBarData` arguments for user specific side bar plots.
+
+## Deprecated
+- `geneCloud`
