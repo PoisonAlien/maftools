@@ -24,6 +24,7 @@
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param pathways Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`
+#' @param selectedPathways Manually provide the subset of pathway names to be seletced from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param barcode_mar Margin width for sample names. Default 4
@@ -79,17 +80,32 @@
 #' oncoplot(maf = laml, colors = col, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
 #' @seealso \code{\link{oncostrip}}
 #' @export
-oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData = NULL, rightBarLims = NULL, drawRowBar = TRUE, drawColBar = TRUE, includeColBarCN = TRUE, draw_titv = FALSE, logColBar = FALSE, topBarData = NULL,
-                     clinicalFeatures = NULL, pathways = NULL, leftBarData = NULL, leftBarLims = NULL, additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9, annotationDat = NULL, annotationColor = NULL, genesToIgnore = NULL,
-                     showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5, legend_height = 4, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL, colors = NULL,
-                     sortByMutation = FALSE, sortByAnnotation = FALSE, numericAnnoCol = NULL, groupAnnotationBySize = TRUE, annotationOrder = NULL, keepGeneOrder = FALSE, drawBox = FALSE,
-                     GeneOrderSort = TRUE, sampleOrder = NULL, writeMatrix = FALSE, sepwd_genes = 0.5, sepwd_samples = 0.25, fontSize = 0.8, SampleNamefontSize = 1, anno_height = 1,
-                     showTitle = TRUE, titleText = NULL, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2, bgCol = "#CCCCCC", borderCol = 'white', colbar_pathway = FALSE){
+oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
+                               drawRowBar = TRUE, drawColBar = TRUE,
+                               leftBarData = NULL, leftBarLims = NULL,
+                               rightBarData = NULL, rightBarLims = NULL,
+                               topBarData = NULL, logColBar = FALSE, includeColBarCN = TRUE,
+                               clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
+                               pathways = NULL, selectedPathways = NULL, draw_titv = FALSE,
+                               showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5,
+                               anno_height = 1, legend_height = 4,
+                               sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
+                               sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
+                               additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9,
+                               genesToIgnore = NULL, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
+                               colors = NULL, bgCol = "#CCCCCC", borderCol = 'white', numericAnnoCol = NULL,
+                               drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
+                               sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL){
 
   if(!is.null(genes)){ #If user provides a gene list
     om = createOncoMatrix(m = maf, g = genes, add_missing = fill)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
+
+    if(!is.null(pathways)){
+      stop("Please use genes or pathways.")
+    }
+
   } else if(!is.null(pathways)){ #If user provides pathway list
 
     if(is(pathways, 'data.frame')){
@@ -101,11 +117,28 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
       colnames(pathways)[1:2] = c('Gene', 'Pathway')
       data.table::setDT(x = pathways)
       pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
+      if(!is.null(selectedPathways)){
+        pathways = pathways[Pathway %in% selectedPathways]
+      }
     }else{
       pathways = system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
       pathways = data.table::fread(file = pathways, skip = "Gene")
       pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
       pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
+      pathwayLoad = pathway_load(maf = maf) #Get top mutated known pathways
+
+      if(is.null(selectedPathways)){
+        message("Drawing upto top 3 mutated pathways")
+        print(pathwayLoad)
+        if(ncol(pathwayLoad) >= 3){
+          pathways = pathways[Pathway %in% pathwayLoad[1:3, Pathway]]
+        }else{
+          pathways = pathways[Pathway %in% pathwayLoad[, Pathway]]
+        }
+      }else{
+        pathways = pathways[Pathway %in% selectedPathways]
+      }
+
     }
     genes = as.character(pathways$Gene)
 
@@ -115,9 +148,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
 
     #Check for any missing genes and ignore them if necessary
     if(length(genes[!genes %in% rownames(numMat)]) > 0){
-      message('Missing following genes from provided pathways')
-      print(genes[!genes %in% rownames(numMat)])
-      message('Ignoring them.')
+      #warning('Missing following genes from provided pathways ', paste(genes[!genes %in% rownames(numMat)], collapse = ", "))
       genes = genes[genes %in% rownames(numMat)]
     }
   }else { #If user does not provide gene list or MutSig results, draw TOP (default 20) genes
@@ -291,7 +322,9 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
               drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = leftBarData, legend_height = legend_height)
 
   #01: Draw scale axis for left barplot table
+  leftBarTitle = NULL
   if(!is.null(leftBarData)){
+    leftBarTitle = colnames(leftBarData)[2]
     colnames(leftBarData) = c('genes', 'exprn')
     data.table::setDF(x = leftBarData, rownames = as.character(leftBarData$genes))
 
@@ -397,10 +430,12 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
   }
 
   #03: Draw scale for right barplot
+  rightBarTitle = NULL
   if(drawRowBar){
     if(is.null(rightBarData)){
       side_bar_lims = c(0, max(unlist(apply(numMat, 1, function(x) cumsum(table(x[x!=0])))), na.rm = TRUE))
     }else{
+      rightBarTitle = colnames(rightBarData)[2]
       colnames(rightBarData) = c('genes', 'exprn')
       data.table::setDF(x = rightBarData, rownames = as.character(rightBarData$genes))
 
@@ -464,6 +499,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
            xright = 0, col = "#535c68", border = NA, lwd = 0)
     }
     axis(side = 3, at = rev(-exprs_bar_lims), outer = FALSE, line = 0.25, labels = rev(exprs_bar_lims))
+    mtext(text = leftBarTitle, side = 3, line = 0.50, cex = 0.6)
   }
 
   #04: Draw the main matrix
@@ -734,7 +770,6 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
         }
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
-
     }else{
 
       plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, nrow(rightBarData)),
@@ -745,6 +780,7 @@ oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE, rightBarData =
              xright = 0, col = "#535c68", border = NA, lwd = 0)
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
+      mtext(text = rightBarTitle, side = 3, line = 0.5, cex = 0.6)
     }
   }
 

@@ -156,6 +156,7 @@ aml_genes = c("TP53", "WT1", "PHF6", "DNMT3A", "DNMT3B", "TET1", "TET2", "IDH1",
 
 #Variant allele frequcnies (Right bar plot)
 aml_genes_vaf = subsetMaf(maf = laml, genes = aml_genes, fields = "i_TumorVAF_WU", mafObj = FALSE)[,mean(i_TumorVAF_WU, na.rm = TRUE), Hugo_Symbol]
+colnames(aml_genes_vaf)[2] = "VAF"
 head(aml_genes_vaf)
 
 #MutSig results (Right bar plot)
@@ -222,8 +223,40 @@ getFields(x = laml)
 ## Group by Pathways
 Genes can be auto grouped based on their Biological processess by setting `pathways = 'auto'` or by providing custom pathway list in the form of a two column tsv file or a data.frame containing gene names and their corresponding pathway.
 
+### Auto
+setting `pathways = 'auto'` draws top 3 most affected pathways
 ```{r}
-pathways = data.frame(Genes = c("TP53", "WT1", "PHF6", "DNMT3A", "DNMT3B", "TET1", "TET2", "IDH1", "IDH2", "FLT3", "KIT", "KRAS", "NRAS", "RUNX1", "CEBPA", "ASXL1", "EZH2", "KDM6A"), Pathway = rep(c("TSG", "DNAm", "Signalling", "TFs", "ChromMod"), c(3, 6, 4, 2, 3)), stringsAsFactors = FALSE)
+oncoplot(maf = laml, pathways = "auto", gene_mar = 8, fontSize = 0.6)
+```
+
+### Custom pathways
+```{r}
+pathways = data.frame(
+  Genes = c(
+    "TP53",
+    "WT1",
+    "PHF6",
+    "DNMT3A",
+    "DNMT3B",
+    "TET1",
+    "TET2",
+    "IDH1",
+    "IDH2",
+    "FLT3",
+    "KIT",
+    "KRAS",
+    "NRAS",
+    "RUNX1",
+    "CEBPA",
+    "ASXL1",
+    "EZH2",
+    "KDM6A"
+  ),
+  Pathway = rep(c(
+    "TSG", "DNAm", "Signalling", "TFs", "ChromMod"
+  ), c(3, 6, 4, 2, 3)),
+  stringsAsFactors = FALSE
+)
 
 head(pathways)
 

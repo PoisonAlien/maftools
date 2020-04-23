@@ -4,7 +4,6 @@
 #' @param genes genes to compare. Default `NULL`.
 #' @param top Top number of genes to use. Mutually exclusive with `genes` argument. Default 20
 #' @param fontSize Default 0.7
-#' @fontSize Default 0.7
 #' @references Bailey MH, Tokheim C, Porta-Pardo E, et al. Comprehensive Characterization of Cancer Driver Genes and Mutations . Cell. 2018;173(2):371–385.e18. doi:10.1016/j.cell.2018.02.060
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")

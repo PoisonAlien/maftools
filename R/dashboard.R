@@ -201,7 +201,7 @@ dashboard = function(maf, color = NULL, rmOutlier = TRUE, log_conv = FALSE, titv
   axis(side = 1, at = xt, lwd = 1.2, font = 3, las = 2, cex.axis = fontSize*0.9)
   title(main = paste0('Top ',  n, '\nmutated genes'), adj = 0, cex.main = titleSize[1], font = 3)
   text(x = colSums(gs.dat)+1, y = b, labels = rev(paste0(gs.load$AlteredSamples, "%")),
-       font = 4, col = "black", cex = fontSize*0.9, adj = 0)
+       font = 4, col = "black", cex = fontSize*0.9, adj = 0, xpd = TRUE)
   abline(h = b, v = xt,lty = 2, lwd = 0.3,
          col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.6))
 }

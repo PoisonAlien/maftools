@@ -9,56 +9,57 @@ oncoplot(
   top = 20,
   genes = NULL,
   altered = FALSE,
-  rightBarData = NULL,
-  rightBarLims = NULL,
   drawRowBar = TRUE,
   drawColBar = TRUE,
-  includeColBarCN = TRUE,
-  draw_titv = FALSE,
-  logColBar = FALSE,
-  topBarData = NULL,
-  clinicalFeatures = NULL,
-  pathways = NULL,
   leftBarData = NULL,
   leftBarLims = NULL,
+  rightBarData = NULL,
+  rightBarLims = NULL,
+  topBarData = NULL,
+  logColBar = FALSE,
+  includeColBarCN = TRUE,
+  clinicalFeatures = NULL,
+  annotationColor = NULL,
+  annotationDat = NULL,
+  pathways = NULL,
+  selectedPathways = NULL,
+  draw_titv = FALSE,
+  showTumorSampleBarcodes = FALSE,
+  barcode_mar = 4,
+  gene_mar = 5,
+  anno_height = 1,
+  legend_height = 4,
+  sortByAnnotation = FALSE,
+  groupAnnotationBySize = TRUE,
+  annotationOrder = NULL,
+  sortByMutation = FALSE,
+  keepGeneOrder = FALSE,
+  GeneOrderSort = TRUE,
+  sampleOrder = NULL,
   additionalFeature = NULL,
   additionalFeaturePch = 20,
   additionalFeatureCol = "gray70",
   additionalFeatureCex = 0.9,
-  annotationDat = NULL,
-  annotationColor = NULL,
   genesToIgnore = NULL,
-  showTumorSampleBarcodes = FALSE,
-  barcode_mar = 4,
-  gene_mar = 5,
-  legend_height = 4,
   removeNonMutated = TRUE,
   fill = TRUE,
   cohortSize = NULL,
   colors = NULL,
-  sortByMutation = FALSE,
-  sortByAnnotation = FALSE,
+  bgCol = "#CCCCCC",
+  borderCol = "white",
   numericAnnoCol = NULL,
-  groupAnnotationBySize = TRUE,
-  annotationOrder = NULL,
-  keepGeneOrder = FALSE,
   drawBox = FALSE,
-  GeneOrderSort = TRUE,
-  sampleOrder = NULL,
-  writeMatrix = FALSE,
-  sepwd_genes = 0.5,
-  sepwd_samples = 0.25,
   fontSize = 0.8,
   SampleNamefontSize = 1,
-  anno_height = 1,
-  showTitle = TRUE,
-  titleText = NULL,
   titleFontSize = 1.5,
   legendFontSize = 1.2,
   annotationFontSize = 1.2,
-  bgCol = "#CCCCCC",
-  borderCol = "white",
-  colbar_pathway = FALSE
+  sepwd_genes = 0.5,
+  sepwd_samples = 0.25,
+  writeMatrix = FALSE,
+  colbar_pathway = FALSE,
+  showTitle = TRUE,
+  titleText = NULL
 )
 }
 \arguments{
@@ -70,29 +71,60 @@ oncoplot(
 
 \item{altered}{Default FALSE. Chooses top genes based on muatation status. If \code{TRUE} chooses top genes based alterations (CNV or mutation).}
 
-\item{rightBarData}{Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.}
-
-\item{rightBarLims}{limits for `rightBarData`. Default `NULL`.}
-
 \item{drawRowBar}{logical. Plots righ barplot for each gene. Default \code{TRUE}.}
 
 \item{drawColBar}{logical plots top barplot for each sample. Default \code{TRUE}.}
 
-\item{includeColBarCN}{Whether to include CN in column bar plot. Default TRUE}
-
-\item{draw_titv}{logical Includes TiTv plot. \code{FALSE}}
-
-\item{logColBar}{Plot top bar plot on log10 scale. Default \code{FALSE}.}
-
-\item{topBarData}{Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.}
-
-\item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
-
-\item{pathways}{Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`}
-
 \item{leftBarData}{Data for leftside barplot. Must be a data.frame with two columns containing gene names and values. Default `NULL`}
 
 \item{leftBarLims}{limits for `leftBarData`. Default `NULL`.}
+
+\item{rightBarData}{Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.}
+
+\item{rightBarLims}{limits for `rightBarData`. Default `NULL`.}
+
+\item{topBarData}{Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.}
+
+\item{logColBar}{Plot top bar plot on log10 scale. Default \code{FALSE}.}
+
+\item{includeColBarCN}{Whether to include CN in column bar plot. Default TRUE}
+
+\item{clinicalFeatures}{columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.}
+
+\item{annotationColor}{Custom colors to use for `clinicalFeatures`. Must be a named list containing a named vector of colors. Default NULL. See example for more info.}
+
+\item{annotationDat}{If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
+You can specify which columns to be drawn using `clinicalFeatures` argument.}
+
+\item{pathways}{Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`}
+
+\item{selectedPathways}{Manually provide the subset of pathway names to be seletced from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.}
+
+\item{draw_titv}{logical Includes TiTv plot. \code{FALSE}}
+
+\item{showTumorSampleBarcodes}{logical to include sample names.}
+
+\item{barcode_mar}{Margin width for sample names. Default 4}
+
+\item{gene_mar}{Margin width for gene names. Default 5}
+
+\item{anno_height}{Height of plotting area for sample annotations. Default 1}
+
+\item{legend_height}{Height of plotting area for legend. Default 4}
+
+\item{sortByAnnotation}{logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort}
+
+\item{groupAnnotationBySize}{Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.}
+
+\item{annotationOrder}{Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.}
+
+\item{sortByMutation}{Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.}
+
+\item{keepGeneOrder}{logical whether to keep order of given genes. Default FALSE, order according to mutation frequency}
+
+\item{GeneOrderSort}{logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE}
+
+\item{sampleOrder}{Manually speify sample names for oncolplot ordering. Default NULL.}
 
 \item{additionalFeature}{a vector of length two indicating column name in the MAF and the factor level to be highlighted. Provide a list of values for highlighting more than one features}
 
@@ -102,20 +134,7 @@ oncoplot(
 
 \item{additionalFeatureCex}{Default 0.9}
 
-\item{annotationDat}{If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
-You can specify which columns to be drawn using `clinicalFeatures` argument.}
-
-\item{annotationColor}{Custom colors to use for `clinicalFeatures`. Must be a named list containing a named vector of colors. Default NULL. See example for more info.}
-
 \item{genesToIgnore}{do not show these genes in Oncoplot. Default NULL.}
-
-\item{showTumorSampleBarcodes}{logical to include sample names.}
-
-\item{barcode_mar}{Margin width for sample names. Default 4}
-
-\item{gene_mar}{Margin width for gene names. Default 5}
-
-\item{legend_height}{Height of plotting area for legend. Default 4}
 
 \item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
@@ -125,39 +144,17 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{colors}{named vector of colors for each Variant_Classification.}
 
-\item{sortByMutation}{Force sort matrix according mutations. Helpful in case of MAF was read along with copy number data. Default FALSE.}
+\item{bgCol}{Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"}
 
-\item{sortByAnnotation}{logical sort oncomatrix (samples) by provided `clinicalFeatures`. Sorts based on first `clinicalFeatures`.  Defaults to FALSE. column-sort}
+\item{borderCol}{border grid color (not-mutated) samples. Default 'white'.}
 
 \item{numericAnnoCol}{color palette used for numeric annotations. Default 'YlOrBr' from RColorBrewer}
 
-\item{groupAnnotationBySize}{Further group `sortByAnnotation` orders by their size.  Defaults to TRUE. Largest groups comes first.}
-
-\item{annotationOrder}{Manually specify order for annotations. Works only for first `clinicalFeatures`. Default NULL.}
-
-\item{keepGeneOrder}{logical whether to keep order of given genes. Default FALSE, order according to mutation frequency}
-
 \item{drawBox}{logical whether to draw a box around main matrix. Default FALSE}
-
-\item{GeneOrderSort}{logical this is applicable when `keepGeneOrder` is TRUE. Default TRUE}
-
-\item{sampleOrder}{Manually speify sample names for oncolplot ordering. Default NULL.}
-
-\item{writeMatrix}{writes character coded matrix used to generate the plot to an output file.}
-
-\item{sepwd_genes}{size of lines seperating genes. Default 0.5}
-
-\item{sepwd_samples}{size of lines seperating samples. Default 0.25}
 
 \item{fontSize}{font size for gene names. Default 0.8.}
 
 \item{SampleNamefontSize}{font size for sample names. Default 1}
-
-\item{anno_height}{Height of plotting area for sample annotations. Default 1}
-
-\item{showTitle}{Default TRUE}
-
-\item{titleText}{Custom title. Default `NULL`}
 
 \item{titleFontSize}{font size for title. Default 1.5}
 
@@ -165,11 +162,17 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{annotationFontSize}{font size for annotations. Default 1.2}
 
-\item{bgCol}{Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"}
+\item{sepwd_genes}{size of lines seperating genes. Default 0.5}
 
-\item{borderCol}{border grid color (not-mutated) samples. Default 'white'.}
+\item{sepwd_samples}{size of lines seperating samples. Default 0.25}
+
+\item{writeMatrix}{writes character coded matrix used to generate the plot to an output file.}
 
 \item{colbar_pathway}{Draw top column bar with respect to diplayed pathway. Default FALSE.}
+
+\item{showTitle}{Default TRUE}
+
+\item{titleText}{Custom title. Default `NULL`}
 }
 \value{
 None.

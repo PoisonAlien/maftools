@@ -34,6 +34,7 @@
 - `coBarplot` side-by-side barplot for maf comparison Issue: [#486](https://github.com/PoisonAlien/maftools/issues/486)
 - Group genes in `oncoplot` by specific pathways. This can be done by setting `pathways = 'auto'` or by providing a two column data.frame/tsv-file with Gene names and their corresponding pathway belongings.
 - Oncoplot gains `rightBarData` and `leftBarData` arguments for user specific side bar plots.
+- Default flatUI colors for lollipop plots
 
 ## Deprecated
 - `geneCloud` and `pancanComparison`
