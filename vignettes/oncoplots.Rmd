@@ -123,7 +123,7 @@ dummy.samples = sample(x = barcodes,
 
 #Genarate random CN status for above samples
 cn.status = sample(
-  x = c('Amp', 'Del'),
+  x = c('ShallowAmp', 'DeepDel', 'Del', 'Amp'),
   size = length(dummy.samples),
   replace = TRUE
 )

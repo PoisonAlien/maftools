@@ -1,4 +1,7 @@
 # CHANGES IN VERSION 2.4.00
+## Allow multiple CN types in oncoplot Issue: [#490](https://github.com/PoisonAlien/maftools/issues/490)
+
+# CHANGES IN VERSION 2.4.00
 ## BUG FIXES
 
 - `lollipopPlot2` error with zero mutation Issue: [#480](https://github.com/PoisonAlien/maftools/issues/480)

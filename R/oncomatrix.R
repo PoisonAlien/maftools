@@ -29,11 +29,14 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
     subMaf[, Hugo_Symbol := factor(x = Hugo_Symbol, levels = g)]
   }
 
+  cnv_events = c(c("Amp", "Del"), as.character(subMaf[Variant_Type == "CNV"][, .N, Variant_Classification][, Variant_Classification]))
+  cnv_events = unique(cnv_events)
+
   oncomat = data.table::dcast(data = subMaf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
-                              fun.aggregate = function(x){
+                              fun.aggregate = function(x, cnv = cnv_events){
                                 x = unique(as.character(x))
-                                xad = x[x %in% c('Amp', 'Del')]
-                                xvc = x[!x %in% c('Amp', 'Del')]
+                                xad = x[x %in% cnv]
+                                xvc = x[!x %in% cnv]
 
                                 if(length(xvc)>0){
                                   xvc = ifelse(test = length(xvc) > 1, yes = 'Multi_Hit', no = xvc)
@@ -116,7 +119,7 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
     oncomat.copy <- oncomat.copy[,colnames(mdf)]
     oncomat.copy <- oncomat.copy[rownames(mdf),]
 
-    return(list(oncoMatrix = oncomat.copy, numericMatrix = mdf, vc = variant.classes))
+    return(list(oncoMatrix = oncomat.copy, numericMatrix = mdf, vc = variant.classes, cnvc = cnv_events))
   }
 }
 
@@ -634,4 +637,27 @@ pathway_load = function(maf){
 
   altered_pws = altered_pws[!n_affected_genes %in% 0]
   altered_pws
+}
+
+#Update missing colors
+update_colors = function(x, y){
+  x = as.character(x)
+
+  avail_colors = as.character(y[!names(y) %in% x])
+
+  missing_entries = as.character(x)[!as.character(x) %in% names(y)]
+  missing_entries = missing_entries[!missing_entries %in% ""]
+
+  if(length(missing_entries) > 0){
+    if(length(missing_entries) > length(avail_colors)){
+      avail_colors = sample(x = colors(distinct = TRUE), size = length(missing_entries), replace = FALSE)
+      names(avail_colors) = missing_entries
+      y = c(y, avail_colors)
+    }else{
+      avail_colors = avail_colors[1:length(missing_entries)]
+      names(avail_colors) = missing_entries
+      y = c(y, avail_colors)
+    }
+  }
+  y
 }
