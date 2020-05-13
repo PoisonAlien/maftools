@@ -3,8 +3,8 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
                      plot2 = FALSE, test = FALSE, clinicalFeatures = NULL,
                      additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9,
                      annotationDat = NULL, annotationColor = NULL,
-                     sortByAnnotation = FALSE, showBarcodes = FALSE,
-                     title = NULL, title_size = 1.2, barcode_size = 1, sepwd_samples = 0.1, sepwd_genes = 0.1){
+                     sortByAnnotation = FALSE, showBarcodes = FALSE, barcodemar = 4,
+                     title = NULL, title_size = 1.2, barcode_size = 0.4, sepwd_samples = 0.1, sepwd_genes = 0.1){
 
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
   genes = as.character(genes)
@@ -65,11 +65,14 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   }
 
   if(is.null(colors)){
-    vc_col = get_vcColors()
+    vc_col = get_vcColors(websafe = FALSE)
   }else{
     vc_col = colors
   }
-  vc_codes = om$vc #VC codes
+  #VC codes
+  vc_codes = update_vc_codes(om_op = om)
+  vc_col = update_colors(x = vc_codes, y = vc_col)
+  #vc_codes = om$vc #VC codes
 
   percent_alt = paste0(round((apply(numMat, 1, function(x) length(x[x != 0])) / length(tsbs)) * 100), "%")
 
@@ -77,13 +80,13 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   if(plot2){
     if(is.null(clinicalFeatures)){
       if(showBarcodes){
-        par(mar = c(5, 1, 3, 3))
+        par(mar = c(barcodemar, 1, 3, 3))
       }else{
         par(mar = c(1, 1, 3, 3))
       }
     }else{
       if(showBarcodes){
-        par(mar = c(5, 1, 3, 5))
+        par(mar = c(barcodemar, 1, 3, 5))
       }else{
         par(mar = c(1, 1, 3, 5))
       }
@@ -91,13 +94,13 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   }else{
     if(is.null(clinicalFeatures)){
       if(showBarcodes){
-        par(mar = c(5, 3, 3, 1))
+        par(mar = c(barcodemar, 3, 3, 1))
       }else{
         par(mar = c(1, 3, 3, 1))
       }
     }else{
       if(showBarcodes){
-        par(mar = c(5, 5, 3, 1))
+        par(mar = c(barcodemar, 5, 3, 1))
       }else{
         par(mar = c(1, 5, 3, 1))
       }
@@ -157,32 +160,19 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     }
   }
 
-  del_idx = which(mo == "Del", arr.ind = TRUE)
-  amp_idx = which(mo == "Amp", arr.ind = TRUE)
-
-  if(nrow(amp_idx) > 0){
-    nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
-    nm_temp[amp_idx] = 0
-    image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
-          yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
-    amp_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
-    for(i in seq_len(nrow(amp_idx))){
-      rowi = amp_idx[i,1]
-      coli = amp_idx[i,2]
-      rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col['Amp'], border = NA, lwd = 0)
-    }
-  }
-
-  if(nrow(del_idx) > 0){
-    nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
-    nm_temp[del_idx] = 0
-    image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
-          yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
-    del_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
-    for(i in seq_len(nrow(del_idx))){
-      rowi = del_idx[i,1]
-      coli = del_idx[i,2]
-      rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col['Del'], border = NA, lwd = 0)
+  for(cnevent in om$cnvc){
+    cn_idx = which(mo == cnevent, arr.ind = TRUE)
+    if(nrow(cn_idx) > 0){
+      nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
+      nm_temp[cn_idx] = 0
+      image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
+            yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+      cn_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
+      for(i in seq_len(nrow(cn_idx))){
+        rowi = cn_idx[i,1]
+        coli = cn_idx[i,2]
+        rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col[cnevent], border = NA, lwd = 0)
+      }
     }
   }
 
@@ -235,17 +225,21 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     mtext(text = rev(percent_alt), side = 4, at = 1:ncol(nm),
           font = 1, line = 0.4, cex = fontSize, las = 2, adj = 0)
     if(showBarcodes){
-      text(x =1:nrow(nm), y = 0.40,
-           labels = rownames(nm), srt = 90, font = 1,
-           cex = barcode_size, adj = 1)
+      mtext(text = rownames(nm), side = 1, las =2, at = 1:nrow(nm),
+            line = 0.4, cex = barcode_size, font = 1)
+      # graphics::text(x =1:nrow(nm), y = 0.40,
+      #      labels = rownames(nm), srt = 90, font = 1,
+      #      cex = barcode_size, adj = 1)
     }
   }else{
     mtext(text = rev(percent_alt), side = 2, at = 1:ncol(nm),
           font = 1, line = 0.4, cex = fontSize, las = 2, adj = 1)
     if(showBarcodes){
-      text(x =1:nrow(nm), y = 0.40,
-           labels = rownames(nm), srt = 90, font = 1,
-           cex = barcode_size, adj = 1)
+      mtext(text = rownames(nm), side = 1, las =2, at = 1:nrow(nm),
+            line = 0.4, cex = barcode_size, font = 1)
+      # graphics::text(x =1:nrow(nm), y = 0.40,
+      #      labels = rownames(nm), srt = 90, font = 1,
+      #      cex = barcode_size, adj = 1)
     }
   }
 
@@ -254,29 +248,24 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
 
     if(is.null(annotationColor)){
-      annotationColor = list()
-      for(i in 1:ncol(annotation)){
-        ann_lvls = levels(annotation[,i])
-        if(length(ann_lvls) <= 9){
-          ann_lvls_cols = RColorBrewer::brewer.pal(n = 9, name = 'Set1')[1:length(ann_lvls)]
-          names(ann_lvls_cols) = ann_lvls
-          annotationColor[[i]] = ann_lvls_cols
-        }else{
-          ann_lvls_cols = colors()[sample(x = 1:100, size = length(ann_lvls), replace = FALSE)]
-          names(ann_lvls_cols) = ann_lvls
-          annotationColor[[i]] = ann_lvls_cols
-        }
-      }
-      names(annotationColor) = colnames(annotation)
+      annotationColor = get_anno_cols(ann = annotation)
     }
+
+    annotationColor = lapply(annotationColor, function(x) {
+      na_idx = which(is.na(names(x)))
+      x[na_idx] = "gray70"
+      names(x)[na_idx] = "NA"
+      x
+    })
 
     anno_cols = c()
     for(i in 1:length(annotationColor)){
       anno_cols = c(anno_cols, annotationColor[[i]])
     }
 
-    clini_lvls = clini_lvls[!is.na(clini_lvls)]
-    names(clini_lvls) = 1:length(clini_lvls)
+    #clini_lvls = clini_lvls[!is.na(clini_lvls)]
+    temp_names = suppressWarnings(sample(x = setdiff(x = 1:1000, y = as.numeric(as.character(clini_lvls))), size = length(clini_lvls), replace = FALSE))
+    names(clini_lvls) = temp_names#1:length(clini_lvls)
     temp_rownames = rownames(annotation)
     annotation = data.frame(lapply(annotation, as.character),
                             stringsAsFactors = FALSE, row.names = temp_rownames)
@@ -384,7 +373,6 @@ get_m12_annotation_colors = function(a1 = NULL, a1_cf = NULL,
     }
   }
   names(a2_rest_cols) = colnames(a2_rest)
-  #print(c(cf_cols, a1_rest_cols, a2_rest_cols))
 
   return(c(cf_cols, a1_rest_cols, a2_rest_cols))
 }
