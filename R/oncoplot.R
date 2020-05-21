@@ -244,6 +244,14 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
   gene_sum = apply(numMat, 1, function(x) length(x[x!=0]))
   percent_alt = paste0(round(100*(apply(numMat, 1, function(x) length(x[x!=0]))/totSamps)), "%")
 
+  nonmut_samps = colnames(numMat)[!colnames(numMat) %in% rownames(samp_sum)]
+  if(length(nonmut_samps) > 0){
+    samp_sum_missing_samps = matrix(data = 0, nrow = length(nonmut_samps), ncol = ncol(samp_sum))
+    colnames(samp_sum_missing_samps) = colnames(samp_sum)
+    rownames(samp_sum_missing_samps) = nonmut_samps
+    samp_sum = rbind(samp_sum, samp_sum_missing_samps)
+  }
+
   if(colbar_pathway){
     samp_sum = getSampleSummary(subsetMaf(maf = maf, genes = genes))
     samp_sum[,total := NULL]
@@ -708,6 +716,11 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
       }
     }
   }
+
+  # #Draw grids for the samples
+  # if(!is.null(gridFeature)){
+  #   To add: https://github.com/PoisonAlien/maftools/issues/528
+  # }
 
   #Add box border
   if (drawBox) {

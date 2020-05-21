@@ -17,7 +17,8 @@ plotVaf(
   axis_fs = 0.8,
   height = 5,
   width = 5,
-  showN = TRUE
+  showN = TRUE,
+  color = NULL
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ plotVaf(
 \item{width}{Width of plot to be saved. Default 4}
 
 \item{showN}{if TRUE, includes number of observations}
+
+\item{color}{manual colors. Default NULL.}
 }
 \value{
 Nothing.

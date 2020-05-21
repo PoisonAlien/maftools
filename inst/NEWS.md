@@ -4,9 +4,13 @@
 - Highlight most significant entry when a variants overlaps with multiple CNV regions Issue: [524](https://github.com/PoisonAlien/maftools/issues/524) 
 - `genesToBarcodes` sample selection fix
 - `coOncoplot` bug fix with `showSampleNames` argument. Issue: [306](https://github.com/PoisonAlien/maftools/issues/306)
+- `removeNonMutated` bug fix with `oncoplot` argument. Issue: [530](https://github.com/PoisonAlien/maftools/issues/530)
 
 ## ENHANCEMENTS
 - Allow multiple CN types in oncoplot Issue: [#490](https://github.com/PoisonAlien/maftools/issues/490)
+- Allow `getSampleSummary` to include non mutated samples Issue: [#527](https://github.com/PoisonAlien/maftools/issues/527)
+- Added `color` argument to `plotVaf` for manual color codes Issue: [#531](https://github.com/PoisonAlien/maftools/issues/531)
+- Added `rm_zero` argument to `tcgaCompare`
 
 # CHANGES IN VERSION 2.4.00
 ## BUG FIXES

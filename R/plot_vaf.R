@@ -14,6 +14,7 @@
 #' @param axis_fs font size for axis. Default 0.8
 #' @param width Width of plot to be saved. Default 4
 #' @param height Height of plot to be saved. Default 5
+#' @param color manual colors. Default NULL.
 #' @return Nothing.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -24,7 +25,7 @@
 
 plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
                    orderByMedian = TRUE, keepGeneOrder = FALSE, flip = FALSE, fn = NULL,
-                   gene_fs = 0.8, axis_fs = 0.8, height = 5, width = 5, showN = TRUE){
+                   gene_fs = 0.8, axis_fs = 0.8, height = 5, width = 5, showN = TRUE, color = NULL){
 
   if(is.null(genes)){
     genes = as.character(getGeneSummary(x =maf)[1:top, Hugo_Symbol])
@@ -70,10 +71,14 @@ plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
     datm$Hugo_Symbol = factor(x = datm$Hugo_Symbol, levels = geneOrder)
   }
 
-  bcol = c(RColorBrewer::brewer.pal(n = 8, name = "Dark2"),
-           RColorBrewer::brewer.pal(n = 8, name = "Accent"))
-  if(length(genes) > length(bcol)){
-    bcol = sample(x = colors(distinct = TRUE), size = length(genes), replace = FALSE)
+  if(!is.null(color)){
+    bcol = color
+  }else{
+    bcol = c(RColorBrewer::brewer.pal(n = 8, name = "Dark2"),
+             RColorBrewer::brewer.pal(n = 8, name = "Accent"))
+    if(length(genes) > length(bcol)){
+      bcol = sample(x = colors(distinct = TRUE), size = length(genes), replace = FALSE)
+    }
   }
 
   if(!is.null(fn)){

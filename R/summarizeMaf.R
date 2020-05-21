@@ -47,7 +47,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
 
   #summarise and casting by 'Variant_Classification'
   vc = maf[,.N, .(Tumor_Sample_Barcode, Variant_Classification )]
-  vc.cast = data.table::dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N')
+  vc.cast = data.table::dcast(data = vc, formula = Tumor_Sample_Barcode ~ Variant_Classification, fill = 0, value.var = 'N', drop = FALSE)
 
   if(any(colnames(vc.cast) %in% c('Amp', 'Del'))){
     vc.cast.cnv = vc.cast[,c('Tumor_Sample_Barcode', colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')]), with =FALSE]
@@ -70,7 +70,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
 
   #summarise and casting by 'Variant_Type'
   vt = maf[,.N, .(Tumor_Sample_Barcode, Variant_Type )]
-  vt.cast = data.table::dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0)
+  vt.cast = data.table::dcast(data = vt, formula = Tumor_Sample_Barcode ~ Variant_Type, value.var = 'N', fill = 0, drop = FALSE)
 
   if(any(colnames(vt.cast) %in% c('CNV'))){
     vt.cast.cnv = vt.cast[,c('Tumor_Sample_Barcode', colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')]), with =FALSE]

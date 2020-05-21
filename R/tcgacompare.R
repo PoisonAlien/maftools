@@ -12,6 +12,7 @@
 #' @param logscale Default TRUE
 #' @param decreasing Default FALSE. Cohorts are arranged in increasing mutation burden.
 #' @param rm_hyper Remove hyper mutated samples (outliers)? Default FALSE
+#' @param rm_zero Remove samples with zero mutations? Default TRUE
 #' @return data.table with median mutations per cohort
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -19,17 +20,10 @@
 #' tcgaCompare(maf = laml, cohortName = "AML")
 #' @export
 
-tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortName = NULL, tcga_cohorts = NULL, primarySite = FALSE, col = c('gray70', 'black'), bg_col = c('#EDF8B1', '#2C7FB8'), medianCol = 'red', decreasing = FALSE, logscale = TRUE, rm_hyper = FALSE){
+tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortName = NULL, tcga_cohorts = NULL, primarySite = FALSE, col = c('gray70', 'black'), bg_col = c('#EDF8B1', '#2C7FB8'), medianCol = 'red', decreasing = FALSE, logscale = TRUE, rm_hyper = FALSE, rm_zero = TRUE){
 
   tcga.cohort = system.file('extdata', 'tcga_cohort.txt.gz', package = 'maftools')
-
-  if(Sys.info()[['sysname']] == 'Windows'){
-    tcga.cohort.gz = gzfile(description = tcga.cohort, open = 'r')
-    tcga.cohort <- suppressWarnings( data.table(read.csv( file = tcga.cohort.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-    close(tcga.cohort.gz)
-  } else{
-    tcga.cohort = data.table::fread(cmd = paste('zcat <', tcga.cohort), sep = '\t', stringsAsFactors = FALSE)
-  }
+  tcga.cohort = data.table::fread(file = tcga.cohort, sep = '\t', stringsAsFactors = FALSE)
 
   if(primarySite){
     tcga.cohort = tcga.cohort[,.(Tumor_Sample_Barcode, total, site)]
@@ -50,8 +44,13 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
   }
   maf.mutload = lapply(maf, function(m){
     x = getSampleSummary(m)[,.(Tumor_Sample_Barcode, total)]
+    if(rm_zero){
+      warning(paste0("Removed ", nrow(x[x$total == 0]), " samples with zero mutations."))
+      x = x[!total == 0]
+    }
     x
   })
+
 
   if(is.null(cohortName)){
     cohortName = paste0('Input', seq_len(length(maf)))
@@ -130,7 +129,7 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
                     })
   names(plot.dat) = names(tcga.cohort)
   if(logscale){
-    y_lims = range(log10(data.table::rbindlist(l = plot.dat)[,V2]))
+    y_lims = range(log10(data.table::rbindlist(l = plot.dat)[V2 != 0][,V2]))
   }else{
     y_lims = range(data.table::rbindlist(l = plot.dat)[,V2])
   }
