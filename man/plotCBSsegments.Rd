@@ -25,7 +25,8 @@ plotCBSsegments(
 
 \item{maf}{optional \code{\link{MAF}}}
 
-\item{tsb}{If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. If you are maping maf, make sure sample names in
+\item{tsb}{If segmentation file contains many samples (as in gistic input), specify sample name here.
+Defualt plots head 1 sample. Set 'ALL' for plotting all samples. If you are maping maf, make sure sample names in
 Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF.}
 
 \item{savePlot}{If true plot is saved as pdf.}
