@@ -43,6 +43,7 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FA
   if (is.null(tsb)){
     #Use top 1 sample for simplicity
     tsb = unique(as.character(seg[,Sample]))[1]
+    message("No 'tsb' specified, plot head 1 sample. Set tsb='ALL' to plot all samples.")
   } else if (tsb == "ALL") {
     #Number of unique samples in segmentation file
     tsb = unique(as.character(seg[,Sample]))
