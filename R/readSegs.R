@@ -172,6 +172,9 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL, y_lims = NUL
   chr.colors = rep(x = chr.colors, times = length(chr.lvls))[1:length(chr.lvls)]
   names(chr.colors) = chr.lvls
 
+  data.table::setkey(seg.spl.transformed, "Chromosome")
+  N <- seg.spl.transformed[levels(Chromosome), .N, .EACHI][, N]
+
   if(is.null(y_lims)){
     y_lims = pretty(round(range(seg.spl.transformed$Segment_Mean, na.rm = TRUE, finite = TRUE), digits = 2))
   }
@@ -186,8 +189,8 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL, y_lims = NUL
   abline(v = chr.lens.sumsum, col = 'gray70', lwd = 0.25)
   rect(xleft = seg.spl.transformed$Start_Position_updated, xright =  seg.spl.transformed$End_Position_updated,
        ybottom = seg.spl.transformed$Segment_Mean-rect_size, ytop = seg.spl.transformed$Segment_Mean+rect_size,
-       col = rep(chr.colors, seg.spl.transformed[,.N,Chromosome][,N]),
-       border = rep(chr.colors, seg.spl.transformed[,.N,Chromosome][,N]))
+       col = rep(chr.colors, N),
+       border = rep(chr.colors, N))
   title(main = tsb, adj = 0, font.main = 3)
   mtext(text = "Chromosome", side = 1, line = 1, font = 3)
   mtext(text = "Segment mean", side = 2, line = 2, font = 3)
