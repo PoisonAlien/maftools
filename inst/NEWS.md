@@ -1,6 +1,7 @@
 # CHANGES IN VERSION 2.4.05
 ## BUG FIXES
 
+- `merge_mafs` bug fix due to discrepancy in column names. Issue: [538](https://github.com/PoisonAlien/maftools/issues/538)
 - `readGistic` TCGA sample names bug fix. Issue: [536](https://github.com/PoisonAlien/maftools/issues/536)
 - Highlight most significant entry when a variants overlaps with multiple CNV regions Issue: [524](https://github.com/PoisonAlien/maftools/issues/524) 
 - `genesToBarcodes` sample selection fix
