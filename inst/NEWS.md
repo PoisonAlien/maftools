@@ -11,6 +11,7 @@
 - `removeNonMutated` bug fix with `oncoplot` argument. Issue: [530](https://github.com/PoisonAlien/maftools/issues/530)
 
 ## ENHANCEMENTS
+- Make `glags` internal function with top 100 genes. Issue: [542](https://github.com/PoisonAlien/maftools/issues/542)
 - Add legend to `gisticBubblePlot`. Issue: [544](https://github.com/PoisonAlien/maftools/issues/544)
 - Add `bgCol` and `borderCol` to  `gisticOncoPlot`. Issue: [#533](https://github.com/PoisonAlien/maftools/issues/533)
 - Allow multiple CN types in oncoplot Issue: [#490](https://github.com/PoisonAlien/maftools/issues/490)

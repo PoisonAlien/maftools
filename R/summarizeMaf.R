@@ -36,9 +36,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   nSamples = length(levels(maf$Tumor_Sample_Barcode))
 
   #Top 20 FLAGS - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267152/
-  flags = c("TTN", "MUC16", "OBSCN", "AHNAK2", "SYNE1", "FLG", "MUC5B",
-            "DNAH17", "PLEC", "DST", "SYNE2", "NEB", "HSPG2", "LAMA5", "AHNAK",
-            "HMCN1", "USH2A", "DNAH11", "MACF1", "MUC17")
+  flags = flags(top = 20)
 
   #Variants per TSB
   tsb = maf[,.N, Tumor_Sample_Barcode]
@@ -198,4 +196,27 @@ add_legend <- function(...) {
   on.exit(par(opar))
   plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n')
   legend(...)
+}
+
+flags = function(top = NULL){
+  top100flags = c("TTN", "MUC16", "OBSCN", "AHNAK2", "SYNE1", "FLG", "MUC5B",
+    "DNAH17", "PLEC", "DST", "SYNE2", "NEB", "HSPG2", "LAMA5", "AHNAK",
+    "HMCN1", "USH2A", "DNAH11", "MACF1", "MUC17", "DNAH5", "GPR98",
+    "FAT1", "PKD1", "MDN1", "RNF213", "RYR1", "DNAH2", "DNAH3", "DNAH8",
+    "DNAH1", "DNAH9", "ABCA13", "APOB", "SRRM2", "CUBN", "SPTBN5",
+    "PKHD1", "LRP2", "FBN3", "CDH23", "DNAH10", "FAT4", "RYR3", "PKHD1L1",
+    "FAT2", "CSMD1", "PCNT", "COL6A3", "FRAS1", "FCGBP", "DNAH7",
+    "RP1L1", "PCLO", "ZFHX3", "COL7A1", "LRP1B", "FAT3", "EPPK1",
+    "VPS13C", "HRNR", "MKI67", "MYO15A", "STAB1", "ZAN", "UBR4",
+    "VPS13B", "LAMA1", "XIRP2", "BSN", "KMT2C", "ALMS1", "CELSR1",
+    "TG", "LAMA3", "DYNC2H1", "KMT2D", "BRCA2", "CMYA5", "SACS",
+    "STAB2", "AKAP13", "UTRN", "VWF", "VPS13D", "ANK3", "FREM2",
+    "PKD1L1", "LAMA2", "ABCA7", "LRP1", "ASPM", "MYOM2", "PDE4DIP",
+    "TACC2", "MUC2", "TEP1", "HELZ2", "HERC2", "ABCA4")
+
+  if(is.null(top)){
+    top100flags
+  }else{
+    top100flags[1:top]
+  }
 }
