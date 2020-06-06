@@ -793,6 +793,7 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
     if(is.null(annotationColor)){
       annotationColor = get_anno_cols(ann = annotation)
     }
+    annotationColor = annotationColor[colnames(annotation)]
 
     annotationColor = lapply(annotationColor, function(x) {
       na_idx = which(is.na(names(x)))

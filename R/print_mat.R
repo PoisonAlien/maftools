@@ -250,6 +250,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     if(is.null(annotationColor)){
       annotationColor = get_anno_cols(ann = annotation)
     }
+    annotationColor = annotationColor[colnames(annotation)]
 
     annotationColor = lapply(annotationColor, function(x) {
       na_idx = which(is.na(names(x)))

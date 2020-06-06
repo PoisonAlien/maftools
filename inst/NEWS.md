@@ -1,6 +1,7 @@
 # CHANGES IN VERSION 2.4.05
 ## BUG FIXES
 
+- Bugfix in annotation legend order in `oncoplot`. Issue: [541](https://github.com/PoisonAlien/maftools/issues/541)
 - Error in `plotCBSsegments`. Issue: [539](https://github.com/PoisonAlien/maftools/issues/539)
 - `merge_mafs` bug fix due to discrepancy in column names. Issue: [538](https://github.com/PoisonAlien/maftools/issues/538)
 - `readGistic` TCGA sample names bug fix. Issue: [536](https://github.com/PoisonAlien/maftools/issues/536)
@@ -10,6 +11,7 @@
 - `removeNonMutated` bug fix with `oncoplot` argument. Issue: [530](https://github.com/PoisonAlien/maftools/issues/530)
 
 ## ENHANCEMENTS
+- Add legend to `gisticBubblePlot`. Issue: [544](https://github.com/PoisonAlien/maftools/issues/544)
 - Add `bgCol` and `borderCol` to  `gisticOncoPlot`. Issue: [#533](https://github.com/PoisonAlien/maftools/issues/533)
 - Allow multiple CN types in oncoplot Issue: [#490](https://github.com/PoisonAlien/maftools/issues/490)
 - Allow `getSampleSummary` to include non mutated samples Issue: [#527](https://github.com/PoisonAlien/maftools/issues/527)

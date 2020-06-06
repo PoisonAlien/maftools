@@ -235,8 +235,11 @@ sortByGeneOrder = function(m, g){
 #col_var = a vector color
 bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
                        bubble_var = NULL, bubble_size = 1, text_var = NULL,
-                       text_size = 1, col_var = NULL, return_dat = FALSE){
+                       text_size = 1, col_var = NULL, return_dat = FALSE, showscale = FALSE, xlab = NULL, ylab = NULL){
 
+  if(showscale){
+    lo = layout(mat = matrix(data = c(1, 2), nrow = 1, ncol = 2), widths = c(5, 1))
+  }
   x_col_idx = which(colnames(plot_dat) == x_var)
   y_col_idx = which(colnames(plot_dat) == y_var)
   colnames(plot_dat)[c(x_col_idx, y_col_idx)] = c("x", "y")
@@ -326,24 +329,25 @@ bubble_plot = function(plot_dat, lab_dat = NULL, x_var = NULL, y_var = NULL,
   suppressWarnings(symbols(x = plot_dat$x, y = plot_dat$y, circles = plot_dat$size_z, inches = 0.1, bg = plot_dat$color_var, xlim = x_lims[c(1, 4)],
           ylim = y_lims[c(1, 4)], xlab = NA, ylab = NA, fg = "white", axes = FALSE))
   axis(side = 1, at = x_ticks)
-  axis(side = 2, at = y_ticks, las = 2)
+  axis(side = 2, at = y_ticks, las = 2, labels = abs(y_ticks))
   abline(h = y_ticks, v = x_ticks, lty = 2,
          col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lwd = 0.75)
 
+  mtext(text = xlab, side = 1, line = 2)
+  mtext(text = ylab, side = 2, line = 3)
+
   if(!is.null(lab_dat)){
-    # points(x = lab_dat$x, y = lab_dat$y, cex = lab_dat$size_z,
-    #        pch = 16, col = lab_dat$color_var)
     text(x = lab_dat$x, y = lab_dat$y, labels = lab_dat$z_text, adj = 1, offset = 0.2, cex = text_size, col = lab_dat$color_var, xpd = TRUE)
-    # if(nrow(lab_dat) > 0 & nrow(lab_dat) < 2){
-    #   text(x = lab_dat$x, y = lab_dat$y, labels = lab_dat$z_text, adj = 1, offset = 0.2, cex = text_size, col = lab_dat$color_var)
-    # }else if(nrow(lab_dat) >= 2){
-    #   symbols(x = lab_dat$x, y = lab_dat$y, circles = lab_dat$size_z,
-    #           bg = lab_dat$color_var, add = TRUE, fg = "white", inches = 0.1)
-    #
-    #   wordcloud::textplot(x = lab_dat$x, y = lab_dat$y, words = lab_dat$z_text,
-    #                       cex = text_size, new = FALSE, show.lines = TRUE,
-    #                       xlim = x_lims[c(1, 4)], ylim = y_lims[c(1, 4)], font = 3, col = lab_dat$color_var)
-    # }
+  }
+
+  if(showscale){
+    par(mar = c(2, 1, 1, 1))
+    plot(x = NA, ylim = c(0, 4.5), xlim = c(0, 2), axes = FALSE, xlab = NA, ylab = NA)
+    bs = seq(min(plot_dat$size_z), max(plot_dat$size_z), length.out = 4)
+    bslabs = round(seq(min(plot_dat$z), max(plot_dat$z), length.out = 4), 2)
+    symbols(y = seq(3, 4, length.out = length(bs)), x = rep(0, length(bs)), circles = bs, add = TRUE, inches = 0.1, bg = "black", xpd = TRUE)
+    text(x = rep(1, length(bs)), y = seq(3, 4, length.out = length(bs)), labels = bslabs, xpd = TRUE, adj =0)
+    text(x = 0, y = 4.4, labels = "-log10(q)", xpd = TRUE, adj = 0)
   }
 }
 
