@@ -397,6 +397,7 @@ Tumors are generally heterogeneous i.e, consist of multiple clones. This heterog
 
 ```{r, echo = TRUE, fig.align='left', fig.height=4, fig.width=6, eval=T}
 #Heterogeneity in sample TCGA.AB.2972
+library("mclust")
 tcga.ab.2972.het = inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
 print(tcga.ab.2972.het$clusterMeans)
 #Visualizing results

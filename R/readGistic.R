@@ -162,6 +162,7 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
   if(isTCGA){
     cnDT$Tumor_Sample_Barcode = substr(x = cnDT$Tumor_Sample_Barcode, start = 1, stop = 12)
     cnSamples = substr(x = cnSamples, start = 1, stop = 12)
+    cnSamples = unique(x = cnSamples)
   }
 
   qval$Unique_Name = gsub(pattern = 'Amplification_Peak', replacement = 'AP', x = qval$Unique_Name)

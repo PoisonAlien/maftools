@@ -23,7 +23,9 @@ gisticOncoPlot(
   SampleNamefontSize = 0.6,
   fontSize = 0.8,
   legendFontSize = 1.2,
-  annotationFontSize = 1.2
+  annotationFontSize = 1.2,
+  borderCol = "white",
+  bgCol = "#CCCCCC"
 )
 }
 \arguments{
@@ -64,6 +66,10 @@ gisticOncoPlot(
 \item{legendFontSize}{font size for legend. Default 1.2}
 
 \item{annotationFontSize}{font size for annotations. Default 1.2}
+
+\item{borderCol}{Default "white"}
+
+\item{bgCol}{Default "#CCCCCC"}
 }
 \value{
 None.

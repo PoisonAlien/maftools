@@ -2,7 +2,8 @@
 #' @details this function takes segmented copy number data and plots it. If MAF object is specified, all mutations are highlighted on the plot.
 #' @param cbsFile CBS segmented copy number file. Column names should be Sample, Chromosome, Start, End, Num_Probes and Segment_Mean (log2 scale).
 #' @param maf optional \code{\link{MAF}}
-#' @param tsb If segmentation file contains many samples (as in gistic input), specify sample name here. Defualt plots all samples. If you are maping maf, make sure sample names in
+#' @param tsb If segmentation file contains many samples (as in gistic input), specify sample name here.
+#' Defualt plots head 1 sample. Set 'ALL' for plotting all samples. If you are maping maf, make sure sample names in
 #' Sample column of segmentation file matches to those Tumor_Sample_Barcodes in MAF.
 #' @param savePlot If true plot is saved as pdf.
 #' @param ylims Default NULL
@@ -39,7 +40,11 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FA
   data.table::setkey(x = seg, Chromosome, Start_Position, End_Position)
 
   #If user doesn't provide sample name
-  if(is.null(tsb)){
+  if (is.null(tsb)){
+    #Use top 1 sample for simplicity
+    tsb = unique(as.character(seg[,Sample]))[1]
+    message("No 'tsb' specified, plot head 1 sample. Set tsb='ALL' to plot all samples.")
+  } else if (tsb == "ALL") {
     #Number of unique samples in segmentation file
     tsb = unique(as.character(seg[,Sample]))
   }
@@ -85,4 +90,5 @@ plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FA
       dev.off()
     }
   }
+ return(invisible(NULL))
 }

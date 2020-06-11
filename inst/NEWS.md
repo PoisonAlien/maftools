@@ -1,3 +1,24 @@
+# CHANGES IN VERSION 2.4.05
+## BUG FIXES
+
+- Bugfix in annotation legend order in `oncoplot`. Issue: [541](https://github.com/PoisonAlien/maftools/issues/541)
+- Error in `plotCBSsegments`. Issue: [539](https://github.com/PoisonAlien/maftools/issues/539)
+- `merge_mafs` bug fix due to discrepancy in column names. Issue: [538](https://github.com/PoisonAlien/maftools/issues/538)
+- `readGistic` TCGA sample names bug fix. Issue: [536](https://github.com/PoisonAlien/maftools/issues/536)
+- Highlight most significant entry when a variants overlaps with multiple CNV regions Issue: [524](https://github.com/PoisonAlien/maftools/issues/524) 
+- `genesToBarcodes` sample selection fix
+- `coOncoplot` bug fix with `showSampleNames` argument. Issue: [306](https://github.com/PoisonAlien/maftools/issues/306)
+- `removeNonMutated` bug fix with `oncoplot` argument. Issue: [530](https://github.com/PoisonAlien/maftools/issues/530)
+
+## ENHANCEMENTS
+- Make `flags` internal function with top 100 genes. Issue: [542](https://github.com/PoisonAlien/maftools/issues/542)
+- Add legend to `gisticBubblePlot`. Issue: [544](https://github.com/PoisonAlien/maftools/issues/544)
+- Add `bgCol` and `borderCol` to  `gisticOncoPlot`. Issue: [#533](https://github.com/PoisonAlien/maftools/issues/533)
+- Allow multiple CN types in oncoplot Issue: [#490](https://github.com/PoisonAlien/maftools/issues/490)
+- Allow `getSampleSummary` to include non mutated samples Issue: [#527](https://github.com/PoisonAlien/maftools/issues/527)
+- Added `color` argument to `plotVaf` for manual color codes Issue: [#531](https://github.com/PoisonAlien/maftools/issues/531)
+- Added `rm_zero` argument to `tcgaCompare`
+
 # CHANGES IN VERSION 2.4.00
 ## BUG FIXES
 

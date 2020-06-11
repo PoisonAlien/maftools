@@ -16,7 +16,8 @@ tcgaCompare(
   medianCol = "red",
   decreasing = FALSE,
   logscale = TRUE,
-  rm_hyper = FALSE
+  rm_hyper = FALSE,
+  rm_zero = TRUE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ tcgaCompare(
 \item{logscale}{Default TRUE}
 
 \item{rm_hyper}{Remove hyper mutated samples (outliers)? Default FALSE}
+
+\item{rm_zero}{Remove samples with zero mutations? Default TRUE}
 }
 \value{
 data.table with median mutations per cohort

@@ -45,6 +45,7 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
   fdrCutOff = -log10(fdrCutOff)
   gis.scores$Variant_Classification = ifelse(test = as.numeric(gis.scores$fdr) > fdrCutOff, yes = gis.scores$Variant_Classification, no = 'neutral')
   gis.scores$Variant_Classification = factor(gis.scores$Variant_Classification, levels = c('neutral', 'Amp', 'Del'))
+  #return(gis.scores)
 
   if(ref.build == 'hg19'){
     chr.lens = c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
@@ -147,7 +148,15 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
 
     data.table::setkey(x = mut_dat, Chromosome, Start_Position, End_Position)
     data.table::setkey(x = gis.scores, Chromosome, Start_Position, End_Position)
-    mut_dat = data.table::foverlaps(y = gis.scores, x = mut_dat, mult = "first")
+    mut_dat = data.table::foverlaps(y = gis.scores, x = mut_dat, mult = "all")
+
+    mut_dat = mut_dat[order(G_Score, decreasing = TRUE)][Hugo_Symbol %in% mutGenes]
+    if(nrow(mut_dat[order(G_Score, decreasing = TRUE)][duplicated(Hugo_Symbol)]) > 0){
+      warning("Multiple CNV region overlaps found for follwing genes. Using the most significant entry for highlighting.", immediate. = TRUE)
+      dups = mut_dat[order(G_Score, decreasing = TRUE)][duplicated(Hugo_Symbol)][,.N,Hugo_Symbol][,Hugo_Symbol]
+      print(mut_dat[order(Hugo_Symbol, -G_Score)][Hugo_Symbol %in% dups, .(Hugo_Symbol, Chromosome, Start_Position, End_Position, Variant_Classification, fdr ,G_Score )])
+    }
+    mut_dat = mut_dat[!duplicated(Hugo_Symbol)]
     color = c(color, 'neutral' = 'black')
 
     if(nrow(mut_dat) == 0){

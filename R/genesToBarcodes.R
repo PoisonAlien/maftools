@@ -43,7 +43,7 @@ genesToBarcodes = function(maf, genes = NULL, justNames = FALSE, verbose = TRUE)
       tsbs = colnames(dat)
     }else{
       x = dat[genes[i],]
-      tsbs = names(x[x == 1])
+      tsbs = names(x[x != 0])
     }
     res[i] = list(maf@variant.classification.summary[Tumor_Sample_Barcode %in% tsbs])
     names(res)[i] = genes[i]

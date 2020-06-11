@@ -33,9 +33,36 @@ merge_mafs = function(mafs, verbose = TRUE, ...){
     if(verbose){
       cat(paste0("Merging ", length(mafs) ," MAF files\n"))
     }
-    maf = lapply(mafs, data.table::fread, stringsAsFactors = FALSE, fill = TRUE,
-                 showProgress = TRUE, header = TRUE, skip = "Hugo_Symbol")
-    names(maf) = gsub(pattern = "\\.maf$", replacement = "", x = basename(path = unlist(mafs)), ignore.case = TRUE)
+    maf = lapply(mafs, function(x) {
+      x = data.table::fread(x, stringsAsFactors = FALSE, fill = TRUE, showProgress = TRUE, header = TRUE, skip = "Hugo_Symbol")
+
+      required.fields = c(
+        'Hugo_Symbol',
+        'Chromosome',
+        'Start_Position',
+        'End_Position',
+        'Reference_Allele',
+        'Tumor_Seq_Allele2',
+        'Variant_Classification',
+        'Variant_Type',
+        'Tumor_Sample_Barcode'
+      )
+
+      #Change column names to standard names; i.e, camel case
+      for (i in 1:length(required.fields)) {
+        colId = suppressWarnings(grep(
+          pattern = paste("^", required.fields[i], "$", sep = ""),
+          x = colnames(x),
+          ignore.case = TRUE
+        ))
+        if (length(colId) > 0) {
+          colnames(x)[colId] = required.fields[i]
+        }
+      }
+      x
+    })
+    #names(maf) = gsub(pattern = "\\.maf$", replacement = "", x = basename(path = unlist(mafs)), ignore.case = TRUE)
+    names(maf) = basename(mafs)
     maf = data.table::rbindlist(l = maf, fill = TRUE, idcol = "Source_MAF", use.names = TRUE)
 
     maf = read.maf(maf = maf, verbose = verbose, ...)

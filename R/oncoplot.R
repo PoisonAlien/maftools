@@ -244,6 +244,14 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
   gene_sum = apply(numMat, 1, function(x) length(x[x!=0]))
   percent_alt = paste0(round(100*(apply(numMat, 1, function(x) length(x[x!=0]))/totSamps)), "%")
 
+  nonmut_samps = colnames(numMat)[!colnames(numMat) %in% rownames(samp_sum)]
+  if(length(nonmut_samps) > 0){
+    samp_sum_missing_samps = matrix(data = 0, nrow = length(nonmut_samps), ncol = ncol(samp_sum))
+    colnames(samp_sum_missing_samps) = colnames(samp_sum)
+    rownames(samp_sum_missing_samps) = nonmut_samps
+    samp_sum = rbind(samp_sum, samp_sum_missing_samps)
+  }
+
   if(colbar_pathway){
     samp_sum = getSampleSummary(subsetMaf(maf = maf, genes = genes))
     samp_sum[,total := NULL]
@@ -272,6 +280,7 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
   }
   #VC codes
   vc_codes = update_vc_codes(om_op = om)
+  vc_col = update_colors(x = vc_codes, y = vc_col)
 
   if(nrow(numMat) == 1){
     stop("Oncoplot requires at-least two genes for plottng.")
@@ -530,7 +539,7 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
   image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
         xlab="", ylab="", col = "white") #col = "#FC8D62"
   #Plot for all variant classifications
-  vc_codes_temp = vc_codes[!vc_codes %in% c('Amp', 'Del')]
+  vc_codes_temp = vc_codes[!vc_codes %in% om$cnvc]
   for(i in 2:length(names(vc_codes_temp))){
     vc_code = vc_codes_temp[i]
     col = vc_col[vc_code]
@@ -582,32 +591,19 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
     }
   }
 
-  del_idx = which(mo == "Del", arr.ind = TRUE)
-  amp_idx = which(mo == "Amp", arr.ind = TRUE)
-
-  if(nrow(amp_idx) > 0){
-    nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
-    nm_temp[amp_idx] = 0
-    image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
-          yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
-    amp_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
-    for(i in seq_len(nrow(amp_idx))){
-      rowi = amp_idx[i,1]
-      coli = amp_idx[i,2]
-      rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col['Amp'], border = NA, lwd = 0)
-    }
-  }
-
-  if(nrow(del_idx) > 0){
-    nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
-    nm_temp[del_idx] = 0
-    image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
-          yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
-    del_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
-    for(i in seq_len(nrow(del_idx))){
-      rowi = del_idx[i,1]
-      coli = del_idx[i,2]
-      rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col['Del'], border = NA, lwd = 0)
+  for(cnevent in om$cnvc){
+    cn_idx = which(mo == cnevent, arr.ind = TRUE)
+    if(nrow(cn_idx) > 0){
+      nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
+      nm_temp[cn_idx] = 0
+      image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
+            yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+      cn_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
+      for(i in seq_len(nrow(cn_idx))){
+        rowi = cn_idx[i,1]
+        coli = cn_idx[i,2]
+        rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col[cnevent], border = NA, lwd = 0)
+      }
     }
   }
 
@@ -721,6 +717,11 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
     }
   }
 
+  # #Draw grids for the samples
+  # if(!is.null(gridFeature)){
+  #   To add: https://github.com/PoisonAlien/maftools/issues/528
+  # }
+
   #Add box border
   if (drawBox) {
     box(lty = 'solid', col = '#535c68', lwd = 2)
@@ -792,6 +793,7 @@ oncoplot = oncoplot = function(maf, top = 20, genes = NULL, altered = FALSE,
     if(is.null(annotationColor)){
       annotationColor = get_anno_cols(ann = annotation)
     }
+    annotationColor = annotationColor[colnames(annotation)]
 
     annotationColor = lapply(annotationColor, function(x) {
       na_idx = which(is.na(names(x)))

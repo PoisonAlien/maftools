@@ -18,7 +18,7 @@ gisticBubblePlot(
 
 \item{color}{colors for Amp and Del events.}
 
-\item{markBands}{any cytobands to label. Default top 5 lowest q values.}
+\item{markBands}{any cytobands to label. Can be cytoband labels, or number of top bands to highlight. Default top 5 lowest q values.}
 
 \item{fdrCutOff}{fdr cutoff to use. Default 0.1}
 

@@ -31,9 +31,12 @@ coOncoplot(
   sepwd_samples2 = 0.5,
   colors = NULL,
   removeNonMutated = TRUE,
+  anno_height = 2,
+  legend_height = 4,
   geneNamefont = 0.8,
   showSampleNames = FALSE,
-  SampleNamefont = 1,
+  SampleNamefont = 0.5,
+  barcode_mar = 4,
   legendFontSize = 1.2,
   titleFontSize = 1.5,
   keepGeneOrder = FALSE,
@@ -94,11 +97,17 @@ coOncoplot(
 
 \item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
 
+\item{anno_height}{Height of clinical margin. Default 2}
+
+\item{legend_height}{Height of legend margin. Default 4}
+
 \item{geneNamefont}{font size for gene names. Default 1}
 
 \item{showSampleNames}{whether to show sample names. Defult FALSE.}
 
-\item{SampleNamefont}{font size for sample names. Default 1}
+\item{SampleNamefont}{font size for sample names. Default 0.5}
+
+\item{barcode_mar}{Margin width for sample names. Default 4}
 
 \item{legendFontSize}{font size for legend. Default 1.2}
 
