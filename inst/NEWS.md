@@ -1,4 +1,10 @@
-# CHANGES IN VERSION 2.4.05
+# CHANGES IN VERSION 2.4.05 (In development)
+## BUG FIXES
+
+## ENHANCEMENTS
+- Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
+
+# CHANGES IN VERSION 2.4.05 (Relase/Bioconductor version)
 ## BUG FIXES
 
 - Bugfix in annotation legend order in `oncoplot`. Issue: [541](https://github.com/PoisonAlien/maftools/issues/541)
