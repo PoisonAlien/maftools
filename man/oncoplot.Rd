@@ -27,6 +27,7 @@ oncoplot(
   draw_titv = FALSE,
   showTumorSampleBarcodes = FALSE,
   barcode_mar = 4,
+  barcodeSrt = 90,
   gene_mar = 5,
   anno_height = 1,
   legend_height = 4,
@@ -48,6 +49,7 @@ oncoplot(
   colors = NULL,
   bgCol = "#CCCCCC",
   borderCol = "white",
+  annoBorderCol = NA,
   numericAnnoCol = NULL,
   drawBox = FALSE,
   fontSize = 0.8,
@@ -109,6 +111,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{barcode_mar}{Margin width for sample names. Default 4}
 
+\item{barcodeSrt}{Rotate sample labels. Default 90.}
+
 \item{gene_mar}{Margin width for gene names. Default 5}
 
 \item{anno_height}{Height of plotting area for sample annotations. Default 1}
@@ -150,6 +154,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{bgCol}{Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"}
 
 \item{borderCol}{border grid color (not-mutated) samples. Default 'white'.}
+
+\item{annoBorderCol}{border grid color for annotations. Default NA.}
 
 \item{numericAnnoCol}{color palette used for numeric annotations. Default 'YlOrBr' from RColorBrewer}
 

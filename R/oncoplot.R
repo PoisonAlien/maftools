@@ -29,6 +29,7 @@
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param barcode_mar Margin width for sample names. Default 4
+#' @param barcodeSrt Rotate sample labels. Default 90.
 #' @param gene_mar Margin width for gene names. Default 5
 #' @param anno_height Height of plotting area for sample annotations. Default 1
 #' @param legend_height Height of plotting area for legend. Default 4
@@ -50,6 +51,7 @@
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
+#' @param annoBorderCol border grid color for annotations. Default NA.
 #' @param numericAnnoCol color palette used for numeric annotations. Default 'YlOrBr' from RColorBrewer
 #' @param drawBox logical whether to draw a box around main matrix. Default FALSE
 #' @param fontSize font size for gene names. Default 0.8.
@@ -88,13 +90,13 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                topBarData = NULL, logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
                                pathways = NULL, selectedPathways = NULL, draw_titv = FALSE,
-                               showTumorSampleBarcodes = FALSE, barcode_mar = 4, gene_mar = 5,
+                               showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
                                anno_height = 1, legend_height = 4,
                                sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
                                sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
                                additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9,
                                genesToIgnore = NULL, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
-                               colors = NULL, bgCol = "#CCCCCC", borderCol = 'white', numericAnnoCol = NULL,
+                               colors = NULL, bgCol = "#CCCCCC", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
                                drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
                                sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL){
 
@@ -754,7 +756,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
   if(showTumorSampleBarcodes){
     text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
-         labels = rownames(nm), srt = 90, font = 1, cex = SampleNamefontSize, adj = 1)
+         labels = rownames(nm), srt = barcodeSrt, font = 1, cex = SampleNamefontSize, adj = 1)
   }
 
   #05: Draw right side barplot
@@ -874,8 +876,8 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
 
     #Add grids
-    abline(h = (1:ncol(nm)) + 0.5, col = "white", lwd = sepwd_genes)
-    abline(v = (1:nrow(nm)) + 0.5, col = "white", lwd = sepwd_samples)
+    abline(h = (1:ncol(nm)) + 0.5, col = annoBorderCol, lwd = sepwd_genes)
+    abline(v = (1:nrow(nm)) + 0.5, col = annoBorderCol, lwd = sepwd_samples)
     mtext(text = colnames(annotation), side = 4,
           font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
 

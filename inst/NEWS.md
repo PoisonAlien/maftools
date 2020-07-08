@@ -3,6 +3,7 @@
 
 ## ENHANCEMENTS
 - Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
+- Added `barcodeSrt`, `annoBorderCol` arguments to `oncoplot`. Issue: [564](https://github.com/PoisonAlien/maftools/issues/564) [565](https://github.com/PoisonAlien/maftools/issues/565)
 
 # CHANGES IN VERSION 2.4.05 (Relase/Bioconductor version)
 ## BUG FIXES
