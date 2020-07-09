@@ -1,13 +1,14 @@
-# CHANGES IN VERSION 2.4.05 (In development)
+# CHANGES IN VERSION 2.4.10 (In development)
 ## BUG FIXES
+- Clinical features with same labels are colored similarly in Oncoplot. Issue: [567](https://github.com/PoisonAlien/maftools/issues/567)
+- Legend Ordering Not Intuitive. Issue: [424](https://github.com/PoisonAlien/maftools/issues/424)
 
 ## ENHANCEMENTS
 - Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
 - Added `barcodeSrt`, `annoBorderCol` arguments to `oncoplot`. Issue: [564](https://github.com/PoisonAlien/maftools/issues/564) [565](https://github.com/PoisonAlien/maftools/issues/565)
 
-# CHANGES IN VERSION 2.4.05 (Relase/Bioconductor version)
+# CHANGES IN VERSION 2.4.05 (Release/Bioconductor version)
 ## BUG FIXES
-
 - Bugfix in annotation legend order in `oncoplot`. Issue: [541](https://github.com/PoisonAlien/maftools/issues/541)
 - Error in `plotCBSsegments`. Issue: [539](https://github.com/PoisonAlien/maftools/issues/539)
 - `merge_mafs` bug fix due to discrepancy in column names. Issue: [538](https://github.com/PoisonAlien/maftools/issues/538)
