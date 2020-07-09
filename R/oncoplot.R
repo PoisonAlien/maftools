@@ -810,7 +810,8 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   #06: Plot annotations if any
   if(!is.null(clinicalFeatures)){
 
-    clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
+    #clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
+    clini_lvls = lapply(annotation, function(x) unique(as.character(x)))
 
     if(is.null(annotationColor)){
       annotationColor = get_anno_cols(ann = annotation)
@@ -830,18 +831,33 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
 
     #clini_lvls = clini_lvls[!is.na(clini_lvls)]
-    temp_names = suppressWarnings(sample(x = setdiff(x = 1:1000, y = as.numeric(as.character(clini_lvls))), size = length(clini_lvls), replace = FALSE))
-    names(clini_lvls) = temp_names#1:length(clini_lvls)
+    clini_lvls = lapply(clini_lvls, function(cl){
+      temp_names = suppressWarnings(sample(
+        x = setdiff(x = 1:1000, y = as.numeric(as.character(cl))),
+        size = length(cl),
+        replace = FALSE
+      ))
+      names(cl) = temp_names#1:length(clini_lvls)
+      cl
+    })
+
     temp_rownames = rownames(annotation)
     annotation = data.frame(lapply(annotation, as.character),
                             stringsAsFactors = FALSE, row.names = temp_rownames)
 
+    annotation_color_coded = data.frame(row.names = rownames(annotation), stringsAsFactors = FALSE)
     for(i in 1:length(clini_lvls)){
-      annotation[annotation == clini_lvls[i]] = names(clini_lvls[i])
+      cl = clini_lvls[[i]]
+      clname = names(clini_lvls)[i]
+      cl_vals = annotation[,clname] #values in column
+      for(i in 1:length(cl)){
+        cl_vals[cl_vals == cl[i]] = names(cl[i])
+      }
+      annotation_color_coded = cbind(annotation_color_coded, cl_vals)
     }
+    names(annotation_color_coded) = names(clini_lvls)
 
-    annotation = data.frame(lapply(annotation, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
-
+    annotation = data.frame(lapply(annotation_color_coded, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
     if(!is.null(leftBarData)){
@@ -859,20 +875,24 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
           xlab="", ylab="", col = "white") #col = "#FC8D62"
 
     #Plot for all variant classifications
-    for(i in 1:length(names(clini_lvls))){
-      anno_code = clini_lvls[i]
-      col = anno_cols[anno_code]
-      #temp_anno = t(apply(annotation, 2, rev))
-      temp_anno = as.matrix(annotation)
-      #Handle NA's
-      if(is.na(col)){
-        col = "gray70"
-        temp_anno[is.na(temp_anno)] = as.numeric(names(anno_code))
-      }
-      temp_anno[temp_anno != names(anno_code)] = NA
+    for(i in 1:length(clini_lvls)){
+      cl = clini_lvls[[i]]
+      clnames = names(clini_lvls)[i]
+      cl_cols = annotationColor[[clnames]]
+      for(i in 1:length(names(cl))){
+        anno_code = cl[i]
+        col = cl_cols[anno_code]
+        temp_anno = as.matrix(annotation)
+        #Handle NA's
+        if(is.na(col)){
+          col = "gray70"
+          temp_anno[is.na(temp_anno)] = as.numeric(names(anno_code))
+        }
+        temp_anno[temp_anno != names(anno_code)] = NA
 
-      suppressWarnings(image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
-            axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE))
+        suppressWarnings(image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
+                               axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE))
+      }
     }
 
     #Add grids
@@ -968,6 +988,16 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     for(i in 1:ncol(annotation)){
       #x = unique(annotation[,i])
       x = annotationColor[[i]]
+      xt = names(x)
+      if("NA" %in% xt){
+        xt = xt[!xt %in% "NA"]
+        xt = sort(xt, decreasing = FALSE)
+        xt = c(xt, "NA")
+        x = x[xt]
+      }else{
+        xt = sort(xt, decreasing = FALSE)
+        x = x[xt]
+      }
 
       if(length(x) <= 4){
         n_col = 1

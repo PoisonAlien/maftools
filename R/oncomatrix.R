@@ -177,7 +177,6 @@ sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL, group = TRUE, is
         stop()
       }
       annoOrder = annoOrder[annoOrder %in% annoSplOrder]
-
       anno.spl.sort = anno.spl.sort[annoOrder]
 
       if(length(annoSplOrder[!annoSplOrder %in% annoOrder]) > 0){
