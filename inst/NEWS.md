@@ -2,6 +2,7 @@
 ## BUG FIXES
 - Clinical features with same labels are colored similarly in Oncoplot. Issue: [567](https://github.com/PoisonAlien/maftools/issues/567)
 - Legend Ordering Not Intuitive. Issue: [424](https://github.com/PoisonAlien/maftools/issues/424)
+- Fix labels in `somaticInteractions`. Issue: [569](https://github.com/PoisonAlien/maftools/issues/569)
 
 ## ENHANCEMENTS
 - Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
