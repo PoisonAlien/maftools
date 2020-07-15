@@ -7,6 +7,8 @@
 #' @param fields include only these fields along with necessary fields in the output
 #' @param query query string. e.g, "Variant_Classification == 'Missense_Mutation'" returns only Missense variants.
 #' @param clinQuery query by clinical variable.
+#' @param ranges subset by ranges. data.frame with 3 column (chr, start, end). Overlaps are identified by  \code{\link{foverlaps}} function with arguments `type = within`, `mult = all`, `nomatch = NULL`
+#' @param mult When multiple loci in `ranges` match to the variants maf, mult=. controls which values are returned - "all" , "first" (default) or "last". This value is passed to `mult` argument of \code{\link{foverlaps}}
 #' @param mafObj returns output as MAF class \code{\link{MAF-class}}. Default TRUE
 #' @param includeSyn Default TRUE, only applicable when mafObj = FALSE. If mafObj = TRUE, synonymous variants will be stored in a seperate slot of MAF object.
 #' @param isTCGA Is input MAF file from TCGA source.
@@ -24,12 +26,16 @@
 #' subsetMaf(maf = laml, query = "i_TumorVAF_WU > 30")
 #' ##Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933' but only include vaf filed.
 #' subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), fields = 'i_TumorVAF_WU')
+#' ##Subset by ranges
+#' ranges = data.frame(chr = c("2", "17"), start = c(25457000, 7571720), end = c(25458000, 7590868))
+#' subsetMaf(laml, ranges = ranges)
+#'
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
+subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, ranges = NULL, mult = "first", fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
 
-  if(all(c(is.null(tsb), is.null(genes), is.null(query), is.null(clinQuery)))){
-    stop("Please provide sample names or genes or a query to subset by.")
+  if(all(c(is.null(tsb), is.null(genes), is.null(query), is.null(ranges), is.null(clinQuery)))){
+    stop("Please provide sample names or genes or a query or ranges to subset by.")
   }
 
   restrictTo = match.arg(arg = restrictTo, choices = c("all", "cnv", "mutations"), several.ok = FALSE)
@@ -126,6 +132,29 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
     maf.silent = rbind(maf.silent, maf.silent.rest, fill = TRUE, use.names = TRUE)
   }
 
+  if(!is.null(ranges)){
+    ranges = data.table::copy(x = ranges)
+    colnames(ranges)[1:3] = c("Chromosome", "Start_Position", "End_Position")
+    ranges$Chromosome = as.character(ranges$Chromosome)
+    ranges$Start_Position = as.numeric(as.character(ranges$Start_Position))
+    ranges$End_Position = as.numeric(as.character(ranges$End_Position))
+
+    data.table::setDT(x = ranges)
+    data.table::setkey(x = ranges, Chromosome, Start_Position, End_Position)
+
+    maf.dat$Chromosome = as.character(maf.dat$Chromosome)
+    maf.dat$Start_Position = as.numeric(as.character(maf.dat$Start_Position))
+    maf.dat$End_Position = as.numeric(as.character(maf.dat$End_Position))
+
+    maf.silent$Chromosome = as.character(maf.silent$Chromosome)
+    maf.silent$Start_Position = as.numeric(as.character(maf.silent$Start_Position))
+    maf.silent$End_Position = as.numeric(as.character(maf.silent$End_Position))
+
+    maf.dat = data.table::foverlaps(x = maf.dat, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
+    maf.silent = data.table::foverlaps(x = maf.silent, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
+    message(paste0(nrow(maf.dat)+nrow(maf.silent), " variants within provided ranges"))
+  }
+
 
   if(mafObj){
 
@@ -133,6 +162,10 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
       maf.silent = droplevels.data.frame(maf.silent)
       maf.dat = droplevels.data.frame(maf.dat)
       maf.anno = droplevels.data.frame(maf.anno)
+    }
+
+    if(nrow(maf.dat) == 0){
+      stop("Subsetting has resulted in zero non-synonymous variants!")
     }
 
     mafSummary = summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)

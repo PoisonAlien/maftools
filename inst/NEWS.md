@@ -1,12 +1,13 @@
 # CHANGES IN VERSION 2.4.10 (In development)
 ## BUG FIXES
+- Fix labels in `somaticInteractions`. Issue: [569](https://github.com/PoisonAlien/maftools/issues/569)
 - Clinical features with same labels are colored similarly in Oncoplot. Issue: [567](https://github.com/PoisonAlien/maftools/issues/567)
 - Legend Ordering Not Intuitive. Issue: [424](https://github.com/PoisonAlien/maftools/issues/424)
-- Fix labels in `somaticInteractions`. Issue: [569](https://github.com/PoisonAlien/maftools/issues/569)
 
 ## ENHANCEMENTS
-- Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
+- Added `ranges` argument to `subsetMaf`. Issue: [571](https://github.com/PoisonAlien/maftools/issues/571)
 - Added `barcodeSrt`, `annoBorderCol` arguments to `oncoplot`. Issue: [564](https://github.com/PoisonAlien/maftools/issues/564) [565](https://github.com/PoisonAlien/maftools/issues/565)
+- Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
 
 # CHANGES IN VERSION 2.4.05 (Release/Bioconductor version)
 ## BUG FIXES

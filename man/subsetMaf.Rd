@@ -10,6 +10,8 @@ subsetMaf(
   genes = NULL,
   query = NULL,
   clinQuery = NULL,
+  ranges = NULL,
+  mult = "first",
   fields = NULL,
   mafObj = TRUE,
   includeSyn = TRUE,
@@ -28,6 +30,10 @@ subsetMaf(
 \item{query}{query string. e.g, "Variant_Classification == 'Missense_Mutation'" returns only Missense variants.}
 
 \item{clinQuery}{query by clinical variable.}
+
+\item{ranges}{subset by ranges. data.frame with 3 column (chr, start, end). Overlaps are identified by  \code{\link{foverlaps}} function with arguments `type = within`, `mult = all`, `nomatch = NULL`}
+
+\item{mult}{When multiple loci in `ranges` match to the variants maf, mult=. controls which values are returned - "all" , "first" (default) or "last". This value is passed to `mult` argument of \code{\link{foverlaps}}}
 
 \item{fields}{include only these fields along with necessary fields in the output}
 
@@ -57,6 +63,10 @@ query = "Variant_Classification == 'Splice_Site'")
 subsetMaf(maf = laml, query = "i_TumorVAF_WU > 30")
 ##Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933' but only include vaf filed.
 subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), fields = 'i_TumorVAF_WU')
+##Subset by ranges
+ranges = data.frame(chr = c("2", "17"), start = c(25457000, 7571720), end = c(25458000, 7590868))
+subsetMaf(laml, ranges = ranges)
+
 }
 \seealso{
 \code{\link{getFields}}
