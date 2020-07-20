@@ -140,7 +140,7 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 50, cohortN
   y_lims = c(y_min, y_max)
   y_at = pretty(y_lims)
 
-  par(mar = c(4, 3, 2.5, 1.5))
+  #par(mar = c(4, 3, 2.5, 1.5))
   plot(NA, NA, xlim = c(0, length(plot.dat)), ylim = y_lims, axes = FALSE, xlab = NA, ylab = NA, frame.plot = TRUE)
   rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = grDevices::adjustcolor(col = "gray", alpha.f = 0.1))
   rect(xleft = seq(0, length(plot.dat)-1, 1), ybottom = min(y_lims), xright = seq(1, length(plot.dat), 1),
