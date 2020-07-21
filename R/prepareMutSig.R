@@ -15,14 +15,7 @@
 prepareMutSig = function(maf, fn = NULL){
 
   hugo.to.ms = system.file('extdata', 'hugo_to_mutSigSymbol.txt.gz', package = 'maftools')
-
-  if(Sys.info()[['sysname']] == 'Windows'){
-    hugo.to.ms.gz = gzfile(description = hugo.to.ms, open = 'r')
-    hugo.to.ms <- suppressWarnings( data.table(read.csv( file = hugo.to.ms.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-    close(hugo.to.ms.gz)
-  } else{
-    hugo.to.ms = data.table::fread(cmd = paste('zcat <', hugo.to.ms), sep = '\t', stringsAsFactors = FALSE)
-  }
+  hugo.to.ms = data.table::fread(file = hugo.to.ms, sep = '\t', stringsAsFactors = FALSE)
 
   mut = maf@data
 

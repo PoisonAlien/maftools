@@ -23,13 +23,7 @@ drugInteractions = function(maf, top = 20, genes = NULL, plotType = "bar", drugs
     db = system.file('extdata', 'categories.tsv.gz', package = 'maftools')
   }
 
-  if(Sys.info()[['sysname']] == 'Windows'){
-    db.gz = gzfile(description = db, open = 'r')
-    suppressWarnings(db <- data.table::as.data.table(read.csv(file = db.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)))
-    close(db.gz)
-  } else{
-    db = suppressWarnings(data.table::fread(cmd = paste('zcat <', db), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE))
-  }
+  db = data.table::fread(file = db)
 
   if(is.null(genes)){
     genes = unique(getGeneSummary(x = maf)[1:top,Hugo_Symbol])

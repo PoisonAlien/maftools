@@ -20,18 +20,7 @@
 
 icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, clinicalData = NULL, removeDuplicatedVariants = TRUE, addHugoSymbol = FALSE){
 
-  if(as.logical(length(grep(pattern = 'gz$', x = icgc, fixed = FALSE)))){
-
-    if(Sys.info()[['sysname']] == 'Windows'){
-      icgc.gz = gzfile(description = icgc, open = 'r')
-      icgc <- suppressWarnings( data.table(read.csv( file = icgc.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-      close(icgc.gz)
-    }else{
-      icgc = suppressWarnings(data.table::fread(cmd = paste('zcat <', icgc), sep = '\t', stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, showProgress = TRUE, header = TRUE, fill = TRUE))
-    }
-  }else{
-    icgc = data.table::fread(input = icgc, sep = '\t', stringsAsFactors = FALSE, header = TRUE, showProgress = TRUE, data.table = TRUE, verbose = FALSE, fill = TRUE)
-  }
+  icgc = data.table::fread(file = icgc, sep = '\t', stringsAsFactors = FALSE, header = TRUE, showProgress = TRUE, data.table = TRUE, verbose = FALSE, fill = TRUE)
 
   icgc.indels = icgc[consequence_type %in% 'frameshift_variant']
   icgc = icgc[!consequence_type %in% 'frameshift_variant']
@@ -108,13 +97,7 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, clinical
     ens = system.file('extdata', 'ensGenes.txt.gz', package = 'maftools')
     message('Converting Ensemble Gene IDs into HGNC gene symbols.')
 
-    if(Sys.info()[['sysname']] == 'Windows'){
-      ens.gz = gzfile(description = ens, open = 'r')
-      ens <- suppressWarnings( data.table(read.csv( file = ens.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
-      close(ens.gz)
-    } else{
-      ens = data.table::fread(cmd = paste('zcat <', ens), sep = '\t', stringsAsFactors = FALSE)
-    }
+    ens = data.table::fread(file = ens, sep = '\t', stringsAsFactors = FALSE)
 
     icgc.maf[,ens_id := Hugo_Symbol]
     icgc.maf = merge(icgc.maf, ens, by.x = 'Hugo_Symbol', by.y = 'ens_id', all.x = TRUE)
