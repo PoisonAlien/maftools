@@ -1,5 +1,6 @@
 # CHANGES IN VERSION 2.4.10 (In development)
 ## BUG FIXES
+- Fix issue with non-numeiric error in `math.score`. Issue: [429](https://github.com/PoisonAlien/maftools/issues/429)
 - Fix issue with zcat for file names with spaces. Let data.table deal with it. Issue: [574](https://github.com/PoisonAlien/maftools/issues/574)
 - Fix margins in `tcgaCompare`. Issue: [573](https://github.com/PoisonAlien/maftools/issues/573)
 - Fix labels in `somaticInteractions`. Issue: [569](https://github.com/PoisonAlien/maftools/issues/569)
@@ -7,6 +8,7 @@
 - Legend Ordering Not Intuitive. Issue: [424](https://github.com/PoisonAlien/maftools/issues/424)
 
 ## ENHANCEMENTS
+- Added `bands` argument to `gisticOncoPlot`. Issue: [579](https://github.com/PoisonAlien/maftools/issues/579)
 - Added `ranges` argument to `subsetMaf`. Issue: [571](https://github.com/PoisonAlien/maftools/issues/571)
 - Added `barcodeSrt`, `annoBorderCol` arguments to `oncoplot`. Issue: [564](https://github.com/PoisonAlien/maftools/issues/564) [565](https://github.com/PoisonAlien/maftools/issues/565)
 - Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
