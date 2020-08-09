@@ -28,7 +28,6 @@ tmb = function(maf, captureSize = 50, logScale = TRUE){
   medlinecol = "#FF5722"
   if(logScale){
     yat = pretty(range(maf.mutload[total != 0][,total_perMB_log]))
-    print(yat)
     plot(NA, xlim = c(0, nrow(maf.mutload)), ylim = range(yat), axes = FALSE, xlab = NA, ylab = NA)
     abline(h = yat, lty = 2, lwd = 1, col = 'gray90')
     abline(h = log10(medload), lty = 2, lwd = 1, col = medlinecol)

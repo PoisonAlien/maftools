@@ -30,6 +30,8 @@ math.score = function(maf, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075){
     if(is.null(vafCol)){
       if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
         message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
+        dat[,t_ref_count := as.numeric(as.character(t_ref_count))]
+        dat[,t_alt_count := as.numeric(as.character(t_alt_count))]
         dat[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
       }else{
         print(colnames(maf))
@@ -69,6 +71,6 @@ math.score = function(maf, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075){
     }
   })
 
-  math.dt = data.table::rbindlist(math.dt)
+  math.dt = data.table::rbindlist(math.dt, use.names = TRUE, fill = TRUE)
   return(math.dt)
 }
