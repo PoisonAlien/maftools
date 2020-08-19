@@ -110,7 +110,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
     col_pal = RColorBrewer::brewer.pal(9, colPal)
     col_pal = grDevices::colorRampPalette(colors = col_pal)
-    col_pal = col_pal(m*n)
+    col_pal = col_pal(m*n-1)
 
 
     if(!is.null(geneOrder)){
@@ -149,10 +149,10 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
       interactions = interactions4plot
     }
 
-
     image(x=1:n, y=1:m, interactions, col = col_pal,
           xaxt="n", yaxt="n",
-          xlab="",ylab="", xlim=c(0, n+1), ylim=c(0, n+1), breaks = )
+          xlab="",ylab="", xlim=c(0, n+1), ylim=c(0, n+1),
+          breaks = seq(-3, 3, length.out = (nrow(interactions) * ncol(interactions))))
 
     abline(h=0:n+.5, col="white", lwd=.5)
     abline(v=0:n+.5, col="white", lwd=.5)
