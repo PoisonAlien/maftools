@@ -1,5 +1,6 @@
 # CHANGES IN VERSION 2.4.10 (In development)
 ## BUG FIXES
+- Fix issue reversed colors in `somaticInteractions`. Setting `limitColorBreaks = TRUE` by default for the fix. Issue: [589](https://github.com/PoisonAlien/maftools/issues/589)
 - Fix issue with non-numeiric error in `math.score`. Issue: [429](https://github.com/PoisonAlien/maftools/issues/429)
 - Fix issue with zcat for file names with spaces. Let data.table deal with it. Issue: [574](https://github.com/PoisonAlien/maftools/issues/574)
 - Fix margins in `tcgaCompare`. Issue: [573](https://github.com/PoisonAlien/maftools/issues/573)

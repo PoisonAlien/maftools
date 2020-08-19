@@ -23,7 +23,7 @@
 #' @param sigSymbolsSize size of symbols in the matrix and in legend
 #' @param sigSymbolsFontSize size of font in legends
 #' @param pvSymbols vector of pch numbers for symbols of p-value for upper and lower thresholds c(upper, lower)
-#' @param limitColorBreaks limit color to extreme values. Default FALSE
+#' @param limitColorBreaks limit color to extreme values. Default TRUE
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
@@ -34,7 +34,7 @@
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
                                geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
                                showCounts = FALSE, countStats = 'all', countType = 'all',
-                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", showSum = TRUE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42), limitColorBreaks = FALSE){
+                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", showSum = TRUE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42), limitColorBreaks = TRUE){
   #browser()
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
