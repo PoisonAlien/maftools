@@ -7,6 +7,7 @@
 - Fix labels in `somaticInteractions`. Issue: [569](https://github.com/PoisonAlien/maftools/issues/569)
 - Clinical features with same labels are colored similarly in Oncoplot. Issue: [567](https://github.com/PoisonAlien/maftools/issues/567)
 - Legend Ordering Not Intuitive. Issue: [424](https://github.com/PoisonAlien/maftools/issues/424)
+- avoid in place conversions of data.frames while reading with read.maf. Issue: [432](https://github.com/PoisonAlien/maftools/issues/432) [593](https://github.com/PoisonAlien/maftools/pull/593)
 
 ## ENHANCEMENTS
 - Added `bands` argument to `gisticOncoPlot`. Issue: [579](https://github.com/PoisonAlien/maftools/issues/579)
