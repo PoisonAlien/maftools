@@ -38,10 +38,10 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
 
   #1. Read MAF if its a file or convert to data.table if its data.frame
   start_time = proc.time()
-  if(is.data.frame(x = maf)){
-    maf  = data.table::setDT(maf)
+  if (is.data.frame(x = maf)) {
+    maf  = data.table::as.data.table(maf)
   } else{
-    if(verbose){
+    if (verbose) {
       cat('-Reading\n')
     }
 
