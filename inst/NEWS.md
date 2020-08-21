@@ -1,4 +1,12 @@
-# CHANGES IN VERSION 2.4.10 (In development)
+# CHANGES IN VERSION 2.4.15 (In development)
+## BUG REPORTS
+
+##ENHANCEMENTS
+- Added `filterMaf` function. 
+
+
+
+# CHANGES IN VERSION 2.4.10 (Release/Bioconductor version)
 ## BUG FIXES
 - Fix issue reversed colors in `somaticInteractions`. Setting `limitColorBreaks = TRUE` by default for the fix. Issue: [589](https://github.com/PoisonAlien/maftools/issues/589)
 - Fix issue with non-numeiric error in `math.score`. Issue: [429](https://github.com/PoisonAlien/maftools/issues/429)
@@ -15,7 +23,7 @@
 - Added `barcodeSrt`, `annoBorderCol` arguments to `oncoplot`. Issue: [564](https://github.com/PoisonAlien/maftools/issues/564) [565](https://github.com/PoisonAlien/maftools/issues/565)
 - Added `minMut` argument to `oncoplot`. Issue: [549](https://github.com/PoisonAlien/maftools/issues/549)
 
-# CHANGES IN VERSION 2.4.05 (Release/Bioconductor version)
+# CHANGES IN VERSION 2.4.05 
 ## BUG FIXES
 - Bugfix in annotation legend order in `oncoplot`. Issue: [541](https://github.com/PoisonAlien/maftools/issues/541)
 - Error in `plotCBSsegments`. Issue: [539](https://github.com/PoisonAlien/maftools/issues/539)
