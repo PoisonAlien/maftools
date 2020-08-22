@@ -13,79 +13,85 @@
 #' relapse.apl <- system.file("extdata", "APL_relapse.maf.gz", package = "maftools")
 #' primary.apl <- read.maf(maf = primary.apl)
 #' relapse.apl <- read.maf(maf = relapse.apl)
-#' pt.vs.rt <- mafCompare(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary',
-#' m2Name = 'Relapse', minMut = 5)
+#' pt.vs.rt <- mafCompare(
+#'   m1 = primary.apl, m2 = relapse.apl, m1Name = "Primary",
+#'   m2Name = "Relapse", minMut = 5
+#' )
 #' @export
 #' @seealso \code{\link{forestPlot}}
 #' @seealso \code{\link{lollipopPlot2}}
 
-mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE){
-
+mafCompare <- function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE) {
   m1.gs <- getGeneSummary(x = m1)
   m2.gs <- getGeneSummary(x = m2)
 
 
-   if(is.null(m1Name)){
-     m1Name = 'M1'
-   }
-
-   if(is.null(m2Name)){
-     m2Name = 'M2'
-   }
-
-  if(useCNV){
-    m1.genes = as.character(m1.gs[AlteredSamples >= minMut,Hugo_Symbol])
-    m2.genes = as.character(m2.gs[AlteredSamples >= minMut,Hugo_Symbol])
-    uniqueGenes = unique(c(m1.genes, m2.genes))
-  }else{
-    m1.genes = as.character(m1.gs[MutatedSamples >= minMut, Hugo_Symbol])
-    m2.genes = as.character(m2.gs[MutatedSamples >= minMut, Hugo_Symbol])
-    uniqueGenes = unique(c(m1.genes, m2.genes))
+  if (is.null(m1Name)) {
+    m1Name <- "M1"
   }
 
- #com.genes = intersect(m1.gs[,Hugo_Symbol], m2.gs[,Hugo_Symbol])
+  if (is.null(m2Name)) {
+    m2Name <- "M2"
+  }
 
- m1.sampleSize = as.numeric(m1@summary[3, summary])
- m2.sampleSize = as.numeric(m2@summary[3, summary])
+  if (useCNV) {
+    m1.genes <- as.character(m1.gs[AlteredSamples >= minMut, Hugo_Symbol])
+    m2.genes <- as.character(m2.gs[AlteredSamples >= minMut, Hugo_Symbol])
+    uniqueGenes <- unique(c(m1.genes, m2.genes))
+  } else {
+    m1.genes <- as.character(m1.gs[MutatedSamples >= minMut, Hugo_Symbol])
+    m2.genes <- as.character(m2.gs[MutatedSamples >= minMut, Hugo_Symbol])
+    uniqueGenes <- unique(c(m1.genes, m2.genes))
+  }
 
- m1.gs.comGenes = m1.gs[Hugo_Symbol %in% uniqueGenes]
- m2.gs.comGenes = m2.gs[Hugo_Symbol %in% uniqueGenes]
+  # com.genes = intersect(m1.gs[,Hugo_Symbol], m2.gs[,Hugo_Symbol])
 
- sampleSummary = data.table::data.table(Cohort = c(m1Name, m2Name), SampleSize = c(m1.sampleSize, m2.sampleSize))
+  m1.sampleSize <- as.numeric(m1@summary[3, summary])
+  m2.sampleSize <- as.numeric(m2@summary[3, summary])
 
- if(useCNV){
-   m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)], m2.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)],
-                      by = 'Hugo_Symbol', all = TRUE)
- }else{
-   m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)], m2.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)],
-                      by = 'Hugo_Symbol', all = TRUE)
- }
+  m1.gs.comGenes <- m1.gs[Hugo_Symbol %in% uniqueGenes]
+  m2.gs.comGenes <- m2.gs[Hugo_Symbol %in% uniqueGenes]
 
- #Set missing genes to zero
- m.gs.meged[is.na(m.gs.meged)] = 0
- m.gs.meged = as.data.frame(m.gs.meged)
+  sampleSummary <- data.table::data.table(Cohort = c(m1Name, m2Name), SampleSize = c(m1.sampleSize, m2.sampleSize))
 
- fisherTable = lapply(seq_len(nrow(m.gs.meged)), function(i){
-                     gene = m.gs.meged[i, 1]
-                     m1Mut = m.gs.meged[i,2]
-                     m2Mut = m.gs.meged[i,3]
-                     #print(i)
-                     xf = fisher.test(matrix(c(m1Mut, m1.sampleSize-m1Mut, m2Mut, m2.sampleSize-m2Mut),
-                                             byrow = TRUE, nrow = 2), conf.int = TRUE, conf.level = 0.95)
+  if (useCNV) {
+    m.gs.meged <- merge(m1.gs.comGenes[, .(Hugo_Symbol, AlteredSamples)], m2.gs.comGenes[, .(Hugo_Symbol, AlteredSamples)],
+      by = "Hugo_Symbol", all = TRUE
+    )
+  } else {
+    m.gs.meged <- merge(m1.gs.comGenes[, .(Hugo_Symbol, MutatedSamples)], m2.gs.comGenes[, .(Hugo_Symbol, MutatedSamples)],
+      by = "Hugo_Symbol", all = TRUE
+    )
+  }
 
-                     pval = xf$p.value
-                     or = xf$estimate
-                     ci.up = xf$conf.int[2]
-                     ci.low = xf$conf.int[1]
-                     tdat = data.table::data.table(Hugo_Symbol = gene, m1Mut , m2Mut,
-                                                   pval = pval, or = or, ci.up = ci.up, ci.low = ci.low)
-                     tdat
-                  })
+  # Set missing genes to zero
+  m.gs.meged[is.na(m.gs.meged)] <- 0
+  m.gs.meged <- as.data.frame(m.gs.meged)
 
- fisherTable = data.table::rbindlist(l = fisherTable, use.names = TRUE, fill = TRUE)
- fisherTable = fisherTable[order(pval)]
- fisherTable[,adjPval := p.adjust(p = pval, method = 'fdr')]
- colnames(fisherTable)[2:3] = c(m1Name, m2Name)
+  fisherTable <- lapply(seq_len(nrow(m.gs.meged)), function(i) {
+    gene <- m.gs.meged[i, 1]
+    m1Mut <- m.gs.meged[i, 2]
+    m2Mut <- m.gs.meged[i, 3]
+    # print(i)
+    xf <- fisher.test(matrix(c(m1Mut, m1.sampleSize - m1Mut, m2Mut, m2.sampleSize - m2Mut),
+      byrow = TRUE, nrow = 2
+    ), conf.int = TRUE, conf.level = 0.95)
 
- return(list(results = fisherTable, SampleSummary = sampleSummary))
+    pval <- xf$p.value
+    or <- xf$estimate
+    ci.up <- xf$conf.int[2]
+    ci.low <- xf$conf.int[1]
+    tdat <- data.table::data.table(
+      Hugo_Symbol = gene, m1Mut, m2Mut,
+      pval = pval, or = or, ci.up = ci.up, ci.low = ci.low
+    )
+    tdat
+  })
+
+  fisherTable <- data.table::rbindlist(l = fisherTable, use.names = TRUE, fill = TRUE)
+  fisherTable <- fisherTable[order(pval)]
+  fisherTable[, adjPval := p.adjust(p = pval, method = "fdr")]
+  colnames(fisherTable)[2:3] <- c(m1Name, m2Name)
+
+  return(list(results = fisherTable, SampleSummary = sampleSummary))
 }

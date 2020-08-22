@@ -10,49 +10,48 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' genesToBarcodes(maf = laml, genes = 'DNMT3A')
+#' genesToBarcodes(maf = laml, genes = "DNMT3A")
 #' @export
 
 
-genesToBarcodes = function(maf, genes = NULL, justNames = FALSE, verbose = TRUE){
-
-  if(is.null(genes)){
-    stop('Atleast one gene name is required.')
+genesToBarcodes <- function(maf, genes = NULL, justNames = FALSE, verbose = TRUE) {
+  if (is.null(genes)) {
+    stop("Atleast one gene name is required.")
   }
 
-  dat = createOncoMatrix(m = maf, g = genes)$numericMatrix
+  dat <- createOncoMatrix(m = maf, g = genes)$numericMatrix
 
-  if(length(genes[!genes %in% rownames(dat)]) > 0){
-    if(verbose){
-      message(paste(genes[!genes %in% rownames(dat)], 'not found in MAF. Excluding it..\n', sep=' '))
+  if (length(genes[!genes %in% rownames(dat)]) > 0) {
+    if (verbose) {
+      message(paste(genes[!genes %in% rownames(dat)], "not found in MAF. Excluding it..\n", sep = " "))
     }
-    genes = genes[genes %in% rownames(dat)]
+    genes <- genes[genes %in% rownames(dat)]
 
-    if(length(genes) == 0){
-      if(verbose){
-        message('No genes left!')
+    if (length(genes) == 0) {
+      if (verbose) {
+        message("No genes left!")
       }
       return(NULL)
     }
   }
 
-  res = list()
+  res <- list()
 
-  for(i in 1:length(genes)){
-    if(ncol(dat) == 1){
-      tsbs = colnames(dat)
-    }else{
-      x = dat[genes[i],]
-      tsbs = names(x[x != 0])
+  for (i in 1:length(genes)) {
+    if (ncol(dat) == 1) {
+      tsbs <- colnames(dat)
+    } else {
+      x <- dat[genes[i], ]
+      tsbs <- names(x[x != 0])
     }
-    res[i] = list(maf@variant.classification.summary[Tumor_Sample_Barcode %in% tsbs])
-    names(res)[i] = genes[i]
+    res[i] <- list(maf@variant.classification.summary[Tumor_Sample_Barcode %in% tsbs])
+    names(res)[i] <- genes[i]
   }
 
-  if(justNames){
-    res = lapply(X = res, FUN = function(x) as.character(x[,Tumor_Sample_Barcode]))
+  if (justNames) {
+    res <- lapply(X = res, FUN = function(x) as.character(x[, Tumor_Sample_Barcode]))
     return(res)
-  }else{
+  } else {
     return(res)
   }
 }

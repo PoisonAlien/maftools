@@ -11,52 +11,53 @@
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
 #' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
-#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
+#' laml.gistic <- readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
 #' gisticBubblePlot(gistic = laml.gistic, markBands = "")
 #' @return Nothing
 #' @export
 #'
-gisticBubblePlot = function(gistic = NULL, color = NULL, markBands = NULL, fdrCutOff = 0.1, log_y = TRUE,
-                            txtSize = 3){
+gisticBubblePlot <- function(gistic = NULL, color = NULL, markBands = NULL, fdrCutOff = 0.1, log_y = TRUE,
+                             txtSize = 3) {
+  g <- getCytobandSummary(gistic)
+  g <- g[qvalues < fdrCutOff]
+  g[, Chromosome := sapply(strsplit(x = g$Wide_Peak_Limits, split = ":"), "[", 1)]
+  g[, loc := sapply(strsplit(x = g$Wide_Peak_Limits, split = ":"), "[", 2)]
+  g[, Start_Position := sapply(strsplit(x = g$loc, split = "-"), "[", 1)]
+  g[, End_Position := sapply(strsplit(x = g$loc, split = "-"), "[", 2)]
+  g.lin <- transformSegments(segmentedData = g[, .(Chromosome, Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
 
-  g = getCytobandSummary(gistic)
-  g = g[qvalues < fdrCutOff]
-  g[,Chromosome := sapply(strsplit(x = g$Wide_Peak_Limits, split = ':'), '[', 1)]
-  g[,loc := sapply(strsplit(x = g$Wide_Peak_Limits, split = ':'), '[', 2)]
-  g[,Start_Position := sapply(strsplit(x = g$loc, split = '-'), '[', 1)]
-  g[,End_Position := sapply(strsplit(x = g$loc, split = '-'), '[', 2)]
-  g.lin = transformSegments(segmentedData = g[,.(Chromosome, Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
-
-  if(is.null(color)){
-    color = c('Amp' = grDevices::adjustcolor('red', alpha.f = 0.8),
-              'Del' = grDevices::adjustcolor('blue', alpha.f = 0.8))
+  if (is.null(color)) {
+    color <- c(
+      "Amp" = grDevices::adjustcolor("red", alpha.f = 0.8),
+      "Del" = grDevices::adjustcolor("blue", alpha.f = 0.8)
+    )
   }
 
-  g$lab = sapply(strsplit(x = g$Unique_Name, split = ':'), '[', 2)
-  if(log_y){
+  g$lab <- sapply(strsplit(x = g$Unique_Name, split = ":"), "[", 2)
+  if (log_y) {
     g[, nGenes := log10(nGenes)]
   }
-  g$pos = ifelse(test = g$Variant_Classification %in% 'Amp', yes = g$nGenes, no = -1 * g$nGenes)
+  g$pos <- ifelse(test = g$Variant_Classification %in% "Amp", yes = g$nGenes, no = -1 * g$nGenes)
 
-  g$color = ifelse(test = g$Variant_Classification == "Amp", yes = color[1], no = color[2])
+  g$color <- ifelse(test = g$Variant_Classification == "Amp", yes = color[1], no = color[2])
   g[, log_q := -log10(qvalues)]
 
 
-  if(is.null(markBands)){
-    markBands = g[1:5, Cytoband]
-  }else{
-    if(is.numeric(markBands)){
-      markBands = g[1:markBands, Cytoband]
-    }else if(markBands[1] == "all"){
-      markBands = g[, Cytoband]
+  if (is.null(markBands)) {
+    markBands <- g[1:5, Cytoband]
+  } else {
+    if (is.numeric(markBands)) {
+      markBands <- g[1:markBands, Cytoband]
+    } else if (markBands[1] == "all") {
+      markBands <- g[, Cytoband]
     }
   }
 
-  if(!is.null(markBands)){
-    g.labs = g[Cytoband %in% markBands]
-    if(nrow(g.labs) == 0){
+  if (!is.null(markBands)) {
+    g.labs <- g[Cytoband %in% markBands]
+    if (nrow(g.labs) == 0) {
       warning("Could not find provided bands for labelling", immediate. = TRUE)
-      g.labs = NULL
+      g.labs <- NULL
     }
   }
 

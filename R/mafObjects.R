@@ -13,11 +13,13 @@
 #' @seealso \code{\link{getGeneSummary}} \code{\link{getSampleSummary}} \code{\link{getFields}}
 
 ## MAF object
-MAF <- setClass(Class = 'MAF', slots =  c(data = 'data.table', variants.per.sample = 'data.table', variant.type.summary = 'data.table',
-                                         variant.classification.summary = 'data.table', gene.summary = 'data.table',
-                                         summary = 'data.table', maf.silent = 'data.table', clinical.data = 'data.table'))
+MAF <- setClass(Class = "MAF", slots = c(
+  data = "data.table", variants.per.sample = "data.table", variant.type.summary = "data.table",
+  variant.classification.summary = "data.table", gene.summary = "data.table",
+  summary = "data.table", maf.silent = "data.table", clinical.data = "data.table"
+))
 
-setMethod(f = 'show', signature = 'MAF', definition = function(object){
-  cat(paste('An object of class ', class(object), "\n"))
+setMethod(f = "show", signature = "MAF", definition = function(object) {
+  cat(paste("An object of class ", class(object), "\n"))
   print(object@summary)
 })

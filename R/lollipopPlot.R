@@ -33,330 +33,342 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' lollipopPlot(maf = laml, gene = 'KIT', AACol = 'Protein_Change')
-#'
+#' lollipopPlot(maf = laml, gene = "KIT", AACol = "Protein_Change")
 #' @export
 
-lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosSize = 0.9, showMutationRate = TRUE,
-                        showDomainLabel = TRUE, cBioPortal = FALSE, refSeqID = NULL, proteinID = NULL, roundedRect = TRUE,
-                        repel = FALSE, collapsePosLabel = TRUE, showLegend = TRUE, legendTxtSize = 0.8, labPosAngle = 0, domainLabelSize = 0.8, axisTextSize = c(1, 1),
-                        printCount = FALSE, colors = NULL, domainAlpha = 1, domainBorderCol = "black", bgBorderCol = "black", labelOnlyUniqueDoamins = TRUE, defaultYaxis = FALSE, titleSize = c(1.2, 1), pointSize = 1.5){
-
-  if(is.null(gene)){
-    stop('Please provide a gene name.')
+lollipopPlot <- function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosSize = 0.9, showMutationRate = TRUE,
+                         showDomainLabel = TRUE, cBioPortal = FALSE, refSeqID = NULL, proteinID = NULL, roundedRect = TRUE,
+                         repel = FALSE, collapsePosLabel = TRUE, showLegend = TRUE, legendTxtSize = 0.8, labPosAngle = 0, domainLabelSize = 0.8, axisTextSize = c(1, 1),
+                         printCount = FALSE, colors = NULL, domainAlpha = 1, domainBorderCol = "black", bgBorderCol = "black", labelOnlyUniqueDoamins = TRUE, defaultYaxis = FALSE, titleSize = c(1.2, 1), pointSize = 1.5) {
+  if (is.null(gene)) {
+    stop("Please provide a gene name.")
   }
 
-  geneID = gene
-  #Protein domain source.
-  gff = system.file('extdata', 'protein_domains.RDs', package = 'maftools')
-  gff = readRDS(file = gff)
+  geneID <- gene
+  # Protein domain source.
+  gff <- system.file("extdata", "protein_domains.RDs", package = "maftools")
+  gff <- readRDS(file = gff)
   data.table::setDT(x = gff)
 
-  mut = subsetMaf(maf = maf, includeSyn = FALSE, genes = gene, query = "Variant_Type != 'CNV'", mafObj = FALSE)
+  mut <- subsetMaf(maf = maf, includeSyn = FALSE, genes = gene, query = "Variant_Type != 'CNV'", mafObj = FALSE)
 
-  if(is.null(AACol)){
-    pchange = c('HGVSp_Short', 'Protein_Change', 'AAChange')
-    if(length(pchange[pchange %in% colnames(mut)]) > 0){
-      pchange = suppressWarnings(pchange[pchange %in% colnames(mut)][1])
-      message(paste0("Assuming protein change information are stored under column ", pchange,". Use argument AACol to override if necessary."))
-      colnames(mut)[which(colnames(mut) == pchange)] = 'AAChange_'
-    }else{
-      message('Available fields:')
+  if (is.null(AACol)) {
+    pchange <- c("HGVSp_Short", "Protein_Change", "AAChange")
+    if (length(pchange[pchange %in% colnames(mut)]) > 0) {
+      pchange <- suppressWarnings(pchange[pchange %in% colnames(mut)][1])
+      message(paste0("Assuming protein change information are stored under column ", pchange, ". Use argument AACol to override if necessary."))
+      colnames(mut)[which(colnames(mut) == pchange)] <- "AAChange_"
+    } else {
+      message("Available fields:")
       print(colnames(mut))
-      stop('AAChange field not found in MAF. Use argument AACol to manually specifiy field name containing protein changes.')
+      stop("AAChange field not found in MAF. Use argument AACol to manually specifiy field name containing protein changes.")
     }
-  }else{
-    if(length(which(colnames(mut) == AACol)) == 0){
-      message('Available fields:')
+  } else {
+    if (length(which(colnames(mut) == AACol)) == 0) {
+      message("Available fields:")
       print(colnames(mut))
       stop(paste0("Column ", AACol, " not found."))
-    }else{
-      colnames(mut)[which(colnames(mut) == AACol)] = 'AAChange_'
+    } else {
+      colnames(mut)[which(colnames(mut) == AACol)] <- "AAChange_"
     }
   }
 
-  prot.dat = mut[Hugo_Symbol %in% geneID, .(Variant_Type, Variant_Classification, AAChange_)]
-  if(nrow(prot.dat) == 0){
-    stop(paste(geneID, 'does not seem to have any mutations!', sep=' '))
+  prot.dat <- mut[Hugo_Symbol %in% geneID, .(Variant_Type, Variant_Classification, AAChange_)]
+  if (nrow(prot.dat) == 0) {
+    stop(paste(geneID, "does not seem to have any mutations!", sep = " "))
   }
 
-  prot = gff[HGNC %in% geneID]
+  prot <- gff[HGNC %in% geneID]
 
-  if(nrow(prot) == 0){
-    stop(paste('Structure for protein', geneID, 'not found.', sep=' '))
+  if (nrow(prot) == 0) {
+    stop(paste("Structure for protein", geneID, "not found.", sep = " "))
   }
 
-  if(!is.null(refSeqID)){
-    prot = prot[refseq.ID == refSeqID]
-    if(nrow(prot) == 0){
+  if (!is.null(refSeqID)) {
+    prot <- prot[refseq.ID == refSeqID]
+    if (nrow(prot) == 0) {
       stop(paste0(refSeqID, " not found!"))
     }
-  } else if(!is.null(proteinID)){
-    prot = prot[protein.ID == proteinID]
-    if(nrow(prot) == 0){
+  } else if (!is.null(proteinID)) {
+    prot <- prot[protein.ID == proteinID]
+    if (nrow(prot) == 0) {
       stop(paste0(refSeqID, " not found!"))
     }
-  } else{
-    txs = unique(prot$refseq.ID)
-    if(length(txs) > 1){
-      message(paste(length(txs), ' transcripts available. Use arguments refSeqID or proteinID to manually specify tx name.', sep = ''))
-      print(prot[!duplicated(protein.ID),.(HGNC, refseq.ID, protein.ID, aa.length)])
-      prot = prot[which(prot$aa.length == max(prot$aa.length)),]
-      if(length(unique(prot$refseq.ID)) > 1){
-        prot = prot[which(prot$refseq.ID == unique(prot[,refseq.ID])[1]),]
-        message(paste('Using longer transcript', unique(prot[,refseq.ID])[1], 'for now.', sep=' '))
-      } else{
-        message(paste('Using longer transcript', unique(prot[,refseq.ID])[1], 'for now.', sep=' '))
+  } else {
+    txs <- unique(prot$refseq.ID)
+    if (length(txs) > 1) {
+      message(paste(length(txs), " transcripts available. Use arguments refSeqID or proteinID to manually specify tx name.", sep = ""))
+      print(prot[!duplicated(protein.ID), .(HGNC, refseq.ID, protein.ID, aa.length)])
+      prot <- prot[which(prot$aa.length == max(prot$aa.length)), ]
+      if (length(unique(prot$refseq.ID)) > 1) {
+        prot <- prot[which(prot$refseq.ID == unique(prot[, refseq.ID])[1]), ]
+        message(paste("Using longer transcript", unique(prot[, refseq.ID])[1], "for now.", sep = " "))
+      } else {
+        message(paste("Using longer transcript", unique(prot[, refseq.ID])[1], "for now.", sep = " "))
       }
     }
   }
 
-  #Legth of protein
-  len = as.numeric(max(prot$aa.length, na.rm = TRUE))
-  #Remove NA's
-  prot = prot[!is.na(Label)]
-  prot = prot[,domain_lenght := End - Start][order(domain_lenght, decreasing = TRUE)][,domain_lenght := NULL]
+  # Legth of protein
+  len <- as.numeric(max(prot$aa.length, na.rm = TRUE))
+  # Remove NA's
+  prot <- prot[!is.na(Label)]
+  prot <- prot[, domain_lenght := End - Start][order(domain_lenght, decreasing = TRUE)][, domain_lenght := NULL]
 
-  #hard coded colors for variant classification if user doesnt provide any
+  # hard coded colors for variant classification if user doesnt provide any
 
-  sampleSize = as.numeric(maf@summary[ID %in% 'Samples', summary])
-  mutRate = round(getGeneSummary(x = maf)[Hugo_Symbol %in% geneID, MutatedSamples]/sampleSize*100, digits = 2)
-  cbioSubTitle = geneID
-  if(showMutationRate){
-    cbioSubTitle = substitute(paste(italic(cbioSubTitle), " : [Somatic Mutation Rate: ", mutRate, "%]"))
+  sampleSize <- as.numeric(maf@summary[ID %in% "Samples", summary])
+  mutRate <- round(getGeneSummary(x = maf)[Hugo_Symbol %in% geneID, MutatedSamples] / sampleSize * 100, digits = 2)
+  cbioSubTitle <- geneID
+  if (showMutationRate) {
+    cbioSubTitle <- substitute(paste(italic(cbioSubTitle), " : [Somatic Mutation Rate: ", mutRate, "%]"))
   }
 
-  if(cBioPortal){
-    vc = c("Nonstop_Mutation", "Frame_Shift_Del", "Missense_Mutation",
-           "Nonsense_Mutation", "Splice_Site", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins")
-    vc.cbio = c("Truncating", "Truncating", "Missense", "Truncating", "Truncating", "Truncating",
-                "In-frame", "In-frame")
-    names(vc.cbio) = vc
-    col = grDevices::adjustcolor(col = c("black", "#33A02C", "brown"), alpha.f = 0.7)
-    col = c('Truncating' = col[1], 'Missense' = col[2], 'In-frame' = col[3])
-  }else{
-    if(is.null(colors)){
-      col = get_vcColors(alpha = 0.7, named = TRUE)
-    }else{
-      col = colors
+  if (cBioPortal) {
+    vc <- c(
+      "Nonstop_Mutation", "Frame_Shift_Del", "Missense_Mutation",
+      "Nonsense_Mutation", "Splice_Site", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins"
+    )
+    vc.cbio <- c(
+      "Truncating", "Truncating", "Missense", "Truncating", "Truncating", "Truncating",
+      "In-frame", "In-frame"
+    )
+    names(vc.cbio) <- vc
+    col <- grDevices::adjustcolor(col = c("black", "#33A02C", "brown"), alpha.f = 0.7)
+    col <- c("Truncating" = col[1], "Missense" = col[2], "In-frame" = col[3])
+  } else {
+    if (is.null(colors)) {
+      col <- get_vcColors(alpha = 0.7, named = TRUE)
+    } else {
+      col <- colors
     }
   }
 
-  #prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
-  #Remove 'p.'
-  prot.spl = strsplit(x = as.character(prot.dat$AAChange_), split = '.', fixed = TRUE)
-  prot.conv = sapply(sapply(prot.spl, function(x) x[length(x)]), '[', 1)
+  # prot.dat = prot.dat[Variant_Classification != 'Splice_Site']
+  # Remove 'p.'
+  prot.spl <- strsplit(x = as.character(prot.dat$AAChange_), split = ".", fixed = TRUE)
+  prot.conv <- sapply(sapply(prot.spl, function(x) x[length(x)]), "[", 1)
 
-  prot.dat[,conv := prot.conv]
-  #If conversions are in HGVSp_long (default HGVSp) format, we will remove strings Ter followed by anything (e.g; p.Asn1986GlnfsTer13)
-  pos = gsub(pattern = 'Ter.*', replacement = '',x = prot.dat$conv)
+  prot.dat[, conv := prot.conv]
+  # If conversions are in HGVSp_long (default HGVSp) format, we will remove strings Ter followed by anything (e.g; p.Asn1986GlnfsTer13)
+  pos <- gsub(pattern = "Ter.*", replacement = "", x = prot.dat$conv)
 
-  #Following parsing takes care of most of HGVSp_short and HGVSp_long format
-  pos = gsub(pattern = '[[:alpha:]]', replacement = '', x = pos)
-  pos = gsub(pattern = '\\*$', replacement = '', x = pos) #Remove * if nonsense mutation ends with *
-  pos = gsub(pattern = '^\\*', replacement = '', x = pos) #Remove * if nonsense mutation starts with *
-  pos = gsub(pattern = '\\*.*', replacement = '', x = pos) #Remove * followed by position e.g, p.C229Lfs*18
+  # Following parsing takes care of most of HGVSp_short and HGVSp_long format
+  pos <- gsub(pattern = "[[:alpha:]]", replacement = "", x = pos)
+  pos <- gsub(pattern = "\\*$", replacement = "", x = pos) # Remove * if nonsense mutation ends with *
+  pos <- gsub(pattern = "^\\*", replacement = "", x = pos) # Remove * if nonsense mutation starts with *
+  pos <- gsub(pattern = "\\*.*", replacement = "", x = pos) # Remove * followed by position e.g, p.C229Lfs*18
 
 
-  #pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[[', 1))
-  pos = as.numeric(sapply(X = strsplit(x = pos, split = '_', fixed = TRUE), FUN = function(x) x[1]))
-  prot.dat[,pos := abs(pos)]
+  # pos = as.numeric(sapply(strsplit(x = pos, split = '_', fixed = TRUE), '[[', 1))
+  pos <- as.numeric(sapply(X = strsplit(x = pos, split = "_", fixed = TRUE), FUN = function(x) x[1]))
+  prot.dat[, pos := abs(pos)]
 
-  if(nrow( prot.dat[is.na(pos)]) > 0){
-    message(paste('Removed', nrow( prot.dat[is.na(prot.dat$pos),]), 'mutations for which AA position was not available', sep = ' '))
-    #print(prot.dat[is.na(pos)])
-    prot.dat = prot.dat[!is.na(pos)]
+  if (nrow(prot.dat[is.na(pos)]) > 0) {
+    message(paste("Removed", nrow(prot.dat[is.na(prot.dat$pos), ]), "mutations for which AA position was not available", sep = " "))
+    # print(prot.dat[is.na(pos)])
+    prot.dat <- prot.dat[!is.na(pos)]
   }
 
-  prot.snp.sumamry = prot.dat[,.N, .(Variant_Classification, conv, pos)]
-  colnames(prot.snp.sumamry)[ncol(prot.snp.sumamry)] = 'count'
-  maxCount = max(prot.snp.sumamry$count, na.rm = TRUE)
+  prot.snp.sumamry <- prot.dat[, .N, .(Variant_Classification, conv, pos)]
+  colnames(prot.snp.sumamry)[ncol(prot.snp.sumamry)] <- "count"
+  maxCount <- max(prot.snp.sumamry$count, na.rm = TRUE)
 
-  prot.snp.sumamry = prot.snp.sumamry[order(pos),]
-  #prot.snp.sumamry$distance = c(0,diff(prot.snp.sumamry$pos))
+  prot.snp.sumamry <- prot.snp.sumamry[order(pos), ]
+  # prot.snp.sumamry$distance = c(0,diff(prot.snp.sumamry$pos))
 
-  if(cBioPortal){
-    prot.snp.sumamry$Variant_Classification = vc.cbio[as.character(prot.snp.sumamry$Variant_Classification)]
+  if (cBioPortal) {
+    prot.snp.sumamry$Variant_Classification <- vc.cbio[as.character(prot.snp.sumamry$Variant_Classification)]
   }
 
-  if(maxCount <= 5){
-    prot.snp.sumamry$count2 = 1+prot.snp.sumamry$count
-    lim.pos = 2:6
-    lim.lab = 1:5
-  }else{
-    prot.snp.sumamry$count2 = 1+(prot.snp.sumamry$count * (5/max(prot.snp.sumamry$count)))
-    lim.pos = prot.snp.sumamry[!duplicated(count2), count2]
-    lim.lab = prot.snp.sumamry[!duplicated(count2), count]
+  if (maxCount <= 5) {
+    prot.snp.sumamry$count2 <- 1 + prot.snp.sumamry$count
+    lim.pos <- 2:6
+    lim.lab <- 1:5
+  } else {
+    prot.snp.sumamry$count2 <- 1 + (prot.snp.sumamry$count * (5 / max(prot.snp.sumamry$count)))
+    lim.pos <- prot.snp.sumamry[!duplicated(count2), count2]
+    lim.lab <- prot.snp.sumamry[!duplicated(count2), count]
   }
 
-  if(length(lim.pos) > 6){
-    lim.dat = data.table::data.table(pos = lim.pos, lab = lim.lab)
-    lim.dat[,posRounded := round(pos)]
-    lim.dat = lim.dat[!duplicated(posRounded)]
-    lim.pos = lim.dat[,pos]
-    lim.lab = lim.dat[,lab]
+  if (length(lim.pos) > 6) {
+    lim.dat <- data.table::data.table(pos = lim.pos, lab = lim.lab)
+    lim.dat[, posRounded := round(pos)]
+    lim.dat <- lim.dat[!duplicated(posRounded)]
+    lim.pos <- lim.dat[, pos]
+    lim.lab <- lim.dat[, lab]
   }
 
-  if(!defaultYaxis){
-    lim.pos = c(min(lim.pos), max(lim.pos))
-    lim.lab = c(min(lim.lab), max(lim.lab))
+  if (!defaultYaxis) {
+    lim.pos <- c(min(lim.pos), max(lim.pos))
+    lim.lab <- c(min(lim.lab), max(lim.lab))
   }
 
-  clusterSize = 10 #Change this later as an argument to user.
-  if(repel){
-    prot.snp.sumamry = repelPoints(dat = prot.snp.sumamry, protLen = len, clustSize = clusterSize)
-  }else{
-    prot.snp.sumamry$pos2 = prot.snp.sumamry$pos
+  clusterSize <- 10 # Change this later as an argument to user.
+  if (repel) {
+    prot.snp.sumamry <- repelPoints(dat = prot.snp.sumamry, protLen = len, clustSize = clusterSize)
+  } else {
+    prot.snp.sumamry$pos2 <- prot.snp.sumamry$pos
   }
 
-  xlimPos = pretty(0:max(prot$aa.length, na.rm = TRUE))
-  xlimPos[length(xlimPos)] = max(prot$aa.length)
+  xlimPos <- pretty(0:max(prot$aa.length, na.rm = TRUE))
+  xlimPos[length(xlimPos)] <- max(prot$aa.length)
 
   # if(xlimPos[length(xlimPos)] - xlimPos[length(xlimPos)-1] <= 10){
   #   xlimPos = xlimPos[-(length(xlimPos)-1)]
   # }
-  #xlimPos[length(xlimPos)] = max(as.numeric(prot$aa.length), na.rm = TRUE)
+  # xlimPos[length(xlimPos)] = max(as.numeric(prot$aa.length), na.rm = TRUE)
 
   #-----------------------------------
-  #If user asks to label points, use ggrepel to label.
-  if(!is.null(labelPos)){
-    prot.snp.sumamry = data.table::data.table(prot.snp.sumamry)
+  # If user asks to label points, use ggrepel to label.
+  if (!is.null(labelPos)) {
+    prot.snp.sumamry <- data.table::data.table(prot.snp.sumamry)
 
-    if(length(labelPos) == 1){
-      if(labelPos != 'all'){
-        prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-        labDat = prot.snp.sumamry[labThis %in% 'yes']
-      }else{
-        labDat = prot.snp.sumamry
+    if (length(labelPos) == 1) {
+      if (labelPos != "all") {
+        prot.snp.sumamry$labThis <- ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = "yes", no = "no")
+        labDat <- prot.snp.sumamry[labThis %in% "yes"]
+      } else {
+        labDat <- prot.snp.sumamry
       }
-    }else{
-      prot.snp.sumamry$labThis = ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = 'yes', no = 'no')
-      labDat = prot.snp.sumamry[labThis %in% 'yes']
+    } else {
+      prot.snp.sumamry$labThis <- ifelse(test = prot.snp.sumamry$pos %in% labelPos, yes = "yes", no = "no")
+      labDat <- prot.snp.sumamry[labThis %in% "yes"]
     }
 
-    if(nrow(labDat) == 0){
-      message(paste0("Position ",labelPos, " doesn't seem to be mutated. Here are the mutated foci."))
-      print(prot.snp.sumamry[,.(pos, conv, count, Variant_Classification)][order(pos)])
+    if (nrow(labDat) == 0) {
+      message(paste0("Position ", labelPos, " doesn't seem to be mutated. Here are the mutated foci."))
+      print(prot.snp.sumamry[, .(pos, conv, count, Variant_Classification)][order(pos)])
       stop()
-      #return(prot.snp.sumamry[,.(mutations = sum(count)), pos][order(mutations, decreasing = TRUE)])
+      # return(prot.snp.sumamry[,.(mutations = sum(count)), pos][order(mutations, decreasing = TRUE)])
     }
 
 
-    if(collapsePosLabel){
-      uniquePos = unique(labDat[,pos2])
-      labDatCollapsed = data.table::data.table()
-      for(i in 1:length(uniquePos)){
-        uniqueDat = labDat[pos2 %in% uniquePos[i]]
-        if(nrow(uniqueDat) > 1){
-          maxDat = max(uniqueDat[,count2])
-          maxPos = unique(uniqueDat[,pos2])
-          toLabel = uniqueDat[,conv]
-          toLabel = paste(toLabel[1],paste(gsub(pattern = '^[A-z]*[[:digit:]]*', replacement = '', x = toLabel[2:length(toLabel)]), collapse = '/'), sep = '/')
-          labDatCollapsed = rbind(labDatCollapsed, data.table::data.table(pos2 = maxPos, count2 = maxDat, conv = toLabel))
-        }else{
-          labDatCollapsed = rbind(labDatCollapsed, data.table::data.table(pos2 = uniqueDat[,pos2], count2 = uniqueDat[,count2], conv = uniqueDat[,conv]))
+    if (collapsePosLabel) {
+      uniquePos <- unique(labDat[, pos2])
+      labDatCollapsed <- data.table::data.table()
+      for (i in 1:length(uniquePos)) {
+        uniqueDat <- labDat[pos2 %in% uniquePos[i]]
+        if (nrow(uniqueDat) > 1) {
+          maxDat <- max(uniqueDat[, count2])
+          maxPos <- unique(uniqueDat[, pos2])
+          toLabel <- uniqueDat[, conv]
+          toLabel <- paste(toLabel[1], paste(gsub(pattern = "^[A-z]*[[:digit:]]*", replacement = "", x = toLabel[2:length(toLabel)]), collapse = "/"), sep = "/")
+          labDatCollapsed <- rbind(labDatCollapsed, data.table::data.table(pos2 = maxPos, count2 = maxDat, conv = toLabel))
+        } else {
+          labDatCollapsed <- rbind(labDatCollapsed, data.table::data.table(pos2 = uniqueDat[, pos2], count2 = uniqueDat[, count2], conv = uniqueDat[, conv]))
         }
       }
-      labDat = labDatCollapsed
+      labDat <- labDatCollapsed
     }
   }
 
 
   #-----------------------------------
-  #Base
-  domains = unique(prot[,Label])
-  domain_cols = get_domain_cols()
+  # Base
+  domains <- unique(prot[, Label])
+  domain_cols <- get_domain_cols()
 
-  if(length(domains) > length(domain_cols)){
-    domain_cols = sample(colours(), size = length(domains), replace = FALSE)
+  if (length(domains) > length(domain_cols)) {
+    domain_cols <- sample(colours(), size = length(domains), replace = FALSE)
   }
 
-  domain_cols = domain_cols[1:length(domains)]
-  domain_cols = grDevices::adjustcolor(col = domain_cols, alpha.f = domainAlpha)
-  names(domain_cols) = domains
+  domain_cols <- domain_cols[1:length(domains)]
+  domain_cols <- grDevices::adjustcolor(col = domain_cols, alpha.f = domainAlpha)
+  names(domain_cols) <- domains
 
-  col = col[unique(as.character(prot.snp.sumamry[,Variant_Classification]))]
+  col <- col[unique(as.character(prot.snp.sumamry[, Variant_Classification]))]
 
-  if(showLegend){
-    lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
+  if (showLegend) {
+    lo <- matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
     graphics::layout(mat = lo, heights = c(4, 1.25))
     par(mar = c(1, 2.5, 2, 1))
-  }else{
+  } else {
     par(mar = c(2.5, 2.5, 2, 1))
   }
 
 
   plot(0, 0, pch = NA, ylim = c(0, 6.5), xlim = c(0, len), axes = FALSE, xlab = NA, ylab = NA)
   rect(xleft = 0, ybottom = 0.2, xright = len, ytop = 0.8, col = "#95a5a6", border = bgBorderCol)
-  axis(side = 1, at = xlimPos, labels = xlimPos, lwd = 1.2, font = 1,
-       cex.axis = axisTextSize[1], line = -0.4)
-  axis(side = 2, at = lim.pos, labels = lim.lab, lwd = 1.2, font = 1, las = 2,
-       cex.axis = axisTextSize[2])
-  #mtext(text = "# Mutations", side = 2, line = 1.5, font = 1)
-  segments(x0 = prot.snp.sumamry[,pos2], y0 = 0.8, x1 = prot.snp.sumamry[,pos2], y1 = prot.snp.sumamry[,count2-0.03], lwd = 1.2, col = "gray70")
-  point_cols = col[as.character(prot.snp.sumamry$Variant_Classification)]
-  points(x = prot.snp.sumamry[,pos2], y = prot.snp.sumamry[,count2], col = point_cols, pch = 16, cex = pointSize)
+  axis(
+    side = 1, at = xlimPos, labels = xlimPos, lwd = 1.2, font = 1,
+    cex.axis = axisTextSize[1], line = -0.4
+  )
+  axis(
+    side = 2, at = lim.pos, labels = lim.lab, lwd = 1.2, font = 1, las = 2,
+    cex.axis = axisTextSize[2]
+  )
+  # mtext(text = "# Mutations", side = 2, line = 1.5, font = 1)
+  segments(x0 = prot.snp.sumamry[, pos2], y0 = 0.8, x1 = prot.snp.sumamry[, pos2], y1 = prot.snp.sumamry[, count2 - 0.03], lwd = 1.2, col = "gray70")
+  point_cols <- col[as.character(prot.snp.sumamry$Variant_Classification)]
+  points(x = prot.snp.sumamry[, pos2], y = prot.snp.sumamry[, count2], col = point_cols, pch = 16, cex = pointSize)
 
   prot[, domainCol := domain_cols[prot[, Label]]]
-  if(roundedRect){
-    if(requireNamespace("berryFunctions", quietly = TRUE)){
-      for(i in 1:nrow(prot)){
-        berryFunctions::roundedRect(xleft = prot[i,Start], ybottom = 0.1, xright = prot[i,End], ytop = 0.9, col = prot[i, domainCol], border = domainBorderCol, rounding = 0.08)
+  if (roundedRect) {
+    if (requireNamespace("berryFunctions", quietly = TRUE)) {
+      for (i in 1:nrow(prot)) {
+        berryFunctions::roundedRect(xleft = prot[i, Start], ybottom = 0.1, xright = prot[i, End], ytop = 0.9, col = prot[i, domainCol], border = domainBorderCol, rounding = 0.08)
       }
-    }else{
-      #warning("Package berryFunctions needed for roundedRect to work. Please install it and try again.")
-      rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = prot[,domainCol], border = domainBorderCol)
+    } else {
+      # warning("Package berryFunctions needed for roundedRect to work. Please install it and try again.")
+      rect(xleft = prot[, Start], ybottom = 0.1, xright = prot[, End], ytop = 0.9, col = prot[, domainCol], border = domainBorderCol)
     }
-  }else{
-    rect(xleft = prot[,Start], ybottom = 0.1, xright = prot[,End], ytop = 0.9, col = prot[,domainCol], border = domainBorderCol)
+  } else {
+    rect(xleft = prot[, Start], ybottom = 0.1, xright = prot[, End], ytop = 0.9, col = prot[, domainCol], border = domainBorderCol)
   }
 
 
   title(main = cbioSubTitle, adj = 0, font.main = 2, cex.main = titleSize[1], line = 0.8)
-  title(main = unique(prot[,refseq.ID]), adj = 0, font.main = 1, line = -0.5, cex.main = titleSize[2])
+  title(main = unique(prot[, refseq.ID]), adj = 0, font.main = 1, line = -0.5, cex.main = titleSize[2])
 
-  if(showDomainLabel){
-    if(labelOnlyUniqueDoamins){
-      prot = prot[!duplicated(Label)]
+  if (showDomainLabel) {
+    if (labelOnlyUniqueDoamins) {
+      prot <- prot[!duplicated(Label)]
     }
-    prot$pos = rowMeans(x = prot[,.(Start, End)], na.rm = FALSE)
+    prot$pos <- rowMeans(x = prot[, .(Start, End)], na.rm = FALSE)
     text(y = 0.5, x = prot$pos, labels = prot$Label, font = 3, cex = domainLabelSize)
   }
 
-  if(!is.null(labelPos)){
-    #prot.snp.sumamry = repelPoints(dat = prot.snp.sumamry, protLen = len, clustSize = 5)
-    text(x = labDat[,pos2], y = labDat[,count2+0.45], labels = labDat[,conv],
-         font = 1, srt = labPosAngle, cex = labPosSize)
+  if (!is.null(labelPos)) {
+    # prot.snp.sumamry = repelPoints(dat = prot.snp.sumamry, protLen = len, clustSize = 5)
+    text(
+      x = labDat[, pos2], y = labDat[, count2 + 0.45], labels = labDat[, conv],
+      font = 1, srt = labPosAngle, cex = labPosSize
+    )
   }
 
-  if(showLegend){
+  if (showLegend) {
     par(mar = c(0, 0.5, 1, 0), xpd = TRUE)
 
-    plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
-    lep = legend("topleft", legend = names(col), col = col,  bty = "n", border=NA,
-                 xpd = TRUE, text.font = 1, pch = 16, xjust = 0, yjust = 0,
-                 cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
-                 pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
+    plot(NULL, ylab = "", xlab = "", xlim = 0:1, ylim = 0:1, axes = FALSE)
+    lep <- legend("topleft",
+      legend = names(col), col = col, bty = "n", border = NA,
+      xpd = TRUE, text.font = 1, pch = 16, xjust = 0, yjust = 0,
+      cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
+      pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col) / 4)
+    )
 
-    x_axp = 0+lep$rect$w
+    x_axp <- 0 + lep$rect$w
 
-    if(!showDomainLabel){
-      if(length(domain_cols) <= 4){
-        n_col = 1
-      }else{
-        n_col = (length(domain_cols) %/% 4)+1
+    if (!showDomainLabel) {
+      if (length(domain_cols) <= 4) {
+        n_col <- 1
+      } else {
+        n_col <- (length(domain_cols) %/% 4) + 1
       }
 
-      lep = legend(x = x_axp, y = 1, legend = names(domain_cols),
-                   col = domain_cols, border = NA,
-                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                   cex = legendTxtSize, title = "Domains",
-                   title.adj = 0, pt.cex = 1.2 * legendTxtSize)
+      lep <- legend(
+        x = x_axp, y = 1, legend = names(domain_cols),
+        col = domain_cols, border = NA,
+        ncol = n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+        cex = legendTxtSize, title = "Domains",
+        title.adj = 0, pt.cex = 1.2 * legendTxtSize
+      )
     }
   }
 
-  if(printCount){
-    print(prot.snp.sumamry[,.(pos, conv, count, Variant_Classification)][order(pos)])
-    #print(prot.snp.sumamry[,.(mutations = sum(count)), pos][order(mutations, decreasing = TRUE)])
+  if (printCount) {
+    print(prot.snp.sumamry[, .(pos, conv, count, Variant_Classification)][order(pos)])
+    # print(prot.snp.sumamry[,.(mutations = sum(count)), pos][order(mutations, decreasing = TRUE)])
   }
 }

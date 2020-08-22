@@ -15,129 +15,145 @@
 #' \dontrun{
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19', prefix = 'chr',
-#' add = TRUE, useSyn = TRUE)
+#' laml.tnm <- trinucleotideMatrix(
+#'   maf = laml, ref_genome = "BSgenome.Hsapiens.UCSC.hg19", prefix = "chr",
+#'   add = TRUE, useSyn = TRUE
+#' )
 #' plotApobecDiff(laml.tnm)
 #' }
 #' @importFrom grDevices pdf boxplot.stats dev.off
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 
-plotApobecDiff = function(tnm, maf, pVal = 0.05, title_size = 1, axis_lwd = 1, font_size = 1.2){
+plotApobecDiff <- function(tnm, maf, pVal = 0.05, title_size = 1, axis_lwd = 1, font_size = 1.2) {
   sub.tbl <- tnm$APOBEC_scores
-  sub.tbl$APOBEC_Enriched = factor(sub.tbl$APOBEC_Enriched, levels = c('yes', 'no')) #Set levels
+  sub.tbl$APOBEC_Enriched <- factor(sub.tbl$APOBEC_Enriched, levels = c("yes", "no")) # Set levels
 
-  if(nrow(sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched][APOBEC_Enriched %in% 'yes']) == 0){
-    stop('None of the samples are enriched for APOBEC. Nothing to plot.')
+  if (nrow(sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched][APOBEC_Enriched %in% "yes"]) == 0) {
+    stop("None of the samples are enriched for APOBEC. Nothing to plot.")
   }
 
-  apobec.samps = as.character(sub.tbl[APOBEC_Enriched %in% 'yes', Tumor_Sample_Barcode])
-  apobec.maf = subsetMaf(maf = maf, tsb = apobec.samps, mafObj = TRUE)
-  apobec.maf.summary = apobec.maf@summary[ID %in% 'total', .(Mean, Median)][,Cohort := 'Enriched']
+  apobec.samps <- as.character(sub.tbl[APOBEC_Enriched %in% "yes", Tumor_Sample_Barcode])
+  apobec.maf <- subsetMaf(maf = maf, tsb = apobec.samps, mafObj = TRUE)
+  apobec.maf.summary <- apobec.maf@summary[ID %in% "total", .(Mean, Median)][, Cohort := "Enriched"]
 
-  nonapobec.samps = as.character(sub.tbl[APOBEC_Enriched %in% 'no', Tumor_Sample_Barcode])
-  nonapobec.maf = subsetMaf(maf = maf, tsb = nonapobec.samps, mafObj = TRUE)
-  nonapobec.maf.summary = nonapobec.maf@summary[ID %in% 'total', .(Mean, Median)][,Cohort := 'nonEnriched']
+  nonapobec.samps <- as.character(sub.tbl[APOBEC_Enriched %in% "no", Tumor_Sample_Barcode])
+  nonapobec.maf <- subsetMaf(maf = maf, tsb = nonapobec.samps, mafObj = TRUE)
+  nonapobec.maf.summary <- nonapobec.maf@summary[ID %in% "total", .(Mean, Median)][, Cohort := "nonEnriched"]
 
-  mc = mafCompare(m1 = apobec.maf, m2 = nonapobec.maf, m1Name = "Enriched", m2Name = "nonEnriched", minMut = 2, useCNV = TRUE)
-  mcr = mc$results
-  mc$SampleSummary = merge(mc$SampleSummary, rbind(apobec.maf.summary, nonapobec.maf.summary))
+  mc <- mafCompare(m1 = apobec.maf, m2 = nonapobec.maf, m1Name = "Enriched", m2Name = "nonEnriched", minMut = 2, useCNV = TRUE)
+  mcr <- mc$results
+  mc$SampleSummary <- merge(mc$SampleSummary, rbind(apobec.maf.summary, nonapobec.maf.summary))
 
-  mcg = mcr[pval < pVal]
-  if(nrow(mcg) == 0){
-    stop('No differetially mutated genes found.')
+  mcg <- mcr[pval < pVal]
+  if (nrow(mcg) == 0) {
+    stop("No differetially mutated genes found.")
   }
 
-  if(nrow(mcg) < 10){
-    mcg = as.character(mcg[, Hugo_Symbol])
-  }else{
-    mcg = as.character(mcg[pval < 0.05, Hugo_Symbol])
+  if (nrow(mcg) < 10) {
+    mcg <- as.character(mcg[, Hugo_Symbol])
+  } else {
+    mcg <- as.character(mcg[pval < 0.05, Hugo_Symbol])
   }
 
-  apobec.mcg.gs = getGeneSummary(x = apobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, MutatedSamples)]
-  colnames(apobec.mcg.gs)[2] = 'Enriched'
-  nonapobec.mcg.gs = getGeneSummary(x = nonapobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, MutatedSamples)]
-  colnames(nonapobec.mcg.gs)[2] = 'nonEnriched'
+  apobec.mcg.gs <- getGeneSummary(x = apobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, MutatedSamples)]
+  colnames(apobec.mcg.gs)[2] <- "Enriched"
+  nonapobec.mcg.gs <- getGeneSummary(x = nonapobec.maf)[Hugo_Symbol %in% mcg, .(Hugo_Symbol, MutatedSamples)]
+  colnames(nonapobec.mcg.gs)[2] <- "nonEnriched"
 
-  mcg.gs = merge(apobec.mcg.gs, nonapobec.mcg.gs, all = TRUE)
-  mcg.gs[is.na(mcg.gs)] = 0
+  mcg.gs <- merge(apobec.mcg.gs, nonapobec.mcg.gs, all = TRUE)
+  mcg.gs[is.na(mcg.gs)] <- 0
 
-  mcg.gs$Enriched = round(mcg.gs$Enriched / mc$SampleSummary[Cohort %in% colnames(mcg.gs)[2], SampleSize], digits = 3)
-  mcg.gs$nonEnriched = round(mcg.gs$nonEnriched / mc$SampleSummary[Cohort %in% colnames(mcg.gs)[3], SampleSize], digits = 3)
+  mcg.gs$Enriched <- round(mcg.gs$Enriched / mc$SampleSummary[Cohort %in% colnames(mcg.gs)[2], SampleSize], digits = 3)
+  mcg.gs$nonEnriched <- round(mcg.gs$nonEnriched / mc$SampleSummary[Cohort %in% colnames(mcg.gs)[3], SampleSize], digits = 3)
 
   data.table::setDF(mcg.gs, rownames = as.character(mcg.gs$Hugo_Symbol))
-  mcg.gs = as.matrix(mcg.gs[,-1])
-  mcg.gs = mcg.gs[mcg,, drop = FALSE]
+  mcg.gs <- as.matrix(mcg.gs[, -1])
+  mcg.gs <- mcg.gs[mcg, , drop = FALSE]
 
-  pieDat = sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched]
-  pieDat[,nonApobec := 1 - V1]
-  colnames(pieDat)[2] = 'Apobec'
-  pieDat = data.table::melt(pieDat, id.vars = 'APOBEC_Enriched', drop = FALSE)
-  pieDat[,title := paste0(variable, ' [', round(value, digits = 3), ']')]
-  #pieDat$title = gsub(pattern = '^Apobec', replacement = 'tCw', x = pieDat$title)
-  #pieDat$title = gsub(pattern = '^nonApobec', replacement = 'non-tCw', x = pieDat$title)
-  pieDat$title = round(pieDat$value, digits = 3)
+  pieDat <- sub.tbl[!is.na(APOBEC_Enriched), mean(fraction_APOBEC_mutations), APOBEC_Enriched]
+  pieDat[, nonApobec := 1 - V1]
+  colnames(pieDat)[2] <- "Apobec"
+  pieDat <- data.table::melt(pieDat, id.vars = "APOBEC_Enriched", drop = FALSE)
+  pieDat[, title := paste0(variable, " [", round(value, digits = 3), "]")]
+  # pieDat$title = gsub(pattern = '^Apobec', replacement = 'tCw', x = pieDat$title)
+  # pieDat$title = gsub(pattern = '^nonApobec', replacement = 'non-tCw', x = pieDat$title)
+  pieDat$title <- round(pieDat$value, digits = 3)
 
-  pieCol  = c("#084594", "#9ECAE1")
+  pieCol <- c("#084594", "#9ECAE1")
 
-  graphics::layout(matrix(c(1,2,3,1,4,4), 2, 3, byrow = TRUE), widths=c(2, 2, 2))
-  par(bty="n", mgp = c(0.5,0.5,0), mar = c(2,3.5,4,0) + 0.1, las=1, tcl=-.25, font.main=4, xpd=NA)
+  graphics::layout(matrix(c(1, 2, 3, 1, 4, 4), 2, 3, byrow = TRUE), widths = c(2, 2, 2))
+  par(bty = "n", mgp = c(0.5, 0.5, 0), mar = c(2, 3.5, 4, 0) + 0.1, las = 1, tcl = -.25, font.main = 4, xpd = NA)
 
-  yp = as.integer(pretty(log10(sub.tbl[,n_mutations])))
+  yp <- as.integer(pretty(log10(sub.tbl[, n_mutations])))
 
-  boxplot(at = 1:2, log10(n_mutations) ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = TRUE, lty=1,
-          outwex=0, staplewex=0, frame.plot = FALSE, col = c('maroon', 'royalblue'), yaxt = 'n',
-          outcol="gray70", outcex = 0.3, outpch  = 16, boxfill = NULL, ylim = range(yp),
-          border = c('maroon', 'royalblue'), lwd = 1.6, ylab = NA, xlab = NA)
+  boxplot(
+    at = 1:2, log10(n_mutations) ~ APOBEC_Enriched, data = sub.tbl, xaxt = "n", boxwex = 0.6, outline = TRUE, lty = 1,
+    outwex = 0, staplewex = 0, frame.plot = FALSE, col = c("maroon", "royalblue"), yaxt = "n",
+    outcol = "gray70", outcex = 0.3, outpch = 16, boxfill = NULL, ylim = range(yp),
+    border = c("maroon", "royalblue"), lwd = 1.6, ylab = NA, xlab = NA
+  )
 
-  title(main = 'Mutation load between APOBEC &\nnon-APOBEC enriched samples', cex.main = title_size)
+  title(main = "Mutation load between APOBEC &\nnon-APOBEC enriched samples", cex.main = title_size)
 
-  axis(side = 1, at = c(1, 2), labels = na.omit(sub.tbl[,.N,APOBEC_Enriched])[,paste0('N=', N)],
-       las = 1, tick = FALSE, font.axis = 1, cex = 2.5, font = 1, cex.axis = font_size, lwd = axis_lwd)
+  axis(
+    side = 1, at = c(1, 2), labels = na.omit(sub.tbl[, .N, APOBEC_Enriched])[, paste0("N=", N)],
+    las = 1, tick = FALSE, font.axis = 1, cex = 2.5, font = 1, cex.axis = font_size, lwd = axis_lwd
+  )
   axis(side = 2, at = , lwd = axis_lwd, las = 1, font = 1, cex.axis = font_size, font.axis = 2)
   mtext(text = "# mutations (log10)", side = 2, las = 3, line = 2.1, cex = 0.8)
 
-  p = wilcox.test(sub.tbl[APOBEC_Enriched %in% 'yes', n_mutations], sub.tbl[APOBEC_Enriched %in% 'no', n_mutations])$p.value
-  if(p < 0.001 ){
-    #lines(x = c(1.3, 1.8), y = rep(yp[length(yp)]-3, 2), lwd = 1.2)
+  p <- wilcox.test(sub.tbl[APOBEC_Enriched %in% "yes", n_mutations], sub.tbl[APOBEC_Enriched %in% "no", n_mutations])$p.value
+  if (p < 0.001) {
+    # lines(x = c(1.3, 1.8), y = rep(yp[length(yp)]-3, 2), lwd = 1.2)
     text(x = 1.55, y = yp[length(yp)], labels = "***", cex = font_size)
-  }else if(p < 0.01){
+  } else if (p < 0.01) {
     text(x = 1.55, y = yp[length(yp)], labels = "**", cex = font_size)
-  }else if(p < 0.05){
+  } else if (p < 0.05) {
     text(x = 1.55, y = yp[length(yp)], labels = "*", cex = font_size)
-  }else{
-    segments(x0 = 1, y0 = yp[length(yp)]-0.1, x1 = 2, y1 = yp[length(yp)]-0.1, col = "black", lty = 1)
-    text(x = 1.55, y = yp[length(yp)], labels = paste0("NS [", round(p, 3),"]"), cex = font_size, font = 3)
+  } else {
+    segments(x0 = 1, y0 = yp[length(yp)] - 0.1, x1 = 2, y1 = yp[length(yp)] - 0.1, col = "black", lty = 1)
+    text(x = 1.55, y = yp[length(yp)], labels = paste0("NS [", round(p, 3), "]"), cex = font_size, font = 3)
   }
 
 
-  par(bty="n", mgp = c(0.5,0.5,0), mar = c(0.5,1.5,3,1) + 0.1, las=1, tcl=-.25, font.main=4, xpd=NA)
-  pie(x = pieDat[APOBEC_Enriched %in% 'yes', value], col = pieCol,
-      border="white", radius = 0.95, cex.main=0.6, cex = font_size, font = 1,
-      labels =  round(pieDat[APOBEC_Enriched %in% 'yes', title], digits = 2), clockwise = TRUE)
-  symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-  title(main = 'tCw load\nAPOBEC samples', cex.main = title_size)
+  par(bty = "n", mgp = c(0.5, 0.5, 0), mar = c(0.5, 1.5, 3, 1) + 0.1, las = 1, tcl = -.25, font.main = 4, xpd = NA)
+  pie(
+    x = pieDat[APOBEC_Enriched %in% "yes", value], col = pieCol,
+    border = "white", radius = 0.95, cex.main = 0.6, cex = font_size, font = 1,
+    labels = round(pieDat[APOBEC_Enriched %in% "yes", title], digits = 2), clockwise = TRUE
+  )
+  symbols(0, 0, circles = .4, inches = FALSE, col = "white", bg = "white", lty = 0, add = TRUE)
+  title(main = "tCw load\nAPOBEC samples", cex.main = title_size)
 
-  pie(x = pieDat[APOBEC_Enriched %in% 'no', value], col = pieCol,
-      border="white",  radius = 0.95, cex.main = 1.33, cex = font_size, font = 1,
-      labels =  round(pieDat[APOBEC_Enriched %in% 'no', title], 2), clockwise = TRUE)
-  symbols(0,0,circles=.4, inches=FALSE, col="white", bg="white", lty=0, add=TRUE)
-  title(main = 'tCw load\nnon-APOBEC samples', cex.main = title_size)
+  pie(
+    x = pieDat[APOBEC_Enriched %in% "no", value], col = pieCol,
+    border = "white", radius = 0.95, cex.main = 1.33, cex = font_size, font = 1,
+    labels = round(pieDat[APOBEC_Enriched %in% "no", title], 2), clockwise = TRUE
+  )
+  symbols(0, 0, circles = .4, inches = FALSE, col = "white", bg = "white", lty = 0, add = TRUE)
+  title(main = "tCw load\nnon-APOBEC samples", cex.main = title_size)
 
-  rownames(mcg.gs) = paste0(rownames(mcg.gs), ifelse(test = mcr[Hugo_Symbol %in% rownames(mcg.gs), pval] < 0.001, yes = '***',
-                                  no = ifelse(test = mcr[Hugo_Symbol %in% rownames(mcg.gs), pval] < 0.01, yes = '**',
-                                              no = ifelse(mcr[Hugo_Symbol %in% rownames(mcg.gs), pval] < 0.05, yes = '*', no = ''))))
+  rownames(mcg.gs) <- paste0(rownames(mcg.gs), ifelse(test = mcr[Hugo_Symbol %in% rownames(mcg.gs), pval] < 0.001, yes = "***",
+    no = ifelse(test = mcr[Hugo_Symbol %in% rownames(mcg.gs), pval] < 0.01, yes = "**",
+      no = ifelse(mcr[Hugo_Symbol %in% rownames(mcg.gs), pval] < 0.05, yes = "*", no = "")
+    )
+  ))
 
-  if(nrow(mcg.gs) > 10){
+  if (nrow(mcg.gs) > 10) {
     message(paste0("Showing top 10 of ", nrow(mcg.gs), " differentially mutated genes"))
-    mcg.gs = mcg.gs[1:10,]
+    mcg.gs <- mcg.gs[1:10, ]
   }
-  par(bty="n", mgp = c(0.5,0.5,0), mar = c(7,3.5,0,0) + 0.1, las=1, tcl=-.25, font.main=4, xpd=NA)
-  barplot(height = t(mcg.gs), beside = TRUE, las =2, ylab = "", border = NA, font.axis = 3,
-          font.lab = 2, col = c('maroon', 'royalblue'),
-          ylim = c(0, yl = max(apply(mcg.gs, 2, max))), yaxt = "n", cex.names = font_size)
-  axis(side = 2, at = seq(0, max(apply(mcg.gs, 2, max)), length.out = 4), lwd = axis_lwd, font.axis = 1, cex = 1.5,
-        labels = paste0(as.integer((seq(0, max(apply(mcg.gs, 2, max)), length.out = 4))*100, digits = 2), '%'), cex.axis = font_size)
+  par(bty = "n", mgp = c(0.5, 0.5, 0), mar = c(7, 3.5, 0, 0) + 0.1, las = 1, tcl = -.25, font.main = 4, xpd = NA)
+  barplot(
+    height = t(mcg.gs), beside = TRUE, las = 2, ylab = "", border = NA, font.axis = 3,
+    font.lab = 2, col = c("maroon", "royalblue"),
+    ylim = c(0, yl = max(apply(mcg.gs, 2, max))), yaxt = "n", cex.names = font_size
+  )
+  axis(
+    side = 2, at = seq(0, max(apply(mcg.gs, 2, max)), length.out = 4), lwd = axis_lwd, font.axis = 1, cex = 1.5,
+    labels = paste0(as.integer((seq(0, max(apply(mcg.gs, 2, max)), length.out = 4)) * 100, digits = 2), "%"), cex.axis = font_size
+  )
 
   return(mc)
 }

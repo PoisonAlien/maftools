@@ -8,24 +8,24 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' write.mafSummary(maf = laml, basename = 'laml')
-#'
+#' write.mafSummary(maf = laml, basename = "laml")
 #' @export
 
-write.mafSummary = function(maf, basename = NULL){
-
-  if(is.null(basename)){
-    stop('Please provide a basename for output file.')
+write.mafSummary <- function(maf, basename = NULL) {
+  if (is.null(basename)) {
+    stop("Please provide a basename for output file.")
   }
 
-  #write gene summary.
-  write.table(x = getGeneSummary(maf), file = paste(basename,'_geneSummary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
-  #write sample summary.
-  write.table(x = getSampleSummary(maf), file = paste(basename,'_sampleSummary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
-  #write summary
-  write.table(x = maf@summary,file = paste(basename,'_summary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
-  #write main maf
-  data.table::fwrite(x = data.table::rbindlist(list(maf@data, maf@maf.silent), use.names = TRUE, fill = TRUE),
-                     file = paste(basename,'_maftools.maf', sep=''), sep='\t',
-                     quote = FALSE, row.names = FALSE)
+  # write gene summary.
+  write.table(x = getGeneSummary(maf), file = paste(basename, "_geneSummary.txt", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE)
+  # write sample summary.
+  write.table(x = getSampleSummary(maf), file = paste(basename, "_sampleSummary.txt", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE)
+  # write summary
+  write.table(x = maf@summary, file = paste(basename, "_summary.txt", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE)
+  # write main maf
+  data.table::fwrite(
+    x = data.table::rbindlist(list(maf@data, maf@maf.silent), use.names = TRUE, fill = TRUE),
+    file = paste(basename, "_maftools.maf", sep = ""), sep = "\t",
+    quote = FALSE, row.names = FALSE
+  )
 }

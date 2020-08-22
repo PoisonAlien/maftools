@@ -17,154 +17,179 @@
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
 #' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
-#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
+#' laml.gistic <- readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
 #' gisticChromPlot(laml.gistic)
 #' @return nothing
 #' @export
 
-gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
-                           color = NULL, ref.build = "hg19", cytobandOffset = 0.01, txtSize = 0.8, cytobandTxtSize = 0.6,
-                           maf = NULL, mutGenes = NULL, y_lims = NULL, mutGenesTxtSize = 0.6) {
+gisticChromPlot <- function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
+                            color = NULL, ref.build = "hg19", cytobandOffset = 0.01, txtSize = 0.8, cytobandTxtSize = 0.6,
+                            maf = NULL, mutGenes = NULL, y_lims = NULL, mutGenesTxtSize = 0.6) {
+  g <- getCytobandSummary(gistic)
+  g <- g[qvalues < fdrCutOff]
+  g[, Chromosome := sapply(strsplit(x = g$Wide_Peak_Limits, split = ":"), "[", 1)]
+  g[, loc := sapply(strsplit(x = g$Wide_Peak_Limits, split = ":"), "[", 2)]
+  g[, Start_Position := sapply(strsplit(x = g$loc, split = "-"), "[", 1)]
+  g[, End_Position := sapply(strsplit(x = g$loc, split = "-"), "[", 2)]
+  g.lin <- transformSegments(segmentedData = g[, .(Chromosome, Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
 
-  g = getCytobandSummary(gistic)
-  g = g[qvalues < fdrCutOff]
-  g[,Chromosome := sapply(strsplit(x = g$Wide_Peak_Limits, split = ':'), '[', 1)]
-  g[,loc := sapply(strsplit(x = g$Wide_Peak_Limits, split = ':'), '[', 2)]
-  g[,Start_Position := sapply(strsplit(x = g$loc, split = '-'), '[', 1)]
-  g[,End_Position := sapply(strsplit(x = g$loc, split = '-'), '[', 2)]
-  g.lin = transformSegments(segmentedData = g[,.(Chromosome, Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
-
-  if(is.null(color)){
-    color = c('Amp' = 'red', 'Del' = 'blue')
+  if (is.null(color)) {
+    color <- c("Amp" = "red", "Del" = "blue")
   }
 
-  gis.scores = transformSegments(segmentedData = gistic@gis.scores, build = ref.build)
-  gis.scores$amp = ifelse(test = gis.scores$Variant_Classification == 'Del', yes = -gis.scores$G_Score, no = gis.scores$G_Score)
-  #gis.scores$ystart = 0
-  gis.scores$ystart = ifelse(test = gis.scores$Variant_Classification == 'Del', yes = -cytobandOffset, no = cytobandOffset)
-  fdrCutOff = -log10(fdrCutOff)
-  gis.scores$Variant_Classification = ifelse(test = as.numeric(gis.scores$fdr) > fdrCutOff, yes = gis.scores$Variant_Classification, no = 'neutral')
-  gis.scores$Variant_Classification = factor(gis.scores$Variant_Classification, levels = c('neutral', 'Amp', 'Del'))
-  #return(gis.scores)
+  gis.scores <- transformSegments(segmentedData = gistic@gis.scores, build = ref.build)
+  gis.scores$amp <- ifelse(test = gis.scores$Variant_Classification == "Del", yes = -gis.scores$G_Score, no = gis.scores$G_Score)
+  # gis.scores$ystart = 0
+  gis.scores$ystart <- ifelse(test = gis.scores$Variant_Classification == "Del", yes = -cytobandOffset, no = cytobandOffset)
+  fdrCutOff <- -log10(fdrCutOff)
+  gis.scores$Variant_Classification <- ifelse(test = as.numeric(gis.scores$fdr) > fdrCutOff, yes = gis.scores$Variant_Classification, no = "neutral")
+  gis.scores$Variant_Classification <- factor(gis.scores$Variant_Classification, levels = c("neutral", "Amp", "Del"))
+  # return(gis.scores)
 
-  if(ref.build == 'hg19'){
-    chr.lens = c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
-                 146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540,
-                 102531392, 90354753, 81195210, 78077248, 59128983, 63025520, 48129895, 51304566,
-                 155270560, 59373566)
-  } else if(ref.build == 'hg18'){
-    chr.lens = c(247249719, 242951149, 199501827, 191273063, 180857866, 170899992,
-                 158821424, 146274826, 140273252, 135374737, 134452384, 132349534,
-                 114142980, 106368585, 100338915, 88827254, 78774742, 76117153,
-                 63811651, 62435964, 46944323, 49691432, 154913754, 57772954)
-  } else if(ref.build == 'hg38'){
-    chr.lens = c(248956422, 242193529, 198295559, 190214555, 181538259, 170805979,
-                 159345973, 145138636, 138394717, 133797422, 135086622, 133275309,
-                 114364328, 107043718, 101991189, 90338345, 83257441, 80373285,
-                 58617616, 64444167, 46709983, 50818468, 156040895, 57227415)
-  }else{
+  if (ref.build == "hg19") {
+    chr.lens <- c(
+      249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
+      146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540,
+      102531392, 90354753, 81195210, 78077248, 59128983, 63025520, 48129895, 51304566,
+      155270560, 59373566
+    )
+  } else if (ref.build == "hg18") {
+    chr.lens <- c(
+      247249719, 242951149, 199501827, 191273063, 180857866, 170899992,
+      158821424, 146274826, 140273252, 135374737, 134452384, 132349534,
+      114142980, 106368585, 100338915, 88827254, 78774742, 76117153,
+      63811651, 62435964, 46944323, 49691432, 154913754, 57772954
+    )
+  } else if (ref.build == "hg38") {
+    chr.lens <- c(
+      248956422, 242193529, 198295559, 190214555, 181538259, 170805979,
+      159345973, 145138636, 138394717, 133797422, 135086622, 133275309,
+      114364328, 107043718, 101991189, 90338345, 83257441, 80373285,
+      58617616, 64444167, 46709983, 50818468, 156040895, 57227415
+    )
+  } else {
     stop("ref.build can only be hg18, hg19 or hg38")
   }
 
-  chr.lens.cumsum = cumsum(chr.lens)
-  nchrs = length(unique(gis.scores$Chromosome))
-  chr.labels= c(1:22, 'X', 'Y')
-  chr.tbl = data.table::data.table(chr = chr.labels, start = c(1, chr.lens.cumsum[1:length(chr.lens.cumsum)-1]), end = chr.lens.cumsum)
-  chr.tbl$color = rep(c('black','white'), length=nrow(chr.tbl))
+  chr.lens.cumsum <- cumsum(chr.lens)
+  nchrs <- length(unique(gis.scores$Chromosome))
+  chr.labels <- c(1:22, "X", "Y")
+  chr.tbl <- data.table::data.table(chr = chr.labels, start = c(1, chr.lens.cumsum[1:length(chr.lens.cumsum) - 1]), end = chr.lens.cumsum)
+  chr.tbl$color <- rep(c("black", "white"), length = nrow(chr.tbl))
 
-  if(is.null(y_lims)){
-    y_lims = pretty(gis.scores[,amp], na.rm = TRUE)
-  }else{
-    y_lims = pretty(y_lims, na.rm = TRUE)
+  if (is.null(y_lims)) {
+    y_lims <- pretty(gis.scores[, amp], na.rm = TRUE)
+  } else {
+    y_lims <- pretty(y_lims, na.rm = TRUE)
   }
 
-  gis.scores$Variant_Classification = factor(x = as.character(gis.scores$Variant_Classification), levels = c("neutral", "Amp", "Del"))
+  gis.scores$Variant_Classification <- factor(x = as.character(gis.scores$Variant_Classification), levels = c("neutral", "Amp", "Del"))
 
-  gis.scores = split(gis.scores, as.factor(gis.scores$Variant_Classification))
+  gis.scores <- split(gis.scores, as.factor(gis.scores$Variant_Classification))
 
-  if(!is.null(maf)){
+  if (!is.null(maf)) {
     layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1, byrow = TRUE), heights = c(5, 1))
   }
 
   par(mar = c(0, 4, 1, 1))
-  plot(NA, NA, xlim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), ylim = range(y_lims),
-       axes = FALSE, xlab = NA, ylab = NA)
+  plot(NA, NA,
+    xlim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), ylim = range(y_lims),
+    axes = FALSE, xlab = NA, ylab = NA
+  )
   abline(v = chr.tbl$end, h = y_lims, lty = 2, col = grDevices::adjustcolor("gray70", 0.25))
   axis(side = 2, at = round(y_lims, 2), las = 2)
   mtext(text = "G-Score", side = 2, line = 2.8, cex = 1.2)
 
-  if(nrow(gis.scores[["neutral"]]) > 0){
-    segments(x0 = gis.scores[["neutral"]]$Start_Position_updated, y0 = 0, x1 = gis.scores[["neutral"]]$End_Position_updated,
-             y1 = gis.scores[["neutral"]]$amp, col = "gray70")
+  if (nrow(gis.scores[["neutral"]]) > 0) {
+    segments(
+      x0 = gis.scores[["neutral"]]$Start_Position_updated, y0 = 0, x1 = gis.scores[["neutral"]]$End_Position_updated,
+      y1 = gis.scores[["neutral"]]$amp, col = "gray70"
+    )
   }
 
-  if(nrow(gis.scores[["Amp"]]) > 0){
-    segments(x0 = gis.scores[["Amp"]]$Start_Position_updated, y0 = 0, x1 = gis.scores[["Amp"]]$End_Position_updated,
-             y1 = gis.scores[["Amp"]]$amp, col = color[1])
+  if (nrow(gis.scores[["Amp"]]) > 0) {
+    segments(
+      x0 = gis.scores[["Amp"]]$Start_Position_updated, y0 = 0, x1 = gis.scores[["Amp"]]$End_Position_updated,
+      y1 = gis.scores[["Amp"]]$amp, col = color[1]
+    )
   }
 
-  if(nrow(gis.scores[["Del"]]) > 0){
-    segments(x0 = gis.scores[["Del"]]$Start_Position_updated, y0 = 0, x1 = gis.scores[["Del"]]$End_Position_updated,
-             y1 = gis.scores[["Del"]]$amp, col = color[2])
+  if (nrow(gis.scores[["Del"]]) > 0) {
+    segments(
+      x0 = gis.scores[["Del"]]$Start_Position_updated, y0 = 0, x1 = gis.scores[["Del"]]$End_Position_updated,
+      y1 = gis.scores[["Del"]]$amp, col = color[2]
+    )
   }
 
-  rect(xleft = chr.tbl$start, ybottom = -cytobandOffset, xright = chr.tbl$end,
-       ytop = cytobandOffset, col = chr.tbl$color)
-  text(y = 0, x = apply(chr.tbl[,2:3], 1, mean), labels = chr.tbl$chr,
-       cex = cytobandTxtSize, col = c('white', 'black'))
-  gis.scores = data.table::rbindlist(l = gis.scores, use.names = TRUE, fill = TRUE)
+  rect(
+    xleft = chr.tbl$start, ybottom = -cytobandOffset, xright = chr.tbl$end,
+    ytop = cytobandOffset, col = chr.tbl$color
+  )
+  text(
+    y = 0, x = apply(chr.tbl[, 2:3], 1, mean), labels = chr.tbl$chr,
+    cex = cytobandTxtSize, col = c("white", "black")
+  )
+  gis.scores <- data.table::rbindlist(l = gis.scores, use.names = TRUE, fill = TRUE)
 
-  if(is.null(markBands)){
-    markBands = g.lin[order(qvalues)][1:5, Cytoband]
+  if (is.null(markBands)) {
+    markBands <- g.lin[order(qvalues)][1:5, Cytoband]
   }
 
-  if(all(length(markBands) == 1 & markBands == 'all')){
-    mb = g.lin
-  }else{
-    mb = g.lin[Cytoband %in% markBands]
+  if (all(length(markBands) == 1 & markBands == "all")) {
+    mb <- g.lin
+  } else {
+    mb <- g.lin[Cytoband %in% markBands]
   }
 
-  if(nrow(mb) == 0){
+  if (nrow(mb) == 0) {
     message("Available cytobands: ")
     print(getCytobandSummary(x = gistic)[qvalues < fdrCutOff])
     stop(paste("Could not find provided cytobands:", paste(markBands, collapse = ", ")))
   }
 
   data.table::setkey(x = gis.scores, Chromosome, Start_Position_updated, End_Position_updated)
-  cyto_peaks_scores = data.table::foverlaps(y = gis.scores[,.(Chromosome, Start_Position_updated, End_Position_updated, amp)],
-                                            x = mb[,.(Chromosome, Start_Position_updated, End_Position_updated, Cytoband)])
-  cyto_peaks_scores = cyto_peaks_scores[order(Cytoband, abs(amp), decreasing = TRUE)][Cytoband %in% mb$Cytoband][!duplicated(Cytoband)]
-  cyto_peaks_scores = cyto_peaks_scores[complete.cases(cyto_peaks_scores)]
+  cyto_peaks_scores <- data.table::foverlaps(
+    y = gis.scores[, .(Chromosome, Start_Position_updated, End_Position_updated, amp)],
+    x = mb[, .(Chromosome, Start_Position_updated, End_Position_updated, Cytoband)]
+  )
+  cyto_peaks_scores <- cyto_peaks_scores[order(Cytoband, abs(amp), decreasing = TRUE)][Cytoband %in% mb$Cytoband][!duplicated(Cytoband)]
+  cyto_peaks_scores <- cyto_peaks_scores[complete.cases(cyto_peaks_scores)]
 
-  text(x = cyto_peaks_scores$Start_Position_updated, y = cyto_peaks_scores$amp,
-       labels = cyto_peaks_scores$Cytoband, font = 3, cex = txtSize)
+  text(
+    x = cyto_peaks_scores$Start_Position_updated, y = cyto_peaks_scores$amp,
+    labels = cyto_peaks_scores$Cytoband, font = 3, cex = txtSize
+  )
 
-  if(!is.null(maf)){
+  if (!is.null(maf)) {
     par(mar = c(0, 4, 0, 1))
-    plot(NA, NA, xlim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), ylim = c(0, 1),
-         axes = FALSE, xlab = NA, ylab = NA)
-    mut_dat = transformSegments(segmentedData = maf@data[,.(Chromosome, Start_Position, End_Position, Hugo_Symbol)], build = ref.build)
-    mut_dat = mut_dat[Hugo_Symbol %in% mutGenes][!duplicated(Hugo_Symbol)]
+    plot(NA, NA,
+      xlim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), ylim = c(0, 1),
+      axes = FALSE, xlab = NA, ylab = NA
+    )
+    mut_dat <- transformSegments(segmentedData = maf@data[, .(Chromosome, Start_Position, End_Position, Hugo_Symbol)], build = ref.build)
+    mut_dat <- mut_dat[Hugo_Symbol %in% mutGenes][!duplicated(Hugo_Symbol)]
 
     data.table::setkey(x = mut_dat, Chromosome, Start_Position, End_Position)
     data.table::setkey(x = gis.scores, Chromosome, Start_Position, End_Position)
-    mut_dat = data.table::foverlaps(y = gis.scores, x = mut_dat, mult = "all")
+    mut_dat <- data.table::foverlaps(y = gis.scores, x = mut_dat, mult = "all")
 
-    mut_dat = mut_dat[order(G_Score, decreasing = TRUE)][Hugo_Symbol %in% mutGenes]
-    if(nrow(mut_dat[order(G_Score, decreasing = TRUE)][duplicated(Hugo_Symbol)]) > 0){
+    mut_dat <- mut_dat[order(G_Score, decreasing = TRUE)][Hugo_Symbol %in% mutGenes]
+    if (nrow(mut_dat[order(G_Score, decreasing = TRUE)][duplicated(Hugo_Symbol)]) > 0) {
       warning("Multiple CNV region overlaps found for follwing genes. Using the most significant entry for highlighting.", immediate. = TRUE)
-      dups = mut_dat[order(G_Score, decreasing = TRUE)][duplicated(Hugo_Symbol)][,.N,Hugo_Symbol][,Hugo_Symbol]
-      print(mut_dat[order(Hugo_Symbol, -G_Score)][Hugo_Symbol %in% dups, .(Hugo_Symbol, Chromosome, Start_Position, End_Position, Variant_Classification, fdr ,G_Score )])
+      dups <- mut_dat[order(G_Score, decreasing = TRUE)][duplicated(Hugo_Symbol)][, .N, Hugo_Symbol][, Hugo_Symbol]
+      print(mut_dat[order(Hugo_Symbol, -G_Score)][Hugo_Symbol %in% dups, .(Hugo_Symbol, Chromosome, Start_Position, End_Position, Variant_Classification, fdr, G_Score)])
     }
-    mut_dat = mut_dat[!duplicated(Hugo_Symbol)]
-    color = c(color, 'neutral' = 'black')
+    mut_dat <- mut_dat[!duplicated(Hugo_Symbol)]
+    color <- c(color, "neutral" = "black")
 
-    if(nrow(mut_dat) == 0){
+    if (nrow(mut_dat) == 0) {
       warning("Could not find mutations")
-    }else{
-      text(x = mut_dat$Start_Position_updated, y = 0, labels = mut_dat$Hugo_Symbol,
-           srt = 90, cex = mutGenesTxtSize, xpd = TRUE, col = color[as.character(mut_dat$Variant_Classification)], font = 3, adj = 0, xpd = TRUE)
+    } else {
+      text(
+        x = mut_dat$Start_Position_updated, y = 0, labels = mut_dat$Hugo_Symbol,
+        srt = 90, cex = mutGenesTxtSize, xpd = TRUE, col = color[as.character(mut_dat$Variant_Classification)], font = 3, adj = 0, xpd = TRUE
+      )
     }
   }
-  #return(mut_dat)
+  # return(mut_dat)
 }

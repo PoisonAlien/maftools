@@ -17,84 +17,83 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, useAll = FALSE)
-#' plotmafSummary(maf = laml, addStat = 'median')
+#' plotmafSummary(maf = laml, addStat = "median")
 #' @return Prints plot.
 #' @import RColorBrewer
 #' @seealso \code{\link{read.maf}} \code{\link{MAF}}
 #' @export
 
-plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE, log_scale = FALSE,
-                          addStat = NULL, showBarcodes = FALSE, fs = 1,
-                          textSize = 0.8, color = NULL, titleSize = c(1, 0.8), titvColor = NULL, top = 10){
-
-
-  addStat.opts = c('mean', 'median')
-  if(!is.null(addStat)){
-    if(length(addStat) > 1){
-      stop('addStat can only be either mean or median.')
+plotmafSummary <- function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE, log_scale = FALSE,
+                           addStat = NULL, showBarcodes = FALSE, fs = 1,
+                           textSize = 0.8, color = NULL, titleSize = c(1, 0.8), titvColor = NULL, top = 10) {
+  addStat.opts <- c("mean", "median")
+  if (!is.null(addStat)) {
+    if (length(addStat) > 1) {
+      stop("addStat can only be either mean or median.")
     }
 
-    if(! addStat %in% addStat.opts){
-      stop('addStat can only be either mean or median.')
+    if (!addStat %in% addStat.opts) {
+      stop("addStat can only be either mean or median.")
     }
   }
 
 
-  if(dashboard){
-    #Plot in dashboard style
-    pie = FALSE
-     dashboard(maf = maf, color = color, rmOutlier = TRUE, log_conv = log_scale,
-                          titv.color = titvColor, fontSize = fs, titleSize = titleSize, sfs = statFontSize,
-                          n = top, donut = pie, rawcount = titvRaw, stat = addStat, barcodes = showBarcodes, barcodeSize = textSize)
-
-  }else{
-
-    if(is.null(color)){
-      #hard coded color scheme if user doesnt provide any
-      col = get_vcColors()
-    }else{
-      col = color
+  if (dashboard) {
+    # Plot in dashboard style
+    pie <- FALSE
+    dashboard(
+      maf = maf, color = color, rmOutlier = TRUE, log_conv = log_scale,
+      titv.color = titvColor, fontSize = fs, titleSize = titleSize, sfs = statFontSize,
+      n = top, donut = pie, rawcount = titvRaw, stat = addStat, barcodes = showBarcodes, barcodeSize = textSize
+    )
+  } else {
+    if (is.null(color)) {
+      # hard coded color scheme if user doesnt provide any
+      col <- get_vcColors()
+    } else {
+      col <- color
     }
 
-    vcs = getSampleSummary(maf)
-    vcs = vcs[,colnames(vcs)[!colnames(x = vcs) %in% c('total', 'Amp', 'Del', 'CNV_total')], with = FALSE]
+    vcs <- getSampleSummary(maf)
+    vcs <- vcs[, colnames(vcs)[!colnames(x = vcs) %in% c("total", "Amp", "Del", "CNV_total")], with = FALSE]
 
-    vcs = vcs[,c(1,order(colSums(x = vcs[,2:(ncol(vcs)), with =FALSE]), decreasing = TRUE)+1), with =FALSE] #order based on most event
-    vcs.m = data.table::melt(data = vcs, id = 'Tumor_Sample_Barcode')
-    colnames(vcs.m) = c('Tumor_Sample_Barcode', 'Variant_Classification', 'N')
+    vcs <- vcs[, c(1, order(colSums(x = vcs[, 2:(ncol(vcs)), with = FALSE]), decreasing = TRUE) + 1), with = FALSE] # order based on most event
+    vcs.m <- data.table::melt(data = vcs, id = "Tumor_Sample_Barcode")
+    colnames(vcs.m) <- c("Tumor_Sample_Barcode", "Variant_Classification", "N")
 
     data.table::setDF(vcs)
-    rownames(x = vcs) = vcs$Tumor_Sample_Barcode
-    vcs = vcs[,-1]
-    vcs = t(vcs)
+    rownames(x = vcs) <- vcs$Tumor_Sample_Barcode
+    vcs <- vcs[, -1]
+    vcs <- t(vcs)
 
     #--------------------------- variant per sample plot -----------------
 
     graphics::layout(mat = matrix(c(1, 1, 2, 2, 3, 3), nrow = 3, byrow = TRUE), heights = c(4, 4, 3))
-    if(showBarcodes){
+    if (showBarcodes) {
       par(mar = c(7, 2, 3, 1))
-      b = barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg =  rep("", ncol(vcs)))
+      b <- barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg = rep("", ncol(vcs)))
       axis(side = 1, at = b, labels = colnames(vcs), font = 2, cex.axis = textSize, las = 2, lwd = 1)
-
-    }else{
+    } else {
       par(mar = c(2, 2, 3, 1))
-      b = barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg =  rep("", ncol(vcs)))
+      b <- barplot(vcs, col = col[rownames(vcs)], border = NA, axes = FALSE, names.arg = rep("", ncol(vcs)))
     }
 
-    axis(side = 2, at = as.integer(seq(0, max(colSums(vcs)), length.out = 4)), lwd = 2, font = 2, las = 2,
-         line = -0.3, hadj = 0.6, cex.axis = fs)
+    axis(
+      side = 2, at = as.integer(seq(0, max(colSums(vcs)), length.out = 4)), lwd = 2, font = 2, las = 2,
+      line = -0.3, hadj = 0.6, cex.axis = fs
+    )
     title(main = "Variants per sample", adj = 0, cex.main = titleSize[1], font = 2, line = 2)
 
-    if(!is.null(addStat)){
-      if(addStat == 'mean'){
-        med.line = round(maf@summary[nrow(maf@summary),Mean], 2)
-        df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Mean: ', med.line, sep='')))
-      }else if(addStat == 'median'){
-        med.line = round(maf@summary[nrow(maf@summary),Median], 2)
-        df = data.frame(y = c(med.line), x = as.integer(0.8*nrow(getSampleSummary(maf))), label = c(paste('Median: ', med.line, sep='')))
+    if (!is.null(addStat)) {
+      if (addStat == "mean") {
+        med.line <- round(maf@summary[nrow(maf@summary), Mean], 2)
+        df <- data.frame(y = c(med.line), x = as.integer(0.8 * nrow(getSampleSummary(maf))), label = c(paste("Mean: ", med.line, sep = "")))
+      } else if (addStat == "median") {
+        med.line <- round(maf@summary[nrow(maf@summary), Median], 2)
+        df <- data.frame(y = c(med.line), x = as.integer(0.8 * nrow(getSampleSummary(maf))), label = c(paste("Median: ", med.line, sep = "")))
       }
-    }else{
-      med.line = round(max(maf@summary[,Median], na.rm = TRUE), 2)
+    } else {
+      med.line <- round(max(maf@summary[, Median], na.rm = TRUE), 2)
     }
 
     title(main = paste0("Median: ", med.line), adj = 0, cex.main = titleSize[2], font = 2, line = 1)
@@ -102,18 +101,24 @@ plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRU
 
     #--------------------------- vc summary plot -----------------
     par(mar = c(2, 2, 2, 1))
-    boxH = vcs.m[,boxplot.stats(N)$stat[5], by = .(Variant_Classification)]
-    colnames(boxH)[ncol(boxH)] = 'boxStat'
-    b = boxplot(N ~ Variant_Classification, data = vcs.m, col = col[levels(vcs.m$Variant_Classification)],
-            axes = FALSE, outline = FALSE, lwd = 1, border = grDevices::adjustcolor(col = "black", alpha.f = 0.6))
-    axis(side = 2, at = as.integer(seq(0, max(boxH[,boxStat], na.rm = TRUE), length.out = 4)),
-         lwd = 2, font = 2, cex.axis = fs, las = 2)
+    boxH <- vcs.m[, boxplot.stats(N)$stat[5], by = .(Variant_Classification)]
+    colnames(boxH)[ncol(boxH)] <- "boxStat"
+    b <- boxplot(N ~ Variant_Classification,
+      data = vcs.m, col = col[levels(vcs.m$Variant_Classification)],
+      axes = FALSE, outline = FALSE, lwd = 1, border = grDevices::adjustcolor(col = "black", alpha.f = 0.6)
+    )
+    axis(
+      side = 2, at = as.integer(seq(0, max(boxH[, boxStat], na.rm = TRUE), length.out = 4)),
+      lwd = 2, font = 2, cex.axis = fs, las = 2
+    )
     title(main = "Variant Classification summary", adj = 0, cex.main = fs, font = 2, line = 1)
 
     plot.new()
     par(mar = c(4, 2.5, 0.5, 2))
-    legend(x = "top", legend = names(col[levels(vcs.m$Variant_Classification)]),
-           fill = col[levels(vcs.m$Variant_Classification)],
-           bty = "n", ncol = 3, cex = fs)
+    legend(
+      x = "top", legend = names(col[levels(vcs.m$Variant_Classification)]),
+      fill = col[levels(vcs.m$Variant_Classification)],
+      bty = "n", ncol = 3, cex = fs
+    )
   }
 }

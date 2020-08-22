@@ -30,32 +30,33 @@
 #' \dontrun{
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19',
-#' prefix = 'chr', add = TRUE, useSyn = TRUE)
+#' laml.tnm <- trinucleotideMatrix(
+#'   maf = laml, ref_genome = "BSgenome.Hsapiens.UCSC.hg19",
+#'   prefix = "chr", add = TRUE, useSyn = TRUE
+#' )
 #' }
 #' @seealso \code{\link{extractSignatures}} \code{\link{plotApobecDiff}}
 #' @export
-trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
-                        add = TRUE, ignoreChr = NULL, useSyn = TRUE, fn = NULL){
-
-  hsgs.installed = BSgenome::installed.genomes(splitNameParts = TRUE)
+trinucleotideMatrix <- function(maf, ref_genome = NULL, prefix = NULL,
+                                add = TRUE, ignoreChr = NULL, useSyn = TRUE, fn = NULL) {
+  hsgs.installed <- BSgenome::installed.genomes(splitNameParts = TRUE)
   data.table::setDT(x = hsgs.installed)
-  #hsgs.installed = hsgs.installed[organism %in% "Hsapiens"]
+  # hsgs.installed = hsgs.installed[organism %in% "Hsapiens"]
 
-  if(is.null(ref_genome)){
-    if(nrow(hsgs.installed) == 0){
+  if (is.null(ref_genome)) {
+    if (nrow(hsgs.installed) == 0) {
       stop("Could not find any installed BSgenomes.\nUse BSgenome::available.genomes() for options.")
-    }else{
+    } else {
       cat("-Found following BSgenome installtions. Using first entry\n")
       print(hsgs.installed)
-      ref_genome = hsgs.installed[,pkgname][1]
+      ref_genome <- hsgs.installed[, pkgname][1]
     }
-  }else{
-    if(nrow(hsgs.installed[pkgname %in% ref_genome]) == 0){
+  } else {
+    if (nrow(hsgs.installed[pkgname %in% ref_genome]) == 0) {
       cat(paste0("-Could not find BSgenome "), ref_genome, "\n")
-      if(nrow(hsgs.installed) == 0){
+      if (nrow(hsgs.installed) == 0) {
         stop("Could not find any installed BSgenomes either.\nUse BSgenome::available.genomes() for options.")
-      }else{
+      } else {
         cat("-Found following BSgenome installtions. Correct ref_genome argument if necessary\n")
         print(hsgs.installed)
         stop()
@@ -63,243 +64,253 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
     }
   }
 
-  ref_genome = BSgenome::getBSgenome(genome = ref_genome)
-  query = subsetMaf(maf = maf, query = "Variant_Type %in% 'SNP'", fields = "Chromosome", includeSyn = useSyn, mafObj = FALSE)
+  ref_genome <- BSgenome::getBSgenome(genome = ref_genome)
+  query <- subsetMaf(maf = maf, query = "Variant_Type %in% 'SNP'", fields = "Chromosome", includeSyn = useSyn, mafObj = FALSE)
 
-  #Remove unwanted contigs
-  if(!is.null(ignoreChr)){
-    query = query[!Chromosome %in% ignoreChr]
+  # Remove unwanted contigs
+  if (!is.null(ignoreChr)) {
+    query <- query[!Chromosome %in% ignoreChr]
   }
 
-  if(nrow(query) == 0){
-    stop('Zero SNPs to analyze!')
+  if (nrow(query) == 0) {
+    stop("Zero SNPs to analyze!")
   }
 
-  if(!is.null(prefix)){
-    if(add){
-      query$Chromosome = paste(prefix, query$Chromosome, sep = '')
-    }else{
-      query$Chromosome = gsub(pattern = prefix, replacement = '', x = query$Chromosome, fixed = TRUE)
+  if (!is.null(prefix)) {
+    if (add) {
+      query$Chromosome <- paste(prefix, query$Chromosome, sep = "")
+    } else {
+      query$Chromosome <- gsub(pattern = prefix, replacement = "", x = query$Chromosome, fixed = TRUE)
     }
   }
 
   query[, Start_Position := as.numeric(as.character(Start_Position))]
   query[, End_Position := as.numeric(as.character(End_Position))]
 
-  query_seq_lvls = query[,.N,Chromosome]
-  ref_seqs_lvls = BSgenome::seqnames(x = ref_genome)
-  query_seq_lvls_missing = query_seq_lvls[!Chromosome %in% ref_seqs_lvls]
+  query_seq_lvls <- query[, .N, Chromosome]
+  ref_seqs_lvls <- BSgenome::seqnames(x = ref_genome)
+  query_seq_lvls_missing <- query_seq_lvls[!Chromosome %in% ref_seqs_lvls]
 
-  if(nrow(query_seq_lvls_missing)  > 0){
-    warning(paste0("Chromosome names in MAF must match chromosome names in reference genome.\nIgnorinig ", query_seq_lvls_missing[,sum(N)] ," single nucleotide variants from missing chromosomes ", paste(query_seq_lvls_missing[,Chromosome], collapse = ', ')), immediate. = TRUE)
+  if (nrow(query_seq_lvls_missing) > 0) {
+    warning(paste0("Chromosome names in MAF must match chromosome names in reference genome.\nIgnorinig ", query_seq_lvls_missing[, sum(N)], " single nucleotide variants from missing chromosomes ", paste(query_seq_lvls_missing[, Chromosome], collapse = ", ")), immediate. = TRUE)
   }
 
-  query = query[!Chromosome %in% query_seq_lvls_missing[,Chromosome]]
+  query <- query[!Chromosome %in% query_seq_lvls_missing[, Chromosome]]
 
-  if(nrow(query) == 0){
-    stop('Zero SNPs to analyze! Maybe add or remove prefix?')
+  if (nrow(query) == 0) {
+    stop("Zero SNPs to analyze! Maybe add or remove prefix?")
   }
 
-  #Meaure nucleotide frequency and tcw motifs within 20bp up and down of mutated base;
-  extract.tbl = data.table::data.table(Chromosome = query$Chromosome, Start = query$Start_Position-1, End = query$Start_Position+1,
-                                       Reference_Allele = query$Reference_Allele, Tumor_Seq_Allele2 = query$Tumor_Seq_Allele2,
-                                       Tumor_Sample_Barcode = query$Tumor_Sample_Barcode, upstream = query$Start_Position-20,
-                                       downstream = query$End_Position+20)
+  # Meaure nucleotide frequency and tcw motifs within 20bp up and down of mutated base;
+  extract.tbl <- data.table::data.table(
+    Chromosome = query$Chromosome, Start = query$Start_Position - 1, End = query$Start_Position + 1,
+    Reference_Allele = query$Reference_Allele, Tumor_Seq_Allele2 = query$Tumor_Seq_Allele2,
+    Tumor_Sample_Barcode = query$Tumor_Sample_Barcode, upstream = query$Start_Position - 20,
+    downstream = query$End_Position + 20
+  )
 
   cat("-Extracting 5' and 3' adjacent bases\n")
-  ss = BSgenome::getSeq(x = ref_genome, names = extract.tbl[,Chromosome], start = extract.tbl[,Start] , end = extract.tbl[,End], as.character = TRUE)
+  ss <- BSgenome::getSeq(x = ref_genome, names = extract.tbl[, Chromosome], start = extract.tbl[, Start], end = extract.tbl[, End], as.character = TRUE)
 
-  cat('-Extracting +/- 20bp around mutated bases for background C>T estimation\n')
-  updwn = BSgenome::getSeq(x = ref_genome, names = extract.tbl[,Chromosome], start = extract.tbl[,upstream] ,
-                           end = extract.tbl[,downstream], as.character = FALSE)
-  updwn.alphFreq = data.table::as.data.table(BSgenome::alphabetFrequency(x = updwn))[,.(A, C, G, T)] #Nucleotide frequency
-  updwn.tnmFreq = data.table::as.data.table(Biostrings::trinucleotideFrequency(x = updwn, step = 1))
+  cat("-Extracting +/- 20bp around mutated bases for background C>T estimation\n")
+  updwn <- BSgenome::getSeq(
+    x = ref_genome, names = extract.tbl[, Chromosome], start = extract.tbl[, upstream],
+    end = extract.tbl[, downstream], as.character = FALSE
+  )
+  updwn.alphFreq <- data.table::as.data.table(BSgenome::alphabetFrequency(x = updwn))[, .(A, C, G, T)] # Nucleotide frequency
+  updwn.tnmFreq <- data.table::as.data.table(Biostrings::trinucleotideFrequency(x = updwn, step = 1))
 
-  extract.tbl[,trinucleotide:= as.character(ss)][,updown := as.character(updwn)]
-  extract.tbl = cbind(extract.tbl, updwn.alphFreq[,.(A, T, G, C)])
-  extract.tbl = cbind(extract.tbl, updwn.tnmFreq[,.(TCA, TCT, AGA, TGA)])
-  extract.tbl[, tcw := rowSums(extract.tbl[,.(TCA, TCT)])]
-  extract.tbl[, wga := rowSums(extract.tbl[,.(TGA, AGA)])]
+  extract.tbl[, trinucleotide := as.character(ss)][, updown := as.character(updwn)]
+  extract.tbl <- cbind(extract.tbl, updwn.alphFreq[, .(A, T, G, C)])
+  extract.tbl <- cbind(extract.tbl, updwn.tnmFreq[, .(TCA, TCT, AGA, TGA)])
+  extract.tbl[, tcw := rowSums(extract.tbl[, .(TCA, TCT)])]
+  extract.tbl[, wga := rowSums(extract.tbl[, .(TGA, AGA)])]
 
-  extract.tbl[,Substitution:=paste(extract.tbl$Reference_Allele, extract.tbl$Tumor_Seq_Allele2, sep='>')]
-  extract.tbl$SubstitutionMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$Substitution, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
+  extract.tbl[, Substitution := paste(extract.tbl$Reference_Allele, extract.tbl$Tumor_Seq_Allele2, sep = ">")]
+  extract.tbl$SubstitutionMotif <- paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1), "[", extract.tbl$Substitution, "]", substr(as.character(extract.tbl$trinucleotide), 3, 3), sep = "")
 
-  #substitutions are referred to by the pyrimidine of the mutated Watson-Crick base pair
-  conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
-  names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
+  # substitutions are referred to by the pyrimidine of the mutated Watson-Crick base pair
+  conv <- c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
+  names(conv) <- c("A>G", "T>C", "C>T", "G>A", "A>T", "T>A", "A>C", "T>G", "C>A", "G>T", "C>G", "G>C")
 
-  extract.tbl$SubstitutionType = conv[extract.tbl$Substitution]
-  complement=c("A","C","G","T")
-  names(complement)=c("T","G","C","A")
-  #need to reverse-complement triplet for mutated purines (not just the middle base)
-  complemented.triplets = paste(
+  extract.tbl$SubstitutionType <- conv[extract.tbl$Substitution]
+  complement <- c("A", "C", "G", "T")
+  names(complement) <- c("T", "G", "C", "A")
+  # need to reverse-complement triplet for mutated purines (not just the middle base)
+  complemented.triplets <- paste(
     complement[
-      substr(x = as.character(extract.tbl$trinucleotide), 3, 3)],
-    '[',extract.tbl$SubstitutionType, ']',
+      substr(x = as.character(extract.tbl$trinucleotide), 3, 3)
+    ],
+    "[", extract.tbl$SubstitutionType, "]",
     complement[substr(as.character(extract.tbl$trinucleotide), 1, 1)],
-    sep='')
-  #which ones need to be reverse-complemented
-  swap.ind = which(substr(x=extract.tbl$Substitution,1,1) %in% c("G","A"))
-  swapSubTypeMotif =  extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
-  swapSubTypeMotif[swap.ind] = complemented.triplets[swap.ind]
+    sep = ""
+  )
+  # which ones need to be reverse-complemented
+  swap.ind <- which(substr(x = extract.tbl$Substitution, 1, 1) %in% c("G", "A"))
+  swapSubTypeMotif <- extract.tbl$SubstitutionTypeMotif <- paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1), "[", extract.tbl$SubstitutionType, "]", substr(as.character(extract.tbl$trinucleotide), 3, 3), sep = "")
+  swapSubTypeMotif[swap.ind] <- complemented.triplets[swap.ind]
 
-  extract.tbl$SubstitutionTypeMotif = swapSubTypeMotif
-  #extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
+  extract.tbl$SubstitutionTypeMotif <- swapSubTypeMotif
+  # extract.tbl$SubstitutionTypeMotif = paste(substr(x = as.character(extract.tbl$trinucleotide), 1, 1),'[',extract.tbl$SubstitutionType, ']', substr(as.character(extract.tbl$trinucleotide), 3, 3), sep='')
 
-  #Possible substitutions and and their motifs
-  sub.levels = extract.tbl[,.N,Substitution][,Substitution]
-  sub.motif.levels = c("C[G>A]A", "T[C>G]C", "A[G>A]C", "T[C>T]A", "T[G>C]A", "C[G>A]C",
-                       "A[A>G]C", "T[G>A]G", "G[G>A]A", "G[C>T]G", "T[G>A]A", "T[C>A]T",
-                       "C[C>T]A", "G[G>C]A", "T[C>A]C", "T[C>T]G", "A[G>C]A", "G[C>T]T",
-                       "G[A>G]G", "T[C>T]T", "C[C>T]C", "C[G>A]G", "T[T>A]C", "C[G>A]T",
-                       "C[C>T]G", "A[G>A]A", "T[G>T]G", "A[G>T]A", "C[C>G]T", "A[T>C]A",
-                       "G[G>T]A", "T[C>T]C", "T[C>A]A", "T[C>G]A", "A[T>G]C", "G[G>A]C",
-                       "A[G>T]T", "A[G>A]G", "T[C>G]T", "C[C>A]A", "C[T>G]A", "C[A>G]C",
-                       "C[C>A]C", "T[C>G]G", "A[C>G]G", "C[C>G]C", "T[G>T]T", "T[G>T]C",
-                       "G[G>T]C", "A[T>C]G", "C[T>G]T", "A[C>T]G", "G[T>C]A", "G[A>C]G",
-                       "A[G>C]T", "T[G>C]G", "A[C>G]A", "C[G>C]A", "T[G>C]T", "T[G>A]C",
-                       "A[T>C]C", "T[G>A]T", "A[T>G]T", "C[T>A]T", "A[A>G]T", "A[T>A]G",
-                       "G[G>T]G", "G[G>C]C", "G[C>A]T", "T[G>T]A", "A[C>A]A", "C[C>A]T",
-                       "C[T>C]C", "G[G>A]G", "G[A>C]A", "A[T>C]T", "T[A>T]T", "C[A>T]G",
-                       "A[C>T]C", "T[T>C]C", "G[C>T]C", "A[A>G]A", "A[C>A]T", "G[T>C]C",
-                       "A[G>T]G", "A[T>A]T", "G[G>C]T", "C[G>T]G", "A[C>G]C", "C[G>T]A",
-                       "A[C>T]A", "C[A>T]T", "C[G>T]T", "A[G>T]C", "G[C>T]A", "C[C>A]G",
-                       "G[C>A]A", "G[C>A]G", "G[T>G]C", "G[G>T]T", "G[A>G]C", "T[C>A]G",
-                       "C[C>T]T", "A[G>A]T", "A[A>T]C", "C[T>C]A", "C[C>G]A", "T[T>A]T",
-                       "C[T>C]G", "A[G>C]C", "G[C>G]C", "A[C>T]T", "T[G>C]C", "G[C>G]T",
-                       "G[C>A]C", "C[T>A]C", "C[A>G]T", "A[A>C]T", "G[G>C]G", "A[G>C]G",
-                       "T[T>C]T", "A[A>T]G", "C[G>C]C", "C[T>A]G", "T[T>A]A", "T[A>C]T",
-                       "A[C>A]C", "G[T>C]T", "A[T>A]C", "C[A>C]T", "T[A>C]C", "G[A>T]G",
-                       "T[A>C]A", "G[A>G]T", "G[A>T]T", "C[T>C]T", "G[T>A]T", "G[A>G]A",
-                       "T[T>G]A", "T[T>G]T", "T[A>G]T", "G[A>T]C", "A[A>C]A", "G[G>A]T",
-                       "C[A>C]G", "C[A>G]A", "G[T>G]A", "G[A>T]A", "T[A>C]G", "A[C>G]T",
-                       "G[T>A]A", "T[A>G]C", "C[G>C]G", "T[T>C]G", "T[A>G]G", "A[A>T]T",
-                       "T[T>G]G", "C[A>T]A", "C[A>C]C", "C[G>T]C", "G[T>A]C", "C[A>G]G",
-                       "C[A>C]A", "T[A>T]A", "G[T>C]G", "A[A>C]C", "C[A>T]C", "C[T>G]G",
-                       "A[A>G]G", "G[C>G]A", "A[A>C]G", "T[A>T]G", "C[G>C]T", "T[T>G]C",
-                       "A[T>G]G", "G[T>G]T", "G[T>A]G", "C[C>G]G", "A[C>A]G", "A[A>T]A",
-                       "A[T>G]A", "G[A>C]T", "G[T>G]G", "G[A>C]C", "A[T>A]A", "C[T>G]C",
-                       "T[A>G]A", "G[C>G]G", "T[T>C]A", "C[T>A]A", "T[T>A]G", "T[A>T]C"
+  # Possible substitutions and and their motifs
+  sub.levels <- extract.tbl[, .N, Substitution][, Substitution]
+  sub.motif.levels <- c(
+    "C[G>A]A", "T[C>G]C", "A[G>A]C", "T[C>T]A", "T[G>C]A", "C[G>A]C",
+    "A[A>G]C", "T[G>A]G", "G[G>A]A", "G[C>T]G", "T[G>A]A", "T[C>A]T",
+    "C[C>T]A", "G[G>C]A", "T[C>A]C", "T[C>T]G", "A[G>C]A", "G[C>T]T",
+    "G[A>G]G", "T[C>T]T", "C[C>T]C", "C[G>A]G", "T[T>A]C", "C[G>A]T",
+    "C[C>T]G", "A[G>A]A", "T[G>T]G", "A[G>T]A", "C[C>G]T", "A[T>C]A",
+    "G[G>T]A", "T[C>T]C", "T[C>A]A", "T[C>G]A", "A[T>G]C", "G[G>A]C",
+    "A[G>T]T", "A[G>A]G", "T[C>G]T", "C[C>A]A", "C[T>G]A", "C[A>G]C",
+    "C[C>A]C", "T[C>G]G", "A[C>G]G", "C[C>G]C", "T[G>T]T", "T[G>T]C",
+    "G[G>T]C", "A[T>C]G", "C[T>G]T", "A[C>T]G", "G[T>C]A", "G[A>C]G",
+    "A[G>C]T", "T[G>C]G", "A[C>G]A", "C[G>C]A", "T[G>C]T", "T[G>A]C",
+    "A[T>C]C", "T[G>A]T", "A[T>G]T", "C[T>A]T", "A[A>G]T", "A[T>A]G",
+    "G[G>T]G", "G[G>C]C", "G[C>A]T", "T[G>T]A", "A[C>A]A", "C[C>A]T",
+    "C[T>C]C", "G[G>A]G", "G[A>C]A", "A[T>C]T", "T[A>T]T", "C[A>T]G",
+    "A[C>T]C", "T[T>C]C", "G[C>T]C", "A[A>G]A", "A[C>A]T", "G[T>C]C",
+    "A[G>T]G", "A[T>A]T", "G[G>C]T", "C[G>T]G", "A[C>G]C", "C[G>T]A",
+    "A[C>T]A", "C[A>T]T", "C[G>T]T", "A[G>T]C", "G[C>T]A", "C[C>A]G",
+    "G[C>A]A", "G[C>A]G", "G[T>G]C", "G[G>T]T", "G[A>G]C", "T[C>A]G",
+    "C[C>T]T", "A[G>A]T", "A[A>T]C", "C[T>C]A", "C[C>G]A", "T[T>A]T",
+    "C[T>C]G", "A[G>C]C", "G[C>G]C", "A[C>T]T", "T[G>C]C", "G[C>G]T",
+    "G[C>A]C", "C[T>A]C", "C[A>G]T", "A[A>C]T", "G[G>C]G", "A[G>C]G",
+    "T[T>C]T", "A[A>T]G", "C[G>C]C", "C[T>A]G", "T[T>A]A", "T[A>C]T",
+    "A[C>A]C", "G[T>C]T", "A[T>A]C", "C[A>C]T", "T[A>C]C", "G[A>T]G",
+    "T[A>C]A", "G[A>G]T", "G[A>T]T", "C[T>C]T", "G[T>A]T", "G[A>G]A",
+    "T[T>G]A", "T[T>G]T", "T[A>G]T", "G[A>T]C", "A[A>C]A", "G[G>A]T",
+    "C[A>C]G", "C[A>G]A", "G[T>G]A", "G[A>T]A", "T[A>C]G", "A[C>G]T",
+    "G[T>A]A", "T[A>G]C", "C[G>C]G", "T[T>C]G", "T[A>G]G", "A[A>T]T",
+    "T[T>G]G", "C[A>T]A", "C[A>C]C", "C[G>T]C", "G[T>A]C", "C[A>G]G",
+    "C[A>C]A", "T[A>T]A", "G[T>C]G", "A[A>C]C", "C[A>T]C", "C[T>G]G",
+    "A[A>G]G", "G[C>G]A", "A[A>C]G", "T[A>T]G", "C[G>C]T", "T[T>G]C",
+    "A[T>G]G", "G[T>G]T", "G[T>A]G", "C[C>G]G", "A[C>A]G", "A[A>T]A",
+    "A[T>G]A", "G[A>C]T", "G[T>G]G", "G[A>C]C", "A[T>A]A", "C[T>G]C",
+    "T[A>G]A", "G[C>G]G", "T[T>C]A", "C[T>A]A", "T[T>A]G", "T[A>T]C"
   )
 
-  #Possible substitution types after being referred to by the pyrimidine of the mutated Watson-Crick base pair
-  subtype.levels = c("A[C>A]A", "A[C>A]C", "A[C>A]G", "A[C>A]T", "C[C>A]A", "C[C>A]C",
-                     "C[C>A]G", "C[C>A]T", "G[C>A]A", "G[C>A]C", "G[C>A]G", "G[C>A]T",
-                     "T[C>A]A", "T[C>A]C", "T[C>A]G", "T[C>A]T", "A[C>G]A", "A[C>G]C",
-                     "A[C>G]G", "A[C>G]T", "C[C>G]A", "C[C>G]C", "C[C>G]G", "C[C>G]T",
-                     "G[C>G]A", "G[C>G]C", "G[C>G]G", "G[C>G]T", "T[C>G]A", "T[C>G]C",
-                     "T[C>G]G", "T[C>G]T", "A[C>T]A", "A[C>T]C", "A[C>T]G", "A[C>T]T",
-                     "C[C>T]A", "C[C>T]C", "C[C>T]G", "C[C>T]T", "G[C>T]A", "G[C>T]C",
-                     "G[C>T]G", "G[C>T]T", "T[C>T]A", "T[C>T]C", "T[C>T]G", "T[C>T]T",
-                     "A[T>A]A", "A[T>A]C", "A[T>A]G", "A[T>A]T", "C[T>A]A", "C[T>A]C",
-                     "C[T>A]G", "C[T>A]T", "G[T>A]A", "G[T>A]C", "G[T>A]G", "G[T>A]T",
-                     "T[T>A]A", "T[T>A]C", "T[T>A]G", "T[T>A]T", "A[T>C]A", "A[T>C]C",
-                     "A[T>C]G", "A[T>C]T", "C[T>C]A", "C[T>C]C", "C[T>C]G", "C[T>C]T",
-                     "G[T>C]A", "G[T>C]C", "G[T>C]G", "G[T>C]T", "T[T>C]A", "T[T>C]C",
-                     "T[T>C]G", "T[T>C]T", "A[T>G]A", "A[T>G]C", "A[T>G]G", "A[T>G]T",
-                     "C[T>G]A", "C[T>G]C", "C[T>G]G", "C[T>G]T", "G[T>G]A", "G[T>G]C",
-                     "G[T>G]G", "G[T>G]T", "T[T>G]A", "T[T>G]C", "T[T>G]G", "T[T>G]T"
+  # Possible substitution types after being referred to by the pyrimidine of the mutated Watson-Crick base pair
+  subtype.levels <- c(
+    "A[C>A]A", "A[C>A]C", "A[C>A]G", "A[C>A]T", "C[C>A]A", "C[C>A]C",
+    "C[C>A]G", "C[C>A]T", "G[C>A]A", "G[C>A]C", "G[C>A]G", "G[C>A]T",
+    "T[C>A]A", "T[C>A]C", "T[C>A]G", "T[C>A]T", "A[C>G]A", "A[C>G]C",
+    "A[C>G]G", "A[C>G]T", "C[C>G]A", "C[C>G]C", "C[C>G]G", "C[C>G]T",
+    "G[C>G]A", "G[C>G]C", "G[C>G]G", "G[C>G]T", "T[C>G]A", "T[C>G]C",
+    "T[C>G]G", "T[C>G]T", "A[C>T]A", "A[C>T]C", "A[C>T]G", "A[C>T]T",
+    "C[C>T]A", "C[C>T]C", "C[C>T]G", "C[C>T]T", "G[C>T]A", "G[C>T]C",
+    "G[C>T]G", "G[C>T]T", "T[C>T]A", "T[C>T]C", "T[C>T]G", "T[C>T]T",
+    "A[T>A]A", "A[T>A]C", "A[T>A]G", "A[T>A]T", "C[T>A]A", "C[T>A]C",
+    "C[T>A]G", "C[T>A]T", "G[T>A]A", "G[T>A]C", "G[T>A]G", "G[T>A]T",
+    "T[T>A]A", "T[T>A]C", "T[T>A]G", "T[T>A]T", "A[T>C]A", "A[T>C]C",
+    "A[T>C]G", "A[T>C]T", "C[T>C]A", "C[T>C]C", "C[T>C]G", "C[T>C]T",
+    "G[T>C]A", "G[T>C]C", "G[T>C]G", "G[T>C]T", "T[T>C]A", "T[T>C]C",
+    "T[T>C]G", "T[T>C]T", "A[T>G]A", "A[T>G]C", "A[T>G]G", "A[T>G]T",
+    "C[T>G]A", "C[T>G]C", "C[T>G]G", "C[T>G]T", "G[T>G]A", "G[T>G]C",
+    "G[T>G]G", "G[T>G]T", "T[T>G]A", "T[T>G]C", "T[T>G]G", "T[T>G]T"
   )
 
-  #Set levels for factors
-  extract.tbl$Substitution = factor(x = extract.tbl$Substitution, levels = as.character(names(conv)))
-  extract.tbl$SubstitutionMotif = factor(x = extract.tbl$SubstitutionMotif, levels = sub.motif.levels)
-  extract.tbl$SubstitutionType = factor(x = extract.tbl$SubstitutionType, levels = unique(conv))
-  extract.tbl$SubstitutionTypeMotif = factor(x = extract.tbl$SubstitutionTypeMotif, levels = subtype.levels)
+  # Set levels for factors
+  extract.tbl$Substitution <- factor(x = extract.tbl$Substitution, levels = as.character(names(conv)))
+  extract.tbl$SubstitutionMotif <- factor(x = extract.tbl$SubstitutionMotif, levels = sub.motif.levels)
+  extract.tbl$SubstitutionType <- factor(x = extract.tbl$SubstitutionType, levels = unique(conv))
+  extract.tbl$SubstitutionTypeMotif <- factor(x = extract.tbl$SubstitutionTypeMotif, levels = subtype.levels)
 
-  #Compile data
-  ##This is nucleotide frequcny and motif frequency across 41 bp in C>T and C>G context.
-  apobecSummary = extract.tbl[as.character(SubstitutionType) %in% c("C>T", "C>G") ,.(A = sum(A), T= sum(T), G = sum(G), C = sum(C), tcw = sum(tcw), wga = sum(wga), bases = sum(A,T,G,C)), Tumor_Sample_Barcode]
+  # Compile data
+  ## This is nucleotide frequcny and motif frequency across 41 bp in C>T and C>G context.
+  apobecSummary <- extract.tbl[as.character(SubstitutionType) %in% c("C>T", "C>G"), .(A = sum(A), T = sum(T), G = sum(G), C = sum(C), tcw = sum(tcw), wga = sum(wga), bases = sum(A, T, G, C)), Tumor_Sample_Barcode]
 
-  ##This is per sample conversion events
-  sub.tbl = extract.tbl[,.N,.(Tumor_Sample_Barcode, Substitution)]
-  sub.tbl = data.table::dcast(data = sub.tbl, formula = Tumor_Sample_Barcode ~ Substitution, fill = 0, value.var = 'N', drop = FALSE)
-  sub.tbl[,n_A := rowSums(sub.tbl[,.(`A>C`, `A>G`, `A>T`)], na.rm = TRUE)][,n_T := rowSums(sub.tbl[,.(`T>A`, `T>C`, `T>G`)], na.rm = TRUE)][,n_G := rowSums(sub.tbl[,.(`G>A`, `G>C`, `G>T`)], na.rm = TRUE)][,n_C := rowSums(sub.tbl[,.(`C>A`, `C>G`, `C>T`)], na.rm = TRUE)]
-  sub.tbl[,n_mutations := rowSums(sub.tbl[,.(n_A, n_T, n_G, n_C)], na.rm = TRUE)]
-  sub.tbl[,"n_C>G_and_C>T" := rowSums(sub.tbl[,.(`C>G` + `G>C`, `C>T`, `G>A`)], na.rm = TRUE)] #number of APOBEC type mutations (C>G and C>T type)
+  ## This is per sample conversion events
+  sub.tbl <- extract.tbl[, .N, .(Tumor_Sample_Barcode, Substitution)]
+  sub.tbl <- data.table::dcast(data = sub.tbl, formula = Tumor_Sample_Barcode ~ Substitution, fill = 0, value.var = "N", drop = FALSE)
+  sub.tbl[, n_A := rowSums(sub.tbl[, .(`A>C`, `A>G`, `A>T`)], na.rm = TRUE)][, n_T := rowSums(sub.tbl[, .(`T>A`, `T>C`, `T>G`)], na.rm = TRUE)][, n_G := rowSums(sub.tbl[, .(`G>A`, `G>C`, `G>T`)], na.rm = TRUE)][, n_C := rowSums(sub.tbl[, .(`C>A`, `C>G`, `C>T`)], na.rm = TRUE)]
+  sub.tbl[, n_mutations := rowSums(sub.tbl[, .(n_A, n_T, n_G, n_C)], na.rm = TRUE)]
+  sub.tbl[, "n_C>G_and_C>T" := rowSums(sub.tbl[, .(`C>G` + `G>C`, `C>T`, `G>A`)], na.rm = TRUE)] # number of APOBEC type mutations (C>G and C>T type)
 
 
-  ##This is per substitution type events
-  subType.tbl = extract.tbl[, .N, .(Tumor_Sample_Barcode, SubstitutionMotif)]
-  subType.tbl = data.table::dcast(data = subType.tbl, formula = Tumor_Sample_Barcode ~ SubstitutionMotif, fill = 0, value.var = 'N', drop = FALSE)
+  ## This is per substitution type events
+  subType.tbl <- extract.tbl[, .N, .(Tumor_Sample_Barcode, SubstitutionMotif)]
+  subType.tbl <- data.table::dcast(data = subType.tbl, formula = Tumor_Sample_Barcode ~ SubstitutionMotif, fill = 0, value.var = "N", drop = FALSE)
 
-  ###tCw events
-  subType.tbl[, tCw_to_A := rowSums(subType.tbl[,.(`T[C>A]A`, `T[C>A]T`)], na.rm = TRUE)]
-  subType.tbl[, tCw_to_G := rowSums(subType.tbl[,.(`T[C>G]A`, `T[C>G]T`)], na.rm = TRUE)]
-  subType.tbl[, tCw_to_T := rowSums(subType.tbl[,.(`T[C>T]A`, `T[C>T]T`)], na.rm = TRUE)]
-  subType.tbl[, tCw := rowSums(subType.tbl[,.(tCw_to_A, tCw_to_G, tCw_to_T)], na.rm = TRUE)]
+  ### tCw events
+  subType.tbl[, tCw_to_A := rowSums(subType.tbl[, .(`T[C>A]A`, `T[C>A]T`)], na.rm = TRUE)]
+  subType.tbl[, tCw_to_G := rowSums(subType.tbl[, .(`T[C>G]A`, `T[C>G]T`)], na.rm = TRUE)]
+  subType.tbl[, tCw_to_T := rowSums(subType.tbl[, .(`T[C>T]A`, `T[C>T]T`)], na.rm = TRUE)]
+  subType.tbl[, tCw := rowSums(subType.tbl[, .(tCw_to_A, tCw_to_G, tCw_to_T)], na.rm = TRUE)]
 
-  ###wGa events
-  subType.tbl[, wGa_to_C := rowSums(subType.tbl[,.(`A[G>C]A`, `T[G>C]A`)], na.rm = TRUE)]
-  subType.tbl[, wGa_to_T := rowSums(subType.tbl[,.(`A[G>T]A`, `T[G>T]A`)], na.rm = TRUE)]
-  subType.tbl[, wGa_to_A := rowSums(subType.tbl[,.(`A[G>A]A`, `T[G>A]A`)], na.rm = TRUE)]
-  subType.tbl[, wGa := rowSums(subType.tbl[,.(wGa_to_C, wGa_to_T, wGa_to_A)], na.rm = TRUE)]
+  ### wGa events
+  subType.tbl[, wGa_to_C := rowSums(subType.tbl[, .(`A[G>C]A`, `T[G>C]A`)], na.rm = TRUE)]
+  subType.tbl[, wGa_to_T := rowSums(subType.tbl[, .(`A[G>T]A`, `T[G>T]A`)], na.rm = TRUE)]
+  subType.tbl[, wGa_to_A := rowSums(subType.tbl[, .(`A[G>A]A`, `T[G>A]A`)], na.rm = TRUE)]
+  subType.tbl[, wGa := rowSums(subType.tbl[, .(wGa_to_C, wGa_to_T, wGa_to_A)], na.rm = TRUE)]
 
-  ##tCw_to_G+tCw_to_T
-  subType.tbl[, "tCw_to_G+tCw_to_T" := rowSums(subType.tbl[,.(`T[C>G]T`, `T[C>G]A`, `T[C>T]T`, `T[C>T]A`, `T[G>C]A`, `A[G>C]A`, `T[G>A]A`, `A[G>A]A`)], na.rm = TRUE)]
+  ## tCw_to_G+tCw_to_T
+  subType.tbl[, "tCw_to_G+tCw_to_T" := rowSums(subType.tbl[, .(`T[C>G]T`, `T[C>G]A`, `T[C>T]T`, `T[C>T]A`, `T[G>C]A`, `A[G>C]A`, `T[G>A]A`, `A[G>A]A`)], na.rm = TRUE)]
 
-  ###Merge data
-  sub.tbl = merge(sub.tbl, subType.tbl[,.(tCw_to_A, tCw_to_T, tCw_to_G, tCw, wGa_to_C, wGa_to_T, wGa_to_A, wGa, `tCw_to_G+tCw_to_T`, Tumor_Sample_Barcode)], by = 'Tumor_Sample_Barcode')
-  sub.tbl = merge(sub.tbl, apobecSummary, by = 'Tumor_Sample_Barcode')
+  ### Merge data
+  sub.tbl <- merge(sub.tbl, subType.tbl[, .(tCw_to_A, tCw_to_T, tCw_to_G, tCw, wGa_to_C, wGa_to_T, wGa_to_A, wGa, `tCw_to_G+tCw_to_T`, Tumor_Sample_Barcode)], by = "Tumor_Sample_Barcode")
+  sub.tbl <- merge(sub.tbl, apobecSummary, by = "Tumor_Sample_Barcode")
 
-  ###Estimate APOBEC enrichment
-  sub.tbl[,APOBEC_Enrichment := (`tCw_to_G+tCw_to_T`/`n_C>G_and_C>T`)/((tcw+wga)/(C+G))]
-  sub.tbl[,non_APOBEC_mutations := n_mutations - `tCw_to_G+tCw_to_T`]
-  sub.tbl[,fraction_APOBEC_mutations := round((n_mutations-non_APOBEC_mutations)/n_mutations, digits = 3)]
+  ### Estimate APOBEC enrichment
+  sub.tbl[, APOBEC_Enrichment := (`tCw_to_G+tCw_to_T` / `n_C>G_and_C>T`) / ((tcw + wga) / (C + G))]
+  sub.tbl[, non_APOBEC_mutations := n_mutations - `tCw_to_G+tCw_to_T`]
+  sub.tbl[, fraction_APOBEC_mutations := round((n_mutations - non_APOBEC_mutations) / n_mutations, digits = 3)]
   data.table::setDF(sub.tbl)
 
   cat("-Estimating APOBEC enrichment scores\n")
-  apobec.fisher.dat = sub.tbl[,c(19, 28, 32, 33, 34)]
-  if(nrow(apobec.fisher.dat) == 1){
-    apobec.fisher.dat = t(as.matrix(apply(X = apobec.fisher.dat, 2, as.numeric)))
-  }else{
-    apobec.fisher.dat = apply(X = apobec.fisher.dat, 2, as.numeric)
+  apobec.fisher.dat <- sub.tbl[, c(19, 28, 32, 33, 34)]
+  if (nrow(apobec.fisher.dat) == 1) {
+    apobec.fisher.dat <- t(as.matrix(apply(X = apobec.fisher.dat, 2, as.numeric)))
+  } else {
+    apobec.fisher.dat <- apply(X = apobec.fisher.dat, 2, as.numeric)
   }
 
-  ###One way Fisher test to estimate over representation og APOBEC associated tcw mutations
+  ### One way Fisher test to estimate over representation og APOBEC associated tcw mutations
   cat("--Performing one-way Fisher's test for APOBEC enrichment\n")
-  sub.tbl = cbind(sub.tbl, data.table::rbindlist(apply(X = apobec.fisher.dat, 1, function(x){
-    xf = fisher.test(matrix(c(x[2], sum(x[3], x[4]), x[1] - x[2], x[3]-x[4]), nrow = 2), alternative = 'g')
+  sub.tbl <- cbind(sub.tbl, data.table::rbindlist(apply(X = apobec.fisher.dat, 1, function(x) {
+    xf <- fisher.test(matrix(c(x[2], sum(x[3], x[4]), x[1] - x[2], x[3] - x[4]), nrow = 2), alternative = "g")
     data.table::data.table(fisher_pvalue = xf$p.value, or = xf$estimate, ci.up = xf$conf.int[1], ci.low = xf$conf.int[2])
   })))
 
   data.table::setDT(sub.tbl)
-  colnames(sub.tbl)[29:35] = paste0("n_bg_", colnames(sub.tbl)[29:35])
-  sub.tbl = sub.tbl[order(fisher_pvalue)]
+  colnames(sub.tbl)[29:35] <- paste0("n_bg_", colnames(sub.tbl)[29:35])
+  sub.tbl <- sub.tbl[order(fisher_pvalue)]
 
-  ##Choosing APOBEC Enrichment scores > 2 as cutoff
-  sub.tbl$APOBEC_Enriched = ifelse(test = sub.tbl$APOBEC_Enrichment >2, yes = 'yes', no = 'no')
-  sub.tbl[,fdr := p.adjust(fisher_pvalue, method = 'fdr')] #Adjusted p-values
+  ## Choosing APOBEC Enrichment scores > 2 as cutoff
+  sub.tbl$APOBEC_Enriched <- ifelse(test = sub.tbl$APOBEC_Enrichment > 2, yes = "yes", no = "no")
+  sub.tbl[, fdr := p.adjust(fisher_pvalue, method = "fdr")] # Adjusted p-values
 
-  cat(paste0("---APOBEC related mutations are enriched in "), round(nrow(sub.tbl[APOBEC_Enriched %in% 'yes']) / nrow(sub.tbl) * 100, digits = 3), "% of samples (APOBEC enrichment score > 2 ; ",
-          nrow(sub.tbl[APOBEC_Enriched %in% 'yes']), " of " , nrow(sub.tbl), " samples)\n")
+  cat(
+    paste0("---APOBEC related mutations are enriched in "), round(nrow(sub.tbl[APOBEC_Enriched %in% "yes"]) / nrow(sub.tbl) * 100, digits = 3), "% of samples (APOBEC enrichment score > 2 ; ",
+    nrow(sub.tbl[APOBEC_Enriched %in% "yes"]), " of ", nrow(sub.tbl), " samples)\n"
+  )
 
 
   cat("-Creating mutation matrix\n")
-  extract.tbl.summary = extract.tbl[,.N , by = list(Tumor_Sample_Barcode, SubstitutionTypeMotif)]
+  extract.tbl.summary <- extract.tbl[, .N, by = list(Tumor_Sample_Barcode, SubstitutionTypeMotif)]
 
-  conv.mat = as.data.frame(data.table::dcast(extract.tbl.summary, formula = Tumor_Sample_Barcode~SubstitutionTypeMotif, fill = 0, value.var = 'N', drop = FALSE))
-  rownames(conv.mat) = conv.mat[,1]
-  conv.mat = conv.mat[,-1]
+  conv.mat <- as.data.frame(data.table::dcast(extract.tbl.summary, formula = Tumor_Sample_Barcode ~ SubstitutionTypeMotif, fill = 0, value.var = "N", drop = FALSE))
+  rownames(conv.mat) <- conv.mat[, 1]
+  conv.mat <- conv.mat[, -1]
 
-  #conv.mat = t(t(conv.mat)[colOrder,])
-  #Check for missing somatic mutation types (this is possible for cancer types with low mutation rate or for a cohort with lesser samples)
-  colOrder.missing = subtype.levels[!subtype.levels %in% colnames(conv.mat)]
-  #If any missing add them with zero counts
-  if(length(colOrder.missing) > 0){
-    zeroMat = as.data.frame(matrix(data = 0, nrow = nrow(conv.mat), ncol = length(colOrder.missing)))
-    colnames(zeroMat) = colOrder.missing
-    conv.mat = cbind(conv.mat, zeroMat)
+  # conv.mat = t(t(conv.mat)[colOrder,])
+  # Check for missing somatic mutation types (this is possible for cancer types with low mutation rate or for a cohort with lesser samples)
+  colOrder.missing <- subtype.levels[!subtype.levels %in% colnames(conv.mat)]
+  # If any missing add them with zero counts
+  if (length(colOrder.missing) > 0) {
+    zeroMat <- as.data.frame(matrix(data = 0, nrow = nrow(conv.mat), ncol = length(colOrder.missing)))
+    colnames(zeroMat) <- colOrder.missing
+    conv.mat <- cbind(conv.mat, zeroMat)
   }
 
-  conv.mat = as.matrix(conv.mat[,match(subtype.levels, colnames(conv.mat))]) #organize columns according to colOrder
+  conv.mat <- as.matrix(conv.mat[, match(subtype.levels, colnames(conv.mat))]) # organize columns according to colOrder
 
-  #Set NAs to zeros if any (highly unlikely)
-  conv.mat[is.na(conv.mat)] = 0
-  cat(paste('--matrix of dimension ', nrow(conv.mat), 'x', ncol(conv.mat), sep=''))
+  # Set NAs to zeros if any (highly unlikely)
+  conv.mat[is.na(conv.mat)] <- 0
+  cat(paste("--matrix of dimension ", nrow(conv.mat), "x", ncol(conv.mat), sep = ""))
 
-  if(!is.null(fn)){
-    write.table(x = sub.tbl, file = paste0(fn, "_APOBEC_enrichment.tsv"), sep = '\t', quote = FALSE, row.names = FALSE)
+  if (!is.null(fn)) {
+    write.table(x = sub.tbl, file = paste0(fn, "_APOBEC_enrichment.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
   }
 
   return(list(nmf_matrix = conv.mat, APOBEC_scores = sub.tbl))

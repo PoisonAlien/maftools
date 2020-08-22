@@ -33,7 +33,7 @@ setGeneric(name = "getSampleSummary", function(x) standardGeneric("getSampleSumm
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
 #' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
-#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
+#' laml.gistic <- readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
 #' getCytobandSummary(laml.gistic)
 setGeneric(name = "getCytobandSummary", function(x) standardGeneric("getCytobandSummary"))
 
@@ -64,30 +64,29 @@ setGeneric(name = "getClinicalData", function(x) standardGeneric("getClinicalDat
 ## Accessor methods
 #' @rdname getGeneSummary
 #' @aliases getGeneSummary
-setMethod(f = "getGeneSummary",signature = "MAF", function(x) x@gene.summary)
+setMethod(f = "getGeneSummary", signature = "MAF", function(x) x@gene.summary)
 
 ## Accessor methods
 #' @rdname getClinicalData
 #' @aliases getClinicalData
-setMethod(f = "getClinicalData",signature = "MAF", function(x) x@clinical.data)
+setMethod(f = "getClinicalData", signature = "MAF", function(x) x@clinical.data)
 
 #' @rdname getGeneSummary
 #' @aliases getGeneSummary
-setMethod(f = "getGeneSummary",signature = "GISTIC", function(x) x@gene.summary)
+setMethod(f = "getGeneSummary", signature = "GISTIC", function(x) x@gene.summary)
 
 #' @rdname getSampleSummary
 #' @aliases getSampleSummary
-setMethod(f = "getSampleSummary",signature = "MAF", function(x) x@variant.classification.summary)
+setMethod(f = "getSampleSummary", signature = "MAF", function(x) x@variant.classification.summary)
 
 #' @rdname getSampleSummary
 #' @aliases getSampleSummary
-setMethod(f = "getSampleSummary",signature = "GISTIC", function(x) x@cnv.summary)
+setMethod(f = "getSampleSummary", signature = "GISTIC", function(x) x@cnv.summary)
 
 #' @rdname getCytobandSummary
 #' @aliases getCytobandSummary
-setMethod(f = "getCytobandSummary",signature = "GISTIC", function(x) x@cytoband.summary)
+setMethod(f = "getCytobandSummary", signature = "GISTIC", function(x) x@cytoband.summary)
 
 #' @rdname getFields
 #' @aliases getFields
-setMethod(f = "getFields",signature = "MAF", function(x) colnames(x@data))
-
+setMethod(f = "getFields", signature = "MAF", function(x) colnames(x@data))

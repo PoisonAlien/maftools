@@ -21,71 +21,79 @@
 #' @export
 
 
-rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
-                        ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 1.2, pointSize = 0.4){
-
-  if(is.null(tsb)){
-    tsb = as.character(getSampleSummary(maf)[1,Tumor_Sample_Barcode])
+rainfallPlot <- function(maf, tsb = NULL, detectChangePoints = FALSE,
+                         ref.build = "hg19", color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 1.2, pointSize = 0.4) {
+  if (is.null(tsb)) {
+    tsb <- as.character(getSampleSummary(maf)[1, Tumor_Sample_Barcode])
   }
 
   message(paste0("Processing ", tsb, ".."))
 
-  maf.snp = subsetMaf(maf = maf, includeSyn = TRUE, tsb = tsb, fields = 'Hugo_Symbol', query = "Variant_Type == 'SNP'", mafObj = FALSE)
+  maf.snp <- subsetMaf(maf = maf, includeSyn = TRUE, tsb = tsb, fields = "Hugo_Symbol", query = "Variant_Type == 'SNP'", mafObj = FALSE)
 
-  if(nrow(maf.snp) == 0){
-    stop('No more single nucleotide variants left after filtering for SNP in Variant_Type field.')
+  if (nrow(maf.snp) == 0) {
+    stop("No more single nucleotide variants left after filtering for SNP in Variant_Type field.")
   }
 
-  maf.snp = maf.snp[ ,.(Chromosome, Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode, Variant_Type)]
+  maf.snp <- maf.snp[, .(Chromosome, Hugo_Symbol, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Tumor_Sample_Barcode, Variant_Type)]
 
-  maf.snp$con = paste(maf.snp[,Reference_Allele], maf.snp[,Tumor_Seq_Allele2], sep = '>')
+  maf.snp$con <- paste(maf.snp[, Reference_Allele], maf.snp[, Tumor_Seq_Allele2], sep = ">")
 
-  conv = c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
-  names(conv) = c('A>G', 'T>C', 'C>T', 'G>A', 'A>T', 'T>A', 'A>C', 'T>G', 'C>A', 'G>T', 'C>G', 'G>C')
-  maf.snp$con.class = conv[as.character(maf.snp$con)]
+  conv <- c("T>C", "T>C", "C>T", "C>T", "T>A", "T>A", "T>G", "T>G", "C>A", "C>A", "C>G", "C>G")
+  names(conv) <- c("A>G", "T>C", "C>T", "G>A", "A>T", "T>A", "A>C", "T>G", "C>A", "G>T", "C>G", "G>C")
+  maf.snp$con.class <- conv[as.character(maf.snp$con)]
 
-  maf.snp = transformSegments(maf.snp, build = ref.build)
-  maf.snp$diff = suppressWarnings( log10(c(0, diff(maf.snp$Start_Position_updated))+1) )
-  #Remove any NA's if generated
-  maf.snp = maf.snp[complete.cases(diff)]
+  maf.snp <- transformSegments(maf.snp, build = ref.build)
+  maf.snp$diff <- suppressWarnings(log10(c(0, diff(maf.snp$Start_Position_updated)) + 1))
+  # Remove any NA's if generated
+  maf.snp <- maf.snp[complete.cases(diff)]
 
-  if(is.null(color)){
-    #col = RColorBrewer::brewer.pal(n = 6, name = 'Set1')
-    col = get_titvCol()
-    #names(col) = c('C>T', 'C>G', 'C>A', 'T>C', 'T>A', 'T>G')
-  }else{
-    col = color
+  if (is.null(color)) {
+    # col = RColorBrewer::brewer.pal(n = 6, name = 'Set1')
+    col <- get_titvCol()
+    # names(col) = c('C>T', 'C>G', 'C>A', 'T>C', 'T>A', 'T>G')
+  } else {
+    col <- color
   }
 
-  #hg19 chromosome lengths
-  if(ref.build == 'hg19'){
-    chr.lens = c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
-                 146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540,
-                 102531392, 90354753, 81195210, 78077248, 59128983, 63025520, 48129895, 51304566,
-                 155270560, 59373566)
-  } else if(ref.build == 'hg18'){
-    chr.lens = c(247249719, 242951149, 199501827, 191273063, 180857866, 170899992,
-                 158821424, 146274826, 140273252, 135374737, 134452384, 132349534,
-                 114142980, 106368585, 100338915, 88827254, 78774742, 76117153,
-                 63811651, 62435964, 46944323, 49691432, 154913754, 57772954)
-  } else if(ref.build == 'hg38'){
-    chr.lens = c(248956422, 242193529, 198295559, 190214555, 181538259, 170805979,
-                 159345973, 145138636, 138394717, 133797422, 135086622, 133275309,
-                 114364328, 107043718, 101991189, 90338345, 83257441, 80373285,
-                 58617616, 64444167, 46709983, 50818468, 156040895, 57227415)
+  # hg19 chromosome lengths
+  if (ref.build == "hg19") {
+    chr.lens <- c(
+      249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663,
+      146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540,
+      102531392, 90354753, 81195210, 78077248, 59128983, 63025520, 48129895, 51304566,
+      155270560, 59373566
+    )
+  } else if (ref.build == "hg18") {
+    chr.lens <- c(
+      247249719, 242951149, 199501827, 191273063, 180857866, 170899992,
+      158821424, 146274826, 140273252, 135374737, 134452384, 132349534,
+      114142980, 106368585, 100338915, 88827254, 78774742, 76117153,
+      63811651, 62435964, 46944323, 49691432, 154913754, 57772954
+    )
+  } else if (ref.build == "hg38") {
+    chr.lens <- c(
+      248956422, 242193529, 198295559, 190214555, 181538259, 170805979,
+      159345973, 145138636, 138394717, 133797422, 135086622, 133275309,
+      114364328, 107043718, 101991189, 90338345, 83257441, 80373285,
+      58617616, 64444167, 46709983, 50818468, 156040895, 57227415
+    )
   }
 
-  chr.lens.sumsum = cumsum(chr.lens)
+  chr.lens.sumsum <- cumsum(chr.lens)
   ###########
 
-  ylims = round(seq(min(summary(maf.snp[,diff]), na.rm = TRUE),
-                    max(summary(maf.snp[,diff]), na.rm = TRUE), length.out = 4), 2)
-  graphics::layout(mat = matrix(data = c(1, 2), nrow = 2, byrow = T), heights= c(4, 1))
+  ylims <- round(seq(min(summary(maf.snp[, diff]), na.rm = TRUE),
+    max(summary(maf.snp[, diff]), na.rm = TRUE),
+    length.out = 4
+  ), 2)
+  graphics::layout(mat = matrix(data = c(1, 2), nrow = 2, byrow = T), heights = c(4, 1))
   par(mar = c(1, 4, 2, 0))
   plot(NA, NA,
-      axes = FALSE, xlab = NA, ylab = NA,
-       ylim = ylims[c(1, 4)], xlim = c(0, max(chr.lens.sumsum)))
-  segments(x0 = chr.lens.sumsum, y0 = 0, x1 = chr.lens.sumsum, y1 = max(ylims), col = 'black', lwd = 0.25)
+    axes = FALSE, xlab = NA, ylab = NA,
+    ylim = ylims[c(1, 4)], xlim = c(0, max(chr.lens.sumsum))
+  )
+  segments(x0 = chr.lens.sumsum, y0 = 0, x1 = chr.lens.sumsum, y1 = max(ylims), col = "black", lwd = 0.25)
   points(x = maf.snp$Start_Position_updated, y = maf.snp$diff, col = col[maf.snp$con.class], pch = 16, cex = pointSize)
   axis(side = 2, at = ylims, las = 2)
   axis(side = 1, at = chr.lens.sumsum, labels = c(1:22, "X", "Y"), tick = FALSE, line = -1.5, cex.axis = 1)
@@ -93,34 +101,39 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
 
 
   ###########
-  if(detectChangePoints){
-    maf.cpt = detect_kataegis(maf.snp = maf.snp)
-    #return(maf.cpt)
-    if(nrow(maf.cpt) == 0){
-      message('No changepoints detected!')
-    }else{
-      maf.snp[,id := paste0(Chromosome, ':', Start_Position)]
-      maf.snp = maf.snp[!diff %in% 0]
-      maf.snp[,minDiff := min(diff), by = .(Chromosome)]
-      maf.cpt[,id := paste0(Chromosome, ':', Start_Position)]
-      maf.cpt = merge(maf.snp[,.(id, Start_Position_updated, End_Position_updated, minDiff)], maf.cpt[,.(id)])
-      maf.cpt[,pos := (End_Position_updated - Start_Position_updated)/2]
-      arrows(x0 = maf.cpt$Start_Position_updated, y0 = 0, x1 = maf.cpt$Start_Position_updated,
-             y1 = maf.cpt$minDiff - 0.2, lwd = 1.2, length = 0.05)
+  if (detectChangePoints) {
+    maf.cpt <- detect_kataegis(maf.snp = maf.snp)
+    # return(maf.cpt)
+    if (nrow(maf.cpt) == 0) {
+      message("No changepoints detected!")
+    } else {
+      maf.snp[, id := paste0(Chromosome, ":", Start_Position)]
+      maf.snp <- maf.snp[!diff %in% 0]
+      maf.snp[, minDiff := min(diff), by = .(Chromosome)]
+      maf.cpt[, id := paste0(Chromosome, ":", Start_Position)]
+      maf.cpt <- merge(maf.snp[, .(id, Start_Position_updated, End_Position_updated, minDiff)], maf.cpt[, .(id)])
+      maf.cpt[, pos := (End_Position_updated - Start_Position_updated) / 2]
+      arrows(
+        x0 = maf.cpt$Start_Position_updated, y0 = 0, x1 = maf.cpt$Start_Position_updated,
+        y1 = maf.cpt$minDiff - 0.2, lwd = 1.2, length = 0.05
+      )
     }
   }
 
   title(main = tsb, outer = TRUE, line = -1.5, cex.main = fontSize, adj = 0.2)
   par(mar = c(0, 0.5, 0.5, 0), xpd = TRUE)
-  plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
-  lep = legend("topleft", legend = names(col),
-               col = col, border = NA, bty = "n",
-              pch = 19, xpd = TRUE, xjust = 0, yjust = 0, cex = 1, ncol= 4) #ncol= 2
+  plot(NULL, ylab = "", xlab = "", xlim = 0:1, ylim = 0:1, axes = FALSE)
+  lep <- legend("topleft",
+    legend = names(col),
+    col = col, border = NA, bty = "n",
+    pch = 19, xpd = TRUE, xjust = 0, yjust = 0, cex = 1, ncol = 4
+  ) # ncol= 2
 
-  if(savePlot){
-    dev.copy( pdf, file = paste(tsb, 'rainfallPlot.pdf', sep = '_'),
-              height = height, width = width, paper = "special", bg = "white")
+  if (savePlot) {
+    dev.copy(pdf,
+      file = paste(tsb, "rainfallPlot.pdf", sep = "_"),
+      height = height, width = width, paper = "special", bg = "white"
+    )
     dev.off()
   }
-
 }

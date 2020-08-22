@@ -7,17 +7,18 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' mafSummary(maf = laml)
-#'
 #' @seealso \code{\link{getGeneSummary}} \code{\link{getSampleSummary}}
 #' @export
 
-mafSummary = function(maf){
-  x = summarizeMaf(maf = data.table::rbindlist(
-    list(maf@data, maf@maf.silent),
-    use.names = TRUE,
-    fill = TRUE
-  ),
-  chatty = FALSE)[c(
+mafSummary <- function(maf) {
+  x <- summarizeMaf(
+    maf = data.table::rbindlist(
+      list(maf@data, maf@maf.silent),
+      use.names = TRUE,
+      fill = TRUE
+    ),
+    chatty = FALSE
+  )[c(
     "variant.classification.summary",
     "gene.summary",
     "variants.per.sample",

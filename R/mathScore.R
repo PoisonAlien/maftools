@@ -13,64 +13,66 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' laml.math <- math.score(maf = laml, vafCol = 'i_TumorVAF_WU',
-#' sampleName = c('TCGA-AB-3009', 'TCGA-AB-2849', 'TCGA-AB-3002', 'TCGA-AB-2972'))
+#' laml.math <- math.score(
+#'   maf = laml, vafCol = "i_TumorVAF_WU",
+#'   sampleName = c("TCGA-AB-3009", "TCGA-AB-2849", "TCGA-AB-3002", "TCGA-AB-2972")
+#' )
 #' @export
 
 
-math.score = function(maf, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075){
-
-  if(is.null(sampleName)){
-    sampleName = as.character(getSampleSummary(maf)[,Tumor_Sample_Barcode])
+math.score <- function(maf, vafCol = NULL, sampleName = NULL, vafCutOff = 0.075) {
+  if (is.null(sampleName)) {
+    sampleName <- as.character(getSampleSummary(maf)[, Tumor_Sample_Barcode])
   }
 
-  dat = subsetMaf(maf, includeSyn = FALSE, tsb = sampleName, mafObj = FALSE)
+  dat <- subsetMaf(maf, includeSyn = FALSE, tsb = sampleName, mafObj = FALSE)
 
-  if(!'t_vaf' %in% colnames(dat)){
-    if(is.null(vafCol)){
-      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
+  if (!"t_vaf" %in% colnames(dat)) {
+    if (is.null(vafCol)) {
+      if (all(c("t_ref_count", "t_alt_count") %in% colnames(dat))) {
         message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
-        dat[,t_ref_count := as.numeric(as.character(t_ref_count))]
-        dat[,t_alt_count := as.numeric(as.character(t_alt_count))]
-        dat[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
-      }else{
+        dat[, t_ref_count := as.numeric(as.character(t_ref_count))]
+        dat[, t_alt_count := as.numeric(as.character(t_alt_count))]
+        dat[, t_vaf := t_alt_count / (t_ref_count + t_alt_count)]
+      } else {
         print(colnames(maf))
-        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+        stop("t_vaf field is missing. Use vafCol to manually specify vaf column name.")
       }
-    }else{
-      colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
+    } else {
+      colnames(dat)[which(colnames(dat) == vafCol)] <- "t_vaf"
       dat[, t_vaf := as.numeric(as.character(t_vaf))]
     }
   }
 
 
-  if(max(dat[,t_vaf], na.rm = TRUE) > 1){
-    dat[,t_vaf:= as.numeric(as.character(t_vaf))/100]
+  if (max(dat[, t_vaf], na.rm = TRUE) > 1) {
+    dat[, t_vaf := as.numeric(as.character(t_vaf)) / 100]
   }
 
-  dat = dat[!t_vaf < vafCutOff]
-  dat = dat[,.(Tumor_Sample_Barcode, Hugo_Symbol, t_vaf)]
+  dat <- dat[!t_vaf < vafCutOff]
+  dat <- dat[, .(Tumor_Sample_Barcode, Hugo_Symbol, t_vaf)]
 
-  dat.spl = split(dat, as.factor(as.character(dat$Tumor_Sample_Barcode)))
+  dat.spl <- split(dat, as.factor(as.character(dat$Tumor_Sample_Barcode)))
 
-  math.dt = lapply(X = dat.spl, function(pat){
+  math.dt <- lapply(X = dat.spl, function(pat) {
+    vaf <- pat$t_vaf
+    vaf <- vaf[!is.na(vaf)] # remove NA's
 
-    vaf = pat$t_vaf
-    vaf = vaf[!is.na(vaf)] #remove NA's
-
-    if(length(vaf) < 5){
-      message(paste('Not enough mutations in', unique(pat[,Tumor_Sample_Barcode]), '. Skipping..'), sep='')
-    }else{
-      abs.med.dev = abs(vaf - median(vaf)) #absolute deviation from median vaf
-      pat.mad = median(abs.med.dev) * 100
-      pat.math = pat.mad * 1.4826 /median(vaf)
-      d = data.table::data.table(Tumor_Sample_Barcode = as.character(unique(pat[,Tumor_Sample_Barcode])),
-                             MedianAbsoluteDeviation = pat.mad,
-                             MATH = pat.math)
+    if (length(vaf) < 5) {
+      message(paste("Not enough mutations in", unique(pat[, Tumor_Sample_Barcode]), ". Skipping.."), sep = "")
+    } else {
+      abs.med.dev <- abs(vaf - median(vaf)) # absolute deviation from median vaf
+      pat.mad <- median(abs.med.dev) * 100
+      pat.math <- pat.mad * 1.4826 / median(vaf)
+      d <- data.table::data.table(
+        Tumor_Sample_Barcode = as.character(unique(pat[, Tumor_Sample_Barcode])),
+        MedianAbsoluteDeviation = pat.mad,
+        MATH = pat.math
+      )
       return(d)
     }
   })
 
-  math.dt = data.table::rbindlist(math.dt, use.names = TRUE, fill = TRUE)
+  math.dt <- data.table::rbindlist(math.dt, use.names = TRUE, fill = TRUE)
   return(math.dt)
 }

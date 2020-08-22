@@ -10,53 +10,54 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' #get rid of samples of interest
+#' # get rid of samples of interest
 #' filterMaf(maf = laml, tsb = c("TCGA-AB-2830", "TCGA-AB-2804"))
-#' #remove genes of intrest
-#' filterMaf(maf = laml, genes =c("TTN", "AHNAK2"))
+#' # remove genes of intrest
+#' filterMaf(maf = laml, genes = c("TTN", "AHNAK2"))
 #' @export
-filterMaf = function(maf, genes = NULL, tsb = NULL, isTCGA = FALSE){
-
-  if(all(c(is.null(tsb), is.null(genes)))){
+filterMaf <- function(maf, genes = NULL, tsb = NULL, isTCGA = FALSE) {
+  if (all(c(is.null(tsb), is.null(genes)))) {
     stop("Please provide sample names or genes or a query or ranges to subset by.")
   }
 
-  #Synonymous variants
+  # Synonymous variants
   maf.silent <- maf@maf.silent
-  #Main data
+  # Main data
   maf.dat <- maf@data
-  #Annotations
+  # Annotations
   maf.anno <- data.table::copy(x = maf@clinical.data)
-  nrows_nsyn = nrow(maf.dat)
-  nrows_syn = nrow(maf.silent)
+  nrows_nsyn <- nrow(maf.dat)
+  nrows_syn <- nrow(maf.silent)
 
-  #Select
-  if(!is.null(tsb)){
-    #message("-subsetting by tumor sample barcodes..")
-    tsb = as.character(tsb)
-    if(isTCGA){
-      tsb = substr(x = tsb, start = 1, stop = 12)
+  # Select
+  if (!is.null(tsb)) {
+    # message("-subsetting by tumor sample barcodes..")
+    tsb <- as.character(tsb)
+    if (isTCGA) {
+      tsb <- substr(x = tsb, start = 1, stop = 12)
     }
-    maf.dat = maf.dat[!Tumor_Sample_Barcode %in% tsb,]
-    maf.silent = maf.silent[!Tumor_Sample_Barcode %in% tsb,]
-    message("Removed ", (nrows_syn+nrows_nsyn) - (nrow(maf.dat) + nrow(maf.silent)), " variants from ", length(tsb), " samples")
+    maf.dat <- maf.dat[!Tumor_Sample_Barcode %in% tsb, ]
+    maf.silent <- maf.silent[!Tumor_Sample_Barcode %in% tsb, ]
+    message("Removed ", (nrows_syn + nrows_nsyn) - (nrow(maf.dat) + nrow(maf.silent)), " variants from ", length(tsb), " samples")
   }
 
-  if(!is.null(genes)){
-    #message("-subsetting by genes..")
-    genes = as.character(genes)
-    maf.dat = maf.dat[!Hugo_Symbol %in% genes, ]
-    maf.silent = maf.silent[!Hugo_Symbol %in% genes, ]
-    message("Removed ", (nrows_syn+nrows_nsyn) - (nrow(maf.dat) + nrow(maf.silent)), " variants from ", length(genes), " genes")
+  if (!is.null(genes)) {
+    # message("-subsetting by genes..")
+    genes <- as.character(genes)
+    maf.dat <- maf.dat[!Hugo_Symbol %in% genes, ]
+    maf.silent <- maf.silent[!Hugo_Symbol %in% genes, ]
+    message("Removed ", (nrows_syn + nrows_nsyn) - (nrow(maf.dat) + nrow(maf.silent)), " variants from ", length(genes), " genes")
   }
 
-  maf.silent = droplevels.data.frame(maf.silent)
-  maf.dat = droplevels.data.frame(maf.dat)
-  maf.anno = droplevels.data.frame(maf.anno)
+  maf.silent <- droplevels.data.frame(maf.silent)
+  maf.dat <- droplevels.data.frame(maf.dat)
+  maf.anno <- droplevels.data.frame(maf.anno)
 
-  mafSummary = summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)
+  mafSummary <- summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)
 
-  MAF(data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
-          variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
-          summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = droplevels(mafSummary$sample.anno))
+  MAF(
+    data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+    variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
+    summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = droplevels(mafSummary$sample.anno)
+  )
 }

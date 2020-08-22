@@ -19,172 +19,173 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' ##Select all Splice_Site mutations from DNMT3A and NPM1
-#' subsetMaf(maf = laml, genes = c('DNMT3A', 'NPM1'),
-#' query = "Variant_Classification == 'Splice_Site'")
-#' ##Select all variants with VAF above 30%
+#' ## Select all Splice_Site mutations from DNMT3A and NPM1
+#' subsetMaf(
+#'   maf = laml, genes = c("DNMT3A", "NPM1"),
+#'   query = "Variant_Classification == 'Splice_Site'"
+#' )
+#' ## Select all variants with VAF above 30%
 #' subsetMaf(maf = laml, query = "i_TumorVAF_WU > 30")
-#' ##Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933' but only include vaf filed.
-#' subsetMaf(maf = laml, tsb = c('TCGA-AB-3009', 'TCGA-AB-2933'), fields = 'i_TumorVAF_WU')
-#' ##Subset by ranges
-#' ranges = data.frame(chr = c("2", "17"), start = c(25457000, 7571720), end = c(25458000, 7590868))
+#' ## Extract data for samples 'TCGA.AB.3009' and 'TCGA.AB.2933' but only include vaf filed.
+#' subsetMaf(maf = laml, tsb = c("TCGA-AB-3009", "TCGA-AB-2933"), fields = "i_TumorVAF_WU")
+#' ## Subset by ranges
+#' ranges <- data.frame(chr = c("2", "17"), start = c(25457000, 7571720), end = c(25458000, 7590868))
 #' subsetMaf(laml, ranges = ranges)
-#'
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, ranges = NULL, mult = "first", fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
-
-  if(all(c(is.null(tsb), is.null(genes), is.null(query), is.null(ranges), is.null(clinQuery)))){
+subsetMaf <- function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, ranges = NULL, mult = "first", fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = "all") {
+  if (all(c(is.null(tsb), is.null(genes), is.null(query), is.null(ranges), is.null(clinQuery)))) {
     stop("Please provide sample names or genes or a query or ranges to subset by.")
   }
 
-  restrictTo = match.arg(arg = restrictTo, choices = c("all", "cnv", "mutations"), several.ok = FALSE)
+  restrictTo <- match.arg(arg = restrictTo, choices = c("all", "cnv", "mutations"), several.ok = FALSE)
 
-  #Synonymous variants
+  # Synonymous variants
   maf.silent <- maf@maf.silent
-  #Main data
+  # Main data
   maf.dat <- maf@data
-  #Annotations
+  # Annotations
   maf.anno <- data.table::copy(x = maf@clinical.data)
 
-  if(!is.null(clinQuery)){
-    if(!is.null(tsb)){
+  if (!is.null(clinQuery)) {
+    if (!is.null(tsb)) {
       warning("sample names provided to tsb argument will be over written by clinical query", immediate. = TRUE)
     }
     message("-subsetting by clinical data..")
-    maf.anno = maf.anno[eval(parse(text = clinQuery))]
+    maf.anno <- maf.anno[eval(parse(text = clinQuery))]
 
-    tsb = unique(as.character(maf.anno[,Tumor_Sample_Barcode]))
-    if(length(tsb) > 0){
-      message(paste0('--', length(tsb)), " samples meet the clinical query")
-    }else{
-      if(all(c(is.null(query), is.null(genes)))){
+    tsb <- unique(as.character(maf.anno[, Tumor_Sample_Barcode]))
+    if (length(tsb) > 0) {
+      message(paste0("--", length(tsb)), " samples meet the clinical query")
+    } else {
+      if (all(c(is.null(query), is.null(genes)))) {
         stop("--None of the samples meet the clinical query", call. = FALSE)
-      }else{
+      } else {
         message("--None of the samples meet the clinical query")
         maf.anno <- data.table::copy(x = maf@clinical.data)
       }
-      tsb = NULL
+      tsb <- NULL
     }
   }
 
-  if(restrictTo == "cnv"){
-    maf.silent.rest = maf.silent[!Variant_Type %in% 'CNV']
-    maf.silent = maf.silent[Variant_Type %in% 'CNV']
+  if (restrictTo == "cnv") {
+    maf.silent.rest <- maf.silent[!Variant_Type %in% "CNV"]
+    maf.silent <- maf.silent[Variant_Type %in% "CNV"]
 
-    maf.dat.rest = maf.dat[!Variant_Type %in% 'CNV']
-    maf.dat = maf.dat[Variant_Type %in% 'CNV']
-  }else if(restrictTo == "mutations"){
-    maf.silent.rest = maf.silent[Variant_Type %in% 'CNV']
-    maf.silent = maf.silent[!Variant_Type %in% 'CNV']
+    maf.dat.rest <- maf.dat[!Variant_Type %in% "CNV"]
+    maf.dat <- maf.dat[Variant_Type %in% "CNV"]
+  } else if (restrictTo == "mutations") {
+    maf.silent.rest <- maf.silent[Variant_Type %in% "CNV"]
+    maf.silent <- maf.silent[!Variant_Type %in% "CNV"]
 
-    maf.dat.rest = maf.dat[Variant_Type %in% 'CNV']
-    maf.dat = maf.dat[!Variant_Type %in% 'CNV']
+    maf.dat.rest <- maf.dat[Variant_Type %in% "CNV"]
+    maf.dat <- maf.dat[!Variant_Type %in% "CNV"]
   }
 
-  #Select
-  if(!is.null(tsb)){
-    #message("-subsetting by tumor sample barcodes..")
-    tsb = as.character(tsb)
-    if(isTCGA){
-      tsb = substr(x = tsb, start = 1, stop = 12)
+  # Select
+  if (!is.null(tsb)) {
+    # message("-subsetting by tumor sample barcodes..")
+    tsb <- as.character(tsb)
+    if (isTCGA) {
+      tsb <- substr(x = tsb, start = 1, stop = 12)
     }
-    maf.dat = maf.dat[Tumor_Sample_Barcode %in% tsb,]
-    maf.silent = maf.silent[Tumor_Sample_Barcode %in% tsb,]
+    maf.dat <- maf.dat[Tumor_Sample_Barcode %in% tsb, ]
+    maf.silent <- maf.silent[Tumor_Sample_Barcode %in% tsb, ]
   }
 
-  if(!is.null(genes)){
-    #message("-subsetting by genes..")
-    genes = as.character(genes)
-    maf.dat = maf.dat[Hugo_Symbol %in% genes, ]
-    maf.silent = maf.silent[Hugo_Symbol %in% genes, ]
+  if (!is.null(genes)) {
+    # message("-subsetting by genes..")
+    genes <- as.character(genes)
+    maf.dat <- maf.dat[Hugo_Symbol %in% genes, ]
+    maf.silent <- maf.silent[Hugo_Symbol %in% genes, ]
   }
 
-  if(!is.null(query)){
-    #message("-subsetting by query..")
-    maf.dat = maf.dat[eval(parse(text=query))]
-    maf.silent = maf.silent[eval(parse(text=query))]
+  if (!is.null(query)) {
+    # message("-subsetting by query..")
+    maf.dat <- maf.dat[eval(parse(text = query))]
+    maf.silent <- maf.silent[eval(parse(text = query))]
   }
 
-  default.fields = c('Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele2','Variant_Classification', 'Variant_Type', 'Tumor_Sample_Barcode') #necessary fields.
+  default.fields <- c("Hugo_Symbol", "Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2", "Variant_Classification", "Variant_Type", "Tumor_Sample_Barcode") # necessary fields.
 
-  if(!is.null(fields)){
-    default.fields = unique(c(default.fields, fields))
+  if (!is.null(fields)) {
+    default.fields <- unique(c(default.fields, fields))
 
-    if(length(default.fields[!default.fields %in% colnames(maf.dat)]) > 0){
+    if (length(default.fields[!default.fields %in% colnames(maf.dat)]) > 0) {
       message("Missing fields. Ignoring them.. ")
       print(default.fields[!default.fields %in% colnames(maf.dat)])
-      default.fields = default.fields[default.fields %in% colnames(maf.dat)]
+      default.fields <- default.fields[default.fields %in% colnames(maf.dat)]
     }
 
-    maf.dat = maf.dat[,default.fields, with = FALSE]
-    maf.silent = maf.silent[,default.fields, with = FALSE]
+    maf.dat <- maf.dat[, default.fields, with = FALSE]
+    maf.silent <- maf.silent[, default.fields, with = FALSE]
 
-    if(restrictTo != "all"){
-      maf.dat.rest = maf.dat.rest[,default.fields, with = FALSE]
-      maf.silent.rest = maf.silent.rest[,default.fields, with = FALSE]
+    if (restrictTo != "all") {
+      maf.dat.rest <- maf.dat.rest[, default.fields, with = FALSE]
+      maf.silent.rest <- maf.silent.rest[, default.fields, with = FALSE]
     }
   }
 
 
-  if(restrictTo != "all"){
-    maf.dat = rbind(maf.dat, maf.dat.rest, fill = TRUE, use.names = TRUE)
-    maf.silent = rbind(maf.silent, maf.silent.rest, fill = TRUE, use.names = TRUE)
+  if (restrictTo != "all") {
+    maf.dat <- rbind(maf.dat, maf.dat.rest, fill = TRUE, use.names = TRUE)
+    maf.silent <- rbind(maf.silent, maf.silent.rest, fill = TRUE, use.names = TRUE)
   }
 
-  if(!is.null(ranges)){
-    ranges = data.table::copy(x = ranges)
-    colnames(ranges)[1:3] = c("Chromosome", "Start_Position", "End_Position")
-    ranges$Chromosome = as.character(ranges$Chromosome)
-    ranges$Start_Position = as.numeric(as.character(ranges$Start_Position))
-    ranges$End_Position = as.numeric(as.character(ranges$End_Position))
+  if (!is.null(ranges)) {
+    ranges <- data.table::copy(x = ranges)
+    colnames(ranges)[1:3] <- c("Chromosome", "Start_Position", "End_Position")
+    ranges$Chromosome <- as.character(ranges$Chromosome)
+    ranges$Start_Position <- as.numeric(as.character(ranges$Start_Position))
+    ranges$End_Position <- as.numeric(as.character(ranges$End_Position))
 
     data.table::setDT(x = ranges)
     data.table::setkey(x = ranges, Chromosome, Start_Position, End_Position)
 
-    maf.dat$Chromosome = as.character(maf.dat$Chromosome)
-    maf.dat$Start_Position = as.numeric(as.character(maf.dat$Start_Position))
-    maf.dat$End_Position = as.numeric(as.character(maf.dat$End_Position))
+    maf.dat$Chromosome <- as.character(maf.dat$Chromosome)
+    maf.dat$Start_Position <- as.numeric(as.character(maf.dat$Start_Position))
+    maf.dat$End_Position <- as.numeric(as.character(maf.dat$End_Position))
 
-    maf.silent$Chromosome = as.character(maf.silent$Chromosome)
-    maf.silent$Start_Position = as.numeric(as.character(maf.silent$Start_Position))
-    maf.silent$End_Position = as.numeric(as.character(maf.silent$End_Position))
+    maf.silent$Chromosome <- as.character(maf.silent$Chromosome)
+    maf.silent$Start_Position <- as.numeric(as.character(maf.silent$Start_Position))
+    maf.silent$End_Position <- as.numeric(as.character(maf.silent$End_Position))
 
-    maf.dat = data.table::foverlaps(x = maf.dat, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
-    maf.silent = data.table::foverlaps(x = maf.silent, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
-    message(paste0(nrow(maf.dat)+nrow(maf.silent), " variants within provided ranges"))
+    maf.dat <- data.table::foverlaps(x = maf.dat, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
+    maf.silent <- data.table::foverlaps(x = maf.silent, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
+    message(paste0(nrow(maf.dat) + nrow(maf.silent), " variants within provided ranges"))
   }
 
 
-  if(mafObj){
-
-    if(dropLevels){
-      maf.silent = droplevels.data.frame(maf.silent)
-      maf.dat = droplevels.data.frame(maf.dat)
-      maf.anno = droplevels.data.frame(maf.anno)
+  if (mafObj) {
+    if (dropLevels) {
+      maf.silent <- droplevels.data.frame(maf.silent)
+      maf.dat <- droplevels.data.frame(maf.dat)
+      maf.anno <- droplevels.data.frame(maf.anno)
     }
 
-    if(nrow(maf.dat) == 0){
+    if (nrow(maf.dat) == 0) {
       stop("Subsetting has resulted in zero non-synonymous variants!")
     }
 
-    mafSummary = summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)
+    mafSummary <- summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)
 
-    m = MAF(data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
-              variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
-              summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = droplevels(mafSummary$sample.anno))
+    m <- MAF(
+      data = maf.dat, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+      variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
+      summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = droplevels(mafSummary$sample.anno)
+    )
 
     return(m)
-  }else{
-    if(includeSyn){
-      maf.dat = rbind(maf.dat, maf.silent, use.names = TRUE, fill = TRUE)
-      if(dropLevels){
-        maf.dat = droplevels.data.frame(x = maf.dat)
+  } else {
+    if (includeSyn) {
+      maf.dat <- rbind(maf.dat, maf.silent, use.names = TRUE, fill = TRUE)
+      if (dropLevels) {
+        maf.dat <- droplevels.data.frame(x = maf.dat)
       }
       return(maf.dat)
-    }else{
-      if(dropLevels){
-        maf.dat = droplevels.data.frame(x = maf.dat)
+    } else {
+      if (dropLevels) {
+        maf.dat <- droplevels.data.frame(x = maf.dat)
       }
       return(maf.dat)
     }

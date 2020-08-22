@@ -10,55 +10,55 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' ##Generate matrix
+#' ## Generate matrix
 #' mutCountMatrix(maf = laml)
-#' ##Generate count matrix of Splice_Site mutations
-#' mutCountMatrix(maf = laml, countOnly = 'Splice_Site')
+#' ## Generate count matrix of Splice_Site mutations
+#' mutCountMatrix(maf = laml, countOnly = "Splice_Site")
 #' @export
 
-mutCountMatrix = function(maf, includeSyn = FALSE, countOnly = NULL, removeNonMutated = TRUE){
+mutCountMatrix <- function(maf, includeSyn = FALSE, countOnly = NULL, removeNonMutated = TRUE) {
 
-  #Synonymous variants
-  maf.silent = maf@maf.silent
-  #Main data
-  maf.dat = maf@data
+  # Synonymous variants
+  maf.silent <- maf@maf.silent
+  # Main data
+  maf.dat <- maf@data
 
-  if(includeSyn){
-    maf.dat = rbind(maf.dat, maf.silent, fill = TRUE)
+  if (includeSyn) {
+    maf.dat <- rbind(maf.dat, maf.silent, fill = TRUE)
   }
 
-  if(!is.null(countOnly)){
-    maf.dat = maf.dat[Variant_Classification %in% countOnly]
-    if(nrow(maf.dat) == 0){
-      stop(paste0("No mutations available for ", countOnly, collapse = ''))
+  if (!is.null(countOnly)) {
+    maf.dat <- maf.dat[Variant_Classification %in% countOnly]
+    if (nrow(maf.dat) == 0) {
+      stop(paste0("No mutations available for ", countOnly, collapse = ""))
     }
   }
 
-  maf.dat = maf.dat[,.N,.(Hugo_Symbol, Tumor_Sample_Barcode)]
+  maf.dat <- maf.dat[, .N, .(Hugo_Symbol, Tumor_Sample_Barcode)]
 
-  if(!removeNonMutated){
-    maf.dat.mat = data.table::dcast(data = maf.dat, Hugo_Symbol ~ Tumor_Sample_Barcode, fill = 0, value.var = 'N', drop = FALSE)
-  }else{
-    maf.dat.mat = data.table::dcast(data = maf.dat, Hugo_Symbol ~ Tumor_Sample_Barcode, fill = 0, value.var = 'N')
+  if (!removeNonMutated) {
+    maf.dat.mat <- data.table::dcast(data = maf.dat, Hugo_Symbol ~ Tumor_Sample_Barcode, fill = 0, value.var = "N", drop = FALSE)
+  } else {
+    maf.dat.mat <- data.table::dcast(data = maf.dat, Hugo_Symbol ~ Tumor_Sample_Barcode, fill = 0, value.var = "N")
   }
 
 
-  maf.dat.mat$tot = rowSums(maf.dat.mat[,2:ncol(maf.dat.mat)])
-  maf.dat.mat = maf.dat.mat[order(tot, decreasing = TRUE)]
-  maf.dat.mat[,tot := NULL]
+  maf.dat.mat$tot <- rowSums(maf.dat.mat[, 2:ncol(maf.dat.mat)])
+  maf.dat.mat <- maf.dat.mat[order(tot, decreasing = TRUE)]
+  maf.dat.mat[, tot := NULL]
   data.table::setDF(x = maf.dat.mat)
-  rownames(maf.dat.mat) = maf.dat.mat$Hugo_Symbol
-  maf.dat.mat = maf.dat.mat[,-1]
+  rownames(maf.dat.mat) <- maf.dat.mat$Hugo_Symbol
+  maf.dat.mat <- maf.dat.mat[, -1]
 
-  maf.temp.copy = maf.dat.mat #temp copy of original unsorted numeric coded matrix
+  maf.temp.copy <- maf.dat.mat # temp copy of original unsorted numeric coded matrix
 
-  maf.dat.mat[maf.dat.mat != 0] = 1 #replacing all non-zero integers with 1 improves sorting (& grouping)
-  tmaf = t(maf.dat.mat) #transposematrix
-  maf.dat.mat = t(tmaf[do.call(order, c(as.list(as.data.frame(tmaf)), decreasing = TRUE)), ]) #sort
+  maf.dat.mat[maf.dat.mat != 0] <- 1 # replacing all non-zero integers with 1 improves sorting (& grouping)
+  tmaf <- t(maf.dat.mat) # transposematrix
+  maf.dat.mat <- t(tmaf[do.call(order, c(as.list(as.data.frame(tmaf)), decreasing = TRUE)), ]) # sort
 
-  maf.temp.copy = maf.temp.copy[rownames(maf.dat.mat),] #organise original matrix into sorted matrix
-  maf.temp.copy = maf.temp.copy[,colnames(maf.dat.mat)]
-  maf.dat.mat = maf.temp.copy
+  maf.temp.copy <- maf.temp.copy[rownames(maf.dat.mat), ] # organise original matrix into sorted matrix
+  maf.temp.copy <- maf.temp.copy[, colnames(maf.dat.mat)]
+  maf.dat.mat <- maf.temp.copy
 
   return(maf.dat.mat)
 }

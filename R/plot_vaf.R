@@ -19,105 +19,113 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU')
-#'
+#' plotVaf(maf = laml, vafCol = "i_TumorVAF_WU")
 #' @export
 
-plotVaf = function(maf, vafCol = NULL, genes = NULL, top = 10,
-                   orderByMedian = TRUE, keepGeneOrder = FALSE, flip = FALSE, fn = NULL,
-                   gene_fs = 0.8, axis_fs = 0.8, height = 5, width = 5, showN = TRUE, color = NULL){
-
-  if(is.null(genes)){
-    genes = as.character(getGeneSummary(x =maf)[1:top, Hugo_Symbol])
+plotVaf <- function(maf, vafCol = NULL, genes = NULL, top = 10,
+                    orderByMedian = TRUE, keepGeneOrder = FALSE, flip = FALSE, fn = NULL,
+                    gene_fs = 0.8, axis_fs = 0.8, height = 5, width = 5, showN = TRUE, color = NULL) {
+  if (is.null(genes)) {
+    genes <- as.character(getGeneSummary(x = maf)[1:top, Hugo_Symbol])
   }
 
-  dat = subsetMaf(maf = maf, genes = genes, includeSyn = FALSE, mafObj = FALSE)
+  dat <- subsetMaf(maf = maf, genes = genes, includeSyn = FALSE, mafObj = FALSE)
 
-  if(!'t_vaf' %in% colnames(dat)){
-    if(is.null(vafCol)){
-      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat))){
+  if (!"t_vaf" %in% colnames(dat)) {
+    if (is.null(vafCol)) {
+      if (all(c("t_ref_count", "t_alt_count") %in% colnames(dat))) {
         message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
-        dat[,t_vaf := as.numeric(as.character(t_alt_count))/(as.numeric(as.character(t_ref_count)) + as.numeric(as.character(t_alt_count)))]
-      }else{
+        dat[, t_vaf := as.numeric(as.character(t_alt_count)) / (as.numeric(as.character(t_ref_count)) + as.numeric(as.character(t_alt_count)))]
+      } else {
         print(colnames(dat))
-        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+        stop("t_vaf field is missing. Use vafCol to manually specify vaf column name.")
       }
-    }else{
-      colnames(dat)[which(colnames(dat) == vafCol)] = 't_vaf'
+    } else {
+      colnames(dat)[which(colnames(dat) == vafCol)] <- "t_vaf"
     }
   }
 
-  #dat.genes = data.frame(dat[dat$Hugo_Symbol %in% genes])
-  #suppressMessages(datm <- melt(dat.genes[,c('Hugo_Symbol', 't_vaf')]))
-  dat.genes = dat[dat$Hugo_Symbol %in% genes]
-  datm <- data.table::melt(data = dat.genes[,.(Hugo_Symbol, t_vaf)], id.vars = 'Hugo_Symbol', measure.vars = 't_vaf')
-  #remove NA from vcf
-  datm = datm[!is.na(value)]
-  datm[,value := as.numeric(as.character(value))]
-  if(nrow(datm) == 0){
+  # dat.genes = data.frame(dat[dat$Hugo_Symbol %in% genes])
+  # suppressMessages(datm <- melt(dat.genes[,c('Hugo_Symbol', 't_vaf')]))
+  dat.genes <- dat[dat$Hugo_Symbol %in% genes]
+  datm <- data.table::melt(data = dat.genes[, .(Hugo_Symbol, t_vaf)], id.vars = "Hugo_Symbol", measure.vars = "t_vaf")
+  # remove NA from vcf
+  datm <- datm[!is.na(value)]
+  datm[, value := as.numeric(as.character(value))]
+  if (nrow(datm) == 0) {
     stop("Nothing to plot.")
   }
 
-  #maximum vaf
-  if(max(datm$value, na.rm = TRUE) > 1){
-    datm$value = datm$value/100
+  # maximum vaf
+  if (max(datm$value, na.rm = TRUE) > 1) {
+    datm$value <- datm$value / 100
   }
 
-  if(keepGeneOrder){
-    geneOrder = genes
-    datm$Hugo_Symbol = factor(x = datm$Hugo_Symbol, levels = geneOrder)
-  }else if(orderByMedian){
-    geneOrder = datm[,median(value),Hugo_Symbol][order(V1, decreasing = TRUE)][,Hugo_Symbol]
-    datm$Hugo_Symbol = factor(x = datm$Hugo_Symbol, levels = geneOrder)
+  if (keepGeneOrder) {
+    geneOrder <- genes
+    datm$Hugo_Symbol <- factor(x = datm$Hugo_Symbol, levels = geneOrder)
+  } else if (orderByMedian) {
+    geneOrder <- datm[, median(value), Hugo_Symbol][order(V1, decreasing = TRUE)][, Hugo_Symbol]
+    datm$Hugo_Symbol <- factor(x = datm$Hugo_Symbol, levels = geneOrder)
   }
 
-  if(!is.null(color)){
-    bcol = color
-  }else{
-    bcol = c(RColorBrewer::brewer.pal(n = 8, name = "Dark2"),
-             RColorBrewer::brewer.pal(n = 8, name = "Accent"))
-    if(length(genes) > length(bcol)){
-      bcol = sample(x = colors(distinct = TRUE), size = length(genes), replace = FALSE)
+  if (!is.null(color)) {
+    bcol <- color
+  } else {
+    bcol <- c(
+      RColorBrewer::brewer.pal(n = 8, name = "Dark2"),
+      RColorBrewer::brewer.pal(n = 8, name = "Accent")
+    )
+    if (length(genes) > length(bcol)) {
+      bcol <- sample(x = colors(distinct = TRUE), size = length(genes), replace = FALSE)
     }
   }
 
-  if(!is.null(fn)){
+  if (!is.null(fn)) {
     pdf(file = paste0(fn, ".pdf"), width = width, height = height, paper = "special", bg = "white")
   }
 
-  if(flip){
+  if (flip) {
     par(mar = c(3, 4, 2, 2))
-    b = boxplot(value ~ Hugo_Symbol, data = datm, xaxt="n", boxwex=0.5, outline=FALSE, lty=1, lwd = 1.4, outwex=0,
-                staplewex=0, ylim = c(0, 1), axes = FALSE, border = bcol, horizontal = TRUE, ylab = NA)
-    axis(side = 1, at = seq(0, 1, 0.2), las = 1, font =1, lwd = 1.5, cex.axis = axis_fs)
+    b <- boxplot(value ~ Hugo_Symbol,
+      data = datm, xaxt = "n", boxwex = 0.5, outline = FALSE, lty = 1, lwd = 1.4, outwex = 0,
+      staplewex = 0, ylim = c(0, 1), axes = FALSE, border = bcol, horizontal = TRUE, ylab = NA
+    )
+    axis(side = 1, at = seq(0, 1, 0.2), las = 1, font = 1, lwd = 1.5, cex.axis = axis_fs)
     axis(side = 2, at = 1:length(b$names), labels = b$names, tick = FALSE, las = 2, font = 3, line = -1, cex.axis = gene_fs)
-    if(showN){
-      axis(side = 4, at = 1:length(b$names), labels = b$n, font =1, tick = FALSE, line = -1, las = 2, cex.axis = gene_fs)
+    if (showN) {
+      axis(side = 4, at = 1:length(b$names), labels = b$n, font = 1, tick = FALSE, line = -1, las = 2, cex.axis = gene_fs)
     }
     abline(v = seq(0, 1, 0.2), h = 1:length(b$names), col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.25), lty = 2)
 
 
-    stripchart(value ~ Hugo_Symbol, vertical = FALSE, data = datm,
-               method = "jitter", add = TRUE, pch = 16, col = bcol, cex = 0.5)
-
-  }else{
+    stripchart(value ~ Hugo_Symbol,
+      vertical = FALSE, data = datm,
+      method = "jitter", add = TRUE, pch = 16, col = bcol, cex = 0.5
+    )
+  } else {
     par(mar = c(4, 3, 2, 1))
-    b = boxplot(value ~ Hugo_Symbol, data = datm, xaxt="n", boxwex=0.5, outline=FALSE, lty=1, lwd = 1.4, outwex=0,
-                staplewex=0, ylim = c(0, 1), axes = FALSE, border = bcol, xlab = NA)
+    b <- boxplot(value ~ Hugo_Symbol,
+      data = datm, xaxt = "n", boxwex = 0.5, outline = FALSE, lty = 1, lwd = 1.4, outwex = 0,
+      staplewex = 0, ylim = c(0, 1), axes = FALSE, border = bcol, xlab = NA
+    )
     axis(side = 1, at = 1:length(b$names), labels = b$names, tick = FALSE, las = 2, font = 3, line = -1, cex.axis = gene_fs)
-    axis(side = 2, at = seq(0, 1, 0.2), las = 2, cex.axis = axis_fs, lwd = 1.2, font.axis = 2, cex = 1.5, font =1)
-    if(showN){
-      axis(side = 3, at = 1:length(b$names), labels = b$n, font =1, tick = FALSE,
-           line = -1, cex.axis = gene_fs)
+    axis(side = 2, at = seq(0, 1, 0.2), las = 2, cex.axis = axis_fs, lwd = 1.2, font.axis = 2, cex = 1.5, font = 1)
+    if (showN) {
+      axis(
+        side = 3, at = 1:length(b$names), labels = b$n, font = 1, tick = FALSE,
+        line = -1, cex.axis = gene_fs
+      )
     }
     abline(h = seq(0, 1, 0.2), v = 1:length(b$names), col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lty = 2)
 
-    stripchart(value ~ Hugo_Symbol, vertical = TRUE, data = datm,
-               method = "jitter", add = TRUE, pch = 16, col = bcol, cex = 0.5)
-
+    stripchart(value ~ Hugo_Symbol,
+      vertical = TRUE, data = datm,
+      method = "jitter", add = TRUE, pch = 16, col = bcol, cex = 0.5
+    )
   }
 
-  if(!is.null(fn)){
+  if (!is.null(fn)) {
     dev.off()
   }
 }

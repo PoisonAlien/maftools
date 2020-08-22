@@ -11,100 +11,107 @@
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml.clin <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
-#' laml <- read.maf(maf = laml.maf,  clinicalData = laml.clin)
-#' mafSurvGroup(maf = laml, geneSet = c('DNMT3A', 'FLT3'), time = 'days_to_last_followup', Status = 'Overall_Survival_Status')
-mafSurvGroup = function(maf, geneSet = NULL, clinicalData = NULL, time = "Time", Status = "Status"){
-
-  if(is.null(geneSet)){
+#' laml <- read.maf(maf = laml.maf, clinicalData = laml.clin)
+#' mafSurvGroup(maf = laml, geneSet = c("DNMT3A", "FLT3"), time = "days_to_last_followup", Status = "Overall_Survival_Status")
+mafSurvGroup <- function(maf, geneSet = NULL, clinicalData = NULL, time = "Time", Status = "Status") {
+  if (is.null(geneSet)) {
     stop("Please provide a geneset")
   }
 
-  if(is.null(clinicalData)){
+  if (is.null(clinicalData)) {
     message("Looking for clinical data in annoatation slot of MAF..")
-    clinicalData = data.table::copy(getClinicalData(x = maf))
-    clinicalData = data.table::setDT(clinicalData)
-  }else{
-    clinicalData = data.table::setDT(clinicalData)
+    clinicalData <- data.table::copy(getClinicalData(x = maf))
+    clinicalData <- data.table::setDT(clinicalData)
+  } else {
+    clinicalData <- data.table::setDT(clinicalData)
   }
 
-  if(!"Tumor_Sample_Barcode" %in% colnames(clinicalData)){
+  if (!"Tumor_Sample_Barcode" %in% colnames(clinicalData)) {
     print(colnames(clinicalData))
     stop("Column Tumo_Sample_Barcode not found in clinical data. Check column names and rename it to Tumo_Sample_Barcode if necessary.")
   }
 
-  if(length(colnames(clinicalData)[colnames(clinicalData) %in% time]) == 0){
+  if (length(colnames(clinicalData)[colnames(clinicalData) %in% time]) == 0) {
     print(colnames(clinicalData))
     stop(paste0(time, " not found in clinicalData. Use argument time to povide column name containing time to event."))
-  }else{
-    colnames(clinicalData)[colnames(clinicalData) %in% time] = 'Time'
+  } else {
+    colnames(clinicalData)[colnames(clinicalData) %in% time] <- "Time"
   }
 
-  if(length(colnames(clinicalData)[colnames(clinicalData) %in% Status]) == 0){
+  if (length(colnames(clinicalData)[colnames(clinicalData) %in% Status]) == 0) {
     print(colnames(clinicalData))
     stop(paste0(Status, " not found in clinicalData. Use argument Status to povide column name containing events (Dead or Alive)."))
-  }else{
-    colnames(clinicalData)[colnames(clinicalData) %in% Status] = 'Status'
+  } else {
+    colnames(clinicalData)[colnames(clinicalData) %in% Status] <- "Status"
   }
 
-  clinicalData$Time = suppressWarnings(as.numeric(as.character(clinicalData$Time)) )
-  clinicalData$Status = suppressWarnings(as.integer(clinicalData$Status))
-  clinicalData$Time = ifelse(test = is.infinite(clinicalData$Time), yes = NA, no = clinicalData$Time)
-  if(nrow(clinicalData[!is.na(Time)][!is.na(Status)]) < nrow(clinicalData)){
-    message(paste0("Removed ", nrow(clinicalData) - nrow(clinicalData[!is.na(Time)][!is.na(Status)]),
-                   " samples with NA's"))
-    clinicalData = clinicalData[!is.na(Time)][!is.na(Status)]
+  clinicalData$Time <- suppressWarnings(as.numeric(as.character(clinicalData$Time)))
+  clinicalData$Status <- suppressWarnings(as.integer(clinicalData$Status))
+  clinicalData$Time <- ifelse(test = is.infinite(clinicalData$Time), yes = NA, no = clinicalData$Time)
+  if (nrow(clinicalData[!is.na(Time)][!is.na(Status)]) < nrow(clinicalData)) {
+    message(paste0(
+      "Removed ", nrow(clinicalData) - nrow(clinicalData[!is.na(Time)][!is.na(Status)]),
+      " samples with NA's"
+    ))
+    clinicalData <- clinicalData[!is.na(Time)][!is.na(Status)]
   }
 
-  om = createOncoMatrix(m = maf, g = geneSet)
-  mutMat = t(om$numericMatrix)
-  mutMat[mutMat > 0 ] = 1
+  om <- createOncoMatrix(m = maf, g = geneSet)
+  mutMat <- t(om$numericMatrix)
+  mutMat[mutMat > 0] <- 1
 
-  mm = mutMat[,geneSet, drop = FALSE]
-  genesTSB = names(which(rowSums(mm) == length(geneSet)))
+  mm <- mutMat[, geneSet, drop = FALSE]
+  genesTSB <- names(which(rowSums(mm) == length(geneSet)))
 
-  groupNames = c("Mutant", "WT")
-  col = c('maroon', 'royalblue')
-  clinicalData$Group = ifelse(test = clinicalData$Tumor_Sample_Barcode %in% genesTSB, yes = groupNames[1], no = groupNames[2])
-  clin.mut.dat = clinicalData[,.(medianTime = median(Time, na.rm = TRUE),N = .N), Group][order(Group)]
+  groupNames <- c("Mutant", "WT")
+  col <- c("maroon", "royalblue")
+  clinicalData$Group <- ifelse(test = clinicalData$Tumor_Sample_Barcode %in% genesTSB, yes = groupNames[1], no = groupNames[2])
+  clin.mut.dat <- clinicalData[, .(medianTime = median(Time, na.rm = TRUE), N = .N), Group][order(Group)]
   message("Median survival..")
   print(clin.mut.dat)
 
-  surv.km = survival::survfit(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData, conf.type = "log-log")
-  res = summary(surv.km)
+  surv.km <- survival::survfit(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData, conf.type = "log-log")
+  res <- summary(surv.km)
 
-  surv.diff = survival::survdiff(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData)
-  surv.diff.pval = signif(1 - pchisq(surv.diff$chisq, length(surv.diff$n) - 1), digits = 3)
+  surv.diff <- survival::survdiff(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData)
+  surv.diff.pval <- signif(1 - pchisq(surv.diff$chisq, length(surv.diff$n) - 1), digits = 3)
 
-  surv.cox = survival::coxph(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData)
-  hr = signif(1/exp(stats::coef(surv.cox)), digits = 3)
+  surv.cox <- survival::coxph(formula = survival::Surv(time = Time, event = Status) ~ Group, data = clinicalData)
+  hr <- signif(1 / exp(stats::coef(surv.cox)), digits = 3)
 
-  surv.dat = data.table::data.table(Group = res$strata, Time = res$time, survProb = res$surv, survUp = res$upper, survLower = res$lower)
-  surv.dat$Group = gsub(pattern = 'Group=', replacement = '', x = surv.dat$Group)
+  surv.dat <- data.table::data.table(Group = res$strata, Time = res$time, survProb = res$surv, survUp = res$upper, survLower = res$lower)
+  surv.dat$Group <- gsub(pattern = "Group=", replacement = "", x = surv.dat$Group)
 
   par(mar = c(4, 4, 2, 2))
-  x_lims = pretty(surv.km$time)
-  y_lims = seq(0, 1, 0.20)
-  plot(NA, xlim = c(min(x_lims), max(x_lims)), ylim = c(0, 1),
-       frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA)
+  x_lims <- pretty(surv.km$time)
+  y_lims <- seq(0, 1, 0.20)
+  plot(NA,
+    xlim = c(min(x_lims), max(x_lims)), ylim = c(0, 1),
+    frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA
+  )
   abline(h = y_lims, v = x_lims, lty = 2, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lwd = 0.75)
 
   points(surv.dat[Group %in% "Mutant", Time], y = surv.dat[Group %in% "Mutant", survProb], pch = 8, col = col [1])
   points(surv.dat[Group %in% "WT", Time], y = surv.dat[Group %in% "WT", survProb], pch = 8, col = col [2])
 
-  lines(surv.km[1], col = col[1], lty = 1, lwd = 2, conf.int=FALSE)
-  lines(surv.km[2], col = col[2], lty = 1, lwd = 2, conf.int=FALSE)
+  lines(surv.km[1], col = col[1], lty = 1, lwd = 2, conf.int = FALSE)
+  lines(surv.km[2], col = col[2], lty = 1, lwd = 2, conf.int = FALSE)
 
   axis(side = 1, at = x_lims)
   axis(side = 2, at = y_lims, las = 2)
   mtext(text = "Survival probability", side = 2, line = 2.5)
-  #mtext(text = "Time", side = 1, line = 2)
+  # mtext(text = "Time", side = 1, line = 2)
 
-  legend(x = "topright", legend = c(paste0("Geneset [N= ", nrow(clinicalData[Group == "Mutant"]),"]"),
-                                    paste0("WT [N= ", nrow(clinicalData[Group == "WT"]),"]")), col = col, bty = "n", lwd = 2, pch = 8)
+  legend(x = "topright", legend = c(
+    paste0("Geneset [N= ", nrow(clinicalData[Group == "Mutant"]), "]"),
+    paste0("WT [N= ", nrow(clinicalData[Group == "WT"]), "]")
+  ), col = col, bty = "n", lwd = 2, pch = 8)
 
-  title(main = NA,
-        sub = paste0("P-value: ", surv.diff.pval, "; ", "HR: ", hr), cex.main = 1, font.main= 4, col.main= "black",
-        cex.sub = 1, font.sub = 3, col.sub = ifelse(test = surv.diff.pval < 0.05, yes = "red", no = "black"),
-        line = 2.5, adj = 0)
+  title(
+    main = NA,
+    sub = paste0("P-value: ", surv.diff.pval, "; ", "HR: ", hr), cex.main = 1, font.main = 4, col.main = "black",
+    cex.sub = 1, font.sub = 3, col.sub = ifelse(test = surv.diff.pval < 0.05, yes = "red", no = "black"),
+    line = 2.5, adj = 0
+  )
   title(main = paste0("Geneset: ", paste(geneSet, collapse = ", ")), adj = 0, font.main = 3, cex.main = 1)
 }

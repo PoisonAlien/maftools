@@ -9,20 +9,18 @@
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
 #' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
-#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
-#' write.GisticSummary(gistic = laml.gistic, basename = 'laml')
-#'
+#' laml.gistic <- readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
+#' write.GisticSummary(gistic = laml.gistic, basename = "laml")
 #' @export
 
 
-write.GisticSummary = function(gistic, basename = NULL){
-
-  if(is.null(basename)){
-    stop('Please provide a basename for output files.')
+write.GisticSummary <- function(gistic, basename = NULL) {
+  if (is.null(basename)) {
+    stop("Please provide a basename for output files.")
   }
 
-  write.table(x = gistic@data, file = paste(basename,'_gisticData.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
-  write.table(x = gistic@cnv.summary, file = paste(basename,'_gisticCNVSummary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
-  write.table(x = gistic@cytoband.summary, file = paste(basename,'_gisticCytobandSummary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
-  write.table(x = gistic@gene.summary, file = paste(basename,'_gisticGeneSummary.txt', sep=''), sep='\t', quote = FALSE, row.names = FALSE)
+  write.table(x = gistic@data, file = paste(basename, "_gisticData.txt", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE)
+  write.table(x = gistic@cnv.summary, file = paste(basename, "_gisticCNVSummary.txt", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE)
+  write.table(x = gistic@cytoband.summary, file = paste(basename, "_gisticCytobandSummary.txt", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE)
+  write.table(x = gistic@gene.summary, file = paste(basename, "_gisticGeneSummary.txt", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE)
 }

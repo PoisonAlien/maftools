@@ -15,35 +15,34 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' OncogenicPathways(maf = laml)
-
-OncogenicPathways = function(maf, pathways = NULL, fontSize = 1, panelWidths = c(2, 4, 4)){
-  if(is.null(pathways)){
+OncogenicPathways <- function(maf, pathways = NULL, fontSize = 1, panelWidths = c(2, 4, 4)) {
+  if (is.null(pathways)) {
     pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
-    pathdb = data.table::fread(input = pathdb)
-  }else{
-    pathdb = data.table::copy(x = pathways)
-    colnames(pathdb) = c("Gene", "Pathway")
+    pathdb <- data.table::fread(input = pathdb)
+  } else {
+    pathdb <- data.table::copy(x = pathways)
+    colnames(pathdb) <- c("Gene", "Pathway")
     data.table::setDT(x = pathdb)
   }
-  pathdb_size = pathdb[,.N,Pathway]
-  pathdb = split(pathdb, as.factor(pathdb$Pathway))
+  pathdb_size <- pathdb[, .N, Pathway]
+  pathdb <- split(pathdb, as.factor(pathdb$Pathway))
 
 
-  altered_pws = lapply(pathdb, function(pw){
-                  x = suppressMessages(try(genesToBarcodes(maf = maf, genes = pw$Gene)))
-                  if(class(x) == "try-error"){
-                    pw_genes = NULL
-                  }else{
-                    pw_genes = names(genesToBarcodes(maf = maf, genes = pw$Gene, justNames = TRUE, verbose = FALSE))
-                  }
-                  pw_genes
-                })
+  altered_pws <- lapply(pathdb, function(pw) {
+    x <- suppressMessages(try(genesToBarcodes(maf = maf, genes = pw$Gene)))
+    if (class(x) == "try-error") {
+      pw_genes <- NULL
+    } else {
+      pw_genes <- names(genesToBarcodes(maf = maf, genes = pw$Gene, justNames = TRUE, verbose = FALSE))
+    }
+    pw_genes
+  })
 
-  mut_load = lapply(altered_pws, function(x){
-    if(is.null(x)){
-      nsamps =  0
-    }else{
-      nsamps = length(unique(as.character(unlist(
+  mut_load <- lapply(altered_pws, function(x) {
+    if (is.null(x)) {
+      nsamps <- 0
+    } else {
+      nsamps <- length(unique(as.character(unlist(
         genesToBarcodes(
           maf = maf,
           genes = x,
@@ -54,21 +53,21 @@ OncogenicPathways = function(maf, pathways = NULL, fontSize = 1, panelWidths = c
     nsamps
   })
 
-  altered_pws = as.data.frame(t(data.frame(lapply(altered_pws, length))))
+  altered_pws <- as.data.frame(t(data.frame(lapply(altered_pws, length))))
   data.table::setDT(x = altered_pws, keep.rownames = TRUE)
-  colnames(altered_pws) = c("Pathway", "n_affected_genes")
-  altered_pws$Pathway = gsub(pattern = "\\.", replacement = "-", x = altered_pws$Pathway)
-  altered_pws = merge(pathdb_size, altered_pws, all.x = TRUE)
+  colnames(altered_pws) <- c("Pathway", "n_affected_genes")
+  altered_pws$Pathway <- gsub(pattern = "\\.", replacement = "-", x = altered_pws$Pathway)
+  altered_pws <- merge(pathdb_size, altered_pws, all.x = TRUE)
 
-  altered_pws[, fraction_affected := n_affected_genes/N]
-  altered_pws$Mutated_samples = unlist(mut_load)
-  nsamps = as.numeric(maf@summary[ID == "Samples", summary])
-  altered_pws[,Fraction_mutated_samples := Mutated_samples/nsamps]
-  altered_pws = altered_pws[order(n_affected_genes, fraction_affected, decreasing = FALSE)]
+  altered_pws[, fraction_affected := n_affected_genes / N]
+  altered_pws$Mutated_samples <- unlist(mut_load)
+  nsamps <- as.numeric(maf@summary[ID == "Samples", summary])
+  altered_pws[, Fraction_mutated_samples := Mutated_samples / nsamps]
+  altered_pws <- altered_pws[order(n_affected_genes, fraction_affected, decreasing = FALSE)]
 
-  altered_pws = altered_pws[!n_affected_genes %in% 0]
+  altered_pws <- altered_pws[!n_affected_genes %in% 0]
 
-  lo = layout(mat = matrix(c(1, 2, 3), ncol = 3, nrow = 1), widths = panelWidths)
+  lo <- layout(mat = matrix(c(1, 2, 3), ncol = 3, nrow = 1), widths = panelWidths)
   par(mar = c(2, 2, 2, 0))
   plot(NA, xlim = c(0, 1), ylim = c(0, nrow(altered_pws)), axes = FALSE)
   text(x = 1, y = seq(0.5, nrow(altered_pws), by = 1), labels = altered_pws$Pathway, adj = 1, xpd = TRUE, cex = fontSize)
@@ -76,16 +75,16 @@ OncogenicPathways = function(maf, pathways = NULL, fontSize = 1, panelWidths = c
 
   par(mar = c(2, 0, 2, 1), xpd = TRUE)
   plot(NA, xlim = c(0, 1.2), ylim = c(0, nrow(altered_pws)), axes = FALSE)
-  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = 1, ytop = seq(0.2, nrow(altered_pws), by = 1)+0.7, col = '#ecf0f1', border = "white")
-  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = altered_pws$fraction_affected, ytop = seq(0.2, nrow(altered_pws), by = 1)+0.7, col = "#c0392b", border = "white")
+  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = 1, ytop = seq(0.2, nrow(altered_pws), by = 1) + 0.7, col = "#ecf0f1", border = "white")
+  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = altered_pws$fraction_affected, ytop = seq(0.2, nrow(altered_pws), by = 1) + 0.7, col = "#c0392b", border = "white")
   text(x = 1.05, y = seq(0.5, nrow(altered_pws), by = 1), labels = paste0(altered_pws$n_affected_genes, "/", altered_pws$N), adj = 0, cex = fontSize)
   axis(side = 1, at = seq(0, 1, 0.25), line = -1, cex.axis = fontSize)
   title(main = "Fraction of pathway affected", adj = 0)
 
   par(mar = c(2, 0, 2, 1), xpd = TRUE)
   plot(NA, xlim = c(0, 1.2), ylim = c(0, nrow(altered_pws)), axes = FALSE)
-  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = 1, ytop = seq(0.2, nrow(altered_pws), by = 1)+0.7, col = '#ecf0f1', border = "white")
-  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = altered_pws$Fraction_mutated_samples, ytop = seq(0.2, nrow(altered_pws), by = 1)+0.7, col = "#c0392b", border = "white")
+  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = 1, ytop = seq(0.2, nrow(altered_pws), by = 1) + 0.7, col = "#ecf0f1", border = "white")
+  rect(xleft = 0, ybottom = seq(0.1, nrow(altered_pws), by = 1), xright = altered_pws$Fraction_mutated_samples, ytop = seq(0.2, nrow(altered_pws), by = 1) + 0.7, col = "#c0392b", border = "white")
   text(x = 1.05, y = seq(0.5, nrow(altered_pws), by = 1), labels = paste0(altered_pws$Mutated_samples, "/", nsamps), adj = 0, cex = fontSize)
   axis(side = 1, at = seq(0, 1, 0.25), line = -1, cex.axis = fontSize)
   title(main = "Fraction of samples affected")

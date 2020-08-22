@@ -5,53 +5,54 @@
 #' @details MutSig/MutSigCV is most widely used program for detecting driver genes. However, we have observed that covariates files (gene.covariates.txt and exome_full192.coverage.txt) which are bundled with MutSig have non-standard gene names (non Hugo_Symbols).
 #' This discrepancy between Hugo_Symbols in MAF and non-Hugo_symbols in covariates file causes MutSig program to ignore such genes. For example, KMT2D - a well known driver gene in Esophageal Carcinoma is represented as MLL2 in MutSig covariates. This causes KMT2D to be ignored
 #' from analysis and is represented as an insignificant gene in MutSig results. This function attempts to correct such gene symbols with a manually curated list of gene names compatible with MutSig covariates list.
-#'@return returns a MAF with gene symbols corrected.
-#'@examples
+#' @return returns a MAF with gene symbols corrected.
+#' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' prepareMutSig(maf = laml)
 #' @export
 
-prepareMutSig = function(maf, fn = NULL){
+prepareMutSig <- function(maf, fn = NULL) {
+  hugo.to.ms <- system.file("extdata", "hugo_to_mutSigSymbol.txt.gz", package = "maftools")
+  hugo.to.ms <- data.table::fread(file = hugo.to.ms, sep = "\t", stringsAsFactors = FALSE)
 
-  hugo.to.ms = system.file('extdata', 'hugo_to_mutSigSymbol.txt.gz', package = 'maftools')
-  hugo.to.ms = data.table::fread(file = hugo.to.ms, sep = '\t', stringsAsFactors = FALSE)
+  mut <- maf@data
 
-  mut = maf@data
+  # in case user read maf without removing silent variants, remove theme here.
+  silent <- c(
+    "3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
+    "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del"
+  )
 
-  #in case user read maf without removing silent variants, remove theme here.
-  silent = c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", "Intron",
-             "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
+  mut <- mut[!Variant_Classification %in% silent]
 
-  mut = mut[!Variant_Classification %in% silent]
+  mut <- rbind(mut, maf@maf.silent, fill = TRUE)
+  mut[, OG_Hugo_Symbol := Hugo_Symbol]
 
-  mut = rbind(mut, maf@maf.silent, fill = TRUE)
-  mut[,OG_Hugo_Symbol := Hugo_Symbol]
+  # Convert Hugo_Symbols to HGNC_Synonyms for MutSig run
+  mafToChange <- mut[Hugo_Symbol %in% hugo.to.ms$Hugo_Symbol]
+  mafToRetain <- mut[!Hugo_Symbol %in% hugo.to.ms$Hugo_Symbol]
 
-  #Convert Hugo_Symbols to HGNC_Synonyms for MutSig run
-  mafToChange = mut[Hugo_Symbol %in% hugo.to.ms$Hugo_Symbol]
-  mafToRetain = mut[!Hugo_Symbol %in% hugo.to.ms$Hugo_Symbol]
+  if (nrow(mafToChange) > 0) {
+    genesToChange <- unique(as.character(mafToChange[, Hugo_Symbol]))
 
-  if(nrow(mafToChange) > 0){
-    genesToChange = unique(as.character(mafToChange[,Hugo_Symbol]))
-
-    hc = hugo.to.ms[Hugo_Symbol %in% genesToChange]
-    mafToChange$Hugo_Symbol = suppressWarnings(as.character(factor(x = mafToChange$Hugo_Symbol, levels = hugo.to.ms$Hugo_Symbol, labels = hugo.to.ms$MutSig_Synonym)))
-    mc = mafToChange[,.N, Hugo_Symbol]
-    conv.tbl = merge(hc, mc, by.x = 'MutSig_Synonym', by.y = 'Hugo_Symbol')
-    conv.tbl = conv.tbl[,.(Hugo_Symbol, MutSig_Synonym, N)]
-    conv.tbl = conv.tbl[order(N, decreasing = TRUE)]
-    message(paste0('Converting gene names for ', nrow(mafToChange), ' variants', ' from ', nrow(conv.tbl), ' genes'))
+    hc <- hugo.to.ms[Hugo_Symbol %in% genesToChange]
+    mafToChange$Hugo_Symbol <- suppressWarnings(as.character(factor(x = mafToChange$Hugo_Symbol, levels = hugo.to.ms$Hugo_Symbol, labels = hugo.to.ms$MutSig_Synonym)))
+    mc <- mafToChange[, .N, Hugo_Symbol]
+    conv.tbl <- merge(hc, mc, by.x = "MutSig_Synonym", by.y = "Hugo_Symbol")
+    conv.tbl <- conv.tbl[, .(Hugo_Symbol, MutSig_Synonym, N)]
+    conv.tbl <- conv.tbl[order(N, decreasing = TRUE)]
+    message(paste0("Converting gene names for ", nrow(mafToChange), " variants", " from ", nrow(conv.tbl), " genes"))
     print(conv.tbl)
-    mut = rbind(mafToRetain, mafToChange, fill = TRUE)
+    mut <- rbind(mafToRetain, mafToChange, fill = TRUE)
 
-    if(!is.null(fn)){
-      write.table(x = mut, file = paste0(fn, '.mutSig.maf'), sep = '\t', quote = FALSE, row.names = FALSE)
-      write.table(x = conv.tbl, file = paste0(fn, '.correctedSymbols.tsv'), sep = '\t', quote = FALSE, row.names = FALSE)
+    if (!is.null(fn)) {
+      write.table(x = mut, file = paste0(fn, ".mutSig.maf"), sep = "\t", quote = FALSE, row.names = FALSE)
+      write.table(x = conv.tbl, file = paste0(fn, ".correctedSymbols.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
     }
-    message('Original symbols are preserved under column OG_Hugo_Symbol.')
+    message("Original symbols are preserved under column OG_Hugo_Symbol.")
     return(mut)
-  }else{
-    message('No changes done. All gene symbols look okay!')
+  } else {
+    message("No changes done. All gene symbols look okay!")
   }
 }

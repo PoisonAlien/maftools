@@ -12,57 +12,58 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' genotypeMatrix(maf = laml, genes = "RUNX1")
-#'
 #' @export
 
-genotypeMatrix = function(maf, genes = NULL, tsb = NULL, includeSyn = FALSE, vafCol = NULL, vafCutoff = c(0.1, 0.75)){
+genotypeMatrix <- function(maf, genes = NULL, tsb = NULL, includeSyn = FALSE, vafCol = NULL, vafCutoff = c(0.1, 0.75)) {
+  mdat <- subsetMaf(maf = maf, tsb = tsb, genes = genes, fields = vafCol, includeSyn = includeSyn, mafObj = FALSE)
 
-  mdat = subsetMaf(maf = maf, tsb = tsb, genes = genes, fields = vafCol, includeSyn = includeSyn, mafObj = FALSE)
-
-  if(nrow(mdat) == 0){
+  if (nrow(mdat) == 0) {
     stop("Zero mutations to make table.")
   }
 
-  mdat[,id := paste0(Chromosome, ":", Start_Position)]
+  mdat[, id := paste0(Chromosome, ":", Start_Position)]
 
-  if(!is.null(vafCol)){
-    if(vafCol %in% colnames(mdat)){
-      colnames(mdat)[which(x = colnames(mdat) == vafCol)] = 't_vaf'
-    }else{
+  if (!is.null(vafCol)) {
+    if (vafCol %in% colnames(mdat)) {
+      colnames(mdat)[which(x = colnames(mdat) == vafCol)] <- "t_vaf"
+    } else {
       stop(paste0("Column ", vafCol, " not found!"))
     }
 
-    if(max(mdat[,t_vaf], na.rm = TRUE) > 1){
-      mdat[,t_vaf := as.numeric(as.character(t_vaf))/100]
+    if (max(mdat[, t_vaf], na.rm = TRUE) > 1) {
+      mdat[, t_vaf := as.numeric(as.character(t_vaf)) / 100]
     }
 
-    vafMin = vafCutoff[1]
-    vafMax = vafCutoff[2]
+    vafMin <- vafCutoff[1]
+    vafMax <- vafCutoff[2]
 
-    mdat.cast = data.table::dcast(data = mdat, formula = id ~ Tumor_Sample_Barcode, value.var = 't_vaf', fill = 0)
+    mdat.cast <- data.table::dcast(data = mdat, formula = id ~ Tumor_Sample_Barcode, value.var = "t_vaf", fill = 0)
     data.table::setDF(x = mdat.cast, rownames = mdat.cast$id)
-    mdat.cast = mdat.cast[,-1]
+    mdat.cast <- mdat.cast[, -1]
 
-    tnumMat = t(mdat.cast) #transposematrix
-    mdat.cast = t(tnumMat[do.call(order, c(as.list(as.data.frame(tnumMat)), decreasing = TRUE)), ]) #sort
+    tnumMat <- t(mdat.cast) # transposematrix
+    mdat.cast <- t(tnumMat[do.call(order, c(as.list(as.data.frame(tnumMat)), decreasing = TRUE)), ]) # sort
 
-    mdat.cast = apply(X = mdat.cast, MARGIN = 2, FUN = function(x){
+    mdat.cast <- apply(X = mdat.cast, MARGIN = 2, FUN = function(x) {
       ifelse(test = x == 0, yes = "None",
-             no = ifelse(test = x > vafMin & x < vafMax, yes = "Het",
-                         no = ifelse(test = x > vafMax, yes = "Hom", no = "None")))
+        no = ifelse(test = x > vafMin & x < vafMax, yes = "Het",
+          no = ifelse(test = x > vafMax, yes = "Hom", no = "None")
+        )
+      )
     })
-  }else{
-    mdat.cast = data.table::dcast(data = mdat, formula = id ~ Tumor_Sample_Barcode, value.var = 'id', fill = 0)
+  } else {
+    mdat.cast <- data.table::dcast(data = mdat, formula = id ~ Tumor_Sample_Barcode, value.var = "id", fill = 0)
     data.table::setDF(x = mdat.cast, rownames = mdat.cast$id)
-    mdat.cast = mdat.cast[,-1]
-    mdat.cast[mdat.cast != 0] = 1
+    mdat.cast <- mdat.cast[, -1]
+    mdat.cast[mdat.cast != 0] <- 1
 
-    tnumMat = t(mdat.cast) #transposematrix
-    mdat.cast = t(tnumMat[do.call(order, c(as.list(as.data.frame(tnumMat)), decreasing = TRUE)), ]) #sort
+    tnumMat <- t(mdat.cast) # transposematrix
+    mdat.cast <- t(tnumMat[do.call(order, c(as.list(as.data.frame(tnumMat)), decreasing = TRUE)), ]) # sort
 
-    mdat.cast = apply(X = mdat.cast, MARGIN = 2, FUN = function(x){
+    mdat.cast <- apply(X = mdat.cast, MARGIN = 2, FUN = function(x) {
       ifelse(test = x == "0", yes = "None",
-             no = "Het")
+        no = "Het"
+      )
     })
   }
 

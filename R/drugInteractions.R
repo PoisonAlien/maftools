@@ -14,66 +14,68 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' drugInteractions(maf = laml)
-
-drugInteractions = function(maf, top = 20, genes = NULL, plotType = "bar", drugs = FALSE, fontSize = 0.8){
-
-  if(drugs){
-    db = system.file('extdata', 'drugs.tsv.gz', package = 'maftools')
-  }else{
-    db = system.file('extdata', 'categories.tsv.gz', package = 'maftools')
+drugInteractions <- function(maf, top = 20, genes = NULL, plotType = "bar", drugs = FALSE, fontSize = 0.8) {
+  if (drugs) {
+    db <- system.file("extdata", "drugs.tsv.gz", package = "maftools")
+  } else {
+    db <- system.file("extdata", "categories.tsv.gz", package = "maftools")
   }
 
-  db = data.table::fread(file = db)
+  db <- data.table::fread(file = db)
 
-  if(is.null(genes)){
-    genes = unique(getGeneSummary(x = maf)[1:top,Hugo_Symbol])
+  if (is.null(genes)) {
+    genes <- unique(getGeneSummary(x = maf)[1:top, Hugo_Symbol])
   }
 
-  if(drugs){
-    db = db[Gene %in% genes]
-    if(nrow(db) == 0){
+  if (drugs) {
+    db <- db[Gene %in% genes]
+    if (nrow(db) == 0) {
       stop("No claimed drugs found for given genes.")
     }
 
-    ndb = db[order(Gene)][,.N,Gene][order(N, decreasing = TRUE)]
+    ndb <- db[order(Gene)][, .N, Gene][order(N, decreasing = TRUE)]
 
     cat("Number of claimed drugs for given genes:\n")
     print(ndb)
     return(db)
-  }else{
-    db = db[Gene %in% genes]
-    if(nrow(db) == 0){
+  } else {
+    db <- db[Gene %in% genes]
+    if (nrow(db) == 0) {
       stop("No druggable categories found for given genes.")
     }
 
-    db = db[Gene %in% genes]
-    ndb = db[,.N,category][order(N, decreasing = TRUE)]
-    dbg = db[,paste(Gene, collapse = ", "), category][,.(category, V1)]
+    db <- db[Gene %in% genes]
+    ndb <- db[, .N, category][order(N, decreasing = TRUE)]
+    dbg <- db[, paste(Gene, collapse = ", "), category][, .(category, V1)]
 
-    dbg$V1 = unlist(lapply(strsplit(dbg$V1, split = ", "), function(x){
-      x = unlist(x)
-      x = x[!is.na(x)]
-      x = names(sort(table(x), decreasing = TRUE))
-      if(length(x) >=5){
+    dbg$V1 <- unlist(lapply(strsplit(dbg$V1, split = ", "), function(x) {
+      x <- unlist(x)
+      x <- x[!is.na(x)]
+      x <- names(sort(table(x), decreasing = TRUE))
+      if (length(x) >= 5) {
         return(paste(x[1:5], collapse = ","))
-      }else{
+      } else {
         return(paste(x, collapse = ","))
       }
     }))
 
-    ndb = merge(ndb, dbg)[order(N, decreasing = TRUE)]
-    ndb[,label := paste0(category, " [", V1, "]")]
+    ndb <- merge(ndb, dbg)[order(N, decreasing = TRUE)]
+    ndb[, label := paste0(category, " [", V1, "]")]
 
-    if(plotType == "pie"){
+    if (plotType == "pie") {
       par(mar = c(2, 5, 2, 5))
-      pie(x = ndb$N, labels = ndb$category, clockwise = TRUE,
-          border = NA, lty = 1, col = heat.colors(n = nrow(ndb), alpha = 0.8), cex = fontSize)
-    }else if(plotType == "bar"){
+      pie(
+        x = ndb$N, labels = ndb$category, clockwise = TRUE,
+        border = NA, lty = 1, col = heat.colors(n = nrow(ndb), alpha = 0.8), cex = fontSize
+      )
+    } else if (plotType == "bar") {
       par(mar = c(2, 2, 3, 4))
-      b = barplot(height = ndb$N, names.arg = NA, las = 2,
-                  col = heat.colors(n = nrow(ndb), alpha = 0.8),
-                  border = NA, axes = FALSE, horiz = TRUE)
-      #mtext(text = ndb$category, side = 2, at = b, las = 2, adj = 0, cex = 0.5)
+      b <- barplot(
+        height = ndb$N, names.arg = NA, las = 2,
+        col = heat.colors(n = nrow(ndb), alpha = 0.8),
+        border = NA, axes = FALSE, horiz = TRUE
+      )
+      # mtext(text = ndb$category, side = 2, at = b, las = 2, adj = 0, cex = 0.5)
       text(labels = ndb$label, las = 2, adj = 0, cex = fontSize, x = 0.1, y = b, font = 2)
       axis(side = 1, at = c(0, max(ndb$N)))
       mtext(text = "# Genes", side = 1, cex = 1, line = 0.5)

@@ -68,673 +68,707 @@
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
+#' laml.clin <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
 #' laml <- read.maf(maf = laml.maf, clinicalData = laml.clin)
-#' #Basic onocplot
+#' # Basic onocplot
 #' oncoplot(maf = laml, top = 3)
-#' #Changing colors for variant classifications (You can use any colors, here in this example we will use a color palette from RColorBrewer)
-#' col = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
-#' names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Multi_Hit', 'Frame_Shift_Ins',
-#'                'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
-#' #Color coding for FAB classification; try getAnnotations(x = laml) to see available annotations.
-#' fabcolors = RColorBrewer::brewer.pal(n = 8,name = 'Spectral')
-#' names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
-#' fabcolors = list(FAB_classification = fabcolors)
-#' oncoplot(maf = laml, colors = col, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
+#' # Changing colors for variant classifications (You can use any colors, here in this example we will use a color palette from RColorBrewer)
+#' col <- RColorBrewer::brewer.pal(n = 8, name = "Paired")
+#' names(col) <- c(
+#'   "Frame_Shift_Del", "Missense_Mutation", "Nonsense_Mutation", "Multi_Hit", "Frame_Shift_Ins",
+#'   "In_Frame_Ins", "Splice_Site", "In_Frame_Del"
+#' )
+#' # Color coding for FAB classification; try getAnnotations(x = laml) to see available annotations.
+#' fabcolors <- RColorBrewer::brewer.pal(n = 8, name = "Spectral")
+#' names(fabcolors) <- c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
+#' fabcolors <- list(FAB_classification = fabcolors)
+#' oncoplot(maf = laml, colors = col, clinicalFeatures = "FAB_classification", sortByAnnotation = TRUE, annotationColor = fabcolors)
 #' @seealso \code{\link{oncostrip}}
 #' @export
-oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, altered = FALSE,
-                               drawRowBar = TRUE, drawColBar = TRUE,
-                               leftBarData = NULL, leftBarLims = NULL,
-                               rightBarData = NULL, rightBarLims = NULL,
-                               topBarData = NULL, logColBar = FALSE, includeColBarCN = TRUE,
-                               clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
-                               pathways = NULL, selectedPathways = NULL, draw_titv = FALSE,
-                               showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
-                               anno_height = 1, legend_height = 4,
-                               sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
-                               sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
-                               additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9,
-                               genesToIgnore = NULL, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
-                               colors = NULL, bgCol = "#CCCCCC", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
-                               drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
-                               sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL){
+oncoplot <- oncoplot <- function(maf, top = 20, minMut = NULL, genes = NULL, altered = FALSE,
+                                 drawRowBar = TRUE, drawColBar = TRUE,
+                                 leftBarData = NULL, leftBarLims = NULL,
+                                 rightBarData = NULL, rightBarLims = NULL,
+                                 topBarData = NULL, logColBar = FALSE, includeColBarCN = TRUE,
+                                 clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
+                                 pathways = NULL, selectedPathways = NULL, draw_titv = FALSE,
+                                 showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
+                                 anno_height = 1, legend_height = 4,
+                                 sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
+                                 sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
+                                 additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9,
+                                 genesToIgnore = NULL, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
+                                 colors = NULL, bgCol = "#CCCCCC", borderCol = "white", annoBorderCol = NA, numericAnnoCol = NULL,
+                                 drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
+                                 sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL) {
 
 
-  #Total samples
-  if(is.null(cohortSize)){
-    totSamps = as.numeric(maf@summary[3,summary])
-  }else{
-    totSamps = cohortSize
+  # Total samples
+  if (is.null(cohortSize)) {
+    totSamps <- as.numeric(maf@summary[3, summary])
+  } else {
+    totSamps <- cohortSize
   }
 
-  if(!is.null(genes)){ #If user provides a gene list
-    om = createOncoMatrix(m = maf, g = genes, add_missing = fill)
-    numMat = om$numericMatrix
-    mat_origin = om$oncoMatrix
+  if (!is.null(genes)) { # If user provides a gene list
+    om <- createOncoMatrix(m = maf, g = genes, add_missing = fill)
+    numMat <- om$numericMatrix
+    mat_origin <- om$oncoMatrix
 
-    if(!is.null(pathways)){
+    if (!is.null(pathways)) {
       stop("Please use genes or pathways.")
     }
+  } else if (!is.null(pathways)) { # If user provides pathway list
 
-  } else if(!is.null(pathways)){ #If user provides pathway list
-
-    if(is(pathways, 'data.frame')){
-      colnames(pathways)[1:2] = c('Gene', 'Pathway')
+    if (is(pathways, "data.frame")) {
+      colnames(pathways)[1:2] <- c("Gene", "Pathway")
       data.table::setDT(x = pathways)
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-    }else if(file.exists(pathways)){
-      pathways = data.table::fread(file = pathways)
-      colnames(pathways)[1:2] = c('Gene', 'Pathway')
+      pathways <- pathways[!duplicated(Gene)][, .(Gene, Pathway)]
+    } else if (file.exists(pathways)) {
+      pathways <- data.table::fread(file = pathways)
+      colnames(pathways)[1:2] <- c("Gene", "Pathway")
       data.table::setDT(x = pathways)
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-      if(!is.null(selectedPathways)){
-        pathways = pathways[Pathway %in% selectedPathways]
+      pathways <- pathways[!duplicated(Gene)][, .(Gene, Pathway)]
+      if (!is.null(selectedPathways)) {
+        pathways <- pathways[Pathway %in% selectedPathways]
       }
-    }else{
-      pathways = system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
-      pathways = data.table::fread(file = pathways, skip = "Gene")
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-      pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
-      pathwayLoad = pathway_load(maf = maf) #Get top mutated known pathways
+    } else {
+      pathways <- system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
+      pathways <- data.table::fread(file = pathways, skip = "Gene")
+      pathways <- pathways[!duplicated(Gene)][, .(Gene, Pathway)]
+      pathways$Pathway <- gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
+      pathwayLoad <- pathway_load(maf = maf) # Get top mutated known pathways
 
-      if(is.null(selectedPathways)){
+      if (is.null(selectedPathways)) {
         message("Drawing upto top 3 mutated pathways")
         print(pathwayLoad)
-        if(ncol(pathwayLoad) >= 3){
-          pathways = pathways[Pathway %in% pathwayLoad[1:3, Pathway]]
-        }else{
-          pathways = pathways[Pathway %in% pathwayLoad[, Pathway]]
+        if (ncol(pathwayLoad) >= 3) {
+          pathways <- pathways[Pathway %in% pathwayLoad[1:3, Pathway]]
+        } else {
+          pathways <- pathways[Pathway %in% pathwayLoad[, Pathway]]
         }
-      }else{
-        pathways = pathways[Pathway %in% selectedPathways]
+      } else {
+        pathways <- pathways[Pathway %in% selectedPathways]
       }
+    }
+    genes <- as.character(pathways$Gene)
 
-    }
-    genes = as.character(pathways$Gene)
+    om <- createOncoMatrix(m = maf, g = genes)
+    numMat <- om$numericMatrix
+    mat_origin <- om$oncoMatrix
 
-    om = createOncoMatrix(m = maf, g = genes)
-    numMat = om$numericMatrix
-    mat_origin = om$oncoMatrix
-
-    #Check for any missing genes and ignore them if necessary
-    if(length(genes[!genes %in% rownames(numMat)]) > 0){
-      #warning('Missing following genes from provided pathways ', paste(genes[!genes %in% rownames(numMat)], collapse = ", "))
-      genes = genes[genes %in% rownames(numMat)]
+    # Check for any missing genes and ignore them if necessary
+    if (length(genes[!genes %in% rownames(numMat)]) > 0) {
+      # warning('Missing following genes from provided pathways ', paste(genes[!genes %in% rownames(numMat)], collapse = ", "))
+      genes <- genes[genes %in% rownames(numMat)]
     }
-  }else if(!is.null(minMut)){
-    if(altered){
-      genes = getGeneSummary(x = maf)[order(AlteredSamples, decreasing = TRUE)][,.(Hugo_Symbol, AlteredSamples)]
-    }else{
-      genes = getGeneSummary(x = maf)[order(MutatedSamples, decreasing = TRUE)][,.(Hugo_Symbol, MutatedSamples)]
+  } else if (!is.null(minMut)) {
+    if (altered) {
+      genes <- getGeneSummary(x = maf)[order(AlteredSamples, decreasing = TRUE)][, .(Hugo_Symbol, AlteredSamples)]
+    } else {
+      genes <- getGeneSummary(x = maf)[order(MutatedSamples, decreasing = TRUE)][, .(Hugo_Symbol, MutatedSamples)]
     }
-    colnames(genes)[2] = "mutload"
-    genes[,fractMutated := mutload/totSamps]
-    if(minMut > 1){
-      genes = genes[mutload >= minMut, Hugo_Symbol]
-    }else{
-      genes = genes[fractMutated >= minMut, Hugo_Symbol]
+    colnames(genes)[2] <- "mutload"
+    genes[, fractMutated := mutload / totSamps]
+    if (minMut > 1) {
+      genes <- genes[mutload >= minMut, Hugo_Symbol]
+    } else {
+      genes <- genes[fractMutated >= minMut, Hugo_Symbol]
     }
 
-    om = createOncoMatrix(m = maf, g = genes)
-    numMat = om$numericMatrix
-    mat_origin = om$oncoMatrix
-  }else { #If user does not provide gene list or MutSig results, draw TOP (default 20) genes
-    if(altered){
-      genes = getGeneSummary(x = maf)[order(AlteredSamples, decreasing = TRUE)][1:top, Hugo_Symbol]
-    }else{
-      genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
+    om <- createOncoMatrix(m = maf, g = genes)
+    numMat <- om$numericMatrix
+    mat_origin <- om$oncoMatrix
+  } else { # If user does not provide gene list or MutSig results, draw TOP (default 20) genes
+    if (altered) {
+      genes <- getGeneSummary(x = maf)[order(AlteredSamples, decreasing = TRUE)][1:top, Hugo_Symbol]
+    } else {
+      genes <- getGeneSummary(x = maf)[1:top, Hugo_Symbol]
     }
-    om = createOncoMatrix(m = maf, g = genes)
-    numMat = om$numericMatrix
-    mat_origin = om$oncoMatrix
+    om <- createOncoMatrix(m = maf, g = genes)
+    numMat <- om$numericMatrix
+    mat_origin <- om$oncoMatrix
   }
 
   #---remove genes from genesToIgnore if any
-  if(!is.null(genesToIgnore)){
-    numMat = numMat[!rownames(numMat) %in% genesToIgnore,]
-    mat_origin = mat_origin[!rownames(mat_origin) %in% genesToIgnore,]
+  if (!is.null(genesToIgnore)) {
+    numMat <- numMat[!rownames(numMat) %in% genesToIgnore, ]
+    mat_origin <- mat_origin[!rownames(mat_origin) %in% genesToIgnore, ]
   }
 
-  tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
+  tsbs <- levels(getSampleSummary(x = maf)[, Tumor_Sample_Barcode])
 
-  if(!removeNonMutated){
-    tsb.include = matrix(data = 0, nrow = nrow(numMat),
-                         ncol = length(tsbs[!tsbs %in% colnames(numMat)]))
-    colnames(tsb.include) = tsbs[!tsbs %in% colnames(numMat)]
-    rownames(tsb.include) = rownames(numMat)
-    numMat = cbind(numMat, tsb.include)
-    mat_origin = cbind(mat_origin, tsb.include)
+  if (!removeNonMutated) {
+    tsb.include <- matrix(
+      data = 0, nrow = nrow(numMat),
+      ncol = length(tsbs[!tsbs %in% colnames(numMat)])
+    )
+    colnames(tsb.include) <- tsbs[!tsbs %in% colnames(numMat)]
+    rownames(tsb.include) <- rownames(numMat)
+    numMat <- cbind(numMat, tsb.include)
+    mat_origin <- cbind(mat_origin, tsb.include)
   }
 
-  #If user wannts to keep given gene order
-  if(keepGeneOrder){
-    if(fill){
-      numMat = numMat[genes, , drop = FALSE]
-    }else{
-      if(GeneOrderSort){
-        numMat = sortByGeneOrder(m = numMat, g = genes)
-      }else{
-        numMat = numMat[genes, , drop = FALSE]
+  # If user wannts to keep given gene order
+  if (keepGeneOrder) {
+    if (fill) {
+      numMat <- numMat[genes, , drop = FALSE]
+    } else {
+      if (GeneOrderSort) {
+        numMat <- sortByGeneOrder(m = numMat, g = genes)
+      } else {
+        numMat <- numMat[genes, , drop = FALSE]
       }
     }
-    mat = mat_origin[rownames(numMat), , drop = FALSE]
-    mat = mat[,colnames(numMat), drop = FALSE]
+    mat <- mat_origin[rownames(numMat), , drop = FALSE]
+    mat <- mat[, colnames(numMat), drop = FALSE]
   }
 
-  if(sortByMutation){
-    numMat_temp = sortByMutation(numMat = numMat, maf = maf)
-    numMat = numMat[rownames(numMat_temp), colnames(numMat_temp), drop = FALSE]
+  if (sortByMutation) {
+    numMat_temp <- sortByMutation(numMat = numMat, maf = maf)
+    numMat <- numMat[rownames(numMat_temp), colnames(numMat_temp), drop = FALSE]
   }
 
-  samp_sum = data.table::copy(getSampleSummary(x = maf))
-  samp_sum[,total := NULL]
-  if("CNV_total" %in% colnames(samp_sum)){
-    samp_sum[,CNV_total := NULL]
+  samp_sum <- data.table::copy(getSampleSummary(x = maf))
+  samp_sum[, total := NULL]
+  if ("CNV_total" %in% colnames(samp_sum)) {
+    samp_sum[, CNV_total := NULL]
   }
 
-  if(!includeColBarCN){
-    suppressWarnings(samp_sum[,Amp := NULL])
-    suppressWarnings(samp_sum[,Del := NULL])
+  if (!includeColBarCN) {
+    suppressWarnings(samp_sum[, Amp := NULL])
+    suppressWarnings(samp_sum[, Del := NULL])
   }
   data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
-  samp_sum = samp_sum[,-1, drop = FALSE]
+  samp_sum <- samp_sum[, -1, drop = FALSE]
 
-  #Parse annotations
-  if(!is.null(clinicalFeatures)){
-    if(is.null(annotationDat)){
-      annotation = parse_annotation_dat(annotationDat = maf, clinicalFeatures = clinicalFeatures)
-    }else{
-      annotation = parse_annotation_dat(annotationDat = annotationDat, clinicalFeatures = clinicalFeatures)
+  # Parse annotations
+  if (!is.null(clinicalFeatures)) {
+    if (is.null(annotationDat)) {
+      annotation <- parse_annotation_dat(annotationDat = maf, clinicalFeatures = clinicalFeatures)
+    } else {
+      annotation <- parse_annotation_dat(annotationDat = annotationDat, clinicalFeatures = clinicalFeatures)
     }
-    annotation = annotation[colnames(numMat),, drop = FALSE]
+    annotation <- annotation[colnames(numMat), , drop = FALSE]
 
-    if(sortByAnnotation){
-      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = FALSE)
+    if (sortByAnnotation) {
+      numMat <- sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = FALSE)
     }
   }
 
-  if(!is.null(sampleOrder)){
-    sampleOrder = as.character(sampleOrder)
-    sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
-    if(length(sampleOrder) == 0){
+  if (!is.null(sampleOrder)) {
+    sampleOrder <- as.character(sampleOrder)
+    sampleOrder <- sampleOrder[sampleOrder %in% colnames(numMat)]
+    if (length(sampleOrder) == 0) {
       stop("None of the provided samples are present in the input MAF")
     }
-    numMat = numMat[,sampleOrder, drop = FALSE]
+    numMat <- numMat[, sampleOrder, drop = FALSE]
   }
 
-  gene_sum = apply(numMat, 1, function(x) length(x[x!=0]))
-  percent_alt = paste0(round(100*(apply(numMat, 1, function(x) length(x[x!=0]))/totSamps)), "%")
+  gene_sum <- apply(numMat, 1, function(x) length(x[x != 0]))
+  percent_alt <- paste0(round(100 * (apply(numMat, 1, function(x) length(x[x != 0])) / totSamps)), "%")
 
-  nonmut_samps = colnames(numMat)[!colnames(numMat) %in% rownames(samp_sum)]
-  if(length(nonmut_samps) > 0){
-    samp_sum_missing_samps = matrix(data = 0, nrow = length(nonmut_samps), ncol = ncol(samp_sum))
-    colnames(samp_sum_missing_samps) = colnames(samp_sum)
-    rownames(samp_sum_missing_samps) = nonmut_samps
-    samp_sum = rbind(samp_sum, samp_sum_missing_samps)
+  nonmut_samps <- colnames(numMat)[!colnames(numMat) %in% rownames(samp_sum)]
+  if (length(nonmut_samps) > 0) {
+    samp_sum_missing_samps <- matrix(data = 0, nrow = length(nonmut_samps), ncol = ncol(samp_sum))
+    colnames(samp_sum_missing_samps) <- colnames(samp_sum)
+    rownames(samp_sum_missing_samps) <- nonmut_samps
+    samp_sum <- rbind(samp_sum, samp_sum_missing_samps)
   }
 
-  if(colbar_pathway){
-    samp_sum = getSampleSummary(subsetMaf(maf = maf, genes = genes))
-    samp_sum[,total := NULL]
-    if("CNV_total" %in% colnames(samp_sum)){
-      samp_sum[,CNV_total := NULL]
+  if (colbar_pathway) {
+    samp_sum <- getSampleSummary(subsetMaf(maf = maf, genes = genes))
+    samp_sum[, total := NULL]
+    if ("CNV_total" %in% colnames(samp_sum)) {
+      samp_sum[, CNV_total := NULL]
     }
 
-    if(!includeColBarCN){
-      suppressWarnings(samp_sum[,Amp := NULL])
-      suppressWarnings(samp_sum[,Del := NULL])
+    if (!includeColBarCN) {
+      suppressWarnings(samp_sum[, Amp := NULL])
+      suppressWarnings(samp_sum[, Del := NULL])
     }
     data.table::setDF(x = samp_sum, rownames = as.character(samp_sum$Tumor_Sample_Barcode))
-    samp_sum = samp_sum[,-1]
-    top_bar_data = t(samp_sum[colnames(numMat),, drop = FALSE])
-  }else{
-    top_bar_data = t(samp_sum[colnames(numMat),, drop = FALSE])
+    samp_sum <- samp_sum[, -1]
+    top_bar_data <- t(samp_sum[colnames(numMat), , drop = FALSE])
+  } else {
+    top_bar_data <- t(samp_sum[colnames(numMat), , drop = FALSE])
   }
 
-  if(is.null(colors)){
-    vc_col = get_vcColors(websafe = FALSE)
-  }else{
-    vc_col = colors
-    if(!"pathway" %in% names(vc_col)){
-      vc_col = c(vc_col, "pathway" = "#535C68FF")
+  if (is.null(colors)) {
+    vc_col <- get_vcColors(websafe = FALSE)
+  } else {
+    vc_col <- colors
+    if (!"pathway" %in% names(vc_col)) {
+      vc_col <- c(vc_col, "pathway" = "#535C68FF")
     }
   }
-  #VC codes
-  vc_codes = update_vc_codes(om_op = om)
-  vc_col = update_colors(x = vc_codes, y = vc_col)
+  # VC codes
+  vc_codes <- update_vc_codes(om_op = om)
+  vc_col <- update_colors(x = vc_codes, y = vc_col)
 
-  if(nrow(numMat) == 1){
+  if (nrow(numMat) == 1) {
     stop("Oncoplot requires at-least two genes for plottng.")
   }
 
-  if(!is.null(pathways)){
-    vc_codes = c(vc_codes, '99' = 'pathway')
+  if (!is.null(pathways)) {
+    vc_codes <- c(vc_codes, "99" = "pathway")
 
-    #Order genes in matrix by most frequently altered gene, followed by pathway size
-    temp_dat = data.table::data.table(Gene = rownames(numMat), percent_alt)
-    temp_dat = merge(temp_dat, pathways, all.x = TRUE)
-    temp_dat[is.na(temp_dat)] = "Unknown"
-    temp_dat$pct_alt = as.numeric(gsub(pattern = "%", replacement = "", x = temp_dat$percent_alt))
-    temp_dat = split(temp_dat, as.factor(as.character(temp_dat$Pathway)))
+    # Order genes in matrix by most frequently altered gene, followed by pathway size
+    temp_dat <- data.table::data.table(Gene = rownames(numMat), percent_alt)
+    temp_dat <- merge(temp_dat, pathways, all.x = TRUE)
+    temp_dat[is.na(temp_dat)] <- "Unknown"
+    temp_dat$pct_alt <- as.numeric(gsub(pattern = "%", replacement = "", x = temp_dat$percent_alt))
+    temp_dat <- split(temp_dat, as.factor(as.character(temp_dat$Pathway)))
 
-    temp_dat_freq = lapply(temp_dat, function(x){
+    temp_dat_freq <- lapply(temp_dat, function(x) {
       data.table::data.table(n = nrow(x), max_alt = max(x$pct_alt))
     })
-    temp_dat_freq = data.table::rbindlist(l = temp_dat_freq, use.names = TRUE, fill = TRUE, idcol = "Pathway")
-    temp_dat_ord = temp_dat_freq[order(max_alt, n, decreasing = TRUE)][, Pathway]
-    temp_dat = lapply(temp_dat, function(x){x[order(pct_alt, decreasing = TRUE)]})[temp_dat_ord]
+    temp_dat_freq <- data.table::rbindlist(l = temp_dat_freq, use.names = TRUE, fill = TRUE, idcol = "Pathway")
+    temp_dat_ord <- temp_dat_freq[order(max_alt, n, decreasing = TRUE)][, Pathway]
+    temp_dat <- lapply(temp_dat, function(x) {
+      x[order(pct_alt, decreasing = TRUE)]
+    })[temp_dat_ord]
 
-    if("Unknown" %in% names(temp_dat)){
-      temp_dat_ord = c(grep(pattern = "Unknown", x = names(temp_dat), invert = TRUE, value = TRUE), "Unknown")
-      temp_dat = temp_dat[temp_dat_ord]
+    if ("Unknown" %in% names(temp_dat)) {
+      temp_dat_ord <- c(grep(pattern = "Unknown", x = names(temp_dat), invert = TRUE, value = TRUE), "Unknown")
+      temp_dat <- temp_dat[temp_dat_ord]
     }
 
-    nm = lapply(seq_along(temp_dat), function(i){
-      x = numMat[temp_dat[[i]]$Gene,, drop = FALSE]
-      x = rbind(x, apply(x, 2, function(y) ifelse(test = sum(y) == 0, yes = 0, no = 99)))
-      rownames(x)[nrow(x)] = names(temp_dat)[i]
+    nm <- lapply(seq_along(temp_dat), function(i) {
+      x <- numMat[temp_dat[[i]]$Gene, , drop = FALSE]
+      x <- rbind(x, apply(x, 2, function(y) ifelse(test = sum(y) == 0, yes = 0, no = 99)))
+      rownames(x)[nrow(x)] <- names(temp_dat)[i]
       x
     })
-    numMat = do.call(rbind, nm)
+    numMat <- do.call(rbind, nm)
 
-    #Add pathway information to the character matrix
-    mat_origin_path = rownames(numMat)[!rownames(numMat) %in% rownames(mat_origin)]
-    mat_origin_path = numMat[mat_origin_path,, drop = FALSE]
-    mat_origin_path[mat_origin_path == 0] = ""
-    mat_origin_path[mat_origin_path == "99"] = "pathway"
-    mat_origin_path = mat_origin_path[,colnames(mat_origin), drop = FALSE]
-    mat_origin = rbind(mat_origin, mat_origin_path)
-    mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
+    # Add pathway information to the character matrix
+    mat_origin_path <- rownames(numMat)[!rownames(numMat) %in% rownames(mat_origin)]
+    mat_origin_path <- numMat[mat_origin_path, , drop = FALSE]
+    mat_origin_path[mat_origin_path == 0] <- ""
+    mat_origin_path[mat_origin_path == "99"] <- "pathway"
+    mat_origin_path <- mat_origin_path[, colnames(mat_origin), drop = FALSE]
+    mat_origin <- rbind(mat_origin, mat_origin_path)
+    mat_origin <- mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
   }
 
-  #Plot layout
-  plot_layout(clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar, anno_height = anno_height,
-              drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = leftBarData, legend_height = legend_height)
+  # Plot layout
+  plot_layout(
+    clinicalFeatures = clinicalFeatures, drawRowBar = drawRowBar, anno_height = anno_height,
+    drawColBar = drawColBar, draw_titv = draw_titv, exprsTbl = leftBarData, legend_height = legend_height
+  )
 
-  #01: Draw scale axis for left barplot table
-  leftBarTitle = NULL
-  if(!is.null(leftBarData)){
-    leftBarTitle = colnames(leftBarData)[2]
-    colnames(leftBarData) = c('genes', 'exprn')
+  # 01: Draw scale axis for left barplot table
+  leftBarTitle <- NULL
+  if (!is.null(leftBarData)) {
+    leftBarTitle <- colnames(leftBarData)[2]
+    colnames(leftBarData) <- c("genes", "exprn")
     data.table::setDF(x = leftBarData, rownames = as.character(leftBarData$genes))
 
-    missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(leftBarData)]
-    if(length(missing_samps) > 0){
-      temp_data = data.frame(
+    missing_samps <- rownames(numMat)[!rownames(numMat) %in% rownames(leftBarData)]
+    if (length(missing_samps) > 0) {
+      temp_data <- data.frame(
         row.names = missing_samps,
         genes = missing_samps,
         exprn = rep(0, length(missing_samps)),
         stringsAsFactors = FALSE
       )
-      leftBarData = rbind(leftBarData, temp_data)
+      leftBarData <- rbind(leftBarData, temp_data)
     }
-    leftBarData = leftBarData[rownames(numMat),, drop = FALSE]
-    #leftBarData = leftBarData[genes,, drop = FALSE]
+    leftBarData <- leftBarData[rownames(numMat), , drop = FALSE]
+    # leftBarData = leftBarData[genes,, drop = FALSE]
 
-    if(is.null(leftBarLims)){
-      exprs_bar_lims = round(range(leftBarData$exprn, na.rm = TRUE), digits = 2)
-    }else{
-      exprs_bar_lims = leftBarLims
+    if (is.null(leftBarLims)) {
+      exprs_bar_lims <- round(range(leftBarData$exprn, na.rm = TRUE), digits = 2)
+    } else {
+      exprs_bar_lims <- leftBarLims
     }
 
-    if(drawColBar){
-      par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
-      plot(x = NA, y = NA, type = "n", axes = FALSE,
-           xlim = exprs_bar_lims, ylim = c(0, 1), xaxs = "i")
+    if (drawColBar) {
+      par(mar = c(0.25, 0, 1, 2), xpd = TRUE)
+      plot(
+        x = NA, y = NA, type = "n", axes = FALSE,
+        xlim = exprs_bar_lims, ylim = c(0, 1), xaxs = "i"
+      )
     }
   }
 
-  #02: Draw top bar plot
-  if(drawColBar & is.null(topBarData)){
-    top_bar_data = top_bar_data[,colnames(numMat), drop = FALSE]
-    if(drawRowBar){
-      par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
-    }else{
-      par(mar = c(0.25 , gene_mar, 2, 5), xpd = TRUE)
+  # 02: Draw top bar plot
+  if (drawColBar & is.null(topBarData)) {
+    top_bar_data <- top_bar_data[, colnames(numMat), drop = FALSE]
+    if (drawRowBar) {
+      par(mar = c(0.25, gene_mar, 2, 3), xpd = TRUE)
+    } else {
+      par(mar = c(0.25, gene_mar, 2, 5), xpd = TRUE)
     }
 
-    if(logColBar){
-      top_bar_data = apply(top_bar_data, 2, function(x) {
-        x_fract = x / sum(x)
-        x_log_total = log10(sum(x))
+    if (logColBar) {
+      top_bar_data <- apply(top_bar_data, 2, function(x) {
+        x_fract <- x / sum(x)
+        x_log_total <- log10(sum(x))
         x_fract * x_log_total
       })
-      top_bar_data[is.infinite(top_bar_data)] = 0
+      top_bar_data[is.infinite(top_bar_data)] <- 0
     }
 
-    plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(top_bar_data)), ylim = c(0, max(colSums(x = top_bar_data, na.rm = TRUE))),
-         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
+    plot(
+      x = NA, y = NA, type = "n", xlim = c(0, ncol(top_bar_data)), ylim = c(0, max(colSums(x = top_bar_data, na.rm = TRUE))),
+      axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i"
+    )
     axis(side = 2, at = c(0, round(max(colSums(top_bar_data, na.rm = TRUE)))), las = 2, line = 0.5)
-    for(i in 1:ncol(top_bar_data)){
-      x = top_bar_data[,i]
-      names(x) = rownames(top_bar_data)
-      x = x[!x == 0]
-      if(length(x) > 0){
-        rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
-             ytop = cumsum(x), col = vc_col[names(x)], border = NA, lwd = 0)
+    for (i in 1:ncol(top_bar_data)) {
+      x <- top_bar_data[, i]
+      names(x) <- rownames(top_bar_data)
+      x <- x[!x == 0]
+      if (length(x) > 0) {
+        rect(
+          xleft = i - 1, ybottom = c(0, cumsum(x)[1:(length(x) - 1)]), xright = i - 0.1,
+          ytop = cumsum(x), col = vc_col[names(x)], border = NA, lwd = 0
+        )
       }
     }
-    if(logColBar){
+    if (logColBar) {
       mtext(text = "(log10)", side = 2, line = 2, cex = 0.6)
     }
-  }else if(!is.null(topBarData) & drawColBar){
+  } else if (!is.null(topBarData) & drawColBar) {
     # Draw extra clinical data in top
-    if(drawRowBar){
-      par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
-    }else{
-      par(mar = c(0.25 , gene_mar, 2, 5), xpd = TRUE)
+    if (drawRowBar) {
+      par(mar = c(0.25, gene_mar, 2, 3), xpd = TRUE)
+    } else {
+      par(mar = c(0.25, gene_mar, 2, 5), xpd = TRUE)
     }
 
-    if(is.data.frame(topBarData)){
-      extdata = data.table::copy(x = topBarData)
-      colnames(extdata)[1] = "Tumor_Sample_Barcode"
+    if (is.data.frame(topBarData)) {
+      extdata <- data.table::copy(x = topBarData)
+      colnames(extdata)[1] <- "Tumor_Sample_Barcode"
       rownames(extdata) <- extdata$Tumor_Sample_Barcode
-    }else{
+    } else {
       message("Top barplot data is derived from clinical column: ", topBarData)
-      extdata <- data.frame(maf@clinical.data)[,c("Tumor_Sample_Barcode", topBarData)]
+      extdata <- data.frame(maf@clinical.data)[, c("Tumor_Sample_Barcode", topBarData)]
       rownames(extdata) <- extdata$Tumor_Sample_Barcode
     }
 
-    topbar_title = colnames(extdata)[2]
+    topbar_title <- colnames(extdata)[2]
 
-    colnames(extdata)[2] = "barheights"
+    colnames(extdata)[2] <- "barheights"
     extdata[, "barheights"] <- as.numeric(as.character(extdata[, "barheights"]))
 
-    if(!all(colnames(top_bar_data) %in% rownames(extdata))){
-      missing_topbars = colnames(top_bar_data)[!colnames(top_bar_data) %in% rownames(extdata)]
-      warning("Missing column barplot data for ",  length(missing_topbars), " samples")
-      extdata = rbind(extdata, data.frame(row.names = missing_topbars, Tumor_Sample_Barcode = missing_topbars, barheights = 0,stringsAsFactors = FALSE))
+    if (!all(colnames(top_bar_data) %in% rownames(extdata))) {
+      missing_topbars <- colnames(top_bar_data)[!colnames(top_bar_data) %in% rownames(extdata)]
+      warning("Missing column barplot data for ", length(missing_topbars), " samples")
+      extdata <- rbind(extdata, data.frame(row.names = missing_topbars, Tumor_Sample_Barcode = missing_topbars, barheights = 0, stringsAsFactors = FALSE))
     }
 
-    extdata <- extdata[colnames(top_bar_data),]
+    extdata <- extdata[colnames(top_bar_data), ]
 
-    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = range(extdata[,"barheights"], na.rm = TRUE),
-         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
-    axis(side = 2, at = round(range(extdata[,"barheights"], na.rm = TRUE)), las = 2, line = 0.5)
+    plot(
+      x = NA, y = NA, type = "n", xlim = c(0, nrow(extdata)), ylim = range(extdata[, "barheights"], na.rm = TRUE),
+      axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i"
+    )
+    axis(side = 2, at = round(range(extdata[, "barheights"], na.rm = TRUE)), las = 2, line = 0.5)
 
-    for(i in 1:nrow(extdata)){
-      graphics::rect(xleft = i-1, xright = i-0.1, ybottom = 0, ytop = as.numeric(extdata[i, "barheights"]),
-                     col = "#535c68", border = NA, lwd = 0)
+    for (i in 1:nrow(extdata)) {
+      graphics::rect(
+        xleft = i - 1, xright = i - 0.1, ybottom = 0, ytop = as.numeric(extdata[i, "barheights"]),
+        col = "#535c68", border = NA, lwd = 0
+      )
     }
     title(ylab = topbar_title, font = 1, cex.lab = legendFontSize, xpd = TRUE)
   }
 
-  #03: Draw scale for right barplot
-  rightBarTitle = NULL
-  if(drawRowBar){
-    if(is.null(rightBarData)){
-      side_bar_lims = c(0, max(unlist(apply(numMat, 1, function(x) cumsum(table(x[x!=0])))), na.rm = TRUE))
-    }else{
-      rightBarTitle = colnames(rightBarData)[2]
-      colnames(rightBarData) = c('genes', 'exprn')
+  # 03: Draw scale for right barplot
+  rightBarTitle <- NULL
+  if (drawRowBar) {
+    if (is.null(rightBarData)) {
+      side_bar_lims <- c(0, max(unlist(apply(numMat, 1, function(x) cumsum(table(x[x != 0])))), na.rm = TRUE))
+    } else {
+      rightBarTitle <- colnames(rightBarData)[2]
+      colnames(rightBarData) <- c("genes", "exprn")
       data.table::setDF(x = rightBarData, rownames = as.character(rightBarData$genes))
 
-      missing_samps = rownames(numMat)[!rownames(numMat) %in% rownames(rightBarData)]
-      if(length(missing_samps) > 0){
-        temp_data = data.frame(
+      missing_samps <- rownames(numMat)[!rownames(numMat) %in% rownames(rightBarData)]
+      if (length(missing_samps) > 0) {
+        temp_data <- data.frame(
           row.names = missing_samps,
           genes = missing_samps,
           exprn = rep(0, length(missing_samps)),
           stringsAsFactors = FALSE
         )
-        rightBarData = rbind(rightBarData, temp_data)
+        rightBarData <- rbind(rightBarData, temp_data)
       }
-      rightBarData = rightBarData[rownames(numMat),, drop = FALSE]
+      rightBarData <- rightBarData[rownames(numMat), , drop = FALSE]
 
-      if(is.null(rightBarLims)){
-        side_bar_lims = round(range(rightBarData$exprn, na.rm = TRUE), digits = 2)
-      }else{
-        side_bar_lims = rightBarLims
+      if (is.null(rightBarLims)) {
+        side_bar_lims <- round(range(rightBarData$exprn, na.rm = TRUE), digits = 2)
+      } else {
+        side_bar_lims <- rightBarLims
       }
-
     }
 
-    if(drawColBar){
-      par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
-      plot(x = NA, y = NA, type = "n", axes = FALSE,
-           xlim = side_bar_lims, ylim = c(0, 1), xaxs = "i")
+    if (drawColBar) {
+      par(mar = c(0.25, 0, 1, 2), xpd = TRUE)
+      plot(
+        x = NA, y = NA, type = "n", axes = FALSE,
+        xlim = side_bar_lims, ylim = c(0, 1), xaxs = "i"
+      )
     }
   }
 
-  #Draw expression barplot
-  if(!is.null(leftBarData)){
-
-  if(showTumorSampleBarcodes){
-    if(!drawRowBar & !drawColBar){
-      par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
-    }else if(!drawRowBar & drawColBar){
-      par(mar = c(barcode_mar, 1, 0, 5), xpd = TRUE)
-    }else if(drawRowBar & !drawColBar){
-      par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
-    } else{
-      par(mar = c(barcode_mar, 1, 0, 0), xpd = TRUE)
+  # Draw expression barplot
+  if (!is.null(leftBarData)) {
+    if (showTumorSampleBarcodes) {
+      if (!drawRowBar & !drawColBar) {
+        par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
+      } else if (!drawRowBar & drawColBar) {
+        par(mar = c(barcode_mar, 1, 0, 5), xpd = TRUE)
+      } else if (drawRowBar & !drawColBar) {
+        par(mar = c(barcode_mar, 1, 2.5, 0), xpd = TRUE)
+      } else {
+        par(mar = c(barcode_mar, 1, 0, 0), xpd = TRUE)
+      }
+    } else {
+      if (!drawRowBar & !drawColBar) {
+        par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
+      } else if (!drawRowBar & drawColBar) {
+        par(mar = c(0.5, 1, 0, 5), xpd = TRUE)
+      } else if (drawRowBar & !drawColBar) {
+        par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
+      } else {
+        par(mar = c(0.5, 1, 0, 0), xpd = TRUE)
+      }
     }
-  }else{
-    if(!drawRowBar & !drawColBar){
-      par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
-    }else if(!drawRowBar & drawColBar){
-      par(mar = c(0.5, 1, 0, 5), xpd = TRUE)
-    }else if(drawRowBar & !drawColBar){
-      par(mar = c(0.5, 1, 2.5, 0), xpd = TRUE)
-    } else{
-      par(mar = c(0.5, 1, 0, 0), xpd = TRUE)
-    }
-  }
 
-    plot(x = NA, y = NA, type = "n", xlim = rev(-exprs_bar_lims), ylim = c(0, nrow(leftBarData)),
-         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
-    for(i in 1:nrow(leftBarData)){
-      x = rev(leftBarData$exprn)[i]
-      rect(ybottom = i-1, xleft = -x, ytop = i-0.1,
-           xright = 0, col = "#535c68", border = NA, lwd = 0)
+    plot(
+      x = NA, y = NA, type = "n", xlim = rev(-exprs_bar_lims), ylim = c(0, nrow(leftBarData)),
+      axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i"
+    ) #
+    for (i in 1:nrow(leftBarData)) {
+      x <- rev(leftBarData$exprn)[i]
+      rect(
+        ybottom = i - 1, xleft = -x, ytop = i - 0.1,
+        xright = 0, col = "#535c68", border = NA, lwd = 0
+      )
     }
     axis(side = 3, at = rev(-exprs_bar_lims), outer = FALSE, line = 0.25, labels = rev(exprs_bar_lims))
     mtext(text = leftBarTitle, side = 3, line = 0.50, cex = 0.6)
   }
 
-  #04: Draw the main matrix
-  if(showTumorSampleBarcodes){
-    if(!drawRowBar & !drawColBar){
+  # 04: Draw the main matrix
+  if (showTumorSampleBarcodes) {
+    if (!drawRowBar & !drawColBar) {
       par(mar = c(barcode_mar, gene_mar, 2.5, 5), xpd = TRUE)
-    }else if(!drawRowBar & drawColBar){
+    } else if (!drawRowBar & drawColBar) {
       par(mar = c(barcode_mar, gene_mar, 0, 5), xpd = TRUE)
-    }else if(drawRowBar & !drawColBar){
+    } else if (drawRowBar & !drawColBar) {
       par(mar = c(barcode_mar, gene_mar, 2.5, 3), xpd = TRUE)
-    } else{
+    } else {
       par(mar = c(barcode_mar, gene_mar, 0, 3), xpd = TRUE)
     }
-  }else{
-    if(!drawRowBar & !drawColBar){
+  } else {
+    if (!drawRowBar & !drawColBar) {
       par(mar = c(0.5, gene_mar, 2.5, 5), xpd = TRUE)
-    }else if(!drawRowBar & drawColBar){
+    } else if (!drawRowBar & drawColBar) {
       par(mar = c(0.5, gene_mar, 0, 5), xpd = TRUE)
-    }else if(drawRowBar & !drawColBar){
+    } else if (drawRowBar & !drawColBar) {
       par(mar = c(0.5, gene_mar, 2.5, 3), xpd = TRUE)
-    } else{
+    } else {
       par(mar = c(0.5, gene_mar, 0, 3), xpd = TRUE)
     }
   }
 
-  nm = t(apply(numMat, 2, rev))
-  nm[nm == 0] = NA
-  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
-        xlab="", ylab="", col = "white") #col = "#FC8D62"
-  #Plot for all variant classifications
-  vc_codes_temp = vc_codes[!vc_codes %in% om$cnvc]
-  for(i in 2:length(names(vc_codes_temp))){
-    vc_code = vc_codes_temp[i]
-    col = vc_col[vc_code]
-    nm = t(apply(numMat, 2, rev))
-    #print(names(vc_code))
-    nm[nm != names(vc_code)] = NA
-    #print(paste0(vc_code, " ", col))
-    #Suppress warning due to min/max applied to a vector of NAs; Issue: #286
-    #This is an harmless warning as matrix is looped over all VC's and missing VC's form NA's (which are plotted in gray)
-    suppressWarnings(image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
-          xlab="", ylab="", col = col, add = TRUE))
+  nm <- t(apply(numMat, 2, rev))
+  nm[nm == 0] <- NA
+  image(
+    x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt = "n", yaxt = "n",
+    xlab = "", ylab = "", col = "white"
+  ) # col = "#FC8D62"
+  # Plot for all variant classifications
+  vc_codes_temp <- vc_codes[!vc_codes %in% om$cnvc]
+  for (i in 2:length(names(vc_codes_temp))) {
+    vc_code <- vc_codes_temp[i]
+    col <- vc_col[vc_code]
+    nm <- t(apply(numMat, 2, rev))
+    # print(names(vc_code))
+    nm[nm != names(vc_code)] <- NA
+    # print(paste0(vc_code, " ", col))
+    # Suppress warning due to min/max applied to a vector of NAs; Issue: #286
+    # This is an harmless warning as matrix is looped over all VC's and missing VC's form NA's (which are plotted in gray)
+    suppressWarnings(image(
+      x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt = "n", yaxt = "n",
+      xlab = "", ylab = "", col = col, add = TRUE
+    ))
   }
 
-  #Add blanks
-  nm = t(apply(numMat, 2, rev))
-  nm[nm != 0] = NA
-  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+  # Add blanks
+  nm <- t(apply(numMat, 2, rev))
+  nm[nm != 0] <- NA
+  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt = "n", yaxt = "n", xlab = "", ylab = "", col = bgCol, add = TRUE)
 
 
-  #Add CNVs if any
-  mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
-  if(writeMatrix){
+  # Add CNVs if any
+  mat_origin <- mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
+  if (writeMatrix) {
     write.table(mat_origin, "onco_matrix.txt", sep = "\t", quote = FALSE)
   }
-  mo = t(apply(mat_origin, 2, rev))
+  mo <- t(apply(mat_origin, 2, rev))
 
-  ##Complex events (mutated as well as CN altered)
-  complex_events = unique(grep(pattern = ";", x = mo, value = TRUE))
+  ## Complex events (mutated as well as CN altered)
+  complex_events <- unique(grep(pattern = ";", x = mo, value = TRUE))
 
-  if(length(complex_events) > 0){
-    for(i in 1:length(complex_events)){
-      ce = complex_events[i]
-      #mo = t(apply(mat_origin, 2, rev))
-      ce_idx = which(mo == ce, arr.ind = TRUE)
+  if (length(complex_events) > 0) {
+    for (i in 1:length(complex_events)) {
+      ce <- complex_events[i]
+      # mo = t(apply(mat_origin, 2, rev))
+      ce_idx <- which(mo == ce, arr.ind = TRUE)
 
-      ce = unlist(strsplit(x = ce, split = ";", fixed = TRUE))
+      ce <- unlist(strsplit(x = ce, split = ";", fixed = TRUE))
 
-      nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
-      nm_temp[ce_idx] = 0
-      image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
-            yaxt="n", xlab="", ylab="", col = vc_col[ce[2]], add = TRUE)
+      nm_temp <- matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
+      nm_temp[ce_idx] <- 0
+      image(
+        x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt = "n",
+        yaxt = "n", xlab = "", ylab = "", col = vc_col[ce[2]], add = TRUE
+      )
 
-      ce_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
-      for(i in seq_len(nrow(ce_idx))){
-        rowi = ce_idx[i,1]
-        coli = ce_idx[i,2]
-        rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col[ce[1]], border = NA, lwd = 0)
+      ce_idx <- which(t(nm_temp) == 0, arr.ind = TRUE)
+      for (i in seq_len(nrow(ce_idx))) {
+        rowi <- ce_idx[i, 1]
+        coli <- ce_idx[i, 2]
+        rect(xleft = coli - 0.5, ybottom = rowi - 0.25, xright = coli + 0.5, ytop = rowi + 0.25, col = vc_col[ce[1]], border = NA, lwd = 0)
       }
     }
   }
 
-  for(cnevent in om$cnvc){
-    cn_idx = which(mo == cnevent, arr.ind = TRUE)
-    if(nrow(cn_idx) > 0){
-      nm_temp = matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
-      nm_temp[cn_idx] = 0
-      image(x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt="n",
-            yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
-      cn_idx = which(t(nm_temp) == 0, arr.ind = TRUE)
-      for(i in seq_len(nrow(cn_idx))){
-        rowi = cn_idx[i,1]
-        coli = cn_idx[i,2]
-        rect(xleft = coli-0.5, ybottom = rowi-0.25, xright = coli+0.5, ytop = rowi+0.25, col = vc_col[cnevent], border = NA, lwd = 0)
+  for (cnevent in om$cnvc) {
+    cn_idx <- which(mo == cnevent, arr.ind = TRUE)
+    if (nrow(cn_idx) > 0) {
+      nm_temp <- matrix(NA, nrow = nrow(nm), ncol = ncol(nm))
+      nm_temp[cn_idx] <- 0
+      image(
+        x = 1:nrow(nm_temp), y = 1:ncol(nm_temp), z = nm_temp, axes = FALSE, xaxt = "n",
+        yaxt = "n", xlab = "", ylab = "", col = bgCol, add = TRUE
+      )
+      cn_idx <- which(t(nm_temp) == 0, arr.ind = TRUE)
+      for (i in seq_len(nrow(cn_idx))) {
+        rowi <- cn_idx[i, 1]
+        coli <- cn_idx[i, 2]
+        rect(xleft = coli - 0.5, ybottom = rowi - 0.25, xright = coli + 0.5, ytop = rowi + 0.25, col = vc_col[cnevent], border = NA, lwd = 0)
       }
     }
   }
 
-  #Add grids
+  # Add grids
   abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
   abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
 
-  #Add boxes if pathways are opted
-  if(!is.null(pathways)){
-    temp_dat = lapply(seq_along(temp_dat), function(i){
+  # Add boxes if pathways are opted
+  if (!is.null(pathways)) {
+    temp_dat <- lapply(seq_along(temp_dat), function(i) {
       data.table::rbindlist(list(temp_dat[[i]], data.table::data.table(Gene = names(temp_dat)[i])), use.names = TRUE, fill = TRUE)
     })
-    temp_dat = data.table::rbindlist(l = temp_dat, use.names = TRUE, fill = TRUE)
-    #return(temp_dat)
+    temp_dat <- data.table::rbindlist(l = temp_dat, use.names = TRUE, fill = TRUE)
+    # return(temp_dat)
     temp_dat[, row_id := nrow(temp_dat):1]
-    temp_dat = split(temp_dat, as.factor(temp_dat$Pathway))
-    lapply(temp_dat, function(td){
-      rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = "#535c68", lwd = 2)
+    temp_dat <- split(temp_dat, as.factor(temp_dat$Pathway))
+    lapply(temp_dat, function(td) {
+      rect(xleft = 0.5, ybottom = min(td$row_id) - 0.499, xright = nrow(nm) + 0.5, ytop = max(td$row_id) + 0.499, border = "#535c68", lwd = 2)
     })
 
-    #New percent alt with pathways
-    percent_alt = rev(paste0(apply(nm, 2, function(x){
-      round(length(x[is.na(x)])/totSamps * 100)
+    # New percent alt with pathways
+    percent_alt <- rev(paste0(apply(nm, 2, function(x) {
+      round(length(x[is.na(x)]) / totSamps * 100)
     }), "%"))
   }
 
-  #Draw if any additional features are requested
-  additionalFeature_legend = FALSE
-  if(!is.null(additionalFeature)){
-    #If its a list, multi features to be mapped
-    if(is.list(additionalFeature)){
-      for(af_idx in seq_along(additionalFeature)){
-        af = additionalFeature[[af_idx]]
-        if(length(af) < 2){
+  # Draw if any additional features are requested
+  additionalFeature_legend <- FALSE
+  if (!is.null(additionalFeature)) {
+    # If its a list, multi features to be mapped
+    if (is.list(additionalFeature)) {
+      for (af_idx in seq_along(additionalFeature)) {
+        af <- additionalFeature[[af_idx]]
+        if (length(af) < 2) {
           stop("additionalFeature must be of length two. See ?oncoplot for details.")
         }
-        af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = af[1], includeSyn = FALSE, mafObj = FALSE)
-        if(length(which(colnames(af_dat) == af[1])) == 0){
+        af_dat <- subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = af[1], includeSyn = FALSE, mafObj = FALSE)
+        if (length(which(colnames(af_dat) == af[1])) == 0) {
           message(paste0("Column ", af[1], " not found in maf. Here are available fields.."))
           print(getFields(maf))
           stop()
         }
-        colnames(af_dat)[which(colnames(af_dat) == af[1])] = 'temp_af'
-        af_dat = af_dat[temp_af %in% af[2]]
-        if(nrow(af_dat) == 0){
+        colnames(af_dat)[which(colnames(af_dat) == af[1])] <- "temp_af"
+        af_dat <- af_dat[temp_af %in% af[2]]
+        if (nrow(af_dat) == 0) {
           warning(paste0("No samples are enriched for ", af[2], " in ", af[1]))
-        }else{
-          af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
-          af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
-          nm = t(apply(numMat, 2, rev))
+        } else {
+          af_mat <- data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
+          af_mat <- as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
+          nm <- t(apply(numMat, 2, rev))
 
-          if(length(additionalFeaturePch) != length(additionalFeature)){
+          if (length(additionalFeaturePch) != length(additionalFeature)) {
             warning("Provided pch for additional features are recycled")
-            additionalFeaturePch = rep(additionalFeaturePch, length(additionalFeature))
+            additionalFeaturePch <- rep(additionalFeaturePch, length(additionalFeature))
           }
 
-          if(length(additionalFeatureCol) != length(additionalFeature)){
+          if (length(additionalFeatureCol) != length(additionalFeature)) {
             warning("Provided colors for additional features are recycled")
-            additionalFeatureCol = rep(additionalFeatureCol, length(additionalFeature))
+            additionalFeatureCol <- rep(additionalFeatureCol, length(additionalFeature))
           }
 
-          lapply(seq_len(nrow(af_mat)), function(i){
-            af_i = af_mat[i,, drop = FALSE]
-            af_i_genes = colnames(af_i)[which(af_i > 0)]
-            af_i_sample = rownames(af_i)
+          lapply(seq_len(nrow(af_mat)), function(i) {
+            af_i <- af_mat[i, , drop = FALSE]
+            af_i_genes <- colnames(af_i)[which(af_i > 0)]
+            af_i_sample <- rownames(af_i)
 
-            lapply(af_i_genes, function(ig){
-              af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
-                                  which(colnames(nm) == ig)),
-                                nrow = 1)
-              points(af_i_mat, pch = additionalFeaturePch[af_idx], col= additionalFeatureCol[af_idx], cex = additionalFeatureCex)
+            lapply(af_i_genes, function(ig) {
+              af_i_mat <- matrix(c(
+                which(rownames(nm) == af_i_sample),
+                which(colnames(nm) == ig)
+              ),
+              nrow = 1
+              )
+              points(af_i_mat, pch = additionalFeaturePch[af_idx], col = additionalFeatureCol[af_idx], cex = additionalFeatureCex)
             })
           })
-          additionalFeature_legend = TRUE
+          additionalFeature_legend <- TRUE
         }
       }
-    }else{
-      if(length(additionalFeature) < 2){
+    } else {
+      if (length(additionalFeature) < 2) {
         stop("additionalFeature must be of length two. See ?oncoplot for details.")
       }
-      af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = additionalFeature[1], includeSyn = FALSE, mafObj = FALSE)
-      if(length(which(colnames(af_dat) == additionalFeature[1])) == 0){
+      af_dat <- subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = additionalFeature[1], includeSyn = FALSE, mafObj = FALSE)
+      if (length(which(colnames(af_dat) == additionalFeature[1])) == 0) {
         message(paste0("Column ", additionalFeature[1], " not found in maf. Here are available fields.."))
         print(getFields(maf))
         stop()
       }
-      colnames(af_dat)[which(colnames(af_dat) == additionalFeature[1])] = 'temp_af'
-      af_dat = af_dat[temp_af %in% additionalFeature[2]]
-      if(nrow(af_dat) == 0){
+      colnames(af_dat)[which(colnames(af_dat) == additionalFeature[1])] <- "temp_af"
+      af_dat <- af_dat[temp_af %in% additionalFeature[2]]
+      if (nrow(af_dat) == 0) {
         warning(paste0("No samples are enriched for ", additionalFeature[2], " in ", additionalFeature[1]))
-      }else{
-        af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
-        af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
+      } else {
+        af_mat <- data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
+        af_mat <- as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
 
-        nm = t(apply(numMat, 2, rev))
+        nm <- t(apply(numMat, 2, rev))
 
-        lapply(seq_len(nrow(af_mat)), function(i){
-          af_i = af_mat[i,, drop = FALSE]
-          af_i_genes = colnames(af_i)[which(af_i > 0)]
-          af_i_sample = rownames(af_i)
+        lapply(seq_len(nrow(af_mat)), function(i) {
+          af_i <- af_mat[i, , drop = FALSE]
+          af_i_genes <- colnames(af_i)[which(af_i > 0)]
+          af_i_sample <- rownames(af_i)
 
-          lapply(af_i_genes, function(ig){
-            af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
-                                which(colnames(nm) == ig)),
-                              nrow = 1)
-            points(af_i_mat, pch = additionalFeaturePch, col= additionalFeatureCol, cex = additionalFeatureCex)
+          lapply(af_i_genes, function(ig) {
+            af_i_mat <- matrix(c(
+              which(rownames(nm) == af_i_sample),
+              which(colnames(nm) == ig)
+            ),
+            nrow = 1
+            )
+            points(af_i_mat, pch = additionalFeaturePch, col = additionalFeatureCol, cex = additionalFeatureCex)
           })
         })
-        additionalFeature_legend = TRUE
+        additionalFeature_legend <- TRUE
       }
     }
   }
@@ -744,290 +778,323 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   #   To add: https://github.com/PoisonAlien/maftools/issues/528
   # }
 
-  #Add box border
+  # Add box border
   if (drawBox) {
-    box(lty = 'solid', col = '#535c68', lwd = 2)
+    box(lty = "solid", col = "#535c68", lwd = 2)
   }
 
-  mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
-        font = 3, line = 0.4, cex = fontSize, las = 2)
-  mtext(text = rev(percent_alt), side = 4, at = 1:ncol(nm),
-        font = 1, line = 0.4, cex = fontSize, las = 2, adj = 0.15)
+  mtext(
+    text = colnames(nm), side = 2, at = 1:ncol(nm),
+    font = 3, line = 0.4, cex = fontSize, las = 2
+  )
+  mtext(
+    text = rev(percent_alt), side = 4, at = 1:ncol(nm),
+    font = 1, line = 0.4, cex = fontSize, las = 2, adj = 0.15
+  )
 
-  if(showTumorSampleBarcodes){
-    text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
-         labels = rownames(nm), srt = barcodeSrt, font = 1, cex = SampleNamefontSize, adj = 1)
+  if (showTumorSampleBarcodes) {
+    text(
+      x = 1:nrow(nm), y = par("usr")[3] - 0.2,
+      labels = rownames(nm), srt = barcodeSrt, font = 1, cex = SampleNamefontSize, adj = 1
+    )
   }
 
-  #05: Draw right side barplot
-  if(drawRowBar){
-    if(showTumorSampleBarcodes){
-      if(!drawRowBar || !drawColBar){
+  # 05: Draw right side barplot
+  if (drawRowBar) {
+    if (showTumorSampleBarcodes) {
+      if (!drawRowBar || !drawColBar) {
         par(mar = c(barcode_mar, 0, 2.5, 1), xpd = TRUE)
-      }else{
+      } else {
         par(mar = c(barcode_mar, 0, 0, 1), xpd = TRUE)
       }
-    }else{
-      if(!drawRowBar || !drawColBar){
+    } else {
+      if (!drawRowBar || !drawColBar) {
         par(mar = c(0.5, 0, 2.5, 1), xpd = TRUE)
-      }else{
+      } else {
         par(mar = c(0.5, 0, 0, 1), xpd = TRUE)
       }
     }
 
-    if(is.null(rightBarData)){
-      #side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
-      side_bar_data = lapply(seq_len(nrow(numMat)), function(i) {
-        xi = numMat[i, ]
+    if (is.null(rightBarData)) {
+      # side_bar_data = apply(numMat, 1, function(x) table(x[x!=0]))
+      side_bar_data <- lapply(seq_len(nrow(numMat)), function(i) {
+        xi <- numMat[i, ]
         table(xi[!xi == 0])
       })
-      names(side_bar_data) = rownames(numMat)
-      plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, length(side_bar_data)),
-           axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
+      names(side_bar_data) <- rownames(numMat)
+      plot(
+        x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, length(side_bar_data)),
+        axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i"
+      ) #
 
-      for(i in 1:length(side_bar_data)){
-        x = rev(side_bar_data)[[i]]
-        if(length(x) > 0){
-          rect(ybottom = i-1, xleft = c(0, cumsum(x)[1:(length(x)-1)]), ytop = i-0.1,
-               xright = cumsum(x), col = vc_col[vc_codes[names(x)]], border = NA, lwd = 0)
+      for (i in 1:length(side_bar_data)) {
+        x <- rev(side_bar_data)[[i]]
+        if (length(x) > 0) {
+          rect(
+            ybottom = i - 1, xleft = c(0, cumsum(x)[1:(length(x) - 1)]), ytop = i - 0.1,
+            xright = cumsum(x), col = vc_col[vc_codes[names(x)]], border = NA, lwd = 0
+          )
         }
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
-    }else{
-
-      plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, nrow(rightBarData)),
-           axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i") #
-      for(i in 1:nrow(rightBarData)){
-        x = rev(rightBarData$exprn)[i]
-        rect(ybottom = i-1, xleft = x, ytop = i-0.1,
-             xright = 0, col = "#535c68", border = NA, lwd = 0)
+    } else {
+      plot(
+        x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, nrow(rightBarData)),
+        axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i", yaxs = "i"
+      ) #
+      for (i in 1:nrow(rightBarData)) {
+        x <- rev(rightBarData$exprn)[i]
+        rect(
+          ybottom = i - 1, xleft = x, ytop = i - 0.1,
+          xright = 0, col = "#535c68", border = NA, lwd = 0
+        )
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
       mtext(text = rightBarTitle, side = 3, line = 0.5, cex = 0.6)
     }
   }
 
-  #06: Plot annotations if any
-  if(!is.null(clinicalFeatures)){
+  # 06: Plot annotations if any
+  if (!is.null(clinicalFeatures)) {
 
-    #clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
-    clini_lvls = lapply(annotation, function(x) unique(as.character(x)))
+    # clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
+    clini_lvls <- lapply(annotation, function(x) unique(as.character(x)))
 
-    if(is.null(annotationColor)){
-      annotationColor = get_anno_cols(ann = annotation)
+    if (is.null(annotationColor)) {
+      annotationColor <- get_anno_cols(ann = annotation)
     }
-    annotationColor = annotationColor[colnames(annotation)]
+    annotationColor <- annotationColor[colnames(annotation)]
 
-    annotationColor = lapply(annotationColor, function(x) {
-      na_idx = which(is.na(names(x)))
-      x[na_idx] = "gray70"
-      names(x)[na_idx] = "NA"
+    annotationColor <- lapply(annotationColor, function(x) {
+      na_idx <- which(is.na(names(x)))
+      x[na_idx] <- "gray70"
+      names(x)[na_idx] <- "NA"
       x
     })
 
-    anno_cols = c()
-    for(i in 1:length(annotationColor)){
-      anno_cols = c(anno_cols, annotationColor[[i]])
+    anno_cols <- c()
+    for (i in 1:length(annotationColor)) {
+      anno_cols <- c(anno_cols, annotationColor[[i]])
     }
 
-    #clini_lvls = clini_lvls[!is.na(clini_lvls)]
-    clini_lvls = lapply(clini_lvls, function(cl){
-      temp_names = suppressWarnings(sample(
+    # clini_lvls = clini_lvls[!is.na(clini_lvls)]
+    clini_lvls <- lapply(clini_lvls, function(cl) {
+      temp_names <- suppressWarnings(sample(
         x = setdiff(x = 1:1000, y = as.numeric(as.character(cl))),
         size = length(cl),
         replace = FALSE
       ))
-      names(cl) = temp_names#1:length(clini_lvls)
+      names(cl) <- temp_names # 1:length(clini_lvls)
       cl
     })
 
-    temp_rownames = rownames(annotation)
-    annotation = data.frame(lapply(annotation, as.character),
-                            stringsAsFactors = FALSE, row.names = temp_rownames)
+    temp_rownames <- rownames(annotation)
+    annotation <- data.frame(lapply(annotation, as.character),
+      stringsAsFactors = FALSE, row.names = temp_rownames
+    )
 
-    annotation_color_coded = data.frame(row.names = rownames(annotation), stringsAsFactors = FALSE)
-    for(i in 1:length(clini_lvls)){
-      cl = clini_lvls[[i]]
-      clname = names(clini_lvls)[i]
-      cl_vals = annotation[,clname] #values in column
-      for(i in 1:length(cl)){
-        cl_vals[cl_vals == cl[i]] = names(cl[i])
+    annotation_color_coded <- data.frame(row.names = rownames(annotation), stringsAsFactors = FALSE)
+    for (i in 1:length(clini_lvls)) {
+      cl <- clini_lvls[[i]]
+      clname <- names(clini_lvls)[i]
+      cl_vals <- annotation[, clname] # values in column
+      for (i in 1:length(cl)) {
+        cl_vals[cl_vals == cl[i]] <- names(cl[i])
       }
-      annotation_color_coded = cbind(annotation_color_coded, cl_vals)
+      annotation_color_coded <- cbind(annotation_color_coded, cl_vals)
     }
-    names(annotation_color_coded) = names(clini_lvls)
+    names(annotation_color_coded) <- names(clini_lvls)
 
-    annotation = data.frame(lapply(annotation_color_coded, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
-    annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
+    annotation <- data.frame(lapply(annotation_color_coded, as.numeric), stringsAsFactors = FALSE, row.names = temp_rownames)
+    annotation <- annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
-    if(!is.null(leftBarData)){
+    if (!is.null(leftBarData)) {
       plot.new()
     }
 
-    if(!drawRowBar){
+    if (!drawRowBar) {
       par(mar = c(0, gene_mar, 0, 5), xpd = TRUE)
-    }else{
+    } else {
       par(mar = c(0, gene_mar, 0, 3), xpd = TRUE)
     }
 
-    image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
-          axes = FALSE, xaxt="n", yaxt="n", bty = "n",
-          xlab="", ylab="", col = "white") #col = "#FC8D62"
+    image(
+      x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
+      axes = FALSE, xaxt = "n", yaxt = "n", bty = "n",
+      xlab = "", ylab = "", col = "white"
+    ) # col = "#FC8D62"
 
-    #Plot for all variant classifications
-    for(i in 1:length(clini_lvls)){
-      cl = clini_lvls[[i]]
-      clnames = names(clini_lvls)[i]
-      cl_cols = annotationColor[[clnames]]
-      for(i in 1:length(names(cl))){
-        anno_code = cl[i]
-        col = cl_cols[anno_code]
-        temp_anno = as.matrix(annotation)
-        #Handle NA's
-        if(is.na(col)){
-          col = "gray70"
-          temp_anno[is.na(temp_anno)] = as.numeric(names(anno_code))
+    # Plot for all variant classifications
+    for (i in 1:length(clini_lvls)) {
+      cl <- clini_lvls[[i]]
+      clnames <- names(clini_lvls)[i]
+      cl_cols <- annotationColor[[clnames]]
+      for (i in 1:length(names(cl))) {
+        anno_code <- cl[i]
+        col <- cl_cols[anno_code]
+        temp_anno <- as.matrix(annotation)
+        # Handle NA's
+        if (is.na(col)) {
+          col <- "gray70"
+          temp_anno[is.na(temp_anno)] <- as.numeric(names(anno_code))
         }
-        temp_anno[temp_anno != names(anno_code)] = NA
+        temp_anno[temp_anno != names(anno_code)] <- NA
 
-        suppressWarnings(image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
-                               axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE))
+        suppressWarnings(image(
+          x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
+          axes = FALSE, xaxt = "n", yaxt = "n", xlab = "", ylab = "", col = col, add = TRUE
+        ))
       }
     }
 
-    #Add grids
+    # Add grids
     abline(h = (1:ncol(nm)) + 0.5, col = annoBorderCol, lwd = sepwd_genes)
     abline(v = (1:nrow(nm)) + 0.5, col = annoBorderCol, lwd = sepwd_samples)
-    mtext(text = colnames(annotation), side = 4,
-          font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
+    mtext(
+      text = colnames(annotation), side = 4,
+      font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation)
+    )
 
-    if(drawRowBar){
+    if (drawRowBar) {
       plot.new()
     }
   }
 
-  #07: Draw TiTv plot
-  if(draw_titv){
-    titv_dat = titv(maf = maf, useSyn = TRUE, plot = FALSE)
-    titv_dat = titv_dat$fraction.contribution
+  # 07: Draw TiTv plot
+  if (draw_titv) {
+    titv_dat <- titv(maf = maf, useSyn = TRUE, plot = FALSE)
+    titv_dat <- titv_dat$fraction.contribution
     data.table::setDF(x = titv_dat, rownames = as.character(titv_dat$Tumor_Sample_Barcode))
-    titv_dat = titv_dat[,-1]
-    titv_dat = t(titv_dat[colnames(numMat), ])
+    titv_dat <- titv_dat[, -1]
+    titv_dat <- t(titv_dat[colnames(numMat), ])
 
-    missing_samps = colnames(numMat)[!colnames(numMat) %in% colnames(titv_dat)]
-    if(length(missing_samps) > 0){
-      temp_data = matrix(data = 0, nrow = 6, ncol = length(missing_samps))
-      colnames(temp_data) = missing_samps
-      titv_dat = cbind(titv_dat, temp_data)
-      titv_dat = titv_dat[,colnames(numMat)]
+    missing_samps <- colnames(numMat)[!colnames(numMat) %in% colnames(titv_dat)]
+    if (length(missing_samps) > 0) {
+      temp_data <- matrix(data = 0, nrow = 6, ncol = length(missing_samps))
+      colnames(temp_data) <- missing_samps
+      titv_dat <- cbind(titv_dat, temp_data)
+      titv_dat <- titv_dat[, colnames(numMat)]
     }
 
-    if(!is.null(leftBarData)){
-     plot.new()
+    if (!is.null(leftBarData)) {
+      plot.new()
     }
 
-    if(!drawRowBar){
+    if (!drawRowBar) {
       par(mar = c(0, gene_mar, 0, 5), xpd = TRUE)
-    }else{
+    } else {
       par(mar = c(0, gene_mar, 0, 3), xpd = TRUE)
     }
 
 
-    plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(titv_dat)), ylim = c(0, 100),
-         axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
+    plot(
+      x = NA, y = NA, type = "n", xlim = c(0, ncol(titv_dat)), ylim = c(0, 100),
+      axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i"
+    )
 
-    titv_col = get_titvCol(alpha = 1)
-    for(i in 1:ncol(titv_dat)){
-      x = titv_dat[,i]
-      x = x[x > 0]
-      if(length(x) > 0){
-        rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
-             ytop = cumsum(x), col = titv_col[names(x)], border = NA, lwd = 0)
-      }else{
-        rect(xleft = i-1, ybottom = c(0, 100), xright = i-0.1,
-             ytop = 100, col = "gray70", border = NA, lwd = 0)
+    titv_col <- get_titvCol(alpha = 1)
+    for (i in 1:ncol(titv_dat)) {
+      x <- titv_dat[, i]
+      x <- x[x > 0]
+      if (length(x) > 0) {
+        rect(
+          xleft = i - 1, ybottom = c(0, cumsum(x)[1:(length(x) - 1)]), xright = i - 0.1,
+          ytop = cumsum(x), col = titv_col[names(x)], border = NA, lwd = 0
+        )
+      } else {
+        rect(
+          xleft = i - 1, ybottom = c(0, 100), xright = i - 0.1,
+          ytop = 100, col = "gray70", border = NA, lwd = 0
+        )
       }
     }
 
-    if(drawRowBar){
+    if (drawRowBar) {
       par(mar = c(0, 0, 1, 6), xpd = TRUE)
-      plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
-      lep = legend("topleft", legend = names(titv_col),
-                   col = titv_col, border = NA, bty = "n",
-                   ncol= 2, pch = 15, xpd = TRUE, xjust = 0, yjust = 0,
-                   cex = legendFontSize)
-
-    }else{
-      mtext(text = names(titv_col)[1:3], side = 2, at = c(25, 50, 75),
-            font = 1, line = 0.4, cex = fontSize, las = 2, col = titv_col[1:3])
-      mtext(text = names(titv_col)[4:6], side = 4, at = c(25, 50, 75),
-            font = 1, line = 0.4, cex = fontSize, las = 2, col = titv_col[4:6],  adj = 0.15)
+      plot(NULL, ylab = "", xlab = "", xlim = 0:1, ylim = 0:1, axes = FALSE)
+      lep <- legend("topleft",
+        legend = names(titv_col),
+        col = titv_col, border = NA, bty = "n",
+        ncol = 2, pch = 15, xpd = TRUE, xjust = 0, yjust = 0,
+        cex = legendFontSize
+      )
+    } else {
+      mtext(
+        text = names(titv_col)[1:3], side = 2, at = c(25, 50, 75),
+        font = 1, line = 0.4, cex = fontSize, las = 2, col = titv_col[1:3]
+      )
+      mtext(
+        text = names(titv_col)[4:6], side = 4, at = c(25, 50, 75),
+        font = 1, line = 0.4, cex = fontSize, las = 2, col = titv_col[4:6], adj = 0.15
+      )
     }
   }
 
-  #08: Add legends
+  # 08: Add legends
   par(mar = c(0, 0.5, 0, 0), xpd = TRUE)
 
-  plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
-  leg_classes = vc_col[vc_codes[2:length(vc_codes)]]
-  leg_classes_pch = rep(15, length(leg_classes))
-  if(additionalFeature_legend){
-    leg_classes = c(leg_classes,"gray70")
-    names(leg_classes)[length(leg_classes)] = paste(additionalFeature, collapse = ":")
-    leg_classes_pch = c(leg_classes_pch, additionalFeaturePch)
+  plot(NULL, ylab = "", xlab = "", xlim = 0:1, ylim = 0:1, axes = FALSE)
+  leg_classes <- vc_col[vc_codes[2:length(vc_codes)]]
+  leg_classes_pch <- rep(15, length(leg_classes))
+  if (additionalFeature_legend) {
+    leg_classes <- c(leg_classes, "gray70")
+    names(leg_classes)[length(leg_classes)] <- paste(additionalFeature, collapse = ":")
+    leg_classes_pch <- c(leg_classes_pch, additionalFeaturePch)
   }
 
-  lep = legend("topleft", legend = names(leg_classes),
-               col = leg_classes, border = NA, bty = "n",
-               ncol= 2, pch = leg_classes_pch, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
+  lep <- legend("topleft",
+    legend = names(leg_classes),
+    col = leg_classes, border = NA, bty = "n",
+    ncol = 2, pch = leg_classes_pch, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize
+  )
 
-  x_axp = 0+lep$rect$w
+  x_axp <- 0 + lep$rect$w
 
-  if(!is.null(clinicalFeatures)){
-
-    for(i in 1:ncol(annotation)){
-      #x = unique(annotation[,i])
-      x = annotationColor[[i]]
-      xt = names(x)
-      if("NA" %in% xt){
-        xt = xt[!xt %in% "NA"]
-        xt = sort(xt, decreasing = FALSE)
-        xt = c(xt, "NA")
-        x = x[xt]
-      }else{
-        xt = sort(xt, decreasing = FALSE)
-        x = x[xt]
+  if (!is.null(clinicalFeatures)) {
+    for (i in 1:ncol(annotation)) {
+      # x = unique(annotation[,i])
+      x <- annotationColor[[i]]
+      xt <- names(x)
+      if ("NA" %in% xt) {
+        xt <- xt[!xt %in% "NA"]
+        xt <- sort(xt, decreasing = FALSE)
+        xt <- c(xt, "NA")
+        x <- x[xt]
+      } else {
+        xt <- sort(xt, decreasing = FALSE)
+        x <- x[xt]
       }
 
-      if(length(x) <= 4){
-        n_col = 1
-      }else{
-        n_col = (length(x) %/% 4)+1
+      if (length(x) <= 4) {
+        n_col <- 1
+      } else {
+        n_col <- (length(x) %/% 4) + 1
       }
-      names(x)[is.na(names(x))] = "NA"
+      names(x)[is.na(names(x))] <- "NA"
 
-      lep = legend(x = x_axp, y = 1, legend = names(x),
-                   col = x, border = NA,
-                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                   cex = annotationFontSize, title = rev(names(annotation))[i],
-                   title.adj = 0)
-      x_axp = x_axp + lep$rect$w
-
+      lep <- legend(
+        x = x_axp, y = 1, legend = names(x),
+        col = x, border = NA,
+        ncol = n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+        cex = annotationFontSize, title = rev(names(annotation))[i],
+        title.adj = 0
+      )
+      x_axp <- x_axp + lep$rect$w
     }
   }
 
-  if(removeNonMutated){
-    #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
-    altStat = paste0("Altered in ", ncol(numMat), " (", round(ncol(numMat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
-  }else{
-    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE))))
-    altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
+  if (removeNonMutated) {
+    # mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
+    altStat <- paste0("Altered in ", ncol(numMat), " (", round(ncol(numMat) / totSamps, digits = 4) * 100, "%) of ", totSamps, " samples.")
+  } else {
+    mutSamples <- length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE))))
+    altStat <- paste0("Altered in ", mutSamples, " (", round(mutSamples / totSamps, digits = 4) * 100, "%) of ", totSamps, " samples.")
   }
 
-  if(showTitle){
-    if(is.null(titleText)){
+  if (showTitle) {
+    if (is.null(titleText)) {
       title(main = altStat, outer = TRUE, line = -1, cex.main = titleFontSize)
-    }else{
+    } else {
       title(main = titleText, outer = TRUE, line = -1, cex.main = titleFontSize)
     }
   }

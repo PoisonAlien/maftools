@@ -9,13 +9,12 @@
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
 #' dev.new()
-#' oncostrip(maf = laml, genes = c('NPM1', 'RUNX1'))
-#'
+#' oncostrip(maf = laml, genes = c("NPM1", "RUNX1"))
 #' @export
 #'
 
-oncostrip = function(maf = NULL, ...){
-  if(is.null(maf)){
+oncostrip <- function(maf = NULL, ...) {
+  if (is.null(maf)) {
     stop("missing MAF")
   }
   oncoplot(maf = maf, ..., drawRowBar = FALSE, drawColBar = FALSE)

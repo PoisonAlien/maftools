@@ -17,146 +17,143 @@
 #'
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' laml.sig <- oncodrive(maf = laml, AACol = 'Protein_Change', minMut = 5)
-#'
+#' laml.sig <- oncodrive(maf = laml, AACol = "Protein_Change", minMut = 5)
 #' @export
 
 
-oncodrive = function(maf, AACol = NULL, minMut = 5, pvalMethod = 'zscore', nBgGenes = 100, bgEstimate = TRUE, ignoreGenes = NULL){
-
+oncodrive <- function(maf, AACol = NULL, minMut = 5, pvalMethod = "zscore", nBgGenes = 100, bgEstimate = TRUE, ignoreGenes = NULL) {
   warning("Oncodrive has been superseeded by OncodriveCLUSTL. See http://bg.upf.edu/group/projects/oncodrive-clust.php")
 
-  #Proetin Length source
-  gl = system.file('extdata', 'prot_len.txt.gz', package = 'maftools')
+  # Proetin Length source
+  gl <- system.file("extdata", "prot_len.txt.gz", package = "maftools")
 
-  if(Sys.info()[['sysname']] == 'Windows'){
-    gl.gz = gzfile(description = gl, open = 'r')
-    gl <- suppressWarnings( data.table(read.csv( file = gl.gz, header = TRUE, sep = '\t', stringsAsFactors = FALSE)) )
+  if (Sys.info()[["sysname"]] == "Windows") {
+    gl.gz <- gzfile(description = gl, open = "r")
+    gl <- suppressWarnings(data.table(read.csv(file = gl.gz, header = TRUE, sep = "\t", stringsAsFactors = FALSE)))
     close(gl.gz)
-  } else{
-    gl = data.table::fread(cmd = paste('zcat <', gl), sep = '\t', stringsAsFactors = FALSE)
+  } else {
+    gl <- data.table::fread(cmd = paste("zcat <", gl), sep = "\t", stringsAsFactors = FALSE)
   }
 
-  pval.options = c('zscore', 'poisson', 'combined')
+  pval.options <- c("zscore", "poisson", "combined")
 
-  if(!pvalMethod %in% pval.options){
-    stop('pvalMethod can only be either zscore, poisson or combined')
+  if (!pvalMethod %in% pval.options) {
+    stop("pvalMethod can only be either zscore, poisson or combined")
   }
 
-  if(length(pvalMethod) > 1){
-    stop('pvalMethod can only be either zscore, poisson or combined')
+  if (length(pvalMethod) > 1) {
+    stop("pvalMethod can only be either zscore, poisson or combined")
   }
 
 
-  #syn variants for background
-  syn.maf = maf@maf.silent
-  #number of samples in maf
-  numSamples = as.numeric(maf@summary[3,summary])
-  #Perform clustering and calculate background scores.
-  if(bgEstimate){
-    if(nrow(syn.maf) == 0){
-      message('No syn mutations found! Skipping background estimation. Using predefined values. (Mean = 0.279; SD = 0.13)')
-      bg.mean = 0.279
-      bg.sd = 0.13
-    }else{
-      message('Estimating background scores from synonymous variants..')
-      syn.bg.scores = parse_prot(dat = syn.maf, AACol = AACol, gl, m = minMut, calBg = TRUE, nBg = nBgGenes)
+  # syn variants for background
+  syn.maf <- maf@maf.silent
+  # number of samples in maf
+  numSamples <- as.numeric(maf@summary[3, summary])
+  # Perform clustering and calculate background scores.
+  if (bgEstimate) {
+    if (nrow(syn.maf) == 0) {
+      message("No syn mutations found! Skipping background estimation. Using predefined values. (Mean = 0.279; SD = 0.13)")
+      bg.mean <- 0.279
+      bg.sd <- 0.13
+    } else {
+      message("Estimating background scores from synonymous variants..")
+      syn.bg.scores <- parse_prot(dat = syn.maf, AACol = AACol, gl, m = minMut, calBg = TRUE, nBg = nBgGenes)
 
-      #If number of genes to calculate background scores is not enough, use predefined scores.
-      if(is.null(syn.bg.scores)){
+      # If number of genes to calculate background scores is not enough, use predefined scores.
+      if (is.null(syn.bg.scores)) {
         message("Not enough genes to build background. Using predefined values. (Mean = 0.279; SD = 0.13)")
-        bg.mean = 0.279
-        bg.sd = 0.13
-      }else {
-        if(nrow(syn.bg.scores) < nBgGenes){
+        bg.mean <- 0.279
+        bg.sd <- 0.13
+      } else {
+        if (nrow(syn.bg.scores) < nBgGenes) {
           message("Not enough genes to build background. Using predefined values. (Mean = 0.279; SD = 0.13)")
-          bg.mean = 0.279
-          bg.sd = 0.13
-        }else{
-          bg.mean = mean(syn.bg.scores$clusterScores)
-          bg.sd = sd(syn.bg.scores$clusterScores)
-          message(paste('Estimated background mean: ', bg.mean))
-          message(paste('Estimated background SD: ', bg.sd))
+          bg.mean <- 0.279
+          bg.sd <- 0.13
+        } else {
+          bg.mean <- mean(syn.bg.scores$clusterScores)
+          bg.sd <- sd(syn.bg.scores$clusterScores)
+          message(paste("Estimated background mean: ", bg.mean))
+          message(paste("Estimated background SD: ", bg.sd))
         }
       }
     }
-  }else{
+  } else {
     message("Using predefined values for background. (Mean = 0.279; SD = 0.13)")
-    bg.mean = 0.279
-    bg.sd = 0.13
+    bg.mean <- 0.279
+    bg.sd <- 0.13
   }
 
-  #non-syn variants
-  non.syn.maf = maf@data
+  # non-syn variants
+  non.syn.maf <- maf@data
 
-  #Remove genes to ignore
-  if(!is.null(ignoreGenes)){
-    ignoreGenes.count = nrow(non.syn.maf[Hugo_Symbol %in% ignoreGenes])
-    message(paste('Removed', ignoreGenes.count, 'variants belonging to', paste(ignoreGenes, collapse = ', ', sep=',')))
-    non.syn.maf = non.syn.maf[!Hugo_Symbol %in% ignoreGenes]
+  # Remove genes to ignore
+  if (!is.null(ignoreGenes)) {
+    ignoreGenes.count <- nrow(non.syn.maf[Hugo_Symbol %in% ignoreGenes])
+    message(paste("Removed", ignoreGenes.count, "variants belonging to", paste(ignoreGenes, collapse = ", ", sep = ",")))
+    non.syn.maf <- non.syn.maf[!Hugo_Symbol %in% ignoreGenes]
   }
 
-  #Perform clustering and calculate cluster scores for nonsyn variants.
-  message('Estimating cluster scores from non-syn variants..')
-  nonsyn.scores = parse_prot(dat = non.syn.maf, AACol = AACol, gl = gl, m = minMut, calBg = FALSE, nBg = nBgGenes)
+  # Perform clustering and calculate cluster scores for nonsyn variants.
+  message("Estimating cluster scores from non-syn variants..")
+  nonsyn.scores <- parse_prot(dat = non.syn.maf, AACol = AACol, gl = gl, m = minMut, calBg = FALSE, nBg = nBgGenes)
 
-  if(pvalMethod == 'combined'){
-    message('Comapring with background model and estimating p-values..')
-    nonsyn.scores$zscore = (nonsyn.scores$clusterScores - bg.mean) / bg.sd
-    nonsyn.scores$tPval = 1- pnorm(nonsyn.scores$zscore)
-    nonsyn.scores$tFdr = p.adjust(nonsyn.scores$tPval, method = 'fdr')
+  if (pvalMethod == "combined") {
+    message("Comapring with background model and estimating p-values..")
+    nonsyn.scores$zscore <- (nonsyn.scores$clusterScores - bg.mean) / bg.sd
+    nonsyn.scores$tPval <- 1 - pnorm(nonsyn.scores$zscore)
+    nonsyn.scores$tFdr <- p.adjust(nonsyn.scores$tPval, method = "fdr")
 
-    nonsyn.scores = merge(getGeneSummary(maf), nonsyn.scores, by = 'Hugo_Symbol')
-    nonsyn.scores[,fract_muts_in_clusters := muts_in_clusters/total]
+    nonsyn.scores <- merge(getGeneSummary(maf), nonsyn.scores, by = "Hugo_Symbol")
+    nonsyn.scores[, fract_muts_in_clusters := muts_in_clusters / total]
 
-    counts.glm = glm(formula = total ~ protLen+clusters, family = poisson(link = identity), data = nonsyn.scores) #Poisson model
-    nonsyn.scores$Expected = counts.glm$fitted.values #Get expected number of events (mutations) from the model
+    counts.glm <- glm(formula = total ~ protLen + clusters, family = poisson(link = identity), data = nonsyn.scores) # Poisson model
+    nonsyn.scores$Expected <- counts.glm$fitted.values # Get expected number of events (mutations) from the model
 
-    observed_mut_colIndex = which(colnames(nonsyn.scores) == 'total')
-    expected_mut_colIndex = which(colnames(nonsyn.scores) == 'Expected')
+    observed_mut_colIndex <- which(colnames(nonsyn.scores) == "total")
+    expected_mut_colIndex <- which(colnames(nonsyn.scores) == "Expected")
 
-    #Poisson test to caluclate difference (p-value)
-    nonsyn.scores$poissonPval = apply(nonsyn.scores, 1, function(x) {
+    # Poisson test to caluclate difference (p-value)
+    nonsyn.scores$poissonPval <- apply(nonsyn.scores, 1, function(x) {
       poisson.test(as.numeric(x[observed_mut_colIndex]), as.numeric(x[expected_mut_colIndex]))$p.value
     })
 
-    nonsyn.scores$poissonFdr = p.adjust(nonsyn.scores$poissonPval, method = 'fdr')
-    nonsyn.scores = nonsyn.scores[order(poissonFdr)]
+    nonsyn.scores$poissonFdr <- p.adjust(nonsyn.scores$poissonPval, method = "fdr")
+    nonsyn.scores <- nonsyn.scores[order(poissonFdr)]
 
-    nonsyn.scores$fdr = apply(nonsyn.scores[,.(tFdr, poissonFdr)], MARGIN = 1, FUN = min)
+    nonsyn.scores$fdr <- apply(nonsyn.scores[, .(tFdr, poissonFdr)], MARGIN = 1, FUN = min)
+  } else if (pvalMethod == "zscore") {
+    # Oncodrive clust way of caluclating pvalues
+    # Calculate z scores; compare it to bg scores and estimate z-score, pvalues, corrected pvalues (fdr) (assumes normal distribution)
+    message("Comapring with background model and estimating p-values..")
+    nonsyn.scores$zscore <- (nonsyn.scores$clusterScores - bg.mean) / bg.sd
+    nonsyn.scores$pval <- 1 - pnorm(nonsyn.scores$zscore)
+    nonsyn.scores$fdr <- p.adjust(nonsyn.scores$pval, method = "fdr")
 
-  } else if(pvalMethod == 'zscore'){
-    #Oncodrive clust way of caluclating pvalues
-    #Calculate z scores; compare it to bg scores and estimate z-score, pvalues, corrected pvalues (fdr) (assumes normal distribution)
-    message('Comapring with background model and estimating p-values..')
-    nonsyn.scores$zscore = (nonsyn.scores$clusterScores - bg.mean) / bg.sd
-    nonsyn.scores$pval = 1- pnorm(nonsyn.scores$zscore)
-    nonsyn.scores$fdr = p.adjust(nonsyn.scores$pval, method = 'fdr')
+    nonsyn.scores <- merge(getGeneSummary(maf), nonsyn.scores, by = "Hugo_Symbol")
+    nonsyn.scores[, fract_muts_in_clusters := muts_in_clusters / total]
+    # nonsyn.scores[,fract_MutatedSamples := MutatedSamples/numSamples]
+    nonsyn.scores <- nonsyn.scores[order(fdr)]
+  } else {
+    # Assuming poisson distribution of mutation counts
+    # Now model observed number of mutations as a function of number of clusters and protein length. Calculate expected number of events based on poisson distribution.
+    nonsyn.scores <- merge(getGeneSummary(maf), nonsyn.scores, by = "Hugo_Symbol")
+    nonsyn.scores[, fract_muts_in_clusters := muts_in_clusters / total]
 
-    nonsyn.scores = merge(getGeneSummary(maf), nonsyn.scores, by = 'Hugo_Symbol')
-    nonsyn.scores[,fract_muts_in_clusters := muts_in_clusters/total]
-    #nonsyn.scores[,fract_MutatedSamples := MutatedSamples/numSamples]
-    nonsyn.scores = nonsyn.scores[order(fdr)]
-  }else{
-    #Assuming poisson distribution of mutation counts
-    #Now model observed number of mutations as a function of number of clusters and protein length. Calculate expected number of events based on poisson distribution.
-    nonsyn.scores = merge(getGeneSummary(maf), nonsyn.scores, by = 'Hugo_Symbol')
-    nonsyn.scores[,fract_muts_in_clusters := muts_in_clusters/total]
+    counts.glm <- glm(formula = total ~ protLen + clusters, family = poisson(link = identity), data = nonsyn.scores) # Poisson model
+    nonsyn.scores$Expected <- counts.glm$fitted.values # Get expected number of events (mutations) from the model
 
-    counts.glm = glm(formula = total ~ protLen+clusters, family = poisson(link = identity), data = nonsyn.scores) #Poisson model
-    nonsyn.scores$Expected = counts.glm$fitted.values #Get expected number of events (mutations) from the model
+    observed_mut_colIndex <- which(colnames(nonsyn.scores) == "total")
+    expected_mut_colIndex <- which(colnames(nonsyn.scores) == "Expected")
 
-    observed_mut_colIndex = which(colnames(nonsyn.scores) == 'total')
-    expected_mut_colIndex = which(colnames(nonsyn.scores) == 'Expected')
-
-    #Poisson test to caluclate difference (p-value)
-    nonsyn.scores$pval = apply(nonsyn.scores, 1, function(x) {
+    # Poisson test to caluclate difference (p-value)
+    nonsyn.scores$pval <- apply(nonsyn.scores, 1, function(x) {
       poisson.test(as.numeric(x[observed_mut_colIndex]), as.numeric(x[expected_mut_colIndex]))$p.value
     })
 
-    nonsyn.scores$fdr = p.adjust(nonsyn.scores$pval, method = 'fdr')
-    nonsyn.scores = nonsyn.scores[order(fdr)]
+    nonsyn.scores$fdr <- p.adjust(nonsyn.scores$pval, method = "fdr")
+    nonsyn.scores <- nonsyn.scores[order(fdr)]
   }
-  message('Done !')
+  message("Done !")
   return(nonsyn.scores)
 }

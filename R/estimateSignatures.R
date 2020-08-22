@@ -15,74 +15,74 @@
 #' \dontrun{
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19', prefix = 'chr',
-#' add = TRUE, useSyn = TRUE)
+#' laml.tnm <- trinucleotideMatrix(
+#'   maf = laml, ref_genome = "BSgenome.Hsapiens.UCSC.hg19", prefix = "chr",
+#'   add = TRUE, useSyn = TRUE
+#' )
 #' library("NMF")
 #' laml.sign <- estimateSignatures(mat = laml.tnm, plotBestFitRes = FALSE, nMin = 2, nTry = 3, nrun = 2, pConstant = 0.01)
 #' }
 #' @importFrom grDevices pdf boxplot.stats dev.off
 #' @seealso \code{\link{plotCophenetic}} \code{\link{extractSignatures}} \code{\link{trinucleotideMatrix}}
 #' @export
-estimateSignatures = function(mat, nMin = 2, nTry = 6, nrun = 10, parallel = 4, pConstant = NULL, verbose = TRUE, plotBestFitRes = FALSE){
-
-
-  if(nMin >= nTry){
+estimateSignatures <- function(mat, nMin = 2, nTry = 6, nrun = 10, parallel = 4, pConstant = NULL, verbose = TRUE, plotBestFitRes = FALSE) {
+  if (nMin >= nTry) {
     stop("nMin should be less than nTry")
   }
 
-  if(nMin < 2){
+  if (nMin < 2) {
     stop("nMin should atleast be 2")
   }
 
-  #suppressPackageStartupMessages(require(NMF, quietly = TRUE))
-  #transpose matrix
-  start_time = proc.time()
-  mat = t(mat$nmf_matrix)
+  # suppressPackageStartupMessages(require(NMF, quietly = TRUE))
+  # transpose matrix
+  start_time <- proc.time()
+  mat <- t(mat$nmf_matrix)
 
-  #Validation
-  zeroMutClass = names(which(rowSums(mat) == 0))
+  # Validation
+  zeroMutClass <- names(which(rowSums(mat) == 0))
 
-  if(length(zeroMutClass)){
-    message('-Found zero mutations for conversions:')
-    for(temp in zeroMutClass){
+  if (length(zeroMutClass)) {
+    message("-Found zero mutations for conversions:")
+    for (temp in zeroMutClass) {
       message(paste0("  ", temp))
     }
   }
 
-  #To avoid error due to non-conformable arrays
-  if(!is.null(pConstant)){
-    if(pConstant < 0 | pConstant == 0){
+  # To avoid error due to non-conformable arrays
+  if (!is.null(pConstant)) {
+    if (pConstant < 0 | pConstant == 0) {
       stop("pConstant must be > 0")
     }
-    mat = mat+pConstant
+    mat <- mat + pConstant
   }
 
-  #Notes:
-  #Available methods for nmf decompositions are 'brunet', 'lee', 'ls-nmf', 'nsNMF', 'offset'.
-  #But based 21 breast cancer signatures data, defualt brunet seems to be working close to the results.
-  #Sticking with default for now.
+  # Notes:
+  # Available methods for nmf decompositions are 'brunet', 'lee', 'ls-nmf', 'nsNMF', 'offset'.
+  # But based 21 breast cancer signatures data, defualt brunet seems to be working close to the results.
+  # Sticking with default for now.
 
-  cat(paste0('-Running NMF for ', nTry, ' ranks\n'))
-  if(!is.null(parallel)){
-    nmfTry = NMF::nmfEstimateRank(mat, seq(nMin,nTry), method='brunet', nrun = nrun, seed = 123456, .opt = paste0('P', parallel), verbose = verbose) #try nmf for a range of values
-  }else{
-    nmfTry = NMF::nmfEstimateRank(mat, seq(nMin,nTry), method='brunet', nrun = nrun, seed = 123456, verbose = verbose) #try nmf for a range of values
+  cat(paste0("-Running NMF for ", nTry, " ranks\n"))
+  if (!is.null(parallel)) {
+    nmfTry <- NMF::nmfEstimateRank(mat, seq(nMin, nTry), method = "brunet", nrun = nrun, seed = 123456, .opt = paste0("P", parallel), verbose = verbose) # try nmf for a range of values
+  } else {
+    nmfTry <- NMF::nmfEstimateRank(mat, seq(nMin, nTry), method = "brunet", nrun = nrun, seed = 123456, verbose = verbose) # try nmf for a range of values
   }
 
-  if(plotBestFitRes){
-    png(filename = 'nmf_consensus.png', bg = 'white', res = 70)
+  if (plotBestFitRes) {
+    png(filename = "nmf_consensus.png", bg = "white", res = 70)
     NMF::consensusmap(nmfTry)
     dev.off()
-    cat('-created nmf_consensus.png\n')
-    #print(NMF::plot(nmfTry, 'cophenetic'))
+    cat("-created nmf_consensus.png\n")
+    # print(NMF::plot(nmfTry, 'cophenetic'))
   }
 
-  nmf.sum = summary(nmfTry) # Get summary of estimates
+  nmf.sum <- summary(nmfTry) # Get summary of estimates
   data.table::setDT(nmf.sum)
 
-  results = list(nmfSummary = nmf.sum, nmfObj = nmfTry)
+  results <- list(nmfSummary = nmf.sum, nmfObj = nmfTry)
   plotCophenetic(results)
 
-  cat("-Finished in",data.table::timetaken(start_time),"\n")
+  cat("-Finished in", data.table::timetaken(start_time), "\n")
   return(results)
 }

@@ -14,12 +14,13 @@
 #' @seealso \code{\link{getGeneSummary}} \code{\link{getSampleSummary}} \code{\link{getCytobandSummary}}
 
 ## MAF object
-GISTIC <- setClass(Class = 'GISTIC', slots =  c(data = 'data.table', cnv.summary = 'data.table',
-                                             cytoband.summary = 'data.table', gene.summary = 'data.table', cnMatrix = 'matrix',
-                                          numericMatrix = 'matrix', gis.scores = 'data.table', summary = 'data.table', classCode = 'character'
-                                          ))
+GISTIC <- setClass(Class = "GISTIC", slots = c(
+  data = "data.table", cnv.summary = "data.table",
+  cytoband.summary = "data.table", gene.summary = "data.table", cnMatrix = "matrix",
+  numericMatrix = "matrix", gis.scores = "data.table", summary = "data.table", classCode = "character"
+))
 
-setMethod(f = 'show', signature = 'GISTIC', definition = function(object){
-  cat(paste('An object of class ', class(object), "\n"))
+setMethod(f = "show", signature = "GISTIC", definition = function(object) {
+  cat(paste("An object of class ", class(object), "\n"))
   print(object@summary)
 })

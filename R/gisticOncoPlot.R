@@ -32,231 +32,250 @@
 #' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
 #' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
 #' scores.gistic <- system.file("extdata", "scores.gistic", package = "maftools")
-#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
+#' laml.gistic <- readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gistic)
 #' gisticOncoPlot(laml.gistic)
 #' @seealso \code{\link{oncostrip}}
 #' @export
 
 
-gisticOncoPlot = function(gistic = NULL, top = NULL, bands = NULL,
+gisticOncoPlot <- function(gistic = NULL, top = NULL, bands = NULL,
                            showTumorSampleBarcodes = FALSE, gene_mar = 5, barcode_mar = 6, sepwd_genes = 0.5, sepwd_samples = 0.25, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE, sampleOrder = NULL,
                            annotationColor = NULL, bandsToIgnore = NULL,
                            removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2, borderCol = "white", bgCol = "#CCCCCC") {
-
-  if(class(gistic) != "GISTIC"){
+  if (class(gistic) != "GISTIC") {
     stop("Input data should be of GISTIC class. Use readGistic function to generate one.")
   }
 
-  numMat = gistic@numericMatrix
-  mat_origin = gistic@cnMatrix
+  numMat <- gistic@numericMatrix
+  mat_origin <- gistic@cnMatrix
 
-  if(ncol(numMat) < 2){
-    stop('Cannot create plot for single sample. Minimum two sample required ! ')
+  if (ncol(numMat) < 2) {
+    stop("Cannot create plot for single sample. Minimum two sample required ! ")
   }
 
-  #remove genes from bandsToIgnore if any
-  if(!is.null(bandsToIgnore)){
-    numMat = numMat[!rownames(numMat) %in% bandsToIgnore,, drop = FALSE]
+  # remove genes from bandsToIgnore if any
+  if (!is.null(bandsToIgnore)) {
+    numMat <- numMat[!rownames(numMat) %in% bandsToIgnore, , drop = FALSE]
   }
 
-  #choose user defined nuber of top genes
-  if(!is.null(bands)){
-    numMat = numMat[rownames(numMat) %in% bands,, drop = FALSE]
-  }else{
-    if(!is.null(top)){
-      if(nrow(numMat) < top){
-        numMat = numMat
-      }else{
-        numMat = numMat[1:top, ]
+  # choose user defined nuber of top genes
+  if (!is.null(bands)) {
+    numMat <- numMat[rownames(numMat) %in% bands, , drop = FALSE]
+  } else {
+    if (!is.null(top)) {
+      if (nrow(numMat) < top) {
+        numMat <- numMat
+      } else {
+        numMat <- numMat[1:top, ]
       }
     }
   }
 
-  #bgCol = "#CCCCCC" #Default gray background
-  #borderCol = "white"
+  # bgCol = "#CCCCCC" #Default gray background
+  # borderCol = "white"
 
-  #To remove samples with no mutations in top n genes, if user says removeNonAltered
-  if(removeNonAltered){
-    tsb = colnames(numMat)
-    tsb.exclude = colnames(numMat[,colSums(numMat) == 0])
-    tsb.include = tsb[!tsb %in% tsb.exclude]
-    numMat = numMat[,tsb.include, drop = FALSE]
+  # To remove samples with no mutations in top n genes, if user says removeNonAltered
+  if (removeNonAltered) {
+    tsb <- colnames(numMat)
+    tsb.exclude <- colnames(numMat[, colSums(numMat) == 0])
+    tsb.include <- tsb[!tsb %in% tsb.exclude]
+    numMat <- numMat[, tsb.include, drop = FALSE]
   }
 
-  #Annotations
-  if(!is.null(clinicalFeatures)){
-    if(is.null(clinicalData)){
+  # Annotations
+  if (!is.null(clinicalFeatures)) {
+    if (is.null(clinicalData)) {
       stop("annotation data missing. Use argument annotation to provide one.")
-    }else{
-      annotation = parse_annotation_dat(annotationDat = clinicalData, clinicalFeatures = clinicalFeatures)
+    } else {
+      annotation <- parse_annotation_dat(annotationDat = clinicalData, clinicalFeatures = clinicalFeatures)
     }
 
-    if(sortByAnnotation){
-      numMat = sortByAnnotation(numMat = numMat, anno = annotation)
-      annotation = annotation[colnames(numMat), , drop = FALSE]
+    if (sortByAnnotation) {
+      numMat <- sortByAnnotation(numMat = numMat, anno = annotation)
+      annotation <- annotation[colnames(numMat), , drop = FALSE]
     }
   }
 
-  if(!is.null(sampleOrder)){
-    sampleOrder = as.character(sampleOrder)
-    sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
-    if(length(sampleOrder) == 0){
+  if (!is.null(sampleOrder)) {
+    sampleOrder <- as.character(sampleOrder)
+    sampleOrder <- sampleOrder[sampleOrder %in% colnames(numMat)]
+    if (length(sampleOrder) == 0) {
       stop("None of the provided samples are present in the input MAF")
     }
-    numMat = numMat[,sampleOrder, drop = FALSE]
+    numMat <- numMat[, sampleOrder, drop = FALSE]
   }
 
-  mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
-  nsamps = as.numeric(as.character(gistic@summary[1, summary]))
-  percent_alt = apply(numMat, 1, function(x) length(x[x != 0]))
-  percent_alt = paste0(rev(round(percent_alt * 100/nsamps)), "%")
+  mat_origin <- mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
+  nsamps <- as.numeric(as.character(gistic@summary[1, summary]))
+  percent_alt <- apply(numMat, 1, function(x) length(x[x != 0]))
+  percent_alt <- paste0(rev(round(percent_alt * 100 / nsamps)), "%")
 
-  #hard coded colors for variant classification if user doesnt provide any
-  if(is.null(colors)){
-    vc_col = c('green', 'red', 'blue')
-    names(vc_col) = names = c('Del', 'Amp', 'Complex')
-  }else{
-    vc_col = colors
+  # hard coded colors for variant classification if user doesnt provide any
+  if (is.null(colors)) {
+    vc_col <- c("green", "red", "blue")
+    names(vc_col) <- names <- c("Del", "Amp", "Complex")
+  } else {
+    vc_col <- colors
   }
 
-  vc_codes = gistic@classCode #VC codes
+  vc_codes <- gistic@classCode # VC codes
 
 
-  #Plot layout
-  if(is.null(clinicalFeatures)){
-    mat_lo = matrix(data = c(1,2), nrow = 2, ncol = 1, byrow = TRUE)
-    lo = graphics::layout(mat = mat_lo, heights = c(12, 2))
-  }else{
-    mat_lo = matrix(data = c(1,2,3), nrow = 3, ncol = 1, byrow = TRUE)
-    lo = graphics::layout(mat = mat_lo, heights = c(12, 1, 4))
+  # Plot layout
+  if (is.null(clinicalFeatures)) {
+    mat_lo <- matrix(data = c(1, 2), nrow = 2, ncol = 1, byrow = TRUE)
+    lo <- graphics::layout(mat = mat_lo, heights = c(12, 2))
+  } else {
+    mat_lo <- matrix(data = c(1, 2, 3), nrow = 3, ncol = 1, byrow = TRUE)
+    lo <- graphics::layout(mat = mat_lo, heights = c(12, 1, 4))
   }
 
-  if(is.null(clinicalFeatures)){
-    if(showTumorSampleBarcodes){
+  if (is.null(clinicalFeatures)) {
+    if (showTumorSampleBarcodes) {
       par(mar = c(barcode_mar, gene_mar, 1, 2.5), xpd = TRUE)
-    }else{
+    } else {
       par(mar = c(0.5, gene_mar, 1, 2.5), xpd = TRUE)
     }
-  }else{
-    if(showTumorSampleBarcodes){
+  } else {
+    if (showTumorSampleBarcodes) {
       par(mar = c(barcode_mar, gene_mar, 1, 5), xpd = TRUE)
-    }else{
+    } else {
       par(mar = c(0.5, gene_mar, 1, 5), xpd = TRUE)
     }
   }
 
 
-  nm = t(apply(numMat, 2, rev))
-  nm[nm == 0] = NA
-  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
-        xlab="", ylab="", col = "white") #col = "#FC8D62"
-  #Plot for all variant classifications
-  vc_codes_temp = vc_codes
-  for(i in 2:length(names(vc_codes_temp))){
-    vc_code = vc_codes_temp[i]
-    col = vc_col[vc_code]
-    nm = t(apply(numMat, 2, rev))
-    nm[nm != names(vc_code)] = NA
-    image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
-          xlab="", ylab="", col = col, add = TRUE)
+  nm <- t(apply(numMat, 2, rev))
+  nm[nm == 0] <- NA
+  image(
+    x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt = "n", yaxt = "n",
+    xlab = "", ylab = "", col = "white"
+  ) # col = "#FC8D62"
+  # Plot for all variant classifications
+  vc_codes_temp <- vc_codes
+  for (i in 2:length(names(vc_codes_temp))) {
+    vc_code <- vc_codes_temp[i]
+    col <- vc_col[vc_code]
+    nm <- t(apply(numMat, 2, rev))
+    nm[nm != names(vc_code)] <- NA
+    image(
+      x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt = "n", yaxt = "n",
+      xlab = "", ylab = "", col = col, add = TRUE
+    )
   }
 
-  #Add blanks
-  nm = t(apply(numMat, 2, rev))
-  nm[nm != 0] = NA
-  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = bgCol, add = TRUE)
+  # Add blanks
+  nm <- t(apply(numMat, 2, rev))
+  nm[nm != 0] <- NA
+  image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt = "n", yaxt = "n", xlab = "", ylab = "", col = bgCol, add = TRUE)
 
-  #Add grids
+  # Add grids
   abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
   abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
 
-  mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
-        font = 3, line = 0.4, cex = fontSize, las = 2)
-  mtext(text = percent_alt, side = 4, at = 1:ncol(nm),
-        font = 3, line = 0.4, cex = fontSize, las = 2)
+  mtext(
+    text = colnames(nm), side = 2, at = 1:ncol(nm),
+    font = 3, line = 0.4, cex = fontSize, las = 2
+  )
+  mtext(
+    text = percent_alt, side = 4, at = 1:ncol(nm),
+    font = 3, line = 0.4, cex = fontSize, las = 2
+  )
 
-  if(showTumorSampleBarcodes){
-    text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
-         labels = rownames(nm), srt = 90, font = 1, cex = SampleNamefontSize, adj = 1)
+  if (showTumorSampleBarcodes) {
+    text(
+      x = 1:nrow(nm), y = par("usr")[3] - 0.2,
+      labels = rownames(nm), srt = 90, font = 1, cex = SampleNamefontSize, adj = 1
+    )
   }
 
-  #Plot annotations if any
-  if(!is.null(clinicalFeatures)){
-    clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
+  # Plot annotations if any
+  if (!is.null(clinicalFeatures)) {
+    clini_lvls <- as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
 
-    if(is.null(annotationColor)){
-      annotationColor = get_anno_cols(ann = annotation)
+    if (is.null(annotationColor)) {
+      annotationColor <- get_anno_cols(ann = annotation)
     }
 
-    anno_cols = c()
-    for(i in 1:length(annotationColor)){
-      anno_cols = c(anno_cols, annotationColor[[i]])
+    anno_cols <- c()
+    for (i in 1:length(annotationColor)) {
+      anno_cols <- c(anno_cols, annotationColor[[i]])
     }
 
-    clini_lvls = clini_lvls[!is.na(clini_lvls)]
-    names(clini_lvls) = 1:length(clini_lvls)
-    temp_rownames = rownames(annotation)
-    annotation = data.frame(lapply(annotation, as.character),
-                            stringsAsFactors = FALSE, row.names = temp_rownames)
+    clini_lvls <- clini_lvls[!is.na(clini_lvls)]
+    names(clini_lvls) <- 1:length(clini_lvls)
+    temp_rownames <- rownames(annotation)
+    annotation <- data.frame(lapply(annotation, as.character),
+      stringsAsFactors = FALSE, row.names = temp_rownames
+    )
 
-    for(i in 1:length(clini_lvls)){
-      annotation[annotation == clini_lvls[i]] = names(clini_lvls[i])
+    for (i in 1:length(clini_lvls)) {
+      annotation[annotation == clini_lvls[i]] <- names(clini_lvls[i])
     }
 
-    annotation = data.frame(lapply(annotation, as.numeric), stringsAsFactors=FALSE, row.names = temp_rownames)
+    annotation <- data.frame(lapply(annotation, as.numeric), stringsAsFactors = FALSE, row.names = temp_rownames)
 
-    annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
+    annotation <- annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
     par(mar = c(0, gene_mar, 0, 5), xpd = TRUE)
 
-    image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
-          axes = FALSE, xaxt="n", yaxt="n", bty = "n",
-          xlab="", ylab="", col = "white") #col = "#FC8D62"
+    image(
+      x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
+      axes = FALSE, xaxt = "n", yaxt = "n", bty = "n",
+      xlab = "", ylab = "", col = "white"
+    ) # col = "#FC8D62"
 
-    #Plot for all variant classifications
-    for(i in 1:length(names(clini_lvls))){
-      anno_code = clini_lvls[i]
-      col = anno_cols[anno_code]
-      #temp_anno = t(apply(annotation, 2, rev))
-      temp_anno = as.matrix(annotation)
-      temp_anno[temp_anno != names(anno_code)] = NA
-      image(x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
-            axes = FALSE, xaxt="n", yaxt="n", xlab="", ylab="", col = col, add = TRUE)
+    # Plot for all variant classifications
+    for (i in 1:length(names(clini_lvls))) {
+      anno_code <- clini_lvls[i]
+      col <- anno_cols[anno_code]
+      # temp_anno = t(apply(annotation, 2, rev))
+      temp_anno <- as.matrix(annotation)
+      temp_anno[temp_anno != names(anno_code)] <- NA
+      image(
+        x = 1:nrow(temp_anno), y = 1:ncol(temp_anno), z = temp_anno,
+        axes = FALSE, xaxt = "n", yaxt = "n", xlab = "", ylab = "", col = col, add = TRUE
+      )
     }
 
-    #Add grids
+    # Add grids
     abline(h = (1:ncol(nm)) + 0.5, col = "white", lwd = sepwd_genes)
     abline(v = (1:nrow(nm)) + 0.5, col = "white", lwd = sepwd_samples)
-    mtext(text = colnames(annotation), side = 4,
-          font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
+    mtext(
+      text = colnames(annotation), side = 4,
+      font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation)
+    )
   }
 
   par(mar = c(1, 1, 0, 0), xpd = TRUE)
 
-  plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)
-  lep = legend("topleft", legend = names(vc_col[vc_codes[2:length(vc_codes)]]),
-               col = vc_col[vc_codes[2:length(vc_codes)]], border = NA, bty = "n",
-               pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
+  plot(NULL, ylab = "", xlab = "", xlim = 0:1, ylim = 0:1, axes = FALSE)
+  lep <- legend("topleft",
+    legend = names(vc_col[vc_codes[2:length(vc_codes)]]),
+    col = vc_col[vc_codes[2:length(vc_codes)]], border = NA, bty = "n",
+    pch = 15, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize
+  )
 
-  x_axp = 0+lep$rect$w
+  x_axp <- 0 + lep$rect$w
 
-  if(!is.null(clinicalFeatures)){
+  if (!is.null(clinicalFeatures)) {
+    for (i in 1:ncol(annotation)) {
+      # x = unique(annotation[,i])
+      x <- annotationColor[[i]]
 
-    for(i in 1:ncol(annotation)){
-      #x = unique(annotation[,i])
-      x = annotationColor[[i]]
-
-      if(length(x) <= 4){
-        n_col = 1
-      }else{
-        n_col = (length(x) %/% 4)+1
+      if (length(x) <= 4) {
+        n_col <- 1
+      } else {
+        n_col <- (length(x) %/% 4) + 1
       }
 
-      lep = legend(x = x_axp, y = 1, legend = names(x),
-                   col = x, border = NA,
-                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                   cex = annotationFontSize, title = rev(names(annotation))[i], title.adj = 0)
-      x_axp = x_axp + lep$rect$w
+      lep <- legend(
+        x = x_axp, y = 1, legend = names(x),
+        col = x, border = NA,
+        ncol = n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+        cex = annotationFontSize, title = rev(names(annotation))[i], title.adj = 0
+      )
+      x_axp <- x_axp + lep$rect$w
     }
   }
 }

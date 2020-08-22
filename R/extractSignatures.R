@@ -14,8 +14,10 @@
 #' \dontrun{
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' laml.tnm <- trinucleotideMatrix(maf = laml, ref_genome = 'BSgenome.Hsapiens.UCSC.hg19', prefix = 'chr',
-#' add = TRUE, useSyn = TRUE)
+#' laml.tnm <- trinucleotideMatrix(
+#'   maf = laml, ref_genome = "BSgenome.Hsapiens.UCSC.hg19", prefix = "chr",
+#'   add = TRUE, useSyn = TRUE
+#' )
 #' library("NMF")
 #' laml.sign <- extractSignatures(mat = laml.tnm, plotBestFitRes = FALSE, n = 2, pConstant = 0.01)
 #' }
@@ -23,62 +25,62 @@
 #' @export
 
 
-extractSignatures = function(mat, n = NULL, plotBestFitRes = FALSE, parallel = 4, pConstant = NULL){
+extractSignatures <- function(mat, n = NULL, plotBestFitRes = FALSE, parallel = 4, pConstant = NULL) {
 
-    #suppressPackageStartupMessages(require(NMF, quietly = TRUE))
-    #transpose matrix
-  start_time = proc.time()
-    mat = t(mat$nmf_matrix)
+  # suppressPackageStartupMessages(require(NMF, quietly = TRUE))
+  # transpose matrix
+  start_time <- proc.time()
+  mat <- t(mat$nmf_matrix)
 
-    #Validation
-    zeroMutClass = names(which(rowSums(mat) == 0))
+  # Validation
+  zeroMutClass <- names(which(rowSums(mat) == 0))
 
-    if(length(zeroMutClass)){
-      message('-Found zero mutations for conversions:')
-      for(temp in zeroMutClass){
-        message(paste0("  ", temp))
-      }
-      #Add small value to avoid zero counts (maybe not appropriate). This happens when sample size is low or in cancers with low mutation rate.
-      #mat[which(rowSums(mat) == 0),] = 0.1
+  if (length(zeroMutClass)) {
+    message("-Found zero mutations for conversions:")
+    for (temp in zeroMutClass) {
+      message(paste0("  ", temp))
     }
+    # Add small value to avoid zero counts (maybe not appropriate). This happens when sample size is low or in cancers with low mutation rate.
+    # mat[which(rowSums(mat) == 0),] = 0.1
+  }
 
-    #To avoid error due to non-conformable arrays
-    if(!is.null(pConstant)){
-      if(pConstant < 0 | pConstant == 0){
-        stop("pConstant must be > 0")
-      }
-      mat = mat+pConstant
+  # To avoid error due to non-conformable arrays
+  if (!is.null(pConstant)) {
+    if (pConstant < 0 | pConstant == 0) {
+      stop("pConstant must be > 0")
     }
+    mat <- mat + pConstant
+  }
 
-    #Notes:
-    #Available methods for nmf decompositions are 'brunet', 'lee', 'ls-nmf', 'nsNMF', 'offset'.
-    #But based 21 breast cancer signatures data, defualt brunet seems to be working close to the results.
-    #Sticking with default for now.
+  # Notes:
+  # Available methods for nmf decompositions are 'brunet', 'lee', 'ls-nmf', 'nsNMF', 'offset'.
+  # But based 21 breast cancer signatures data, defualt brunet seems to be working close to the results.
+  # Sticking with default for now.
 
-    message(paste0('-Running NMF for factorization rank: ', n))
-    if(!is.null(parallel)){
-      conv.mat.nmf = NMF::nmf(x = mat, rank = n, .opt = paste0('P', parallel), seed = 123456)
-    }else{
-      conv.mat.nmf = NMF::nmf(x = mat, rank = n, seed = 123456)
-    }
+  message(paste0("-Running NMF for factorization rank: ", n))
+  if (!is.null(parallel)) {
+    conv.mat.nmf <- NMF::nmf(x = mat, rank = n, .opt = paste0("P", parallel), seed = 123456)
+  } else {
+    conv.mat.nmf <- NMF::nmf(x = mat, rank = n, seed = 123456)
+  }
 
-    #Signatures
-    w = NMF::basis(conv.mat.nmf)
-    w = apply(w, 2, function(x) x/sum(x)) #Scale the signatures (basis)
-    colnames(w) = paste('Signature', 1:ncol(w),sep='_')
+  # Signatures
+  w <- NMF::basis(conv.mat.nmf)
+  w <- apply(w, 2, function(x) x / sum(x)) # Scale the signatures (basis)
+  colnames(w) <- paste("Signature", 1:ncol(w), sep = "_")
 
-    #Contribution
-    h = NMF::coef(conv.mat.nmf)
-    colnames(h) = colnames(mat) #correct colnames (seems to be mssing with low mutation load)
-    #For single signature, contribution will be 100% per sample
-    if(n == 1){
-      h = h/h
-      rownames(h) = paste('Signature', '1', sep = '_')
-    }else{
-      h = apply(h, 2, function(x) x/sum(x)) #Scale contributions (coefs)
-      rownames(h) = paste('Signature', 1:nrow(h),sep='_')
-    }
+  # Contribution
+  h <- NMF::coef(conv.mat.nmf)
+  colnames(h) <- colnames(mat) # correct colnames (seems to be mssing with low mutation load)
+  # For single signature, contribution will be 100% per sample
+  if (n == 1) {
+    h <- h / h
+    rownames(h) <- paste("Signature", "1", sep = "_")
+  } else {
+    h <- apply(h, 2, function(x) x / sum(x)) # Scale contributions (coefs)
+    rownames(h) <- paste("Signature", 1:nrow(h), sep = "_")
+  }
 
-    message("-Finished in",data.table::timetaken(start_time))
-    return(list(signatures = w, contributions = h, nmfObj = conv.mat.nmf))
+  message("-Finished in", data.table::timetaken(start_time))
+  return(list(signatures = w, contributions = h, nmfObj = conv.mat.nmf))
 }

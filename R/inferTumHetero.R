@@ -28,159 +28,157 @@
 #' \dontrun{
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml <- read.maf(maf = laml.maf)
-#' TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
-#'}
+#' TCGA.AB.2972.clust <- inferHeterogeneity(maf = laml, tsb = "TCGA-AB-2972", vafCol = "i_TumorVAF_WU")
+#' }
 #' @export
 #' @seealso \code{\link{plotClusters}}
 
-inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, useSyn = FALSE,dirichlet = FALSE){
-
-  if(is.null(tsb)){
-    tsb = as.character(getSampleSummary(x = maf)[1:top, Tumor_Sample_Barcode])
+inferHeterogeneity <- function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile = NULL, ignChr = NULL, minVaf = 0, maxVaf = 1, useSyn = FALSE, dirichlet = FALSE) {
+  if (is.null(tsb)) {
+    tsb <- as.character(getSampleSummary(x = maf)[1:top, Tumor_Sample_Barcode])
   }
 
-  dat.tsb = subsetMaf(maf = maf, tsb = tsb, includeSyn = useSyn, mafObj = FALSE)
+  dat.tsb <- subsetMaf(maf = maf, tsb = tsb, includeSyn = useSyn, mafObj = FALSE)
 
-  if(nrow(dat.tsb) == 0){
-    stop(paste(tsb, 'not found in MAF'))
+  if (nrow(dat.tsb) == 0) {
+    stop(paste(tsb, "not found in MAF"))
   }
 
-  #chromosme 1 to 22
-  onlyContigs = as.character(seq(1:22))
+  # chromosme 1 to 22
+  onlyContigs <- as.character(seq(1:22))
 
-  #dirichlet process no longer supported since DPpackage has been defunct from CRAN
-  dirichlet = FALSE
+  # dirichlet process no longer supported since DPpackage has been defunct from CRAN
+  dirichlet <- FALSE
 
-  #Check if t_vaf exists
-  if(!'t_vaf' %in% colnames(dat.tsb)){
-    if(is.null(vafCol)){
-      if(all(c('t_ref_count', 't_alt_count') %in% colnames(dat.tsb))){
+  # Check if t_vaf exists
+  if (!"t_vaf" %in% colnames(dat.tsb)) {
+    if (is.null(vafCol)) {
+      if (all(c("t_ref_count", "t_alt_count") %in% colnames(dat.tsb))) {
         message("t_vaf field is missing, but found t_ref_count & t_alt_count columns. Estimating vaf..")
-        dat.tsb[,t_vaf := t_alt_count/(t_ref_count + t_alt_count)]
-      }else{
+        dat.tsb[, t_vaf := t_alt_count / (t_ref_count + t_alt_count)]
+      } else {
         print(colnames(dat.tsb))
-        stop('t_vaf field is missing. Use vafCol to manually specify vaf column name.')
+        stop("t_vaf field is missing. Use vafCol to manually specify vaf column name.")
       }
-    }else{
-      colnames(dat.tsb)[which(colnames(dat.tsb) == vafCol)] = 't_vaf'
+    } else {
+      colnames(dat.tsb)[which(colnames(dat.tsb) == vafCol)] <- "t_vaf"
     }
   }
 
-  #If given Copynumber data : Read, Sort and match it to samples in maf
-  if(!is.null(segFile)){
-    seg.dat = readSegs(segFile)
-    seg.dat = seg.dat[Chromosome %in% onlyContigs]
-    seg.dat = seg.dat[order(as.numeric(Chromosome))]
+  # If given Copynumber data : Read, Sort and match it to samples in maf
+  if (!is.null(segFile)) {
+    seg.dat <- readSegs(segFile)
+    seg.dat <- seg.dat[Chromosome %in% onlyContigs]
+    seg.dat <- seg.dat[order(as.numeric(Chromosome))]
     setkey(x = seg.dat, Chromosome, Start_Position, End_Position)
 
-    seg.tsbs = unique(seg.dat[,Sample])
+    seg.tsbs <- unique(seg.dat[, Sample])
 
-    if(sum(!tsb %in% seg.tsbs) > 0){
+    if (sum(!tsb %in% seg.tsbs) > 0) {
       message("CN data for following samples not found. Ignoring them ..")
       print(tsb[!tsb %in% seg.tsbs])
-      seg.tsbs = tsb[tsb %in% seg.tsbs]
+      seg.tsbs <- tsb[tsb %in% seg.tsbs]
     } else {
       ## This is used to keep data for selected samples
-      seg.tsbs = tsb
+      seg.tsbs <- tsb
     }
 
-    if(length(seg.tsbs) > 0){
-      seg.dat = seg.dat[Sample %in% seg.tsbs]
-    }else{
+    if (length(seg.tsbs) > 0) {
+      seg.dat <- seg.dat[Sample %in% seg.tsbs]
+    } else {
       stop("None of the provided samples have copy number data.")
     }
   }
 
-  #empty df to store cluster info
-  clust.dat = c()
+  # empty df to store cluster info
+  clust.dat <- c()
 
-  #Select only required columns and sort
-  dat.tsb = dat.tsb[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, t_vaf)]
-  dat.tsb$Chromosome = as.character(dat.tsb$Chromosome)
-  dat.tsb$t_vaf = as.numeric(as.character(dat.tsb$t_vaf))
-  dat.tsb = dat.tsb[order(Chromosome)]
-  #setkey(x = dat.tsb, Chromosome, Start_Position, End_Position)
+  # Select only required columns and sort
+  dat.tsb <- dat.tsb[, .(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, t_vaf)]
+  dat.tsb$Chromosome <- as.character(dat.tsb$Chromosome)
+  dat.tsb$t_vaf <- as.numeric(as.character(dat.tsb$t_vaf))
+  dat.tsb <- dat.tsb[order(Chromosome)]
+  # setkey(x = dat.tsb, Chromosome, Start_Position, End_Position)
 
-  #If VAF is in %, covert it to fractions.
-  if(max(dat.tsb$t_vaf, na.rm = TRUE) > 1){
-    dat.tsb$t_vaf = dat.tsb$t_vaf/100
+  # If VAF is in %, covert it to fractions.
+  if (max(dat.tsb$t_vaf, na.rm = TRUE) > 1) {
+    dat.tsb$t_vaf <- dat.tsb$t_vaf / 100
   }
 
-  #Filter ignChr
-  if(!is.null(ignChr)){
-    dat.tsb = dat.tsb[!Chromosome %in% ignChr]
+  # Filter ignChr
+  if (!is.null(ignChr)) {
+    dat.tsb <- dat.tsb[!Chromosome %in% ignChr]
   }
 
-  #Filter low and high vaf variants
-  dat.tsb = dat.tsb[t_vaf > minVaf][t_vaf < maxVaf]
+  # Filter low and high vaf variants
+  dat.tsb <- dat.tsb[t_vaf > minVaf][t_vaf < maxVaf]
 
-  #Change contig names 'chr' to numeric in maf (so it can match to copynumber data)
-  dat.tsb$Chromosome = gsub(pattern = 'chr', replacement = '', x = dat.tsb$Chromosome, fixed = TRUE)
-  dat.tsb = suppressWarnings(dat.tsb[order(as.numeric(Chromosome))]) #Generates warning for X and Y sorting, as numeric
+  # Change contig names 'chr' to numeric in maf (so it can match to copynumber data)
+  dat.tsb$Chromosome <- gsub(pattern = "chr", replacement = "", x = dat.tsb$Chromosome, fixed = TRUE)
+  dat.tsb <- suppressWarnings(dat.tsb[order(as.numeric(Chromosome))]) # Generates warning for X and Y sorting, as numeric
 
 
   ################# Map variants to segments and start clustering #######################
 
-  for(i in 1:length(tsb)){
+  for (i in 1:length(tsb)) {
+    message("Processing ", tsb[i], "..")
 
-    message('Processing ', tsb[i], '..')
+    tsb.dat <- dat.tsb[Tumor_Sample_Barcode %in% tsb[i]]
+    tsb.dat <- tsb.dat[!is.na(tsb.dat$t_vaf), ]
 
-    tsb.dat = dat.tsb[Tumor_Sample_Barcode %in% tsb[i]]
-    tsb.dat = tsb.dat[!is.na(tsb.dat$t_vaf),]
+    # nvm this. Variable for later use
+    tempCheck <- 0
 
-    #nvm this. Variable for later use
-    tempCheck = 0
-
-    if(!is.null(segFile)){
-      if(tsb[i] %in% seg.tsbs){
-        seg = seg.dat[Sample %in% tsb[i]]
-        #Map copynumber and variants; filter variants on CN altered regions.
-        seg.res = filterCopyNumber(seg, tsb.dat, tempCheck, tsb[i])
-        tsb.dat = seg.res[[1]]
-        tsb.dat.cn.vars = seg.res[[2]]
-        tempCheck = seg.res[[3]]
+    if (!is.null(segFile)) {
+      if (tsb[i] %in% seg.tsbs) {
+        seg <- seg.dat[Sample %in% tsb[i]]
+        # Map copynumber and variants; filter variants on CN altered regions.
+        seg.res <- filterCopyNumber(seg, tsb.dat, tempCheck, tsb[i])
+        tsb.dat <- seg.res[[1]]
+        tsb.dat.cn.vars <- seg.res[[2]]
+        tempCheck <- seg.res[[3]]
       }
     }
 
-    if(nrow(tsb.dat) < 3){
-      #Less than 3 variants might not be useful.
-      message('Too few mutations for clustering. Skipping..')
-    }else{
-      #cluster
-      if(dirichlet){
-        #Awesome blog post on non-finite mixture models
-        #http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/
-        tsb.dat = dirichletClusters(tsb.dat)
-      }else{
-        #More than 7 clusters possible ? May not be biologically meaningful.
-        #Use finite mixture model
-        tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7, verbose = FALSE)
-        tsb.dat$cluster = as.character(tsb.cluster$classification)
-        abs.med.dev = abs(tsb.dat[,t_vaf] - median(tsb.dat[,t_vaf])) #absolute deviation from median vaf
-        pat.mad = median(abs.med.dev) * 100
-        pat.math = pat.mad * 1.4826 /median(tsb.dat[,t_vaf])
-        tsb.dat$MATH = pat.math
-        tsb.dat$MedianAbsoluteDeviation = pat.mad
+    if (nrow(tsb.dat) < 3) {
+      # Less than 3 variants might not be useful.
+      message("Too few mutations for clustering. Skipping..")
+    } else {
+      # cluster
+      if (dirichlet) {
+        # Awesome blog post on non-finite mixture models
+        # http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/
+        tsb.dat <- dirichletClusters(tsb.dat)
+      } else {
+        # More than 7 clusters possible ? May not be biologically meaningful.
+        # Use finite mixture model
+        tsb.cluster <- mclust::densityMclust(tsb.dat[, t_vaf], G = 1:7, verbose = FALSE)
+        tsb.dat$cluster <- as.character(tsb.cluster$classification)
+        abs.med.dev <- abs(tsb.dat[, t_vaf] - median(tsb.dat[, t_vaf])) # absolute deviation from median vaf
+        pat.mad <- median(abs.med.dev) * 100
+        pat.math <- pat.mad * 1.4826 / median(tsb.dat[, t_vaf])
+        tsb.dat$MATH <- pat.math
+        tsb.dat$MedianAbsoluteDeviation <- pat.mad
       }
 
-      #Refine cluster assignment (z score > 2; mark it as an outlier)
-      tsb.dat = refineClusters(clusters = tsb.dat)
+      # Refine cluster assignment (z score > 2; mark it as an outlier)
+      tsb.dat <- refineClusters(clusters = tsb.dat)
 
-      if(tempCheck == 1){
-        tsb.dat = rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE)
+      if (tempCheck == 1) {
+        tsb.dat <- rbind(tsb.dat, tsb.dat.cn.vars, fill = TRUE)
       }
 
-      #Update result table
-      clust.dat = rbind(clust.dat, tsb.dat, fill = TRUE)
+      # Update result table
+      clust.dat <- rbind(clust.dat, tsb.dat, fill = TRUE)
     }
   }
 
   if (is.null(clust.dat)) {
     message("No result, this is basically caused by no copy number neutral variants,\n you may re-run this without copy number data.")
   } else {
-    #Caluclate cluster means
-    clust.dat.mean = clust.dat[,mean(t_vaf), by = .(Tumor_Sample_Barcode, cluster)]
-    colnames(clust.dat.mean)[ncol(clust.dat.mean)] = 'meanVaf'
+    # Caluclate cluster means
+    clust.dat.mean <- clust.dat[, mean(t_vaf), by = .(Tumor_Sample_Barcode, cluster)]
+    colnames(clust.dat.mean)[ncol(clust.dat.mean)] <- "meanVaf"
 
     return(list(clusterData = clust.dat, clusterMeans = clust.dat.mean))
   }

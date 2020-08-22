@@ -20,75 +20,79 @@
 #' @examples
 #' tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package = "maftools")
 #' plotCBSsegments(cbsFile = tcga.ab.009.seg)
-#'
-
-plotCBSsegments = function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FALSE, ylims = NULL, seg_size = 0.1,
-                           width = 6, height = 3, genes = NULL, ref.build = 'hg19', writeTable = FALSE, removeXY = FALSE, color = NULL){
-
-  if(is.null(cbsFile)){
-    stop('Missing segmentation file!')
+plotCBSsegments <- function(cbsFile = NULL, maf = NULL, tsb = NULL, savePlot = FALSE, ylims = NULL, seg_size = 0.1,
+                            width = 6, height = 3, genes = NULL, ref.build = "hg19", writeTable = FALSE, removeXY = FALSE, color = NULL) {
+  if (is.null(cbsFile)) {
+    stop("Missing segmentation file!")
   }
 
-  #Read segmentation file and change chromosome names
-  seg = readSegs(seg = cbsFile)
+  # Read segmentation file and change chromosome names
+  seg <- readSegs(seg = cbsFile)
 
-  if(removeXY){
-    seg = seg[!Chromosome %in% c('23', '24')]
+  if (removeXY) {
+    seg <- seg[!Chromosome %in% c("23", "24")]
   }
 
-  seg = seg[order(as.numeric(Chromosome))]
+  seg <- seg[order(as.numeric(Chromosome))]
   data.table::setkey(x = seg, Chromosome, Start_Position, End_Position)
 
-  #If user doesn't provide sample name
-  if (is.null(tsb)){
-    #Use top 1 sample for simplicity
-    tsb = unique(as.character(seg[,Sample]))[1]
+  # If user doesn't provide sample name
+  if (is.null(tsb)) {
+    # Use top 1 sample for simplicity
+    tsb <- unique(as.character(seg[, Sample]))[1]
     message("No 'tsb' specified, plot head 1 sample. Set tsb='ALL' to plot all samples.")
   } else if (tsb == "ALL") {
-    #Number of unique samples in segmentation file
-    tsb = unique(as.character(seg[,Sample]))
+    # Number of unique samples in segmentation file
+    tsb <- unique(as.character(seg[, Sample]))
   }
 
-  for(i in 1:length(tsb)){
-
-    if(savePlot){
-      pdf(file = paste(tsb[i], '_segPlot.pdf', sep = ''), width = width, height = height, bg = "white", paper = "special")
+  for (i in 1:length(tsb)) {
+    if (savePlot) {
+      pdf(file = paste(tsb[i], "_segPlot.pdf", sep = ""), width = width, height = height, bg = "white", paper = "special")
     }
 
-    plotCBS(segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color,
-            y_lims = ylims, rect_size = seg_size)
+    plotCBS(
+      segData = seg, tsb = tsb[i], build = ref.build, chr.colors = color,
+      y_lims = ylims, rect_size = seg_size
+    )
 
-    if(!is.null(maf)){
-      tsb.mapped = mapMutsToSegs(seg = seg, maf = maf, tsb = tsb[i], build = ref.build)
-      if(writeTable){
-        write.table(x = tsb.mapped[,.(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, Segment_Start, Segment_End, Segment_Mean, CN)],
-                    file = paste(tsb[i], '_segData.tsv', sep = ''), sep='\t', quote = FALSE, row.names = FALSE)
+    if (!is.null(maf)) {
+      tsb.mapped <- mapMutsToSegs(seg = seg, maf = maf, tsb = tsb[i], build = ref.build)
+      if (writeTable) {
+        write.table(
+          x = tsb.mapped[, .(Hugo_Symbol, Chromosome, Start_Position, End_Position, Tumor_Sample_Barcode, Segment_Start, Segment_End, Segment_Mean, CN)],
+          file = paste(tsb[i], "_segData.tsv", sep = ""), sep = "\t", quote = FALSE, row.names = FALSE
+        )
       }
     }
 
-    if(!is.null(genes)){
-      if(is.null(maf)){
+    if (!is.null(genes)) {
+      if (is.null(maf)) {
         warning("Missing maf file. Skipping gene mapping..", immediate. = TRUE)
-      }else{
-        #Map mutations to segments
-        tsb.mapped.cn = tsb.mapped[Hugo_Symbol %in% genes]
+      } else {
+        # Map mutations to segments
+        tsb.mapped.cn <- tsb.mapped[Hugo_Symbol %in% genes]
 
-        if(nrow(tsb.mapped.cn) > 0){
-          text(x = tsb.mapped.cn$Start_Position_updated,
-               y = ifelse(test = tsb.mapped.cn$Segment_Mean > 0, yes = tsb.mapped.cn$Segment_Mean+1, no = tsb.mapped.cn$Segment_Mean - 1),
-               labels = as.character(tsb.mapped.cn$Hugo_Symbol), cex = 0.8)
-          segments(x0 = tsb.mapped.cn$Start_Position_updated, y0 = tsb.mapped.cn$Segment_Mean,
-                   x1 = tsb.mapped.cn$Start_Position_updated,
-                   y1 = ifelse(test = tsb.mapped.cn$Segment_Mean > 0, yes = tsb.mapped.cn$Segment_Mean+0.9, no = tsb.mapped.cn$Segment_Mean - 0.9),
-                   lty = 1)
-        }else{
+        if (nrow(tsb.mapped.cn) > 0) {
+          text(
+            x = tsb.mapped.cn$Start_Position_updated,
+            y = ifelse(test = tsb.mapped.cn$Segment_Mean > 0, yes = tsb.mapped.cn$Segment_Mean + 1, no = tsb.mapped.cn$Segment_Mean - 1),
+            labels = as.character(tsb.mapped.cn$Hugo_Symbol), cex = 0.8
+          )
+          segments(
+            x0 = tsb.mapped.cn$Start_Position_updated, y0 = tsb.mapped.cn$Segment_Mean,
+            x1 = tsb.mapped.cn$Start_Position_updated,
+            y1 = ifelse(test = tsb.mapped.cn$Segment_Mean > 0, yes = tsb.mapped.cn$Segment_Mean + 0.9, no = tsb.mapped.cn$Segment_Mean - 0.9),
+            lty = 1
+          )
+        } else {
           message(paste0("No mutations observed from given gene list for sample ", tsb[i]))
         }
       }
     }
-    if(savePlot){
+    if (savePlot) {
       dev.off()
     }
   }
- return(invisible(NULL))
+  return(invisible(NULL))
 }
