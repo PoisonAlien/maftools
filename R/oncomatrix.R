@@ -570,7 +570,7 @@ get_anno_cols = function(ann, numericAnnoCol = NULL){
   }
   for(i in 1:ncol(ann)){
     if(is.numeric(ann[,i])){
-      x = ann[,i]
+      x = unique(ann[,i])
       ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x))
       names(ann_lvls_cols) = x[order(x, na.last = TRUE)]
       ann_cols[[i]] = ann_lvls_cols

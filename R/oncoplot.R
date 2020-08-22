@@ -809,6 +809,26 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
   #06: Plot annotations if any
   if(!is.null(clinicalFeatures)){
+    # Detect if a annotation column should be transformed into numeric vector
+    temp_names = rownames(annotation)
+    annotation = suppressWarnings(
+      as.data.frame(
+        lapply(annotation, function(x) {
+          if (length(table(x)) < 4) {
+            return(x)
+          } else {
+            v = as.numeric(x)
+            if (sum(!is.na(v)) < length(v) / 2) {
+              return(x)
+            } else {
+              return(v)
+            }
+          }
+        })
+      )
+    )
+    rownames(annotation) = temp_names
+    anno_lgl_index = sapply(annotation, is.numeric)
 
     #clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
     clini_lvls = lapply(annotation, function(x) unique(as.character(x)))
@@ -833,7 +853,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     #clini_lvls = clini_lvls[!is.na(clini_lvls)]
     clini_lvls = lapply(clini_lvls, function(cl){
       temp_names = suppressWarnings(sample(
-        x = setdiff(x = 1:1000, y = as.numeric(as.character(cl))),
+        x = setdiff(x = seq_len(2*length(cl)), y = as.numeric(as.character(cl))),
         size = length(cl),
         replace = FALSE
       ))
@@ -984,34 +1004,47 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   x_axp = 0+lep$rect$w
 
   if(!is.null(clinicalFeatures)){
+    annot_orders = order(anno_lgl_index)
+    for(i in annot_orders){
 
-    for(i in 1:ncol(annotation)){
       #x = unique(annotation[,i])
       x = annotationColor[[i]]
       xt = names(x)
-      if("NA" %in% xt){
-        xt = xt[!xt %in% "NA"]
-        xt = sort(xt, decreasing = FALSE)
-        xt = c(xt, "NA")
-        x = x[xt]
-      }else{
-        xt = sort(xt, decreasing = FALSE)
-        x = x[xt]
-      }
 
-      if(length(x) <= 4){
-        n_col = 1
-      }else{
-        n_col = (length(x) %/% 4)+1
-      }
-      names(x)[is.na(names(x))] = "NA"
+      if (isFALSE(anno_lgl_index[i])) {
+        if("NA" %in% xt){
+          xt = xt[!xt %in% "NA"]
+          xt = sort(xt, decreasing = FALSE)
+          xt = c(xt, "NA")
+          x = x[xt]
+        }else{
+          xt = sort(xt, decreasing = FALSE)
+          x = x[xt]
+        }
 
-      lep = legend(x = x_axp, y = 1, legend = names(x),
-                   col = x, border = NA,
-                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                   cex = annotationFontSize, title = rev(names(annotation))[i],
-                   title.adj = 0)
-      x_axp = x_axp + lep$rect$w
+        if(length(x) <= 4){
+          n_col = 1
+        }else{
+          n_col = (length(x) %/% 4)+1
+        }
+        names(x)[is.na(names(x))] = "NA"
+
+        lep = legend(x = x_axp, y = 1, legend = names(x),
+                     col = x, border = NA,
+                     ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+                     cex = annotationFontSize, title = rev(names(annotation))[i],
+                     title.adj = 0)
+        x_axp = x_axp + lep$rect$w
+      } else {
+        opar = par(no.readonly = TRUE)
+        on.exit(par(opar))
+        par(fig=c(0.8,1,0.01,0.15), new=TRUE)
+        nlev = length(x)
+        image(y=seq_len(nlev),z=t(as.numeric(xt)),
+              col = x, axes = FALSE, add = TRUE,
+              ylab = names(annotationColor)[i])
+        axis(2)
+      }
 
     }
   }
