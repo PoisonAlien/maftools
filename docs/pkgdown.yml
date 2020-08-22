@@ -1,0 +1,8 @@
+pandoc: 2.7.3
+pkgdown: 1.5.1
+pkgdown_sha: ~
+articles:
+  maftools: maftools.html
+  oncoplots: oncoplots.html
+last_built: 2020-08-22T12:03Z
+

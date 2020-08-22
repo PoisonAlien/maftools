@@ -1,0 +1,85 @@
+template:
+  params:
+    bootswatch: united
+destination: docs
+
+reference:
+  - title: Data input, classes and operation
+    contents:
+    - MAF-class
+    - GISTIC-class
+    - read.maf
+    - readGistic
+    - annovarToMaf
+    - icgcSimpleMutationToMAF
+    - subsetMaf
+    - filterMaf
+    - merge_mafs
+    - setdiffMAF
+    - intersectMAF
+    - write.mafSummary
+    - write.GisticSummary
+  - title: Analyze and visualize MAF object
+    contents:
+    - plotmafSummary
+    - plotVaf
+    - plotTiTv
+    - rainfallPlot
+    - lollipopPlot
+    - oncoplot
+    - oncostrip
+    - oncodrive
+    - plotOncodrive
+    - pfamDomains
+    - somaticInteractions
+    - OncogenicPathways
+    - PlotOncogenicPathways
+    - inferHeterogeneity
+    - plotClusters
+    - math.score
+    - forestPlot
+    - drugInteractions
+    - mafSurvival
+    - survGroup
+    - mafSurvGroup
+    - clinicalEnrichment
+    - plotEnrichmentResults
+  - title: Analyze and visualize GISTIC object
+    contents:
+    - plotCBSsegments
+    - gisticOncoPlot
+    - gisticBubblePlot
+    - gisticChromPlot
+  - title: Analyze and visualize multiple cohorts
+    contents:
+    - mafCompare
+    - vafCompare
+    - coBarplot
+    - coOncoplot
+    - lollipopPlot2
+    - tcgaCompare
+    - tcgaDriverBP
+  - title: APOBEC and mutational signature analysis
+    contents:
+    - trinucleotideMatrix
+    - plotApobecDiff
+    - prepareMutSig
+    - estimateSignatures
+    - plotCophenetic
+    - extractSignatures
+    - compareSignatures
+    - plotSignatures
+    - signatureEnrichment
+  - title: Obtain information from MAF or GISTIC object
+    contents:
+    - mafSummary
+    - getClinicalData
+    - getGeneSummary
+    - getSampleSummary
+    - getFields
+    - getCytobandSummary
+    - genesToBarcodes
+    - genotypeMatrix
+    - tmb
+    - titv
+    - mutCountMatrix
