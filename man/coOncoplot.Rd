@@ -17,6 +17,8 @@ coOncoplot(
   annotationFontSize = 1.2,
   sortByAnnotation1 = FALSE,
   sortByAnnotation2 = FALSE,
+  sampleOrder1 = NULL,
+  sampleOrder2 = NULL,
   additionalFeature1 = NULL,
   additionalFeaturePch1 = 20,
   additionalFeatureCol1 = "white",
@@ -68,6 +70,10 @@ coOncoplot(
 \item{sortByAnnotation1}{logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort}
 
 \item{sortByAnnotation2}{same as above but for m2}
+
+\item{sampleOrder1}{Manually speify sample names in m1 for oncolplot ordering. Default NULL.}
+
+\item{sampleOrder2}{Manually speify sample names in m2 for oncolplot ordering. Default NULL.}
 
 \item{additionalFeature1}{a vector of length two indicating column name in the MAF and the factor level to be highlighted.}
 

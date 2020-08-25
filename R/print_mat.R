@@ -1,6 +1,6 @@
 print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
                      bgCol = 'gray70', borderCol = 'white', fontSize = 1,
-                     plot2 = FALSE, test = FALSE, clinicalFeatures = NULL,
+                     plot2 = FALSE, test = FALSE, clinicalFeatures = NULL, sampleOrder = NULL,
                      additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9,
                      annotationDat = NULL, annotationColor = NULL,
                      sortByAnnotation = FALSE, showBarcodes = FALSE, barcodemar = 4,
@@ -109,6 +109,15 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
 
   if(test){
     return(list(numMat, vc_col[om$vc]))
+  }
+
+  if(!is.null(sampleOrder)){
+    sampleOrder = as.character(sampleOrder)
+    sampleOrder = sampleOrder[sampleOrder %in% colnames(numMat)]
+    if(length(sampleOrder) == 0){
+      stop("None of the provided samples are present in the input MAF")
+    }
+    numMat = numMat[,sampleOrder, drop = FALSE]
   }
 
   nm = t(apply(numMat, 2, rev))
