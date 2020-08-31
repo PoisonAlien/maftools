@@ -1,7 +1,6 @@
 <img src="vignettes/maftools_hex.svg" align="left" height="140" /></a>
 
 ## maftools - An R package to summarize, analyze and visualize MAF files
-***
 
 [![bioc](http://www.bioconductor.org/shields/downloads/maftools.svg)](https://bioconductor.org/packages/stats/bioc/maftools/) 
 [![bioc](http://www.bioconductor.org/shields/years-in-bioc/maftools.svg)](http://bioconductor.org/packages/devel/bioc/html/maftools.html)
@@ -11,17 +10,15 @@
 [![Lines Of Code](https://tokei.rs/b1/github/poisonalien/maftools?category=code)](https://github.com/poisonalien/maftools)
 
 ## Introduction
-***
+
 `maftools` provides a comprehensive set of functions for processing [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) files from cancer genomics studies. This package provides various functions to perform most commonly used analyses in cancer genomics. See [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html) for a detailed usage and a case study.
 
-***
 
 <p align="left">
 <img src="vignettes/tool_summary.gif" height="320">
 </p>
 
 ## Installation
-***
 ```{r}
 #Install from Bioconductor repository
 BiocManager::install("maftools")
@@ -30,20 +27,17 @@ BiocManager::install("maftools")
 BiocManager::install("PoisonAlien/maftools")
 ```
 
-### Getting started: Vignette and a case study
-***
+## Getting started: Vignette and a case study
+
 A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/full/10.1056/nejmoa1301689) as a case study can be found [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
-***
 
-### Citation
-***
+## Citation
+
 **_Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome Research](https://doi.org/10.1101/gr.239244.118). PMID: [30341162](https://www.ncbi.nlm.nih.gov/pubmed/?term=30341162)_**
 
-***
 
-### Useful links
-***
+## Useful links
 
 
 |                                                    File formats                                                    |                                           Data Portals                                          |                                        Annotation tools                                       |
@@ -56,8 +50,8 @@ A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/
 |                                                                                                                    | [DGIdb](http://www.dgidb.org/) - Information on drug-gene interactions and the druggable genome |                                                                                               |
 
 
-### Similar packages/tools
-***
+## Similar packages/tools
+
 Below are some more useful software packages for somatic variant analysis (not necessarily similar to maftools)
 
 * [TRONCO](https://github.com/BIMIB-DISCo/TRONCO) - Repository of the TRanslational ONCOlogy library (R)
