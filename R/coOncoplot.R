@@ -31,7 +31,8 @@
 #' @param m2Name optional name for second cohort
 #' @param geneNamefont font size for gene names. Default 1
 #' @param showSampleNames whether to show sample names. Defult FALSE.
-#' @param barcode_mar Margin width for sample names. Default 4
+#' @param barcode_mar Margin width for sample names. Default 1
+#' @param gene_mar Margin width for gene names. Default 3
 #' @param SampleNamefont font size for sample names. Default 0.5
 #' @param anno_height Height of clinical margin. Default 2
 #' @param legend_height Height of legend margin. Default 4
@@ -62,7 +63,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                       additionalFeature2 = NULL, additionalFeaturePch2 = 20, additionalFeatureCol2 = "white", additionalFeatureCex2 = 0.9,
                       sepwd_genes1 = 0.5, sepwd_samples1 = 0.5, sepwd_genes2 = 0.5, sepwd_samples2 = 0.5,
                        colors = NULL, removeNonMutated = TRUE, anno_height = 2, legend_height = 4,
-                       geneNamefont = 0.8, showSampleNames = FALSE, SampleNamefont = 0.5, barcode_mar = 4,
+                       geneNamefont = 0.8, showSampleNames = FALSE, SampleNamefont = 0.5, barcode_mar = 1,gene_mar = 3,
                        legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder=FALSE,
                        bgCol = "#CCCCCC", borderCol = "white"){
 
@@ -141,7 +142,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature1, additionalFeaturePch = additionalFeaturePch1,
                         additionalFeatureCex = additionalFeatureCex1, additionalFeatureCol = additionalFeatureCol1,
-                        sepwd_genes = sepwd_genes1, sepwd_samples = sepwd_samples1, barcodemar = barcode_mar, sampleOrder = sampleOrder1)
+                        sepwd_genes = sepwd_genes1, sepwd_samples = sepwd_samples1, barcodemar = barcode_mar, genemar = gene_mar, sampleOrder = sampleOrder1)
 
 
   if(is.null(clinicalFeatures1) & !is.null(clinicalFeatures2)){
@@ -173,7 +174,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature2, additionalFeaturePch = additionalFeaturePch2,
                         additionalFeatureCex = additionalFeatureCex2, additionalFeatureCol = additionalFeatureCol2,
-                        sepwd_genes = sepwd_genes2, sepwd_samples = sepwd_samples2, barcodemar = barcode_mar, sampleOrder = sampleOrder2)
+                        sepwd_genes = sepwd_genes2, sepwd_samples = sepwd_samples2, barcodemar = barcode_mar, genemar = gene_mar, sampleOrder = sampleOrder2)
 
   if(!is.null(clinicalFeatures1) & is.null(clinicalFeatures2)){
     plot.new()

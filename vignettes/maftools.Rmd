@@ -17,7 +17,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<img src="maftools.png" height="100" width="250" style="position:absolute;top:30px;right:0px;" />
+<img src="maftools_hex.svg" height="140" style="position:absolute;top:30px;right:0px;" />
 
 # Introduction
 With advances in Cancer Genomics, [Mutation Annotation Format](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) (MAF) is being widely accepted and used to store somatic variants detected. 
@@ -655,8 +655,34 @@ laml_m4 = subsetMaf(maf = laml, clinQuery = "FAB_classification %in% 'M4'")
 There is also an R data package containing pre-compiled TCGA MAF objects from TCGA firehose and TCGA [MC3](https://gdc.cancer.gov/about-data/publications/mc3-2017) projects, particularly helpful for those working with TCGA mutation data. Every dataset is stored as an MAF object containing somatic mutations along with clinical information. Due to Bioconductor package size limits and other difficulties, this was not submitted to Bioconductor. However, you can still download [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) package from GitHub. 
 
 ```{r, eval=FALSE}
-devtools::install_github(repo = "PoisonAlien/TCGAmutations")
+BiocManager::install(pkgs = "PoisonAlien/TCGAmutations")
 ```
+
+## Useful links
+
+
+|                                                    File formats                                                    |                                           Data Portals                                          |                                        Annotation tools                                       |
+|:------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|
+|               [Mutation Annotation Format](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/)              |                               [TCGA](http://cancergenome.nih.gov)                               |       [vcf2maf](https://github.com/mskcc/vcf2maf) - for converting your VCF files to MAF      |
+|                      [Variant Call Format](https://en.wikipedia.org/wiki/Variant_Call_Format)                      |                                  [ICGC](https://docs.icgc.org/)                                 | Ensembl Variant Effect Predictor [VEP](http://www.ensembl.org/info/docs/tools/vep/index.html) |
+| ICGC [Simple Somatic Mutation Format](https://docs.icgc.org/submission/guide/icgc-simple-somatic-mutation-format/) |                        [Broad Firehose](https://gdac.broadinstitute.org/)                       |           [Annovar](https://doc-openbio.readthedocs.io/projects/annovar/en/latest/)           |
+|                                                                                                                    |                            [cBioPortal](https://www.cbioportal.org/)                            |    [Funcotator](https://gatk.broadinstitute.org/hc/en-us/articles/360037224432-Funcotator)    |
+|                                                                                                                    |        [CIViC](https://civicdb.org/home) - Clinical interpretation of variants in cancer        |                                                                                               |
+|                                                                                                                    | [DGIdb](http://www.dgidb.org/) - Information on drug-gene interactions and the druggable genome |                                                                                               |
+
+
+## Similar packages/tools
+
+Below are some more useful software packages for somatic variant analysis (not necessarily similar to maftools)
+
+* [TRONCO](https://github.com/BIMIB-DISCo/TRONCO) - Repository of the TRanslational ONCOlogy library (R)
+* [dndscv](https://github.com/im3sanger/dndscv) - dN/dS methods to quantify selection in cancer and somatic evolution (R)
+* [cloneevol](https://github.com/hdng/clonevol) - Inferring and visualizing clonal evolution in multi-sample cancer sequencing (R)
+* [sigminer](https://github.com/ShixiangWang/sigminer) - Primarily for signature analysis and visualization in R. Supports `maftools` output (R)
+* [GenVisR](https://github.com/griffithlab/GenVisR) - Primarily for visualization (R)
+* [comut](https://github.com/vanallenlab/comut) - Primarily for visualization (Python)
+* [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) - pre-compiled curated somatic mutations from TCGA cohorts (from Broad Firehose and TCGA MC3 Project) that can be loaded into `maftools` (R)
+* [basecounts](https://github.com/PoisonAlien/basecounts) - A command line tool to extract read counts and allele frequencies from BAM files for user specific loci (Rust)
 
 
 # References

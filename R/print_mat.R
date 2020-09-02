@@ -3,7 +3,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
                      plot2 = FALSE, test = FALSE, clinicalFeatures = NULL, sampleOrder = NULL,
                      additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9,
                      annotationDat = NULL, annotationColor = NULL,
-                     sortByAnnotation = FALSE, showBarcodes = FALSE, barcodemar = 4,
+                     sortByAnnotation = FALSE, showBarcodes = FALSE, barcodemar = 4,genemar = 1,
                      title = NULL, title_size = 1.2, barcode_size = 0.4, sepwd_samples = 0.1, sepwd_genes = 0.1){
 
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
@@ -80,29 +80,29 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   if(plot2){
     if(is.null(clinicalFeatures)){
       if(showBarcodes){
-        par(mar = c(barcodemar, 1, 3, 3))
+        par(mar = c(barcodemar, 1, 3, genemar))
       }else{
-        par(mar = c(1, 1, 3, 3))
+        par(mar = c(barcodemar, 1, 3, genemar))
       }
     }else{
       if(showBarcodes){
-        par(mar = c(barcodemar, 1, 3, 5))
+        par(mar = c(barcodemar, 1, 3, genemar))
       }else{
-        par(mar = c(1, 1, 3, 5))
+        par(mar = c(barcodemar, 1, 3, genemar))
       }
     }
   }else{
     if(is.null(clinicalFeatures)){
       if(showBarcodes){
-        par(mar = c(barcodemar, 3, 3, 1))
+        par(mar = c(barcodemar, genemar, 3, 1))
       }else{
-        par(mar = c(1, 3, 3, 1))
+        par(mar = c(barcodemar, genemar, 3, 1))
       }
     }else{
       if(showBarcodes){
-        par(mar = c(barcodemar, 5, 3, 1))
+        par(mar = c(barcodemar, genemar, 3, 1))
       }else{
-        par(mar = c(1, 5, 3, 1))
+        par(mar = c(barcodemar, genemar, 3, 1))
       }
     }
   }
@@ -289,9 +289,9 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
     if(plot2){
-      par(mar = c(0, 1, 0, 5))
+      par(mar = c(0, 1, 0, genemar))
     }else{
-      par(mar = c(0, 5, 0, 1))
+      par(mar = c(0, genemar, 0, 1))
     }
 
     image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),

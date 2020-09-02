@@ -4,6 +4,8 @@
 ## ENHANCEMENTS
 - Added `sampleOrder1` and `sampleOrder2` arguments to `coOncoplot`. Issue: [592](https://github.com/PoisonAlien/maftools/issues/592)
 - Added `filterMaf` function. 
+- Added `gene_mar` argument to `coOncoplot`. Issue: [260](https://github.com/PoisonAlien/maftools/issues/260)
+- Added sample size warning messages to `mafCompare`. Issue: [602](https://github.com/PoisonAlien/maftools/issues/602)
 
 # CHANGES IN VERSION 2.4.12 (Release/Bioconductor version)
 No new changes. Just updated news file.

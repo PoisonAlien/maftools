@@ -65,6 +65,9 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
  m.gs.meged[is.na(m.gs.meged)] = 0
  m.gs.meged = as.data.frame(m.gs.meged)
 
+ if(nrow(m.gs.meged) == 0){
+   stop("No genes pass the minMut threshold. Try decreasing the value..")
+ }
  fisherTable = lapply(seq_len(nrow(m.gs.meged)), function(i){
                      gene = m.gs.meged[i, 1]
                      m1Mut = m.gs.meged[i,2]
