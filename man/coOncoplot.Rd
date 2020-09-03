@@ -38,7 +38,9 @@ coOncoplot(
   geneNamefont = 0.8,
   showSampleNames = FALSE,
   SampleNamefont = 0.5,
-  barcode_mar = 4,
+  barcode_mar = 1,
+  outer_mar = 3,
+  gene_mar = 1,
   legendFontSize = 1.2,
   titleFontSize = 1.5,
   keepGeneOrder = FALSE,
@@ -113,7 +115,11 @@ coOncoplot(
 
 \item{SampleNamefont}{font size for sample names. Default 0.5}
 
-\item{barcode_mar}{Margin width for sample names. Default 4}
+\item{barcode_mar}{Margin width for sample names. Default 1}
+
+\item{outer_mar}{Margin width for outer. Default 3}
+
+\item{gene_mar}{Margin width for gene names. Default 1}
 
 \item{legendFontSize}{font size for legend. Default 1.2}
 

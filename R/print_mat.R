@@ -289,9 +289,9 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
     if(plot2){
-      par(mar = c(0, 1, 0, genemar))
+      par(mar = c(0, 0, 0, genemar))
     }else{
-      par(mar = c(0, genemar, 0, 1))
+      par(mar = c(0, genemar, 0, 0))
     }
 
     image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),

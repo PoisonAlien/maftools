@@ -32,7 +32,8 @@
 #' @param geneNamefont font size for gene names. Default 1
 #' @param showSampleNames whether to show sample names. Defult FALSE.
 #' @param barcode_mar Margin width for sample names. Default 1
-#' @param gene_mar Margin width for gene names. Default 3
+#' @param gene_mar Margin width for gene names. Default 1
+#' @param outer_mar Margin width for outer. Default 3
 #' @param SampleNamefont font size for sample names. Default 0.5
 #' @param anno_height Height of clinical margin. Default 2
 #' @param legend_height Height of legend margin. Default 4
@@ -63,7 +64,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                       additionalFeature2 = NULL, additionalFeaturePch2 = 20, additionalFeatureCol2 = "white", additionalFeatureCex2 = 0.9,
                       sepwd_genes1 = 0.5, sepwd_samples1 = 0.5, sepwd_genes2 = 0.5, sepwd_samples2 = 0.5,
                        colors = NULL, removeNonMutated = TRUE, anno_height = 2, legend_height = 4,
-                       geneNamefont = 0.8, showSampleNames = FALSE, SampleNamefont = 0.5, barcode_mar = 1,gene_mar = 3,
+                       geneNamefont = 0.8, showSampleNames = FALSE, SampleNamefont = 0.5, barcode_mar = 1, outer_mar = 3, gene_mar = 1,
                        legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder=FALSE,
                        bgCol = "#CCCCCC", borderCol = "white"){
 
@@ -126,11 +127,11 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   if(!is.null(clinicalFeatures1) || !is.null(clinicalFeatures2)){
     mat_lo = matrix(data = c(1,3,5,2,4,6,7,7,7), nrow = 3, ncol = 3, byrow = TRUE)
     mat_lo = graphics::layout(mat = mat_lo,
-                    widths = c(6 * (nm1_ncol/nm2_ncol), 1.5, 6), heights = c(12, anno_height, legend_height))
+                    widths = c(6 * (nm1_ncol/nm2_ncol), gene_mar, 6), heights = c(12, anno_height, legend_height))
   }else{
     mat_lo = matrix(data = c(1,2,3,4,4,4), nrow = 2, ncol = 3, byrow = TRUE)
     mat_lo = graphics::layout(mat = mat_lo,
-                    widths = c(6 * (nm1_ncol/nm2_ncol), 1, 6), heights = c(12, legend_height))
+                    widths = c(6 * (nm1_ncol/nm2_ncol), gene_mar, 6), heights = c(12, legend_height))
   }
 
   #Plot first oncoplot
@@ -142,7 +143,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature1, additionalFeaturePch = additionalFeaturePch1,
                         additionalFeatureCex = additionalFeatureCex1, additionalFeatureCol = additionalFeatureCol1,
-                        sepwd_genes = sepwd_genes1, sepwd_samples = sepwd_samples1, barcodemar = barcode_mar, genemar = gene_mar, sampleOrder = sampleOrder1)
+                        sepwd_genes = sepwd_genes1, sepwd_samples = sepwd_samples1, barcodemar = barcode_mar, genemar = outer_mar, sampleOrder = sampleOrder1)
 
 
   if(is.null(clinicalFeatures1) & !is.null(clinicalFeatures2)){
@@ -159,8 +160,9 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   nm = matrix(data = 1, nrow = 1, ncol = length(genes))
   image(x = 1:nrow(nm), y = 1:ncol(nm), z = nm, axes = FALSE, xaxt="n", yaxt="n",
         xlab="", ylab="", col = "white")
-  mtext(text = rev(genes), side = 2, adj = 0.5, at = 1:ncol(nm),
-        font = 3, line = -2, cex = geneNamefont, las = 2)
+  text(x = nrow(nm), y = 1:ncol(nm), labels = rev(genes), xpd = TRUE, font = 3, cex = geneNamefont*1.5)
+  # mtext(text = rev(genes), side = 2, adj = 0.5, at = 1:ncol(nm),
+  #       font = 3, line = -2, cex = geneNamefont, las = 2)
 
   if(!is.null(clinicalFeatures1) || !is.null(clinicalFeatures2)){
     plot.new()
@@ -174,7 +176,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature2, additionalFeaturePch = additionalFeaturePch2,
                         additionalFeatureCex = additionalFeatureCex2, additionalFeatureCol = additionalFeatureCol2,
-                        sepwd_genes = sepwd_genes2, sepwd_samples = sepwd_samples2, barcodemar = barcode_mar, genemar = gene_mar, sampleOrder = sampleOrder2)
+                        sepwd_genes = sepwd_genes2, sepwd_samples = sepwd_samples2, barcodemar = barcode_mar, genemar = outer_mar, sampleOrder = sampleOrder2)
 
   if(!is.null(clinicalFeatures1) & is.null(clinicalFeatures2)){
     plot.new()
