@@ -11,12 +11,7 @@
 
 ## Introduction
 
-`maftools` provides a comprehensive set of functions for processing [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) files from cancer genomics studies. This package provides various functions to perform most commonly used analyses in cancer genomics. See [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html) for a detailed usage and a case study.
-
-
-<p align="left">
-<img src="vignettes/tool_summary.gif" height="320">
-</p>
+`maftools` provides a comprehensive set of functions for processing [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) files and to perform most commonly used analyses in cancer genomics. See [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html) for a detailed usage and a case study.
 
 ## Installation
 ```{r}
@@ -31,6 +26,9 @@ BiocManager::install("PoisonAlien/maftools")
 
 A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/full/10.1056/nejmoa1301689) as a case study can be found [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
+<p align="left">
+<img src="vignettes/tool_summary.gif" height="320">
+</p>
 
 ## Citation
 
