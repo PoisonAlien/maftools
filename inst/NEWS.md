@@ -1,5 +1,6 @@
 # CHANGES IN VERSION 2.4.15 (In development)
 ## BUG REPORTS
+- Fix Copy number labels and coloring in `coBarPlot`. Issue: [609](https://github.com/PoisonAlien/maftools/issues/609)
 
 ## ENHANCEMENTS
 - Added `sampleOrder1` and `sampleOrder2` arguments to `coOncoplot`. Issue: [592](https://github.com/PoisonAlien/maftools/issues/592)

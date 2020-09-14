@@ -152,6 +152,8 @@ coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name
          xpd = TRUE, text.font = 1, pch = 15, xjust = 0, yjust = 0,
          cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
          pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
+
+  invisible(list(m1 = m1.gs, m2 = m2.gs))
 }
 
 get_col_df = function(m, g){
@@ -164,6 +166,10 @@ get_col_df = function(m, g){
   })
   ml = data.table::rbindlist(l = ml, use.names = TRUE, fill = TRUE, idcol = "Gene")
   ml = ml[!Var1 %in% ""]
+  #CNV+Mutated = Complex_Event
+  ml$Var1 = ifelse(test = ml$Var1 %like% ";", yes = "Complex_Event", no = as.character(ml$Var1))
+  ml = ml[,sum(Freq), .(Gene, Var1)]
+  colnames(ml) = c("Gene", "Var1", "Freq")
   ml$Gene = factor(x = ml$Gene, levels = g, ordered = TRUE)
   ml$Var1 = as.character(ml$Var1)
   mdf = data.table::dcast(data = ml, Gene ~ Var1, value.var = "Freq", fill = 0, drop = FALSE)
