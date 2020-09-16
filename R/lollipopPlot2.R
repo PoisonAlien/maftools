@@ -169,6 +169,7 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
 
   prot$pos = rowMeans(x = prot[,.(Start, End)])
   if(showDomainLabel){
+    prot = prot[!duplicated(Label)]
     text(y = 0, x = prot$pos, labels = prot$Label, font = 3, cex = domainLabelSize)
   }
 
