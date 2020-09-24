@@ -114,7 +114,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   #Legth of protein
   len = as.numeric(max(prot$aa.length, na.rm = TRUE))
   #Remove NA's
-  prot = prot[!is.na(Label)]
+  #prot = prot[!is.na(Label)]
   prot = prot[,domain_lenght := End - Start][order(domain_lenght, decreasing = TRUE)][,domain_lenght := NULL]
 
   #hard coded colors for variant classification if user doesnt provide any
@@ -326,7 +326,7 @@ lollipopPlot = function(maf, gene = NULL, AACol = NULL, labelPos = NULL, labPosS
   if(!is.null(labelPos)){
     #prot.snp.sumamry = repelPoints(dat = prot.snp.sumamry, protLen = len, clustSize = 5)
     text(x = labDat[,pos2], y = labDat[,count2+0.45], labels = labDat[,conv],
-         font = 1, srt = labPosAngle, cex = labPosSize)
+         font = 1, srt = labPosAngle, cex = labPosSize, adj = 0.1)
   }
 
   if(showLegend){

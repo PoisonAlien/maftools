@@ -4,6 +4,7 @@
 - Fix Copy number labels and coloring in `coBarPlot`. Issue: [609](https://github.com/PoisonAlien/maftools/issues/609)
 
 ## ENHANCEMENTS
+- Added `SIMC1` protein to domain database. Issue: [616](https://github.com/PoisonAlien/maftools/issues/616)
 - Added `sampleOrder1` and `sampleOrder2` arguments to `coOncoplot`. Issue: [592](https://github.com/PoisonAlien/maftools/issues/592)
 - Added `filterMaf` function. 
 - Added `gene_mar` `outer_mar` argument to `coOncoplot`. Issue: [260](https://github.com/PoisonAlien/maftools/issues/260)
