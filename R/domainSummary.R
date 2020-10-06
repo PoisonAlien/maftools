@@ -21,25 +21,8 @@
 pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5, domainsToLabel = NULL, baseName = NULL, varClass = 'nonSyn', width = 5, height = 5, labelSize = 1){
 
 
-  summarizeBy.opts = c('AAPos', 'AAChange')
-
-  if(!summarizeBy %in% summarizeBy.opts){
-    stop('summarizeBy can only be either AAPos or AAChange')
-  }
-
-  if(length(summarizeBy) > 1){
-    stop('summarizeBy can only be either AAPos or AAChange')
-  }
-
-  varClas.opts = c('nonSyn', 'Syn', 'all')
-
-  if(!varClass %in% varClas.opts){
-    stop('varClas can only be either nonSyn, Syn or all')
-  }
-
-  if(length(varClass) > 1){
-    stop('varClas can only be either nonSyn, Syn or all')
-  }
+  summarizeBy = match.arg(arg = summarizeBy, choices = c('AAPos', 'AAChange'))
+  varClass = match.arg(arg = varClass, choices = c('nonSyn', 'Syn', 'all'))
 
   gs = getGeneSummary(maf)
 
@@ -116,6 +99,7 @@ pfamDomains = function(maf = NULL, AACol = NULL, summarizeBy = 'AAPos', top = 5,
   }
 
   gff = gff[,.(HGNC, Start, End, Label, pfam, Description)]
+  gff = gff[!is.na(End)|!is.na(Start)]
   data.table::setkey(gff, HGNC, Start, End)
   #return(list(prot.sum, gff))
   gff.idx = data.table::foverlaps(prot.sum, gff, type="within", which=TRUE, nomatch = NA, mult = 'first')

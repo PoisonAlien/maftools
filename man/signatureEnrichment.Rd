@@ -21,7 +21,7 @@ signatureEnrichment(maf, sig_res, minMut = 5, useCNV = FALSE, fn = NULL)
 result list containing p-values
 }
 \description{
-Performs k-means clustering to assign signature to samples and performs enrichment analysis.
+Performs k-means clustering to assign signature to samples and performs enrichment analysis. Note - Do not use this function. This will be removed in future updates.
 }
 \seealso{
 \code{\link{plotEnrichmentResults}}

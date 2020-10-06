@@ -113,7 +113,7 @@ write.mafSummary(maf = laml, basename = 'laml')
 ## Plotting MAF summary.
 We can use `plotmafSummary` to plot the summary of the maf file, which displays number of variants in each sample as a stacked barplot and variant types as a boxplot summarized by Variant_Classification. 
 
-```{r,fig.height=5, fig.width=6}
+```{r,fig.height=4, fig.width=6}
 plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
@@ -121,7 +121,7 @@ plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRU
 ### Drawing oncoplots
 Better representation of maf file can be shown as oncoplots, also known as waterfall plots. 
 
-```{r, fig.align='left',fig.height=5,fig.width=10, fig.align='left'}
+```{r, fig.align='left',fig.height=3.5,fig.width=6, fig.align='left'}
 #oncoplot for top ten mutated genes.
 oncoplot(maf = laml, top = 10)
 ```
@@ -133,7 +133,7 @@ For more details on customisation see the [Customizing oncoplots](http://biocond
 ## Transition and Transversions.
 `titv` function classifies SNPs into [Transitions and Transversions](http://www.mun.ca/biology/scarr/Transitions_vs_Transversions.html) and returns a list of summarized tables in various ways. Summarized data can also be visualized as a boxplot showing overall distribution of six different conversions and as a stacked barplot showing fraction of conversions in each sample.
 
-```{r, fig.height=5, fig.width=6, eval = T, fig.align='left'}
+```{r, fig.height=3, fig.width=4.2, eval = T, fig.align='left'}
 laml.titv = titv(maf = laml, plot = FALSE, useSyn = TRUE)
 #plot titv summary
 plotTiTv(res = laml.titv)
@@ -142,7 +142,7 @@ plotTiTv(res = laml.titv)
 ## Lollipop plots for amino acid changes
 `lollipopPlot` function requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all available fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argument `AACol`. 
 
-```{r,fig.align='left', fig.width=6, fig.height=3}
+```{r,fig.align='left', fig.width=4.5, fig.height=2.5}
 #lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
 lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', showMutationRate = TRUE)
 ```
@@ -152,7 +152,7 @@ By default lollipopPlot uses the longest isoform of the gene.
 ### Labelling points.
 We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted. 
 
-```{r,fig.align='left', fig.width=6, fig.height=3}
+```{r,fig.align='left', fig.width=4.5, fig.height=2.5}
 lollipopPlot(maf = laml, gene = 'DNMT3A', showDomainLabel = FALSE, labelPos = 882)
 ```
 
@@ -164,8 +164,8 @@ brca <- system.file("extdata", "brca.maf.gz", package = "maftools")
 brca = read.maf(maf = brca, verbose = FALSE)
 ```
 
-```{r, fig.height=5,fig.width=12,fig.align='center'}
-rainfallPlot(maf = brca, detectChangePoints = TRUE, pointSize = 0.6)
+```{r, fig.height=3,fig.width=6,fig.align='left'}
+rainfallPlot(maf = brca, detectChangePoints = TRUE, pointSize = 0.4)
 ```
 
 "Kataegis" are defined as those genomic segments containing six or more consecutive mutations with an average inter-mutation distance of less than or equal to 1,00 bp [5](#references).
@@ -173,14 +173,14 @@ rainfallPlot(maf = brca, detectChangePoints = TRUE, pointSize = 0.6)
 ## Compare mutation load against TCGA cohorts
 `tcgaCompare` uses mutation load from TCGA [MC3](https://gdc.cancer.gov/about-data/publications/mc3-2017) for comparing muttaion burden against 33 TCGA cohorts. Plot generated is [similar](http://www.nature.com/nature/journal/v500/n7463/fig_tab/nature12477_F1.html) to the one described in Alexandrov et al [5](#references). 
 
-```{r, fig.align='left', fig.height=5, fig.width=12, message=FALSE, results='hide'}
-laml.mutload = tcgaCompare(maf = laml, cohortName = 'Example-LAML')
+```{r, fig.align='left', fig.height=3.25, fig.width=6, message=FALSE, results='hide'}
+laml.mutload = tcgaCompare(maf = laml, cohortName = 'Example-LAML', logscale = TRUE, capture_size = 50)
 ```
 
 ## Plotting VAF
 This function plots Variant Allele Frequencies as a boxplot which quickly helps to estimate clonal status of top mutated genes (clonal genes usually have mean allele frequency around ~50% assuming pure sample)
 
-```{r, fig.align='left', fig.height=4, fig.width=4}
+```{r, fig.align='left', fig.height=3, fig.width=3}
 plotVaf(maf = laml, vafCol = 'i_TumorVAF_WU')
 ```
 
@@ -206,24 +206,24 @@ Similar to MAF objects, there are methods available to access slots of GISTIC ob
 There are three types of plots available to visualize gistic results.
 
 ### genome plot
-```{r, fig.width=6, fig.height=4, fig.align='left'}
+```{r, fig.width=4, fig.height=3, fig.align='left'}
 gisticChromPlot(gistic = laml.gistic, markBands = "all")
 ```
 
 ### Bubble plot
-```{r, fig.width=5, fig.height=4, fig.align='left'}
+```{r, fig.width=4, fig.height=3, fig.align='left'}
 gisticBubblePlot(gistic = laml.gistic)
 ```
 
 ### oncoplot
 This is similar to oncoplots except for copy number data. One can again sort the matrix according to annotations, if any. Below plot is the gistic results for LAML, sorted according to FAB classification. Plot shows that 7q deletions are virtually absent in M4 subtype where as it is widespread in other subtypes.
 
-```{r, fig.align='left',fig.width=7, fig.height=5, eval=T}
+```{r, fig.align='left',fig.width=5, fig.height=3, eval=T}
 gisticOncoPlot(gistic = laml.gistic, clinicalData = getClinicalData(x = laml), clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, top = 10)
 ```
 
 ### Visualizing CBS segments
-```{r, fig.height=3,fig.width=8,fig.align='center'}
+```{r, fig.height=2.5,fig.width=4,fig.align='left'}
 tcga.ab.009.seg <- system.file("extdata", "TCGA.AB.3009.hg19.seg.txt", package = "maftools")
 plotCBSsegments(cbsFile = tcga.ab.009.seg)
 ```
@@ -249,8 +249,8 @@ head(laml.sig)
 ```
 
 We can plot the results using `plotOncodrive`.
-```{r, fig.align='left', fig.width=5, fig.height=4}
-plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE)
+```{r, fig.align='left', fig.width=3.2, fig.height=3.2}
+plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE, labelSize = 0.5)
 ```
 
 `plotOncodrive` plots the results as scatter plot with size of the points proportional to the number of clusters found in the gene. X-axis shows number of mutations (or fraction of mutations) observed in these clusters. In the above example, IDH1 has a single cluster and all of the 18 mutations are accumulated within that cluster, giving it a cluster score of one. For details on oncodrive algorithm, please refer to [OncodriveCLUST article](http://bioinformatics.oxfordjournals.org/content/early/2013/07/31/bioinformatics.btt395.full) [7](#references).
@@ -258,7 +258,7 @@ plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE)
 ##  Adding and summarizing pfam domains
 maftools comes with the function `pfamDomains`, which adds pfam domain information to the amino acid changes. `pfamDomain` also summarizes amino acid changes according to the domains that are affected. This serves the purpose of knowing what domain in given cancer cohort, is most frequently affected. This function is inspired from Pfam annotation module from MuSic tool [8](#references).
 
-```{r, fig.align='left', fig.width=5, fig.height=4}
+```{r, fig.align='left', fig.width=4, fig.height=3}
 laml.pfam = pfamDomains(maf = laml, AACol = 'Protein_Change', top = 10)
 #Protein summary (Printing first 7 columns for display convenience)
 laml.pfam$proteinSummary[,1:7, with = FALSE]
@@ -273,7 +273,7 @@ Survival analysis is an essential part of cohort based sequencing projects. Func
 Our annotation data already contains survival information and in case you have survival data stored in a separate table provide them via argument `clinicalData`
 
 ### Mutation in any given genes
-```{r, fig.width=5, fig.height=5}
+```{r, fig.width=3, fig.height=3}
 #Survival analysis based on grouping of DNMT3A mutation status
 mafSurvival(maf = laml, genes = 'DNMT3A', time = 'days_to_last_followup', Status = 'Overall_Survival_Status', isTCGA = TRUE)
 ```
@@ -290,7 +290,7 @@ print(prog_geneset)
 
 Above results show a combination (N = 2) of genes which are associated with poor survival (P < 0.05). We can draw KM curve for above results with the function `mafSurvGroup`
 
-```{r, fig.width=5, fig.height=5}
+```{r, fig.width=3, fig.height=3}
 mafSurvGroup(maf = laml, geneSet = c("DNMT3A", "FLT3"), time = "days_to_last_followup", Status = "Overall_Survival_Status")
 ```
 
@@ -315,20 +315,20 @@ print(pt.vs.rt)
 
 ### Forest plots
 Above results show two genes PML and RARA which are highly mutated in Relapse APL compared to Primary APL. We can visualize these results as a [forestplot](https://en.wikipedia.org/wiki/Forest_plot).
-```{r, fig.width=5, fig.height=5, fig.align='left'}
+```{r, fig.width=4, fig.height=5, fig.align='left'}
 forestPlot(mafCompareRes = pt.vs.rt, pVal = 0.1, color = c('royalblue', 'maroon'), geneFontSize = 0.8)
 ```
 
 ### Co-onco plots
 Another alternative way of displaying above results is by plotting two oncoplots side by side. `coOncoplot` function takes two maf objects and plots them side by side for better comparison.
 
-```{r, fig.height=3,fig.width=11, eval=T, fig.align='left'}
+```{r, fig.height=2.5,fig.width=6, eval=T, fig.align='left'}
 genes = c("PML", "RARA", "RUNX1", "ARID1B", "FLT3")
 coOncoplot(m1 = primary.apl, m2 = relapse.apl, m1Name = 'PrimaryAPL', m2Name = 'RelapseAPL', genes = genes, removeNonMutated = TRUE)
 ```
 
 ### Co-bar plots
-```{r, fig.height=4, fig.width=5}
+```{r, fig.height=3, fig.width=4}
 coBarplot(m1 = primary.apl, m2 = relapse.apl, m1Name = "Primary", m2Name = "Relapse")
 ```
 
@@ -336,7 +336,7 @@ coBarplot(m1 = primary.apl, m2 = relapse.apl, m1Name = "Primary", m2Name = "Rela
 ### Lollipop plot-2
 Along with plots showing cohort wise differences, its also possible to show gene wise differences with `lollipopPlot2` function.
 
-```{r, warning=FALSE, message=FALSE,fig.align='left', results='hide'}
+```{r, warning=FALSE, message=FALSE,fig.align='left', results='hide', fig.height=3.5, fig.width=5}
 lollipopPlot2(m1 = primary.apl, m2 = relapse.apl, gene = "PML", AACol1 = "amino_acid_change", AACol2 = "amino_acid_change", m1_name = "Primary", m2_name = "Relapse")
 ```
 
@@ -352,14 +352,14 @@ fab.ce$groupwise_comparision[p_value < 0.05]
 
 Above results shows IDH1 mutations are enriched in M1 subtype of leukemia compared to rest of the cohort. Similarly DNMT3A is in M5, RUNX1 is in M0, and so on. These are well known results and this function effectively recaptures them. One can use any sort of clincial feature to perform such an analysis. There is also a small function - `plotEnrichmentResults` which can be used to plot these results.
 
-```{r, fig.width=6, fig.height=4}
-plotEnrichmentResults(enrich_res = fab.ce, pVal = 0.05)
+```{r, fig.width=4, fig.height=3}
+plotEnrichmentResults(enrich_res = fab.ce, pVal = 0.05, geneFontSize = 0.5, annoFontSize = 0.6)
 ```
 
 ## Drug-Gene Interactions
 `drugInteractions` function checks for drug–gene interactions and gene druggability information compiled from [Drug Gene Interaction database](http://www.dgidb.org). 
 
-```{r, fig.height=4, fig.width=8}
+```{r, fig.height=3, fig.width=5}
 dgi = drugInteractions(maf = laml, fontSize = 0.75)
 ```
 
@@ -379,12 +379,12 @@ Please cite [DGIdb article](https://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcg
 ## Oncogenic Signaling Pathways
 `OncogenicPathways` function checks for enrichment of known Oncogenic Signaling Pathways in TCGA cohorts [11](#references).
 
-```{r, fig.width=4, fig.height=4}
+```{r, fig.width=3.5, fig.height=3}
 OncogenicPathways(maf = laml)
 ```
 
 Its also possible to visualize complete pathway.
-```{r, fig.width=10, fig.height=3}
+```{r, fig.width=5, fig.height=2.5}
 PlotOncogenicPathways(maf = laml, pathways = "RTK-RAS")
 ```
 
@@ -395,7 +395,7 @@ Tumor suppressor genes are in red, and oncogenes are in blue font.
 ### Heterogeneity in tumor samples
 Tumors are generally heterogeneous i.e, consist of multiple clones. This heterogeneity can be inferred by clustering variant allele frequencies. `inferHeterogeneity` function uses vaf information to cluster variants (using `mclust`), to infer clonality. By default, `inferHeterogeneity` function looks for column *t_vaf* containing vaf information. However, if the field name is different from *t_vaf*, we can manually specify it using argument `vafCol`. For example, in this case study vaf is stored under the field name *i_TumorVAF_WU*.
 
-```{r, echo = TRUE, fig.align='left', fig.height=4, fig.width=6, eval=T}
+```{r, echo = TRUE, fig.align='left', fig.height=3.5, fig.width=4, eval=T}
 #Heterogeneity in sample TCGA.AB.2972
 library("mclust")
 tcga.ab.2972.het = inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-2972', vafCol = 'i_TumorVAF_WU')
@@ -411,7 +411,7 @@ Although clustering of variant allele frequencies gives us a fair idea on hetero
 ### Ignoring variants in copy number altered regions
 We can use copy number information to ignore variants located on copy-number altered regions. Copy number alterations results in abnormally high/low variant allele frequencies, which tends to affect clustering. Removing such variants improves clustering and density estimation while retaining biologically meaningful results. Copy number information can be provided as a segmented file generated from segmentation programmes, such as Circular Binary Segmentation from "DNACopy" Bioconductor package [6](#references).
 
-```{r, fig.align='left', fig.height=4, fig.width=6, eval=T}
+```{r, fig.align='left', fig.height=3.5, fig.width=4, eval=T}
 seg = system.file('extdata', 'TCGA.AB.3009.hg19.seg.txt', package = 'maftools')
 tcga.ab.3009.het = inferHeterogeneity(maf = laml, tsb = 'TCGA-AB-3009', segFile = seg, vafCol = 'i_TumorVAF_WU')
 #Visualizing results. Highlighting those variants on copynumber altered variants.
@@ -453,7 +453,7 @@ We can also analyze the differences in mutational patterns between APOBEC enrich
 
 Note that, LAML with no APOBEC enrichments, is not an ideal cohort for this sort of analysis and hence below plot is only for demonstration purpose.
 
-```{r, eval=TRUE, fig.height=4, fig.width=7}
+```{r, eval=TRUE, fig.height=3, fig.width=5}
 plotApobecDiff(tnm = laml.tnm, maf = laml, pVal = 0.2)
 ```
 
@@ -532,7 +532,7 @@ pheatmap::pheatmap(mat = laml.og30.cosm$cosine_similarities, cluster_rows = FALS
 
 Finally plot signatures
 ```{r, fig.width=6, fig.height=4, fig.align='center', eval = T}
-maftools::plotSignatures(nmfRes = laml.sig, title_size = 0.8, sig_db = "SBS")
+maftools::plotSignatures(nmfRes = laml.sig, title_size = 1.2, sig_db = "SBS")
 ```
 
 If you fancy 3D barpots, you can install `barplot3d` package and visualize the results with `legoplot3d` function.
@@ -549,24 +549,6 @@ barplot3d::legoplot3d(contextdata = sig1, labels = FALSE, scalexy = 0.01, sixcol
 1. Should you receive an error while running `extractSignatures` complaining `none of the packages are loaded`, please manually load the `NMF` library and re-run.
 
 2. If either `extractSignatures` or `estimateSignatures` stops in between, its possibly due to low mutation counts in the matrix. In that case rerun the functions with `pConstant` argument set to small positive value (e.g, 0.1).
-
-### Signature enrichment analysis
-Signatures can further be assigned to samples and enrichment analysis can be performd using `signatureEnrichment` funtion, which identifies mutations enriched in every signature identified. 
-
-```{r, echo=FALSE,eval=FALSE}
-colnames(laml.sign$contributions) = as.character(getSampleSummary(x = laml)[,Tumor_Sample_Barcode])[1:187]
-```
-
-
-```{r, fig.height=3.5, fig.width=5, warning=FALSE}
-laml.se = signatureEnrichment(maf = laml, sig_res = laml.sig)
-```
-
-Above results can be visualzied similar to clinical enrichments.
-
-```{r, fig.height=4, fig.width=6}
-plotEnrichmentResults(enrich_res = laml.se, pVal = 0.05)
-```
 
 
 # Variant Annotations
