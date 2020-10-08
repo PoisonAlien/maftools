@@ -23,7 +23,7 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
   #maf$Tumor_Sample_Barcode = gsub(pattern = '-', replacement = '.', x = as.character(maf$Tumor_Sample_Barcode))
 
   if(rdup){
-    maf = maf[, variantId := paste(Chromosome, Start_Position, Tumor_Sample_Barcode, sep = ':')]
+    maf = maf[, variantId := paste(Chromosome, Start_Position, Tumor_Sample_Barcode, Reference_Allele, Tumor_Seq_Allele2, sep = ':')]
     if(nrow(maf[duplicated(variantId)]) > 0){
       if(chatty){
         cat("--Removed",  nrow(maf[duplicated(variantId)]) ,"duplicated variants\n")
