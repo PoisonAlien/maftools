@@ -853,7 +853,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       for(i in 1:length(cl)){
         cl_vals[cl_vals == cl[i]] = names(cl[i])
       }
-      annotation_color_coded = cbind(annotation_color_coded, cl_vals)
+      annotation_color_coded = cbind(annotation_color_coded, cl_vals, stringsAsFactors = FALSE)
     }
     names(annotation_color_coded) = names(clini_lvls)
 

@@ -3,6 +3,7 @@
 - Incorrect deduplication cases while validating MAFs. Issue: [623](https://github.com/PoisonAlien/maftools/issues/623)
 - Fix repeated domain labels in `lollipopPlot2`. Issue: [614](https://github.com/PoisonAlien/maftools/issues/614)
 - Fix Copy number labels and coloring in `coBarPlot`. Issue: [609](https://github.com/PoisonAlien/maftools/issues/609)
+- Fix coloring issues for annotations in `oncoplot` in R < 4.0. Issue: [599](https://github.com/PoisonAlien/maftools/issues/599)
 
 ## ENHANCEMENTS
 - Updated TCGA TMB. All variants from MC3 results are restricted and harmonized to Agilent 35.8 MB capture kit. See `?tcgaCompare` for details. Issue: [612](https://github.com/PoisonAlien/maftools/issues/612)
