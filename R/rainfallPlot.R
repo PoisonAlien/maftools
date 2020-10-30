@@ -20,7 +20,6 @@
 #' @return Results are written to an output file with suffix changePoints.tsv
 #' @export
 
-
 rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
                         ref.build = 'hg19', color = NULL, savePlot = FALSE, width = 6, height = 3, fontSize = 1.2, pointSize = 0.4){
 
@@ -95,18 +94,16 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
   ###########
   if(detectChangePoints){
     maf.cpt = detect_kataegis(maf.snp = maf.snp)
-    #return(maf.cpt)
     if(nrow(maf.cpt) == 0){
       message('No changepoints detected!')
     }else{
-      maf.snp[,id := paste0(Chromosome, ':', Start_Position)]
-      maf.snp = maf.snp[!diff %in% 0]
-      maf.snp[,minDiff := min(diff), by = .(Chromosome)]
-      maf.cpt[,id := paste0(Chromosome, ':', Start_Position)]
-      maf.cpt = merge(maf.snp[,.(id, Start_Position_updated, End_Position_updated, minDiff)], maf.cpt[,.(id)])
-      maf.cpt[,pos := (End_Position_updated - Start_Position_updated)/2]
-      arrows(x0 = maf.cpt$Start_Position_updated, y0 = 0, x1 = maf.cpt$Start_Position_updated,
-             y1 = maf.cpt$minDiff - 0.2, lwd = 1.2, length = 0.05)
+      maf.cpt = transformSegments(segmentedData = maf.cpt, build = ref.build)
+      data.table::setkey(maf.cpt, "Chromosome", "Start_Position", "End_Position")
+      for(idx in seq_len(nrow(maf.cpt))){
+        arrow_height =  min(maf.snp[data.table::foverlaps(maf.snp, maf.cpt[idx], which = TRUE, nomatch = NULL)$xid][,diff])
+        arrows(x0 = maf.cpt$Start_Position_updated[idx], y0 = 0, x1 = maf.cpt$Start_Position_updated[idx],
+               y1 = ifelse(test = (arrow_height - 0.2)<0, yes = 0.1, no = arrow_height - 0.2), lwd = 1.2, length = 0.05)
+      }
     }
   }
 
@@ -122,5 +119,4 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
               height = height, width = width, paper = "special", bg = "white")
     dev.off()
   }
-
 }
