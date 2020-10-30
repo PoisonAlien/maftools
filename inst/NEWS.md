@@ -1,4 +1,8 @@
-# CHANGES IN VERSION 2.6.00 (For upcoming BioC 3.12 release)
+# CHANGES IN VERSION 2.6.05
+## BUG REPORTS
+- Rainfallplot arrowhead bug. Issue: [628](https://github.com/PoisonAlien/maftools/issues/628) [629](https://github.com/PoisonAlien/maftools/issues/629)
+
+# CHANGES IN VERSION 2.6.00 (BioC 3.12 version)
 ## BUG REPORTS
 - Incorrect deduplication cases while validating MAFs. Issue: [623](https://github.com/PoisonAlien/maftools/issues/623)
 - Fix repeated domain labels in `lollipopPlot2`. Issue: [614](https://github.com/PoisonAlien/maftools/issues/614)
