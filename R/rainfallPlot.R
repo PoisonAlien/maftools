@@ -99,12 +99,14 @@ rainfallPlot = function(maf, tsb = NULL, detectChangePoints = FALSE,
     if(nrow(maf.cpt) == 0){
       message('No changepoints detected!')
     }else{
-      maf.snp[,id := paste0(Chromosome, ':', Start_Position)]
       maf.snp = maf.snp[!diff %in% 0]
       maf.snp[,minDiff := min(diff), by = .(Chromosome)]
-      maf.cpt[,id := paste0(Chromosome, ':', Start_Position)]
-      maf.cpt = merge(maf.snp[,.(id, Start_Position_updated, End_Position_updated, minDiff)], maf.cpt[,.(id)])
+      maf.snp[, Chromosome := as.character(Chromosome)]
+      maf.cpt[, Chromosome := as.character(Chromosome)]
+      data.table::setkey(maf.cpt, "Chromosome", "Start_Position", "End_Position")
+      maf.cpt = maf.snp[data.table::foverlaps(maf.snp, maf.cpt, which = TRUE, nomatch = NULL)$xid]
       maf.cpt[,pos := (End_Position_updated - Start_Position_updated)/2]
+      
       arrows(x0 = maf.cpt$Start_Position_updated, y0 = 0, x1 = maf.cpt$Start_Position_updated,
              y1 = maf.cpt$minDiff - 0.2, lwd = 1.2, length = 0.05)
     }
