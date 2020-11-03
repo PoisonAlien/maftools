@@ -27,7 +27,7 @@ BiocManager::install("PoisonAlien/maftools")
 A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/full/10.1056/nejmoa1301689) as a case study can be found [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 <p align="left">
-<img src="vignettes/tool_summary.gif" height="320">
+<img src="https://user-images.githubusercontent.com/8164062/97981605-d8a59500-1dd2-11eb-9f5e-cc808f7b3f91.gif" height="320">
 </p>
 
 ## Citation
