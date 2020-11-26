@@ -1,5 +1,5 @@
 #' Performs mutational enrichment analysis for a given clinical feature.
-#' @description Performs paiwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
+#' @description Performs pairwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
 #'
 #' @param maf \code{\link{MAF}} object
 #' @param clinicalFeature columns names from `clinical.data` slot of \code{MAF} to be analysed for.
@@ -7,6 +7,7 @@
 #' @param useCNV whether to include copy number events. Only applicable when MAF is read along with copy number data. Default TRUE if available.
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} or a tsv file with a column containing Tumor_Sample_Barcodes along with clinical features. Default NULL.
 #' @return result list containing p-values
+#' @details Performs fishers test on 2x2 contingency table for WT/Mutants in group of interest vs rest of the sample. Odds Ratio indicate the odds of observing mutant in the group of interest compared to wild-type
 #' @examples
 #' \dontrun{
 #' laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
@@ -77,18 +78,18 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
           g = unique(genesToBarcodes(maf = maf, genes = x, justNames = TRUE)[[1]])
           cd$Genotype = ifelse(test = cd$Tumor_Sample_Barcode %in% g, yes = "Mutant", no = "WT")
 
-          #Perform groupwise comparision for given gene
+          #Perform groupwise comparison for given gene
           ft = lapply(X = names(cf.tbl), FUN = function(y){
             cd$Group = ifelse(test = cd$cf %in% y, yes = y, no = "Other")
             cd$Genotype = factor(x = cd$Genotype, levels = c("WT", "Mutant"))
             cd$Group = factor(x = cd$Group, levels = c(y, "Other"))
             cd.tbl = with(cd, table(Genotype, Group))
-            cd.tbl = cd.tbl[c("WT", "Mutant") ,c(y, "Other")]
-            ft = fisher.test(cd.tbl, alternative = 'l')
+            cd.tbl = cd.tbl[c("Mutant", "WT") ,c(y, "Other")]
+            ft = fisher.test(cd.tbl)
             ft.tbl = data.table::data.table(Group1 = y, Group2 = "Rest",
                                             n_mutated_group1 = paste0(nrow(cd[Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[Group %in% y])),
                                             n_mutated_group2 = paste0(nrow(cd[!Group %in% y][Genotype %in% 'Mutant']), " of ", nrow(cd[!Group %in% y])),
-                                            p_value = ft$p.value, OR_low = ft$conf.int[1], OR_high = ft$conf.int[2],
+                                            p_value = ft$p.value, OR = ft$estimate, OR_low = ft$conf.int[1], OR_high = ft$conf.int[2],
                                             Hugo_Symbol = x, Analysis = "Group")
             ft.tbl
           })
@@ -126,7 +127,7 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
   plist = data.table::rbindlist(l = plist, fill = TRUE)
 
   pw.pvals = plist[Analysis %in% "Pairwise",.(Hugo_Symbol, Feature_1, Feature_2, n_mutated_Feature1, n_mutated_Feature2, fdr)][order(fdr)]
-  gw.pvals = plist[Analysis %in% "Group",.(Hugo_Symbol, Group1, Group2, n_mutated_group1, n_mutated_group2, p_value, OR_low, OR_high)][order(p_value)]
+  gw.pvals = plist[Analysis %in% "Group",.(Hugo_Symbol, Group1, Group2, n_mutated_group1, n_mutated_group2, p_value, OR, OR_low, OR_high)][order(p_value)]
   gw.pvals[,fdr := p.adjust(p_value, method = "fdr")]
 
   return(list(pairwise_comparision = pw.pvals, groupwise_comparision = gw.pvals, cf_sizes = cd[,.N,cf], clinicalFeature = clinicalFeature))

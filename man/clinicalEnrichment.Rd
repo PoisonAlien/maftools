@@ -27,7 +27,10 @@ clinicalEnrichment(
 result list containing p-values
 }
 \description{
-Performs paiwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
+Performs pairwise and groupwise fisher exact tests to find differentially enriched genes for every factor within a clinical feature.
+}
+\details{
+Performs fishers test on 2x2 contingency table for WT/Mutants in group of interest vs rest of the sample. Odds Ratio indicate the odds of observing mutant in the group of interest compared to wild-type
 }
 \examples{
 \dontrun{

@@ -1,6 +1,10 @@
 # CHANGES IN VERSION 2.6.05
 ## BUG REPORTS
-- Rainfallplot arrowhead bug. Issue: [628](https://github.com/PoisonAlien/maftools/issues/628) [629](https://github.com/PoisonAlien/maftools/issues/629)
+- `Rainfallplot` arrowhead bug. Issue: [628](https://github.com/PoisonAlien/maftools/issues/628) [629](https://github.com/PoisonAlien/maftools/issues/629)
+
+## ENHANCEMENTS
+- Improve `clinicalEnrichment` odd-ratio interpretation. Issue: [633](https://github.com/PoisonAlien/maftools/issues/633)
+In earlier versions, odds-ratio indicated the odds of observing WT in the group of interest compared to Mutant. From this update, odds-ratio indicate the odds of observing mutant in the group of interest compared to wild-type. This way is much intuitive and easier interpret. See issue [633](https://github.com/PoisonAlien/maftools/issues/633) for details.
 
 # CHANGES IN VERSION 2.6.00 (BioC 3.12 version)
 ## BUG REPORTS
