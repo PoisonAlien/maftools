@@ -4,7 +4,8 @@
 
 ## ENHANCEMENTS
 - Improve `clinicalEnrichment` odd-ratio interpretation. Issue: [633](https://github.com/PoisonAlien/maftools/issues/633)
-In earlier versions, odds-ratio indicated the odds of observing WT in the group of interest compared to Mutant. From this update, odds-ratio indicate the odds of observing mutant in the group of interest compared to wild-type. This way is much intuitive and easier interpret. See issue [633](https://github.com/PoisonAlien/maftools/issues/633) for details.
+In earlier versions, odds-ratio indicated the odds of observing WT in the group of interest compared to Mutant. From this update, odds-ratio indicate the odds of observing mutant in the group of interest compared to wild-type. This way is much intuitive and easier interpret. See issue [633](https://github.com/PoisonAlien/maftools/issues/633) for details. P-values and other details are unaffected.
+- Changes in how `Multi_Hit` are reported. By default two distinct types of mutations in the same gene or same patient were classified as Multi_Hit (e.g; Missense + Splice_Site = Multi_Hit; Missense + Missense = Missense). This update onward, regardless of type of mutations, if there are >1 mutations in the same gene of same patient, they are classified as Multi_Hit (e.g; Missense + Splice_Site = Multi_Hit; Missense + Missense = Multi_Hit). Issue: [347](https://github.com/PoisonAlien/maftools/issues/347) [347](https://github.com/PoisonAlien/maftools/issues/347)
 
 # CHANGES IN VERSION 2.6.00 (BioC 3.12 version)
 ## BUG REPORTS

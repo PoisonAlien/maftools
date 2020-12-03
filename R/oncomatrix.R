@@ -34,7 +34,8 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
 
   oncomat = data.table::dcast(data = subMaf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
                               fun.aggregate = function(x, cnv = cnv_events){
-                                x = unique(as.character(x))
+                                #x = unique(as.character(x)) #>=2 distinct variant classification = Multi_Hit
+                                x = as.character(x) # >= 2 same/distinct variant classification = Multi_Hit See #347
                                 xad = x[x %in% cnv]
                                 xvc = x[!x %in% cnv]
 
