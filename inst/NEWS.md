@@ -1,6 +1,8 @@
 # CHANGES IN VERSION 2.6.05
 ## BUG REPORTS
+- `plotApobecDiff` y-axis limits. Issue: [642](https://github.com/PoisonAlien/maftools/issues/642) [629](https://github.com/PoisonAlien/maftools/issues/642)
 - `Rainfallplot` arrowhead bug. Issue: [628](https://github.com/PoisonAlien/maftools/issues/628) [629](https://github.com/PoisonAlien/maftools/issues/629)
+
 
 ## ENHANCEMENTS
 - Improve `clinicalEnrichment` odd-ratio interpretation. Issue: [633](https://github.com/PoisonAlien/maftools/issues/633)

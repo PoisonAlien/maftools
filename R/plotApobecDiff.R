@@ -84,17 +84,18 @@ plotApobecDiff = function(tnm, maf, pVal = 0.05, title_size = 1, axis_lwd = 1, f
   par(bty="n", mgp = c(0.5,0.5,0), mar = c(2,3.5,4,0) + 0.1, las=1, tcl=-.25, font.main=4, xpd=NA)
 
   yp = as.integer(pretty(log10(sub.tbl[,n_mutations])))
+  yp_lims = range(log10(sub.tbl[,n_mutations]))
 
   boxplot(at = 1:2, log10(n_mutations) ~ APOBEC_Enriched, data = sub.tbl,  xaxt="n", boxwex=0.6, outline = TRUE, lty=1,
           outwex=0, staplewex=0, frame.plot = FALSE, col = c('maroon', 'royalblue'), yaxt = 'n',
-          outcol="gray70", outcex = 0.3, outpch  = 16, boxfill = NULL, ylim = range(yp),
+          outcol="gray70", outcex = 0.3, outpch  = 16, boxfill = NULL, ylim = yp_lims,
           border = c('maroon', 'royalblue'), lwd = 1.6, ylab = NA, xlab = NA)
 
   title(main = 'Mutation load between APOBEC &\nnon-APOBEC enriched samples', cex.main = title_size)
 
   axis(side = 1, at = c(1, 2), labels = na.omit(sub.tbl[,.N,APOBEC_Enriched])[,paste0('N=', N)],
        las = 1, tick = FALSE, font.axis = 1, cex = 2.5, font = 1, cex.axis = font_size, lwd = axis_lwd)
-  axis(side = 2, at = , lwd = axis_lwd, las = 1, font = 1, cex.axis = font_size, font.axis = 2)
+  axis(side = 2, lwd = axis_lwd, las = 1, font = 1, cex.axis = font_size, font.axis = 2)
   mtext(text = "# mutations (log10)", side = 2, las = 3, line = 2.1, cex = 0.8)
 
   p = wilcox.test(sub.tbl[APOBEC_Enriched %in% 'yes', n_mutations], sub.tbl[APOBEC_Enriched %in% 'no', n_mutations])$p.value
