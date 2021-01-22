@@ -2,6 +2,7 @@
 ## BUG REPORTS
 - `plotApobecDiff` y-axis limits. Issue: [642](https://github.com/PoisonAlien/maftools/issues/642) [629](https://github.com/PoisonAlien/maftools/issues/642)
 - `Rainfallplot` arrowhead bug. Issue: [628](https://github.com/PoisonAlien/maftools/issues/628) [629](https://github.com/PoisonAlien/maftools/issues/629)
+- `OncogenicPathways` zero entries bug and correct documentation. Issue: [656](https://github.com/PoisonAlien/maftools/issues/656)
 
 
 ## ENHANCEMENTS
