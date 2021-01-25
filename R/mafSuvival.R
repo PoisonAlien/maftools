@@ -14,9 +14,6 @@
 #' @param showConfInt TRUE. Whether to show confidence interval in KM plot.
 #' @param addInfo TRUE. Whether to show survival info in the plot.
 #' @param textSize Text size for surv table. Default 7.
-#' @param fn NULL. If provided saves pdf plot with basename fn.
-#' @param width width of plot to be saved. Default 6
-#' @param height height of plot to be saved. Default 6
 #' @import survival
 #' @return Survival plot
 #' @examples
@@ -30,7 +27,7 @@
 mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, time = "Time",
                        Status = "Status", groupNames = c("Mutant", "WT"), showConfInt = TRUE, addInfo = TRUE,
                        col = c('maroon', 'royalblue'), isTCGA = FALSE,
-                       textSize = 12, fn = NULL, width = 6, height = 6){
+                       textSize = 12){
 
   if(is.null(genes) & is.null(samples)){
     stop("Either provide Gene names or Sample names to group by.")
