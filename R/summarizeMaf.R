@@ -1,5 +1,10 @@
 summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
 
+  if(!is.data.frame(maf)){
+    #try to coerce into data.frame
+    maf = data.table::as.data.table(maf)
+  }
+
   if('NCBI_Build' %in% colnames(maf)){
     NCBI_Build = unique(maf[!Variant_Type %in% 'CNV', NCBI_Build])
     NCBI_Build = NCBI_Build[!is.na(NCBI_Build)]
