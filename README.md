@@ -59,6 +59,7 @@ Below are some more useful software packages for somatic variant analysis (not n
 * [GenVisR](https://github.com/griffithlab/GenVisR) - Primarily for visualization (R)
 * [comut](https://github.com/vanallenlab/comut) - Primarily for visualization (Python)
 * [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) - pre-compiled curated somatic mutations from TCGA cohorts (from Broad Firehose and TCGA MC3 Project) that can be loaded into `maftools` (R)
+* [somaticfreq](<https://github.com/PoisonAlien/somaticfreq>) - rapid genotyping of known somatic hotspot variants from the tumor BAM files. Generates a browsable/sharable HTML report. (C)
 
 ***
 

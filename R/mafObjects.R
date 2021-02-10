@@ -79,6 +79,10 @@ MAF = function(nonSyn = NULL, syn = NULL, clinicalData = NULL, verbose = TRUE) {
 
 maf2mae = function(m = NULL){
 
+  if(any(!requireNamespace("RaggedExperiment") | !requireNamespace("MultiAssayExperiment"))){
+    stop("Converting to MultiAssayExperiment requires RaggedExperiment and MultiAssayExperiment packages!")
+  }
+
   if(is.null(m)){
     stop("Missing input MAF")
   }
