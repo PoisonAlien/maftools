@@ -26,8 +26,9 @@
 #' @param verbose TRUE logical. Default to be talkative and prints summary.
 #' @return An object of class MAF.
 #' @examples
-#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf)
+#' laml.maf = system.file("extdata", "tcga_laml.maf.gz", package = "maftools") #MAF file
+#' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools') #clinical data
+#' laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 #' @import data.table
 #' @seealso \code{\link{plotmafSummary}} \code{\link{write.mafSummary}}
 #' @export
@@ -169,18 +170,23 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
   if(verbose){
     cat('-Summarizing\n')
   }
-  mafSummary = summarizeMaf(maf = maf, anno = clinicalData, chatty = verbose)
 
 
-  #7. Create MAF object
-  m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
-          variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
-          summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = mafSummary$sample.anno)
+  m = MAF(nonSyn = maf, syn = maf.silent, clinicalData = clinicalData)
+
+
+  # mafSummary = summarizeMaf(maf = maf, anno = clinicalData, chatty = verbose)
+  #
+  #
+  # #7. Create MAF object
+  # m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+  #         variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
+  #         summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = mafSummary$sample.anno)
   #m = mafSetKeys(maf = m)
 
   if(verbose){
     cat("-Finished in",data.table::timetaken(start_time),"\n")
   }
 
-  return(m)
+  m
 }

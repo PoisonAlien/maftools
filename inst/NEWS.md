@@ -1,4 +1,7 @@
-# CHANGES IN VERSION 2.6.10
+# CHANGES IN VERSION 2.7.10 (GitHub/Bioc devel version)
+
+- Added `MAF` constructor function
+- Added `maf2mae` for converting `MAF` to `MultiAssayExperiment` class objects Issue: [640](https://github.com/PoisonAlien/maftools/issues/640) [293](https://github.com/waldronlab/MultiAssayExperiment/pull/293) Discussion: (285)[https://github.com/waldronlab/MultiAssayExperiment/discussions/285]
 
 # CHANGES IN VERSION 2.6.05 (BioC 3.12 version)
 ## BUG REPORTS

@@ -16,7 +16,7 @@ intersectMAF(x, y, refAltMatch = TRUE, mafObj = TRUE, ...)
 
 \item{mafObj}{Return output as an `MAF` object. Default `TRUE`}
 
-\item{refAltMatch}{Set operations are done by matching ref and alt alleles in addition to loci (Default). Id FALSE only loci (chr, start, end positions) are matched.}
+\item{refAltMatch}{Set operations are done by matching ref and alt alleles in addition to loci (Default). If FALSE only loci (chr, start, end positions) are matched.}
 
 \item{...}{other parameters passing to `subsetMaf` for subsetting operations.}
 }

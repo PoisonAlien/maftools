@@ -3,7 +3,6 @@
 \docType{class}
 \name{MAF-class}
 \alias{MAF-class}
-\alias{MAF}
 \title{Class MAF}
 \description{
 S4 class for storing summarized MAF.
