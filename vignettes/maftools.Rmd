@@ -682,7 +682,7 @@ laml_m4 = subsetMaf(maf = laml, clinQuery = "FAB_classification %in% 'M4'")
 
 # MultiAssayExperiment
 
-MAF can be converted to an object of ckass [MultiAssayExperiment](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html) which facilitates integration with multiple experimental assays. More information on `MultiAssayExperiment` can be found on the corresponding Bioconductor [landing page](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html).
+MAF can be converted to an object of class [MultiAssayExperiment](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html) which facilitates integration with multiple experimental assays. More information on `MultiAssayExperiment` can be found on the corresponding Bioconductor [landing page](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html).
 
 Note: Converting MAF to MAE object requires installation of [MultiAssayExperiment](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html) and [RaggedExperiment](https://www.bioconductor.org/packages/release/bioc/html/RaggedExperiment.html) packages.
 

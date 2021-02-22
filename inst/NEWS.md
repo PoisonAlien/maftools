@@ -1,5 +1,10 @@
 # CHANGES IN VERSION 2.7.10 (GitHub/Bioc devel version)
 
+## ENHANCEMENTS
+- Added `rmFlags` argument to `read.maf`. Issue: [668](https://github.com/PoisonAlien/maftools/issues/668)
+- Added `path_order` argument to `oncoplot` for custom ordering of pathways on oncoplot. 
+
+## NEW FUNCTIONS
 - Added `MAF` constructor function
 - Added `maf2mae` for converting `MAF` to `MultiAssayExperiment` class objects Issue: [640](https://github.com/PoisonAlien/maftools/issues/640) [293](https://github.com/waldronlab/MultiAssayExperiment/pull/293) Discussion: (285)[https://github.com/waldronlab/MultiAssayExperiment/discussions/285]
 

@@ -7,6 +7,7 @@
 read.maf(
   maf,
   clinicalData = NULL,
+  rmFlags = FALSE,
   removeDuplicatedVariants = TRUE,
   useAll = TRUE,
   gisticAllLesionsFile = NULL,
@@ -24,6 +25,8 @@ read.maf(
 \item{maf}{tab delimited MAF file. File can also be gz compressed. Required. Alternatively, you can also provide already read MAF file as a dataframe.}
 
 \item{clinicalData}{Clinical data associated with each sample/Tumor_Sample_Barcode in MAF. Could be a text file or a data.frame. Default NULL.}
+
+\item{rmFlags}{Default FALSE. Can be TRUE or an integer. If TRUE removes all the top 20 FLAG genes. If integer, remove top n FLAG genes.}
 
 \item{removeDuplicatedVariants}{removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
 
