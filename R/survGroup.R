@@ -8,15 +8,16 @@
 #' @param time column name contining time in \code{clinicalData}
 #' @param Status column name containing status of patients in \code{clinicalData}. must be logical or numeric. e.g, TRUE or FALSE, 1 or 0.
 #' @param verbose Default TRUE
+#' @param plot Default TRUE. If TRUE, generate KM plots of the genesets combinations.
 #' @export
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml.clin <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
 #' laml <- read.maf(maf = laml.maf,  clinicalData = laml.clin)
-#' survGroup(maf = laml, top = 20, geneSetSize = 1, time = "days_to_last_followup", Status = "Overall_Survival_Status")
+#' survGroup(maf = laml, top = 20, geneSetSize = 1, time = "days_to_last_followup", Status = "Overall_Survival_Status", plot = FALSE)
 
 survGroup = function(maf, top = 20, genes = NULL, geneSetSize = 2, minSamples = 5, clinicalData = NULL, time = "Time",
-                     Status = "Status", verbose = TRUE){
+                     Status = "Status", verbose = TRUE, plot = TRUE){
 
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
@@ -105,8 +106,7 @@ survGroup = function(maf, top = 20, genes = NULL, geneSetSize = 2, minSamples = 
   res
 }
 
-run_surv = function(cd, tsbs){
-  geneSet <-  paste("Geneset: ", paste0( parent.frame()$x, collapse = ","))
+run_surv = function(cd, tsbs,...){
   groupNames = c("Mutant", "WT")
   col = c('maroon', 'royalblue')
   cd$Group = ifelse(test = cd$Tumor_Sample_Barcode %in% tsbs, yes = groupNames[1], no = groupNames[2])
@@ -120,48 +120,41 @@ run_surv = function(cd, tsbs){
   surv.cox = survival::coxph(formula = survival::Surv(time = Time, event = Status) ~ Group, data = cd)
   hr = signif(1/exp(stats::coef(surv.cox)), digits = 3)
 
-  surv.km = survival::survfit(formula = survival::Surv(time = Time, event = Status) ~ Group, data = cd, conf.type = "log-log")
-  res = summary(surv.km)
-
-  surv.diff = survival::survdiff(formula = survival::Surv(time = Time, event = Status) ~ Group, data = cd)
-  surv.diff.pval = signif(1 - pchisq(surv.diff$chisq, length(surv.diff$n) - 1), digits = 3)
-
-
-  surv.cox = survival::coxph(formula = survival::Surv(time = Time, event = Status) ~ Group, data = cd)
-  hr = signif(1/exp(stats::coef(surv.cox)), digits = 3)
-
   surv.dat = data.table::data.table(Group = res$strata, Time = res$time, survProb = res$surv, survUp = res$upper, survLower = res$lower)
   surv.dat$Group = gsub(pattern = 'Group=', replacement = '', x = surv.dat$Group)
 
-  par(mar = c(4, 4, 2, 2))
-  x_lims = pretty(surv.km$time)
-  y_lims = seq(0, 1, 0.20)
+  geneSet <-  paste("Geneset: ", paste0( parent.frame()$x, collapse = " + "))
+  plot = parent.frame(3)$plot
+  if (plot){
+        par(mar = c(4, 4, 2, 2))
+        x_lims = pretty(surv.km$time)
+        y_lims = seq(0, 1, 0.20)
 
+        plot(NA, xlim = c(min(x_lims), max(x_lims)), ylim = c(0, 1),
+            frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA)
+        abline(h = y_lims, v = x_lims, lty = 2, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lwd = 0.75)
 
-  plot(NA, xlim = c(min(x_lims), max(x_lims)), ylim = c(0, 1),
-       frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA)
-  abline(h = y_lims, v = x_lims, lty = 2, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lwd = 0.75)
+        points(surv.dat[Group %in% "Mutant", Time], y = surv.dat[Group %in% "Mutant", survProb], pch = 8, col = col [1])
+        points(surv.dat[Group %in% "WT", Time], y = surv.dat[Group %in% "WT", survProb], pch = 8, col = col [2])
 
-  points(surv.dat[Group %in% "Mutant", Time], y = surv.dat[Group %in% "Mutant", survProb], pch = 8, col = col [1])
-  points(surv.dat[Group %in% "WT", Time], y = surv.dat[Group %in% "WT", survProb], pch = 8, col = col [2])
+        lines(surv.km[1], col = col[1], lty = 1, lwd = 2, conf.int=FALSE)
+        lines(surv.km[2], col = col[2], lty = 1, lwd = 2, conf.int=FALSE)
 
-  lines(surv.km[1], col = col[1], lty = 1, lwd = 2, conf.int=FALSE)
-  lines(surv.km[2], col = col[2], lty = 1, lwd = 2, conf.int=FALSE)
+        axis(side = 1, at = x_lims)
+        axis(side = 2, at = y_lims, las = 2)
+        mtext(text = "Survival probability", side = 2, line = 2.5)
+        #mtext(text = "Time", side = 1, line = 2)
 
-  axis(side = 1, at = x_lims)
-  axis(side = 2, at = y_lims, las = 2)
-  mtext(text = "Survival probability", side = 2, line = 2.5)
-  #mtext(text = "Time", side = 1, line = 2)
+        legend(x = "topright", legend = c(paste0("Geneset [N= ", nrow(cd[Group == "Mutant"]),"]"),
+                                          paste0("WT [N= ", nrow(cd[Group == "WT"]),"]")), col = col, bty = "n", lwd = 2, pch = 8)
 
-  legend(x = "topright", legend = c(paste0("Geneset [N= ", nrow(cd[Group == "Mutant"]),"]"),
-                                    paste0("WT [N= ", nrow(cd[Group == "WT"]),"]")), col = col, bty = "n", lwd = 2, pch = 8)
+        title(main = NA,
+              sub = paste0("P-value: ", surv.diff.pval, "; ", "HR: ", hr), cex.main = 1, font.main= 4, col.main= "black",
+              cex.sub = 1, font.sub = 3, col.sub = ifelse(test = surv.diff.pval < 0.05, yes = "red", no = "black"),
+              line = 2.5, adj = 0)
 
-  title(main = NA,
-        sub = paste0("P-value: ", surv.diff.pval, "; ", "HR: ", hr), cex.main = 1, font.main= 4, col.main= "black",
-        cex.sub = 1, font.sub = 3, col.sub = ifelse(test = surv.diff.pval < 0.05, yes = "red", no = "black"),
-        line = 2.5, adj = 0)
-
-  title(main = paste0("Geneset: ", paste(geneSet, collapse = ", ")), adj = 0, font.main = 3, cex.main = 1)
+        title(main = geneSet, adj = 0, font.main = 3, cex.main = 1)
+  }
 
   #surv.dat = data.table::data.table(Group = res$strata, Time = res$time, survProb = res$surv, survUp = res$upper, survLower = res$lower)
   #surv.dat$Group = gsub(pattern = 'Group=', replacement = '', x = surv.dat$Group)
