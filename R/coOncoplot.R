@@ -197,15 +197,57 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
   vc_pch = rep(15, length(vc_legend))
   if(!is.null(additionalFeature1)){
-    vc_legend = c(vc_legend, "gray70")
-    names(vc_legend)[length(vc_legend)] = paste(additionalFeature1, collapse = ":")
-    vc_pch = c(vc_pch, additionalFeaturePch1)
+
+    if(!is(object = additionalFeature1, class2 = "list")){
+      if(length(additionalFeature1) < 2){
+        stop("additionalFeature must be of length two. See ?oncoplot for details.")
+      }else{
+        additionalFeature1 = list(additionalFeature1)
+      }
+    }
+
+    if(length(additionalFeaturePch1) != length(additionalFeature1)){
+      additionalFeaturePch1 = rep(additionalFeaturePch1, length(additionalFeature1))
+    }
+
+    if(length(additionalFeatureCol1) != length(additionalFeature1)){
+      additionalFeatureCol1 = rep(additionalFeatureCol1, length(additionalFeature1))
+    }
+
+    for(af_idx in 1:length(additionalFeature1)){
+      af = additionalFeature1[[af_idx]]
+      vc_legend = c(vc_legend, additionalFeatureCol1[af_idx])
+      names(vc_legend)[length(vc_legend)] = paste(af, collapse = ":")
+      vc_pch = c(vc_pch, additionalFeaturePch1[af_idx])
+    }
   }
 
   if(!is.null(additionalFeature2)){
-    vc_legend = c(vc_legend, "gray70")
-    names(vc_legend)[length(vc_legend)] = paste(additionalFeature2, collapse = ":")
-    vc_pch = c(vc_pch, additionalFeaturePch2)
+
+    if(!is(object = additionalFeature2, class2 = "list")){
+      if(length(additionalFeature2) < 2){
+        stop("additionalFeature must be of length two. See ?oncoplot for details.")
+      }else{
+        additionalFeature2 = list(additionalFeature2)
+      }
+    }
+
+    if(length(additionalFeaturePch2) != length(additionalFeature2)){
+      warning("Provided pch for additional features are recycled")
+      additionalFeaturePch2 = rep(additionalFeaturePch2, length(additionalFeature2))
+    }
+
+    if(length(additionalFeatureCol2) != length(additionalFeature2)){
+      warning("Provided colors for additional features are recycled")
+      additionalFeatureCol2 = rep(additionalFeatureCol2, length(additionalFeature2))
+    }
+
+    for(af_idx in 1:length(additionalFeature2)){
+      af = additionalFeature2[[af_idx]]
+      vc_legend = c(vc_legend, additionalFeatureCol2[af_idx])
+      names(vc_legend)[length(vc_legend)] = paste(af, collapse = ":")
+      vc_pch = c(vc_pch, additionalFeaturePch2[af_idx])
+    }
   }
 
   plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)

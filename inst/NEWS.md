@@ -1,4 +1,6 @@
 # CHANGES IN VERSION 2.7.10 (GitHub/Bioc devel version)
+## BUG FIXES
+- `coOncoplot` not allowing more than one additional feature. Issue: [675](https://github.com/PoisonAlien/maftools/issues/675)
 
 ## ENHANCEMENTS
 - Added `rmFlags` argument to `read.maf`. Issue: [668](https://github.com/PoisonAlien/maftools/issues/668)

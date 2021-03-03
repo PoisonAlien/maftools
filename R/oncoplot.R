@@ -985,9 +985,29 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   leg_classes = vc_col[vc_codes[2:length(vc_codes)]]
   leg_classes_pch = rep(15, length(leg_classes))
   if(additionalFeature_legend){
-    leg_classes = c(leg_classes,"gray70")
-    names(leg_classes)[length(leg_classes)] = paste(additionalFeature, collapse = ":")
-    leg_classes_pch = c(leg_classes_pch, additionalFeaturePch)
+
+    if(!is(object = additionalFeature, class2 = "list")){
+      if(length(additionalFeature) < 2){
+        stop("additionalFeature must be of length two. See ?oncoplot for details.")
+      }else{
+        additionalFeature = list(additionalFeature)
+      }
+    }
+
+    if(length(additionalFeaturePch) != length(additionalFeature)){
+      additionalFeaturePch = rep(additionalFeaturePch, length(additionalFeature))
+    }
+
+    if(length(additionalFeatureCol) != length(additionalFeature)){
+      additionalFeatureCol = rep(additionalFeatureCol, length(additionalFeature))
+    }
+
+    for(af_idx in 1:length(additionalFeature)){
+      af = additionalFeature[[af_idx]]
+      leg_classes = c(leg_classes,additionalFeatureCol[af_idx])
+      names(leg_classes)[length(leg_classes)] = paste(af, collapse = ":")
+      leg_classes_pch = c(leg_classes_pch, additionalFeaturePch[af_idx])
+    }
   }
 
   lep = legend("topleft", legend = names(leg_classes),
