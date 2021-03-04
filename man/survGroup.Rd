@@ -13,8 +13,8 @@ survGroup(
   clinicalData = NULL,
   time = "Time",
   Status = "Status",
-  verbose = TRUE
-  plot = TRUE
+  verbose = TRUE,
+  plot = FALSE
 )
 }
 \arguments{
@@ -35,7 +35,8 @@ survGroup(
 \item{Status}{column name containing status of patients in \code{clinicalData}. must be logical or numeric. e.g, TRUE or FALSE, 1 or 0.}
 
 \item{verbose}{Default TRUE}
-\item{plot}{Default TRUE. If TRUE, generate KM plots of the genesets combinations.}
+
+\item{plot}{Default FALSE If TRUE, generate KM plots of the genesets combinations.}
 }
 \description{
 Predict genesets associated with survival

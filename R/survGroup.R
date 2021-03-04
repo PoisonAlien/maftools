@@ -8,7 +8,7 @@
 #' @param time column name contining time in \code{clinicalData}
 #' @param Status column name containing status of patients in \code{clinicalData}. must be logical or numeric. e.g, TRUE or FALSE, 1 or 0.
 #' @param verbose Default TRUE
-#' @param plot Default TRUE. If TRUE, generate KM plots of the genesets combinations.
+#' @param plot Default FALSE If TRUE, generate KM plots of the genesets combinations.
 #' @export
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -17,7 +17,7 @@
 #' survGroup(maf = laml, top = 20, geneSetSize = 1, time = "days_to_last_followup", Status = "Overall_Survival_Status", plot = FALSE)
 
 survGroup = function(maf, top = 20, genes = NULL, geneSetSize = 2, minSamples = 5, clinicalData = NULL, time = "Time",
-                     Status = "Status", verbose = TRUE, plot = TRUE){
+                     Status = "Status", verbose = TRUE, plot = FALSE){
 
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
@@ -94,7 +94,7 @@ survGroup = function(maf, top = 20, genes = NULL, geneSetSize = 2, minSamples = 
       if(verbose){
         cat("Geneset: ", paste0(x, collapse = ","), "[N=", length(genesTSB),"]\n")
       }
-      surv.dat = run_surv(cd = clinicalData, tsbs = genesTSB)
+      surv.dat = run_surv(cd = clinicalData, tsbs = genesTSB, doplot = plot)
     }else{
       surv.dat = NULL
     }
@@ -106,10 +106,15 @@ survGroup = function(maf, top = 20, genes = NULL, geneSetSize = 2, minSamples = 
   res
 }
 
-run_surv = function(cd, tsbs,...){
+run_surv = function(cd, tsbs, doplot = FALSE){
   groupNames = c("Mutant", "WT")
   col = c('maroon', 'royalblue')
   cd$Group = ifelse(test = cd$Tumor_Sample_Barcode %in% tsbs, yes = groupNames[1], no = groupNames[2])
+
+  if(nrow(cd[,.N,Group]) == 1){
+    #Only group - surv.diff wont work
+    return(NULL)
+  }
 
   surv.km = survival::survfit(formula = survival::Surv(time = Time, event = Status) ~ Group, data = cd, conf.type = "log-log")
   res = summary(surv.km)
@@ -124,8 +129,8 @@ run_surv = function(cd, tsbs,...){
   surv.dat$Group = gsub(pattern = 'Group=', replacement = '', x = surv.dat$Group)
 
   geneSet <-  paste("Geneset: ", paste0( parent.frame()$x, collapse = " + "))
-  plot = parent.frame(3)$plot
-  if (plot){
+
+  if (doplot){
         par(mar = c(4, 4, 2, 2))
         x_lims = pretty(surv.km$time)
         y_lims = seq(0, 1, 0.20)
