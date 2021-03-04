@@ -2,7 +2,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
                      bgCol = 'gray70', borderCol = 'white', fontSize = 1,
                      plot2 = FALSE, test = FALSE, clinicalFeatures = NULL, sampleOrder = NULL,
                      additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9,
-                     annotationDat = NULL, annotationColor = NULL,
+                     annotationDat = NULL, annotationOrder = NULL, annotationColor = NULL,
                      sortByAnnotation = FALSE, showBarcodes = FALSE, barcodemar = 4,genemar = 1,
                      title = NULL, title_size = 1.2, barcode_size = 0.4, sepwd_samples = 0.1, sepwd_genes = 0.1){
 
@@ -60,7 +60,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     }
 
     if(sortByAnnotation){
-      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation)
+      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder)
     }
   }
 

@@ -3,10 +3,10 @@
 - `coOncoplot` not allowing more than one additional feature. Issue: [675](https://github.com/PoisonAlien/maftools/issues/675)
 
 ## ENHANCEMENTS
+- Added `annotationOrder` argument to `coOncoplot`. Issue: [676](https://github.com/PoisonAlien/maftools/issues/676) 
 - Added `plot` argument to `survGroup`. Thank you [OmarElAshkar](https://github.com/OmarElAshkar) PR: [674](https://github.com/PoisonAlien/maftools/issues/674) 
 - Added `rmFlags` argument to `read.maf`. Issue: [668](https://github.com/PoisonAlien/maftools/issues/668)
 - Added `path_order` argument to `oncoplot` for custom ordering of pathways on oncoplot. 
-
 
 ## NEW FUNCTIONS
 - Added `MAF` constructor function

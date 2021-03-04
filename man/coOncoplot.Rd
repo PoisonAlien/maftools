@@ -16,7 +16,9 @@ coOncoplot(
   annotationColor2 = NULL,
   annotationFontSize = 1.2,
   sortByAnnotation1 = FALSE,
+  annotationOrder1 = NULL,
   sortByAnnotation2 = FALSE,
+  annotationOrder2 = NULL,
   sampleOrder1 = NULL,
   sampleOrder2 = NULL,
   additionalFeature1 = NULL,
@@ -71,7 +73,11 @@ coOncoplot(
 
 \item{sortByAnnotation1}{logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort}
 
+\item{annotationOrder1}{Manually specify order for annotations for `clinicalFeatures1`. Works only for first value. Default NULL.}
+
 \item{sortByAnnotation2}{same as above but for m2}
+
+\item{annotationOrder2}{Manually specify order for annotations for `clinicalFeatures2`. Works only for first value. Default NULL.}
 
 \item{sampleOrder1}{Manually speify sample names in m1 for oncolplot ordering. Default NULL.}
 
