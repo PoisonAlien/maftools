@@ -430,6 +430,8 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
     if(logColBar){
       mtext(text = "(log10)", side = 2, line = 2, cex = 0.6)
+    }else{
+      mtext(text = "TMB", side = 2, line = 2, cex = 0.6)
     }
   }else if(!is.null(topBarData) & drawColBar){
     # Draw extra clinical data in top
@@ -505,8 +507,10 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
     if(drawColBar){
       par(mar = c(0.25 , 0, 1, 2), xpd = TRUE)
+
       plot(x = NA, y = NA, type = "n", axes = FALSE,
            xlim = side_bar_lims, ylim = c(0, 1), xaxs = "i")
+      rightBarTitle = "No. of samples"
     }
   }
 
@@ -806,6 +810,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
         }
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
+      mtext(text = rightBarTitle, side = 3, line = 0.5, cex = 0.6)
     }else{
 
       plot(x = NA, y = NA, type = "n", xlim = side_bar_lims, ylim = c(0, nrow(rightBarData)),

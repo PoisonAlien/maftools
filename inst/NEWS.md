@@ -3,6 +3,7 @@
 - `coOncoplot` not allowing more than one additional feature. Issue: [675](https://github.com/PoisonAlien/maftools/issues/675)
 
 ## ENHANCEMENTS
+- Added default title for side and topbar plots to `oncoplot`. Issue: [682](https://github.com/PoisonAlien/maftools/issues/682) 
 - Added `annotationOrder` argument to `coOncoplot`. Issue: [676](https://github.com/PoisonAlien/maftools/issues/676) 
 - Added `plot` argument to `survGroup`. Thank you [OmarElAshkar](https://github.com/OmarElAshkar) PR: [674](https://github.com/PoisonAlien/maftools/issues/674) 
 - Added `rmFlags` argument to `read.maf`. Issue: [668](https://github.com/PoisonAlien/maftools/issues/668)
@@ -10,7 +11,7 @@
 
 ## NEW FUNCTIONS
 - Added `MAF` constructor function
-- Added `maf2mae` for converting `MAF` to `MultiAssayExperiment` class objects Issue: [640](https://github.com/PoisonAlien/maftools/issues/640) [293](https://github.com/waldronlab/MultiAssayExperiment/pull/293) Discussion: (285)[https://github.com/waldronlab/MultiAssayExperiment/discussions/285]
+- Added `maf2mae` for converting `MAF` to `MultiAssayExperiment` class objects Issue: [640](https://github.com/PoisonAlien/maftools/issues/640) [293](https://github.com/waldronlab/MultiAssayExperiment/pull/293) Discussion: [285](https://github.com/waldronlab/MultiAssayExperiment/discussions/285)
 
 # CHANGES IN VERSION 2.6.05 (BioC 3.12 version)
 ## BUG REPORTS
