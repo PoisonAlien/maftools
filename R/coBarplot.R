@@ -16,6 +16,7 @@
 #' @param pctSize Default 0.7
 #' @param axisSize Default 0.8
 #' @param legendTxtSize Default 0.8
+#' @param geneMar Default 4
 #' @export
 #' @examples
 #' #' ##Primary and Relapse APL
@@ -30,7 +31,7 @@
 #' @return Returns nothing. Just draws plot.
 #'
 coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name = NULL, colors = NULL, normalize = TRUE, yLims = NULL, borderCol = "gray", titleSize = 1, geneSize = 0.8,
-                     showPct = TRUE, pctSize = 0.7, axisSize = 0.8, legendTxtSize = 1){
+                     showPct = TRUE, pctSize = 0.7, axisSize = 0.8, legendTxtSize = 1, geneMar = 4){
 
   if(is.null(genes)){
     m1.genes = getGeneSummary(m1)[1:5, Hugo_Symbol]
@@ -100,7 +101,7 @@ coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name
   lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
   graphics::layout(mat = lo, heights = c(4, 1.25))
 
-  par(mar = c(2, 4, 1, 2))
+  par(mar = c(2, geneMar, 1, 2))
   b1 = barplot(
     height = -m1.gs,
     horiz = TRUE,

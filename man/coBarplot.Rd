@@ -20,7 +20,8 @@ coBarplot(
   showPct = TRUE,
   pctSize = 0.7,
   axisSize = 0.8,
-  legendTxtSize = 1
+  legendTxtSize = 1,
+  geneMar = 4
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ coBarplot(
 \item{axisSize}{Default 0.8}
 
 \item{legendTxtSize}{Default 0.8}
+
+\item{geneMar}{Default 4}
 }
 \value{
 Returns nothing. Just draws plot.
