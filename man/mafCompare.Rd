@@ -4,7 +4,16 @@
 \alias{mafCompare}
 \title{compare two cohorts (MAF).}
 \usage{
-mafCompare(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE)
+mafCompare(
+  m1,
+  m2,
+  m1Name = NULL,
+  m2Name = NULL,
+  minMut = 5,
+  useCNV = TRUE,
+  pathways = FALSE,
+  custom_pw = NULL
+)
 }
 \arguments{
 \item{m1}{first \code{\link{MAF}} object}
@@ -17,7 +26,11 @@ mafCompare(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE)
 
 \item{minMut}{Consider only genes with minimum this number of samples mutated in atleast one of the cohort for analysis. Helful to ignore single mutated genes. Default 5.}
 
-\item{useCNV}{whether to include copy number events to compare MAFs. Only applicable when MAF is read along with copy number data. Default TRUE if available.}
+\item{useCNV}{whether to include copy number events. Default TRUE if available.. Not applicable when `pathways = TRUE`}
+
+\item{pathways}{Summarize genes by pathways before comparing. Default `FALSE`}
+
+\item{custom_pw}{Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`, uses a predefined list of pathways. Applicable only when `pathways = TRUE`}
 }
 \value{
 result list

@@ -8,10 +8,9 @@ forestPlot(
   mafCompareRes,
   pVal = 0.05,
   fdr = NULL,
-  color = NULL,
-  geneFontSize = 1.2,
+  geneFontSize = 0.8,
   titleSize = 1.2,
-  lineWidth = 2.2
+  lineWidth = 1
 )
 }
 \arguments{
@@ -21,13 +20,11 @@ forestPlot(
 
 \item{fdr}{fdr threshold. Default NULL. If provided uses adjusted pvalues (fdr).}
 
-\item{color}{vector of colors for cohorts. Default NULL.}
-
-\item{geneFontSize}{Font size for gene symbols. Default 1.2}
+\item{geneFontSize}{Font size for gene symbols. Default 0.8}
 
 \item{titleSize}{font size for titles. Default 1.2}
 
-\item{lineWidth}{line width for CI bars. Default 2.2}
+\item{lineWidth}{line width for CI bars. Default 1}
 }
 \value{
 Nothing

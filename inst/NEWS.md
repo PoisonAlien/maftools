@@ -3,11 +3,13 @@
 - `coOncoplot` not allowing more than one additional feature. Issue: [675](https://github.com/PoisonAlien/maftools/issues/675)
 
 ## ENHANCEMENTS
+- Added pathway support for `mafCompare()` or `clinicalEnrichment()`. Issue: [681](https://github.com/PoisonAlien/maftools/issues/681) 
 - Added default title for side and topbar plots to `oncoplot`. Issue: [682](https://github.com/PoisonAlien/maftools/issues/682) 
 - Added `annotationOrder` argument to `coOncoplot`. Issue: [676](https://github.com/PoisonAlien/maftools/issues/676) 
 - Added `plot` argument to `survGroup`. Thank you [OmarElAshkar](https://github.com/OmarElAshkar) PR: [674](https://github.com/PoisonAlien/maftools/issues/674) 
 - Added `rmFlags` argument to `read.maf`. Issue: [668](https://github.com/PoisonAlien/maftools/issues/668)
 - Added `path_order` argument to `oncoplot` for custom ordering of pathways on oncoplot. 
+- Added `geneMar` argumen to `coBarplot`. Issue: [260](https://github.com/PoisonAlien/maftools/issues/260) 
 
 ## NEW FUNCTIONS
 - Added `MAF` constructor function
