@@ -55,7 +55,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
 
   graphics::layout(mat = matrix(c(1, 2, 3, 4, 5, 6, 6, 6, 6, 6), byrow = TRUE, ncol = 5, nrow = 2), widths = c(4, 1, 1), heights = c(6, 1.2))
   par(mar = c(3, 1, 3, 5))
-  plot(NA, xlim = xlims, ylim = ylims, axes= FALSE)
+  plot(NA, xlim = xlims, ylim = ylims, axes= FALSE, xlab = NA, ylab = NA)
   apply(m.sigs[,.(or, ci.up, ci.low, ci.up, or_new, upper, lower, pos)], 1, function(x){
     p = x[5]; u = x[6]; u_orig = x[2]; l = x[7]; l_orig = x[3]; ypos = x[8]
     points(x = p, y = ypos, pch = 16, cex = 1.1*(lineWidth))
@@ -72,7 +72,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
 
   })
 
-  abline(v = 1, lty = 2, col = "gray")
+  abline(v = 1, lty = 2, col = "gray", xpd = FALSE)
   axis(side = 1, at = 0:3, labels = c(0:3), font = 1, pos = 0.5, cex.axis = 1.3)
 
   mtext(text = m.sigs$Hugo_Symbol, side = 4, line = 0.2, at = 1:nrow(m.sigs),
