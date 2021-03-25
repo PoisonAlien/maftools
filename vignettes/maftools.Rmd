@@ -680,9 +680,42 @@ Use `clinQuery` argument in `subsetMaf` to select samples of interest based on t
 laml_m4 = subsetMaf(maf = laml, clinQuery = "FAB_classification %in% 'M4'")
 ```
 
+# TCGA cohorts
+
+Analysis of TCGA cohorts with `maftools` is as easy as it can get. This is made possible by processing TCGA MAF files from [Broad firehose](https://gdac.broadinstitute.org/) and TCGA [MC3](https://gdc.cancer.gov/about-data/publications/mc3-2017) project. Every cohort is stored as an MAF object containing somatic mutations (no CNVs) along with the relevant clinical information. There are two functions
+
+* `tcgaAvailable()` will display available cohorts
+* `tcgaLoad()` will load the desired cohort
+
+## Available cohorts
+
+```{r}
+tcga_avail = tcgaAvailable()
+head(tcga_avail, 3)
+```
+
+## Loading a TCGA cohort
+
+```{r}
+# By default MAF from MC3 project will be loaded
+laml_mc3 = tcgaLoad(study = "LAML")
+laml_mc3
+
+# Change the source to Firehose
+laml_fh = tcgaLoad(study = "LAML", source = "Firehose")
+laml_fh
+```
+
+
+There is also an R data package containing the same pre-compiled TCGA MAF objects. Due to Bioconductor package size limits and other difficulties, this was not submitted to Bioconductor. However, you can still download [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) package from GitHub.
+
+```{r, eval=FALSE}
+BiocManager::install(pkgs = "PoisonAlien/TCGAmutations")
+```
+
 # MultiAssayExperiment
 
-MAF can be converted to an object of class [MultiAssayExperiment](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html) which facilitates integration with multiple experimental assays. More information on `MultiAssayExperiment` can be found on the corresponding Bioconductor [landing page](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html).
+MAF can be converted to an object of class [MultiAssayExperiment](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html) which facilitates integration of MAF with distinct data types. More information on `MultiAssayExperiment` can be found on the corresponding Bioconductor [landing page](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html).
 
 Note: Converting MAF to MAE object requires installation of [MultiAssayExperiment](https://www.bioconductor.org/packages/release/bioc/html/MultiAssayExperiment.html) and [RaggedExperiment](https://www.bioconductor.org/packages/release/bioc/html/RaggedExperiment.html) packages.
 
@@ -691,13 +724,6 @@ laml_mae = maf2mae(m = laml)
 laml_mae
 ```
 
-# Pre-compiled TCGA MAF objects
-
-There is also an R data package containing pre-compiled TCGA MAF objects from TCGA firehose and TCGA [MC3](https://gdc.cancer.gov/about-data/publications/mc3-2017) projects, particularly helpful for those working with TCGA mutation data. Every dataset is stored as an MAF object containing somatic mutations along with clinical information. Due to Bioconductor package size limits and other difficulties, this was not submitted to Bioconductor. However, you can still download [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) package from GitHub.
-
-```{r, eval=FALSE}
-BiocManager::install(pkgs = "PoisonAlien/TCGAmutations")
-```
 
 ## Useful links
 

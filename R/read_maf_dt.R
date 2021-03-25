@@ -141,6 +141,9 @@ read.maf = function(maf, clinicalData = NULL, rmFlags = FALSE, removeDuplicatedV
 
   #5. Process CN data if available.
   if(!is.null(gisticAllLesionsFile)){
+    if(verbose){
+      cat('-Processing GISTIC copy number data\n')
+    }
     gisticIp = readGistic(gisticAllLesionsFile = gisticAllLesionsFile, gisticAmpGenesFile = gisticAmpGenesFile,
                           gisticDelGenesFile = gisticDelGenesFile, isTCGA = isTCGA, gisticScoresFile = gisticScoresFile, cnLevel = cnLevel, verbose = verbose)
     #gisticIp = gisticIp@data
@@ -157,6 +160,9 @@ read.maf = function(maf, clinicalData = NULL, rmFlags = FALSE, removeDuplicatedV
     suppressWarnings(gisticIp[, id := paste(Hugo_Symbol, Tumor_Sample_Barcode, sep=':')])
     gisticIp = gisticIp[!duplicated(id)]
     gisticIp[,id := NULL]
+    if(verbose){
+      cat("--Start and end coordinates for CN altered genes are derived from the corresponding `Wide Peak Limits`\n")
+    }
 
     maf = data.table::rbindlist(list(maf, gisticIp), fill = TRUE, use.names = TRUE)
     maf$Tumor_Sample_barcode = factor(x = maf$Tumor_Sample_barcode,
@@ -195,17 +201,8 @@ read.maf = function(maf, clinicalData = NULL, rmFlags = FALSE, removeDuplicatedV
   }
 
 
-  m = MAF(nonSyn = maf, syn = maf.silent, clinicalData = clinicalData)
+  m = MAF(nonSyn = maf, syn = maf.silent, clinicalData = clinicalData, verbose = verbose)
 
-
-  # mafSummary = summarizeMaf(maf = maf, anno = clinicalData, chatty = verbose)
-  #
-  #
-  # #7. Create MAF object
-  # m = MAF(data = maf, variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
-  #         variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
-  #         summary = mafSummary$summary, maf.silent = maf.silent, clinical.data = mafSummary$sample.anno)
-  #m = mafSetKeys(maf = m)
 
   if(verbose){
     cat("-Finished in",data.table::timetaken(start_time),"\n")
