@@ -6,7 +6,9 @@
 #' @param m1Name optional name for first cohort
 #' @param m2Name optional name for second cohort
 #' @param minMut Consider only genes with minimum this number of samples mutated in atleast one of the cohort for analysis. Helful to ignore single mutated genes. Default 5.
-#' @param useCNV whether to include copy number events to compare MAFs. Only applicable when MAF is read along with copy number data. Default TRUE if available.
+#' @param useCNV whether to include copy number events. Default TRUE if available.. Not applicable when `pathways = TRUE`
+#' @param pathways Summarize genes by pathways before comparing. Default `FALSE`
+#' @param custom_pw Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`, uses a predefined list of pathways. Applicable only when `pathways = TRUE`
 #' @return result list
 #' @examples
 #' primary.apl <- system.file("extdata", "APL_primary.maf.gz", package = "maftools")
@@ -19,7 +21,7 @@
 #' @seealso \code{\link{forestPlot}}
 #' @seealso \code{\link{lollipopPlot2}}
 
-mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE){
+mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE, pathways = FALSE, custom_pw = NULL){
 
   m1.gs <- getGeneSummary(x = m1)
   m2.gs <- getGeneSummary(x = m2)
@@ -33,37 +35,50 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
      m2Name = 'M2'
    }
 
-  if(useCNV){
-    m1.genes = as.character(m1.gs[AlteredSamples >= minMut,Hugo_Symbol])
-    m2.genes = as.character(m2.gs[AlteredSamples >= minMut,Hugo_Symbol])
-    uniqueGenes = unique(c(m1.genes, m2.genes))
+  m1.sampleSize = as.numeric(m1@summary[3, summary])
+  m2.sampleSize = as.numeric(m2@summary[3, summary])
+  sampleSummary = data.table::data.table(
+    Cohort = c(m1Name, m2Name),
+    SampleSize = c(m1.sampleSize, m2.sampleSize)
+  )
+
+  if(pathways){
+    m1_pw = get_pw_summary(maf = m1, pathways = custom_pw)[,.(Pathway, Mutated_samples)]
+    m2_pw = get_pw_summary(maf = m2, pathways = custom_pw)[,.(Pathway, Mutated_samples)]
+
+    m.gs.meged = merge(m1_pw, m2_pw, by = "Pathway", all = TRUE)
+    m.gs.meged = as.data.frame(m.gs.meged)
+
   }else{
-    m1.genes = as.character(m1.gs[MutatedSamples >= minMut, Hugo_Symbol])
-    m2.genes = as.character(m2.gs[MutatedSamples >= minMut, Hugo_Symbol])
-    uniqueGenes = unique(c(m1.genes, m2.genes))
+    if(useCNV){
+      m1.genes = as.character(m1.gs[AlteredSamples >= minMut,Hugo_Symbol])
+      m2.genes = as.character(m2.gs[AlteredSamples >= minMut,Hugo_Symbol])
+      uniqueGenes = unique(c(m1.genes, m2.genes))
+    }else{
+      m1.genes = as.character(m1.gs[MutatedSamples >= minMut, Hugo_Symbol])
+      m2.genes = as.character(m2.gs[MutatedSamples >= minMut, Hugo_Symbol])
+      uniqueGenes = unique(c(m1.genes, m2.genes))
+    }
+
+    m1.gs.comGenes = m1.gs[Hugo_Symbol %in% uniqueGenes]
+    m2.gs.comGenes = m2.gs[Hugo_Symbol %in% uniqueGenes]
+
+    if(useCNV){
+      m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)], m2.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)],
+                         by = 'Hugo_Symbol', all = TRUE)
+    }else{
+      m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)], m2.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)],
+                         by = 'Hugo_Symbol', all = TRUE)
+    }
+
+    #Set missing genes to zero
+    m.gs.meged[is.na(m.gs.meged)] = 0
+    m.gs.meged = as.data.frame(m.gs.meged)
+
   }
 
- #com.genes = intersect(m1.gs[,Hugo_Symbol], m2.gs[,Hugo_Symbol])
+  #return(m.gs.meged)
 
- m1.sampleSize = as.numeric(m1@summary[3, summary])
- m2.sampleSize = as.numeric(m2@summary[3, summary])
-
- m1.gs.comGenes = m1.gs[Hugo_Symbol %in% uniqueGenes]
- m2.gs.comGenes = m2.gs[Hugo_Symbol %in% uniqueGenes]
-
- sampleSummary = data.table::data.table(Cohort = c(m1Name, m2Name), SampleSize = c(m1.sampleSize, m2.sampleSize))
-
- if(useCNV){
-   m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)], m2.gs.comGenes[,.(Hugo_Symbol, AlteredSamples)],
-                      by = 'Hugo_Symbol', all = TRUE)
- }else{
-   m.gs.meged = merge(m1.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)], m2.gs.comGenes[,.(Hugo_Symbol, MutatedSamples)],
-                      by = 'Hugo_Symbol', all = TRUE)
- }
-
- #Set missing genes to zero
- m.gs.meged[is.na(m.gs.meged)] = 0
- m.gs.meged = as.data.frame(m.gs.meged)
 
  if(nrow(m.gs.meged) == 0){
    stop("No genes pass the minMut threshold. Try decreasing the value..")

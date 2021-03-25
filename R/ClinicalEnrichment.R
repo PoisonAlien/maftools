@@ -4,8 +4,9 @@
 #' @param maf \code{\link{MAF}} object
 #' @param clinicalFeature columns names from `clinical.data` slot of \code{MAF} to be analysed for.
 #' @param minMut Consider only genes with minimum this number of samples mutated. Default 5.
-#' @param useCNV whether to include copy number events. Only applicable when MAF is read along with copy number data. Default TRUE if available.
+#' @param useCNV whether to include copy number events if available. Default TRUE. Not applicable when `pathways = TRUE`
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} or a tsv file with a column containing Tumor_Sample_Barcodes along with clinical features. Default NULL.
+#' @param pathways Summarize genes by pathways before comparing. Default `FALSE`
 #' @return result list containing p-values
 #' @details Performs fishers test on 2x2 contingency table for WT/Mutants in group of interest vs rest of the sample. Odds Ratio indicate the odds of observing mutant in the group of interest compared to wild-type
 #' @examples
@@ -18,7 +19,7 @@
 #' @seealso \code{\link{plotEnrichmentResults}}
 #' @export
 
-clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL, minMut = 5, useCNV = TRUE){
+clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL, minMut = 5, useCNV = TRUE, pathways = FALSE){
 
   if(is.null(clinicalFeature)){
     stop("Missing clinicalFeature. Use getClinicalData() to see available features.")
@@ -68,14 +69,30 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
     return(ans)
   }
 
-  if(useCNV){
-    genes = as.character(getGeneSummary(x = maf)[AlteredSamples > minMut, Hugo_Symbol])
+  if(pathways){
+    pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
+    pathdb = data.table::fread(file = pathdb)
+    pathdb = split(pathdb, as.factor(pathdb$Pathway))
+    genes = lapply(pathdb, function(pw){
+      unique(unlist(genesToBarcodes(maf = maf, genes = pw[,Gene], justNames = TRUE, verbose = FALSE)))
+    })
+    genes = names(which(x = lapply(genes, length) >= minMut))
   }else{
-    genes = as.character(getGeneSummary(x = maf)[MutatedSamples > minMut, Hugo_Symbol])
+    if(useCNV){
+      genes = as.character(getGeneSummary(x = maf)[AlteredSamples > minMut, Hugo_Symbol])
+    }else{
+      genes = as.character(getGeneSummary(x = maf)[MutatedSamples > minMut, Hugo_Symbol])
+    }
   }
 
   plist = lapply(genes, function(x){
-          g = unique(genesToBarcodes(maf = maf, genes = x, justNames = TRUE)[[1]])
+          if(pathways){
+            pathgenes = pathdb[[x]][,Gene]
+            g = unique(unlist(genesToBarcodes(maf = maf, genes = x, justNames = TRUE, verbose = FALSE)))
+          }else{
+            g = unique(genesToBarcodes(maf = maf, genes = x, justNames = TRUE)[[1]])
+          }
+
           cd$Genotype = ifelse(test = cd$Tumor_Sample_Barcode %in% g, yes = "Mutant", no = "WT")
 
           #Perform groupwise comparison for given gene
@@ -93,7 +110,7 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
                                             Hugo_Symbol = x, Analysis = "Group")
             ft.tbl
           })
-          ft = data.table::rbindlist(ft)
+          ft = data.table::rbindlist(ft, use.names = TRUE, fill = TRUE)
 
           #Perform pairwise fisher test for every gene
           prop.tbl = pairwise.fisher.test(x = cd$Genotype, g = cd$cf, p.adjust.method = "fdr")

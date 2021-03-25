@@ -13,7 +13,8 @@ survGroup(
   clinicalData = NULL,
   time = "Time",
   Status = "Status",
-  verbose = TRUE
+  verbose = TRUE,
+  plot = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ survGroup(
 \item{Status}{column name containing status of patients in \code{clinicalData}. must be logical or numeric. e.g, TRUE or FALSE, 1 or 0.}
 
 \item{verbose}{Default TRUE}
+
+\item{plot}{Default FALSE If TRUE, generate KM plots of the genesets combinations.}
 }
 \description{
 Predict genesets associated with survival
@@ -42,5 +45,5 @@ Predict genesets associated with survival
 laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 laml.clin <- system.file("extdata", "tcga_laml_annot.tsv", package = "maftools")
 laml <- read.maf(maf = laml.maf,  clinicalData = laml.clin)
-survGroup(maf = laml, top = 20, geneSetSize = 1, time = "days_to_last_followup", Status = "Overall_Survival_Status")
+survGroup(maf = laml, top = 20, geneSetSize = 1, time = "days_to_last_followup", Status = "Overall_Survival_Status", plot = FALSE)
 }

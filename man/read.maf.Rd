@@ -7,6 +7,7 @@
 read.maf(
   maf,
   clinicalData = NULL,
+  rmFlags = FALSE,
   removeDuplicatedVariants = TRUE,
   useAll = TRUE,
   gisticAllLesionsFile = NULL,
@@ -24,6 +25,8 @@ read.maf(
 \item{maf}{tab delimited MAF file. File can also be gz compressed. Required. Alternatively, you can also provide already read MAF file as a dataframe.}
 
 \item{clinicalData}{Clinical data associated with each sample/Tumor_Sample_Barcode in MAF. Could be a text file or a data.frame. Default NULL.}
+
+\item{rmFlags}{Default FALSE. Can be TRUE or an integer. If TRUE removes all the top 20 FLAG genes. If integer, remove top n FLAG genes.}
 
 \item{removeDuplicatedVariants}{removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
 
@@ -64,8 +67,9 @@ FLAGS - If you get a note on possible FLAGS while reading MAF, it means some of 
 This note can be ignored without any harm, it's only generated as to make user aware of such genes. See references for details on FLAGS.
 }
 \examples{
-laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf)
+laml.maf = system.file("extdata", "tcga_laml.maf.gz", package = "maftools") #MAF file
+laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools') #clinical data
+laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
 }
 \references{
 Shyr C, Tarailo-Graovac M, Gottlieb M, Lee JJ, van Karnebeek C, Wasserman WW. FLAGS, frequently mutated genes in public exomes. BMC Med Genomics 2014; 7: 64.

@@ -1,15 +1,33 @@
-# CHANGES IN VERSION 2.6.05
+# CHANGES IN VERSION 2.7.10 (GitHub/Bioc devel version)
+## BUG FIXES
+- `coOncoplot` not allowing more than one additional feature. Issue: [675](https://github.com/PoisonAlien/maftools/issues/675)
+
+## ENHANCEMENTS
+- Added pathway support for `mafCompare()` or `clinicalEnrichment()`. Issue: [681](https://github.com/PoisonAlien/maftools/issues/681) 
+- Added default title for side and topbar plots to `oncoplot`. Issue: [682](https://github.com/PoisonAlien/maftools/issues/682) 
+- Added `annotationOrder` argument to `coOncoplot`. Issue: [676](https://github.com/PoisonAlien/maftools/issues/676) 
+- Added `plot` argument to `survGroup`. Thank you [OmarElAshkar](https://github.com/OmarElAshkar) PR: [674](https://github.com/PoisonAlien/maftools/issues/674) 
+- Added `rmFlags` argument to `read.maf`. Issue: [668](https://github.com/PoisonAlien/maftools/issues/668)
+- Added `path_order` argument to `oncoplot` for custom ordering of pathways on oncoplot. 
+- Added `geneMar` argumen to `coBarplot`. Issue: [260](https://github.com/PoisonAlien/maftools/issues/260) 
+
+## NEW FUNCTIONS
+- Added `MAF` constructor function
+- Added `maf2mae` for converting `MAF` to `MultiAssayExperiment` class objects Issue: [640](https://github.com/PoisonAlien/maftools/issues/640) [293](https://github.com/waldronlab/MultiAssayExperiment/pull/293) Discussion: [285](https://github.com/waldronlab/MultiAssayExperiment/discussions/285)
+
+# CHANGES IN VERSION 2.6.05 (BioC 3.12 version)
 ## BUG REPORTS
+- `mafSurvival` Remove non functional fn argument. Issue: [660](https://github.com/PoisonAlien/maftools/issues/660)
+- `OncogenicPathways` zero entries bug and correct documentation. Issue: [656](https://github.com/PoisonAlien/maftools/issues/656)
 - `plotApobecDiff` y-axis limits. Issue: [642](https://github.com/PoisonAlien/maftools/issues/642) [629](https://github.com/PoisonAlien/maftools/issues/642)
 - `Rainfallplot` arrowhead bug. Issue: [628](https://github.com/PoisonAlien/maftools/issues/628) [629](https://github.com/PoisonAlien/maftools/issues/629)
-
 
 ## ENHANCEMENTS
 - Improve `clinicalEnrichment` odd-ratio interpretation. Issue: [633](https://github.com/PoisonAlien/maftools/issues/633)
 In earlier versions, odds-ratio indicated the odds of observing WT in the group of interest compared to Mutant. From this update, odds-ratio indicate the odds of observing mutant in the group of interest compared to wild-type. This way is much intuitive and easier interpret. See issue [633](https://github.com/PoisonAlien/maftools/issues/633) for details. P-values and other details are unaffected.
 - Changes in how `Multi_Hit` are reported. By default two distinct types of mutations in the same gene or same patient were classified as Multi_Hit (e.g; Missense + Splice_Site = Multi_Hit; Missense + Missense = Missense). This update onward, regardless of type of mutations, if there are >1 mutations in the same gene of same patient, they are classified as Multi_Hit (e.g; Missense + Splice_Site = Multi_Hit; Missense + Missense = Multi_Hit). Issue: [347](https://github.com/PoisonAlien/maftools/issues/347) [347](https://github.com/PoisonAlien/maftools/issues/347)
 
-# CHANGES IN VERSION 2.6.00 (BioC 3.12 version)
+# CHANGES IN VERSION 2.6.00
 ## BUG REPORTS
 - Incorrect deduplication cases while validating MAFs. Issue: [623](https://github.com/PoisonAlien/maftools/issues/623)
 - Fix repeated domain labels in `lollipopPlot2`. Issue: [614](https://github.com/PoisonAlien/maftools/issues/614)

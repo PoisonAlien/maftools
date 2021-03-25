@@ -9,7 +9,8 @@ clinicalEnrichment(
   clinicalFeature = NULL,
   annotationDat = NULL,
   minMut = 5,
-  useCNV = TRUE
+  useCNV = TRUE,
+  pathways = FALSE
 )
 }
 \arguments{
@@ -21,7 +22,9 @@ clinicalEnrichment(
 
 \item{minMut}{Consider only genes with minimum this number of samples mutated. Default 5.}
 
-\item{useCNV}{whether to include copy number events. Only applicable when MAF is read along with copy number data. Default TRUE if available.}
+\item{useCNV}{whether to include copy number events if available. Default TRUE. Not applicable when `pathways = TRUE`}
+
+\item{pathways}{Summarize genes by pathways before comparing. Default `FALSE`}
 }
 \value{
 result list containing p-values

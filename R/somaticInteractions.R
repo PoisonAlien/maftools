@@ -123,7 +123,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     interactions[lower.tri(x = interactions, diag = TRUE)] = NA
 
     gene_sum = getGeneSummary(x = maf)[Hugo_Symbol %in% rownames(interactions), .(Hugo_Symbol, AlteredSamples)]
-    data.table::setDF(gene_sum, rownames = gene_sum$Hugo_Symbol)
+    data.table::setDF(gene_sum, rownames = as.character(gene_sum$Hugo_Symbol))
     gene_sum = gene_sum[rownames(interactions),]
     if(!all(rownames(gene_sum) == rownames(interactions))){
       stop(paste0("Row mismatches!"))

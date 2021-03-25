@@ -141,9 +141,11 @@ icgcSimpleMutationToMAF = function(icgc, basename = NA, MAFobj = FALSE, clinical
       icgc.maf = icgc.maf[!Variant_Classification %in% silent]
       maf.summary = summarizeMaf(maf = icgc.maf, anno = clinicalData)
 
-      icgc.maf = MAF(data = icgc.maf, variants.per.sample = maf.summary$variants.per.sample, variant.type.summary = maf.summary$variant.type.summary,
-              variant.classification.summary = maf.summary$variant.classification.summary, gene.summary = maf.summary$gene.summary,
-              summary = maf.summary$summary, maf.silent = maf.silent, clinical.data = maf.summary$sample.anno)
+      icgc.maf = MAF(nonSyn = icgc.maf, syn = maf.silent, clinicalData = clinicalData, verbose = TRUE)
+
+      # icgc.maf = MAF(data = icgc.maf, variants.per.sample = maf.summary$variants.per.sample, variant.type.summary = maf.summary$variant.type.summary,
+      #         variant.classification.summary = maf.summary$variant.classification.summary, gene.summary = maf.summary$gene.summary,
+      #         summary = maf.summary$summary, maf.silent = maf.silent, clinical.data = maf.summary$sample.anno)
     }
   }
 

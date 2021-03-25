@@ -665,3 +665,56 @@ update_colors = function(x, y){
   }
   y
 }
+
+#Get pathway summary from an MAF
+get_pw_summary = function(maf, pathways = NULL){
+  if(is.null(pathways)){
+    pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
+    pathdb = data.table::fread(input = pathdb)
+  }else{
+    pathdb = data.table::copy(x = pathways)
+    colnames(pathdb) = c("Gene", "Pathway")
+    data.table::setDT(x = pathdb)
+  }
+  pathdb_size = pathdb[,.N,Pathway]
+  pathdb = split(pathdb, as.factor(pathdb$Pathway))
+
+
+  altered_pws = lapply(pathdb, function(pw){
+    x = suppressMessages(try(genesToBarcodes(maf = maf, genes = pw$Gene)))
+    if(class(x) == "try-error"){
+      pw_genes = NULL
+    }else{
+      pw_genes = names(genesToBarcodes(maf = maf, genes = pw$Gene, justNames = TRUE, verbose = FALSE))
+    }
+    pw_genes
+  })
+
+  mut_load = lapply(altered_pws, function(x){
+    if(is.null(x)){
+      nsamps =  0
+    }else{
+      nsamps = length(unique(as.character(unlist(
+        genesToBarcodes(
+          maf = maf,
+          genes = x,
+          justNames = TRUE
+        )
+      ))))
+    }
+    nsamps
+  })
+
+  altered_pws = as.data.frame(t(data.frame(lapply(altered_pws, length))))
+  data.table::setDT(x = altered_pws, keep.rownames = TRUE)
+  colnames(altered_pws) = c("Pathway", "n_affected_genes")
+  altered_pws$Pathway = gsub(pattern = "\\.", replacement = "-", x = altered_pws$Pathway)
+  altered_pws = merge(pathdb_size, altered_pws, all.x = TRUE)
+
+  altered_pws[, fraction_affected := n_affected_genes/N]
+  altered_pws$Mutated_samples = unlist(mut_load)
+  nsamps = as.numeric(maf@summary[ID == "Samples", summary])
+  altered_pws[,Fraction_mutated_samples := Mutated_samples/nsamps]
+  altered_pws = altered_pws[order(n_affected_genes, fraction_affected, decreasing = FALSE)]
+  altered_pws
+}

@@ -2,7 +2,7 @@
 #' @param x the first `MAF` object.
 #' @param y the second `MAF` object.
 #' @param mafObj Return output as an `MAF` object. Default `TRUE`
-#' @param refAltMatch Set operations are done by matching ref and alt alleles in addition to loci (Default). Id FALSE only loci (chr, start, end positions) are matched.
+#' @param refAltMatch Set operations are done by matching ref and alt alleles in addition to loci (Default). If FALSE only loci (chr, start, end positions) are matched.
 #' @param ... other parameters passing to `subsetMaf` for subsetting operations.
 #' @rdname setMaf
 #' @export
@@ -56,11 +56,15 @@ setdiffMAF <- function(x, y, mafObj = TRUE, refAltMatch = TRUE, ...) {
     maf_x_unique = split(maf_x_unique, f = maf_x_unique$maf_slot)
     maf_x_unique[['syn']][,maf_slot := NULL]
     maf_x_unique[['nonsyn']][,maf_slot := NULL]
-    mafSummary = summarizeMaf(maf = maf_x_unique[["nonsyn"]], anno = x@clinical.data, chatty = FALSE)
 
-    maf_x_unique = MAF(data = maf_x_unique[['nonsyn']], variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
-            variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
-            summary = mafSummary$summary, maf.silent = maf_x_unique[['syn']], clinical.data = droplevels(mafSummary$sample.anno))
+
+    maf_x_unique = MAF(nonSyn = maf_x_unique[['nonsyn']], syn = maf_x_unique[['syn']], clinicalData = x@clinical.data, verbose = FALSE)
+    maf_x_unique@clinical.data = droplevels(maf_x_unique@clinical.data)
+
+    #mafSummary = summarizeMaf(maf = maf_x_unique[["nonsyn"]], anno = x@clinical.data, chatty = FALSE)
+    # maf_x_unique = MAF(data = maf_x_unique[['nonsyn']], variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+    #         variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
+    #         summary = mafSummary$summary, maf.silent = maf_x_unique[['syn']], clinical.data = droplevels(mafSummary$sample.anno))
   }
 
   maf_x_unique
@@ -111,11 +115,15 @@ intersectMAF <- function(x, y, refAltMatch = TRUE, mafObj = TRUE, ...) {
     maf_x_common = split(maf_x_common, f = maf_x_common$maf_slot)
     maf_x_common[['syn']][,maf_slot := NULL]
     maf_x_common[['nonsyn']][,maf_slot := NULL]
-    mafSummary = summarizeMaf(maf = maf_x_common[["nonsyn"]], anno = x@clinical.data, chatty = FALSE)
 
-    maf_x_common = MAF(data = maf_x_common[['nonsyn']], variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
-                       variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
-                       summary = mafSummary$summary, maf.silent = maf_x_common[['syn']], clinical.data = droplevels(mafSummary$sample.anno))
+    maf_x_common = MAF(nonSyn = maf_x_common[['nonsyn']], syn = maf_x_common[['syn']], clinicalData = x@clinical.data, verbose = FALSE)
+    maf_x_common@clinical.data = droplevels(maf_x_common@clinical.data)
+
+    # mafSummary = summarizeMaf(maf = maf_x_common[["nonsyn"]], anno = x@clinical.data, chatty = FALSE)
+    #
+    # maf_x_common = MAF(data = maf_x_common[['nonsyn']], variants.per.sample = mafSummary$variants.per.sample, variant.type.summary = mafSummary$variant.type.summary,
+    #                    variant.classification.summary = mafSummary$variant.classification.summary, gene.summary = mafSummary$gene.summary,
+    #                    summary = mafSummary$summary, maf.silent = maf_x_common[['syn']], clinical.data = droplevels(mafSummary$sample.anno))
   }
 
   maf_x_common

@@ -9,7 +9,9 @@
 #' @param annotationColor1 list of colors to use for `clinicalFeatures1` Default NULL.
 #' @param annotationColor2 list of colors to use for `clinicalFeatures2` Default NULL.
 #' @param sortByAnnotation1 logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort
+#' @param annotationOrder1 Manually specify order for annotations for `clinicalFeatures1`. Works only for first value. Default NULL.
 #' @param sortByAnnotation2 same as above but for m2
+#' @param annotationOrder2 Manually specify order for annotations for `clinicalFeatures2`. Works only for first value. Default NULL.
 #' @param sampleOrder1 Manually speify sample names in m1 for oncolplot ordering. Default NULL.
 #' @param sampleOrder2 Manually speify sample names in m2 for oncolplot ordering. Default NULL.
 #' @param additionalFeature1 a vector of length two indicating column name in the MAF and the factor level to be highlighted.
@@ -58,7 +60,7 @@
 coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                        clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
                        annotationColor1 = NULL, annotationColor2 = NULL, annotationFontSize = 1.2,
-                       sortByAnnotation1 = FALSE, sortByAnnotation2 = FALSE,
+                       sortByAnnotation1 = FALSE, annotationOrder1 = NULL, sortByAnnotation2 = FALSE, annotationOrder2 = NULL,
                       sampleOrder1 = NULL, sampleOrder2 = NULL,
                       additionalFeature1 = NULL, additionalFeaturePch1 = 20, additionalFeatureCol1 = "white", additionalFeatureCex1 = 0.9,
                       additionalFeature2 = NULL, additionalFeaturePch2 = 20, additionalFeatureCol2 = "white", additionalFeatureCex2 = 0.9,
@@ -138,7 +140,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   m1_legend = print_mat(maf = m1, genes = genes, removeNonMutated = removeNonMutated,
                         clinicalFeatures = clinicalFeatures1, colors = colors,
                         annotationColor = annotationColor1, barcode_size = SampleNamefont,
-                        sortByAnnotation = sortByAnnotation1, fontSize = geneNamefont,
+                        sortByAnnotation = sortByAnnotation1, annotationOrder = annotationOrder1, fontSize = geneNamefont,
                         title = m1Name, title_size = titleFontSize,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature1, additionalFeaturePch = additionalFeaturePch1,
@@ -171,7 +173,7 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   m2_legend = print_mat(maf = m2, genes = genes, removeNonMutated = removeNonMutated,
                         clinicalFeatures = clinicalFeatures2, colors = colors,
                         annotationColor = annotationColor2, barcode_size = SampleNamefont,
-                        sortByAnnotation = sortByAnnotation2, fontSize = geneNamefont,
+                        sortByAnnotation = sortByAnnotation2, annotationOrder = annotationOrder2, fontSize = geneNamefont,
                         title = m2Name, title_size = titleFontSize, plot2 = TRUE,
                         showBarcodes = showSampleNames, bgCol = bgCol, borderCol = borderCol,
                         additionalFeature = additionalFeature2, additionalFeaturePch = additionalFeaturePch2,
@@ -197,15 +199,57 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
   vc_pch = rep(15, length(vc_legend))
   if(!is.null(additionalFeature1)){
-    vc_legend = c(vc_legend, "gray70")
-    names(vc_legend)[length(vc_legend)] = paste(additionalFeature1, collapse = ":")
-    vc_pch = c(vc_pch, additionalFeaturePch1)
+
+    if(!is(object = additionalFeature1, class2 = "list")){
+      if(length(additionalFeature1) < 2){
+        stop("additionalFeature must be of length two. See ?oncoplot for details.")
+      }else{
+        additionalFeature1 = list(additionalFeature1)
+      }
+    }
+
+    if(length(additionalFeaturePch1) != length(additionalFeature1)){
+      additionalFeaturePch1 = rep(additionalFeaturePch1, length(additionalFeature1))
+    }
+
+    if(length(additionalFeatureCol1) != length(additionalFeature1)){
+      additionalFeatureCol1 = rep(additionalFeatureCol1, length(additionalFeature1))
+    }
+
+    for(af_idx in 1:length(additionalFeature1)){
+      af = additionalFeature1[[af_idx]]
+      vc_legend = c(vc_legend, additionalFeatureCol1[af_idx])
+      names(vc_legend)[length(vc_legend)] = paste(af, collapse = ":")
+      vc_pch = c(vc_pch, additionalFeaturePch1[af_idx])
+    }
   }
 
   if(!is.null(additionalFeature2)){
-    vc_legend = c(vc_legend, "gray70")
-    names(vc_legend)[length(vc_legend)] = paste(additionalFeature2, collapse = ":")
-    vc_pch = c(vc_pch, additionalFeaturePch2)
+
+    if(!is(object = additionalFeature2, class2 = "list")){
+      if(length(additionalFeature2) < 2){
+        stop("additionalFeature must be of length two. See ?oncoplot for details.")
+      }else{
+        additionalFeature2 = list(additionalFeature2)
+      }
+    }
+
+    if(length(additionalFeaturePch2) != length(additionalFeature2)){
+      warning("Provided pch for additional features are recycled")
+      additionalFeaturePch2 = rep(additionalFeaturePch2, length(additionalFeature2))
+    }
+
+    if(length(additionalFeatureCol2) != length(additionalFeature2)){
+      warning("Provided colors for additional features are recycled")
+      additionalFeatureCol2 = rep(additionalFeatureCol2, length(additionalFeature2))
+    }
+
+    for(af_idx in 1:length(additionalFeature2)){
+      af = additionalFeature2[[af_idx]]
+      vc_legend = c(vc_legend, additionalFeatureCol2[af_idx])
+      names(vc_legend)[length(vc_legend)] = paste(af, collapse = ":")
+      vc_pch = c(vc_pch, additionalFeaturePch2[af_idx])
+    }
   }
 
   plot(NULL,ylab='',xlab='', xlim=0:1, ylim=0:1, axes = FALSE)

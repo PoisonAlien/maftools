@@ -2,7 +2,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
                      bgCol = 'gray70', borderCol = 'white', fontSize = 1,
                      plot2 = FALSE, test = FALSE, clinicalFeatures = NULL, sampleOrder = NULL,
                      additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9,
-                     annotationDat = NULL, annotationColor = NULL,
+                     annotationDat = NULL, annotationOrder = NULL, annotationColor = NULL,
                      sortByAnnotation = FALSE, showBarcodes = FALSE, barcodemar = 4,genemar = 1,
                      title = NULL, title_size = 1.2, barcode_size = 0.4, sepwd_samples = 0.1, sepwd_genes = 0.1){
 
@@ -60,7 +60,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     }
 
     if(sortByAnnotation){
-      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation)
+      numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder)
     }
   }
 
@@ -188,39 +188,58 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   #Draw if any additional features are requested
   additionalFeature_legend = FALSE
   if(!is.null(additionalFeature)){
-    if(length(additionalFeature) < 2){
-      stop("additionalFeature must be of length two. See ?oncoplot for details.")
+
+    if(!is(object = additionalFeature, class2 = "list")){
+      if(length(additionalFeature) < 2){
+        stop("additionalFeature must be of length two. See ?oncoplot for details.")
+      }else{
+        additionalFeature = list(additionalFeature)
+      }
     }
-    af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = additionalFeature[1], includeSyn = FALSE, mafObj = FALSE)
-    if(length(which(colnames(af_dat) == additionalFeature[1])) == 0){
-      message(paste0("Column ", additionalFeature[1], " not found in maf. Here are available fields.."))
-      print(getFields(maf))
-      stop()
+
+    if(length(additionalFeaturePch) != length(additionalFeature)){
+      warning("Provided pch for additional features are recycled")
+      additionalFeaturePch = rep(additionalFeaturePch, length(additionalFeature))
     }
-    colnames(af_dat)[which(colnames(af_dat) == additionalFeature[1])] = 'temp_af'
-    af_dat = af_dat[temp_af %in% additionalFeature[2]]
-    if(nrow(af_dat) == 0){
-      warning(paste0("No samples are enriched for ", additionalFeature[2], " in ", additionalFeature[1]))
-    }else{
-      af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
-      af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
 
-      nm = t(apply(numMat, 2, rev))
+    if(length(additionalFeatureCol) != length(additionalFeature)){
+      warning("Provided colors for additional features are recycled")
+      additionalFeatureCol = rep(additionalFeatureCol, length(additionalFeature))
+    }
 
-      lapply(seq_len(nrow(af_mat)), function(i){
-        af_i = af_mat[i,, drop = FALSE]
-        af_i_genes = colnames(af_i)[which(af_i > 0)]
-        af_i_sample = rownames(af_i)
+    lapply(1:length(additionalFeature), function(af_idx){
+      af = additionalFeature[[af_idx]]
+      af_dat = subsetMaf(maf = maf, genes = rownames(numMat), tsb = colnames(numMat), fields = af[1], includeSyn = FALSE, mafObj = FALSE)
+      if(length(which(colnames(af_dat) == af[1])) == 0){
+        message(paste0("Column ", af[1], " not found in maf. Here are available fields.."))
+        print(getFields(maf))
+        stop()
+      }
+      colnames(af_dat)[which(colnames(af_dat) == af[1])] = 'temp_af'
+      af_dat = af_dat[temp_af %in% af[2]]
+      if(nrow(af_dat) == 0){
+        warning(paste0("No samples are enriched for ", af[2], " in ", af[1]))
+      }else{
+        af_mat = data.table::dcast(data = af_dat, Tumor_Sample_Barcode ~ Hugo_Symbol, value.var = "temp_af", fun.aggregate = length)
+        af_mat = as.matrix(af_mat, rownames = "Tumor_Sample_Barcode")
 
-        lapply(af_i_genes, function(ig){
-          af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
-                              which(colnames(nm) == ig)),
-                            nrow = 1)
-          points(af_i_mat, pch = additionalFeaturePch, col= additionalFeatureCol, cex = additionalFeatureCex)
+        nm = t(apply(numMat, 2, rev))
+
+        lapply(seq_len(nrow(af_mat)), function(i){
+          af_i = af_mat[i,, drop = FALSE]
+          af_i_genes = colnames(af_i)[which(af_i > 0)]
+          af_i_sample = rownames(af_i)
+
+          lapply(af_i_genes, function(ig){
+            af_i_mat = matrix(c(which(rownames(nm) == af_i_sample),
+                                which(colnames(nm) == ig)),
+                              nrow = 1)
+            points(af_i_mat, pch = additionalFeaturePch[af_idx], col= additionalFeatureCol[af_idx], cex = additionalFeatureCex)
+          })
         })
-      })
-      additionalFeature_legend = TRUE
-    }
+        additionalFeature_legend = TRUE
+      }
+    })
   }
 
   #Add grids

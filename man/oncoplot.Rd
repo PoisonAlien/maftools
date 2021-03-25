@@ -23,6 +23,7 @@ oncoplot(
   annotationColor = NULL,
   annotationDat = NULL,
   pathways = NULL,
+  path_order = NULL,
   selectedPathways = NULL,
   draw_titv = FALSE,
   showTumorSampleBarcodes = FALSE,
@@ -102,6 +103,8 @@ oncoplot(
 You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{pathways}{Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`}
+
+\item{path_order}{Default `NULL` Manually specify the order of pathways}
 
 \item{selectedPathways}{Manually provide the subset of pathway names to be seletced from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.}
 

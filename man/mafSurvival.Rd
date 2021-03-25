@@ -16,10 +16,7 @@ mafSurvival(
   addInfo = TRUE,
   col = c("maroon", "royalblue"),
   isTCGA = FALSE,
-  textSize = 12,
-  fn = NULL,
-  width = 6,
-  height = 6
+  textSize = 12
 )
 }
 \arguments{
@@ -46,12 +43,6 @@ mafSurvival(
 \item{isTCGA}{FALSE. Is data is from TCGA.}
 
 \item{textSize}{Text size for surv table. Default 7.}
-
-\item{fn}{NULL. If provided saves pdf plot with basename fn.}
-
-\item{width}{width of plot to be saved. Default 6}
-
-\item{height}{height of plot to be saved. Default 6}
 }
 \value{
 Survival plot
