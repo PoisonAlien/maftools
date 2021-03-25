@@ -220,3 +220,12 @@ flags = function(top = NULL){
     top100flags[1:top]
   }
 }
+
+loci2df = function(loci){
+  chr = as.character(unlist(data.table::tstrsplit(x = loci, spli = ":", keep = 1)))
+  start = unlist(data.table::tstrsplit(x = unlist(data.table::tstrsplit(x = loci, split = ":", keep = 2)), split = "-", keep = 1))
+  start = as.numeric(as.character(gsub(pattern = ",", replacement = "", x = as.character(start))))
+  end = unlist(data.table::tstrsplit(x = unlist(data.table::tstrsplit(x = loci, split = ":", keep = 2)), split = "-", keep = 2))
+  end = as.numeric(as.character(gsub(pattern = ",", replacement = "", x = as.character(end))))
+  data.table::data.table(Chromosome = chr, Start_Position = start, End_Position = end)
+}

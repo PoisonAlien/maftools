@@ -128,7 +128,16 @@ read.maf = function(maf, clinicalData = NULL, removeDuplicatedVariants = TRUE, u
   if(!is.null(gisticAllLesionsFile)){
     gisticIp = readGistic(gisticAllLesionsFile = gisticAllLesionsFile, gisticAmpGenesFile = gisticAmpGenesFile,
                           gisticDelGenesFile = gisticDelGenesFile, isTCGA = isTCGA, gisticScoresFile = gisticScoresFile, cnLevel = cnLevel, verbose = verbose)
-    gisticIp = gisticIp@data
+    #gisticIp = gisticIp@data
+    gisticIp = merge(
+      gisticIp@data,
+      gisticIp@cytoband.summary[, .(Unique_Name, Wide_Peak_Limits)],
+      by.x = 'Cytoband',
+      by.y = 'Unique_Name',
+      all.x = TRUE
+    )
+
+    gisticIp = cbind(gisticIp, loci2df(loci = gisticIp$Wide_Peak_Limits))
 
     suppressWarnings(gisticIp[, id := paste(Hugo_Symbol, Tumor_Sample_Barcode, sep=':')])
     gisticIp = gisticIp[!duplicated(id)]
