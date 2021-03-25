@@ -1,4 +1,4 @@
-createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
+createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE, cbio = FALSE){
 
   if(is.null(g)){
     stop("Please provde atleast two genes!")
@@ -29,8 +29,21 @@ createOncoMatrix = function(m, g = NULL, chatty = TRUE, add_missing = FALSE){
     subMaf[, Hugo_Symbol := factor(x = Hugo_Symbol, levels = g)]
   }
 
+
   cnv_events = c(c("Amp", "Del"), as.character(subMaf[Variant_Type == "CNV"][, .N, Variant_Classification][, Variant_Classification]))
   cnv_events = unique(cnv_events)
+
+  if(cbio){
+    vc = c("Nonstop_Mutation", "Frame_Shift_Del", "Missense_Mutation",
+           "Nonsense_Mutation", "Splice_Site", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins")
+    vc.cbio = c("Truncating", "Truncating", "Missense", "Truncating", "Truncating", "Truncating",
+                "In-frame", "In-frame")
+    names(vc.cbio) = vc
+    subMaf[,Variant_Classification_temp := vc.cbio[as.character(subMaf$Variant_Classification)]]
+    subMaf$Variant_Classification_temp = ifelse(test = is.na(subMaf$Variant_Classification_temp), yes = as.character(subMaf$Variant_Classification), no = subMaf$Variant_Classification_temp)
+    subMaf[,Variant_Classification := as.factor(as.character(Variant_Classification_temp))]
+    subMaf[,Variant_Classification_temp := NULL]
+  }
 
   oncomat = data.table::dcast(data = subMaf[,.(Hugo_Symbol, Variant_Classification, Tumor_Sample_Barcode)], formula = Hugo_Symbol ~ Tumor_Sample_Barcode,
                               fun.aggregate = function(x, cnv = cnv_events){

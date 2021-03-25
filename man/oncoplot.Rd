@@ -48,6 +48,7 @@ oncoplot(
   fill = TRUE,
   cohortSize = NULL,
   colors = NULL,
+  cBioPortal = FALSE,
   bgCol = "#CCCCCC",
   borderCol = "white",
   annoBorderCol = NA,
@@ -153,6 +154,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{cohortSize}{Number of sequenced samples in the cohort. Default all samples from Cohort. You can manually specify the cohort size. Default \code{NULL}}
 
 \item{colors}{named vector of colors for each Variant_Classification.}
+
+\item{cBioPortal}{Adds annotations similar to cBioPortals MutationMapper and collapse Variants into Truncating and rest.}
 
 \item{bgCol}{Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"}
 

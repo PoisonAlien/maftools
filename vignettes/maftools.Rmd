@@ -346,8 +346,8 @@ print(pt.vs.rt)
 
 Above results show two genes PML and RARA which are highly mutated in Relapse APL compared to Primary APL. We can visualize these results as a [forestplot](https://en.wikipedia.org/wiki/Forest_plot).
 
-```{r, fig.width=4, fig.height=5, fig.align='left'}
-forestPlot(mafCompareRes = pt.vs.rt, pVal = 0.1, color = c('royalblue', 'maroon'), geneFontSize = 0.8)
+```{r, fig.width=4, fig.height=5.5, fig.align='left'}
+forestPlot(mafCompareRes = pt.vs.rt, pVal = 0.1)
 ```
 
 ### Co-onco plots
@@ -420,7 +420,7 @@ OncogenicPathways(maf = laml)
 
 Its also possible to visualize complete pathway.
 
-```{r, fig.width=5, fig.height=2.5}
+```{r, fig.width=6, fig.height=2.5}
 PlotOncogenicPathways(maf = laml, pathways = "RTK-RAS")
 ```
 

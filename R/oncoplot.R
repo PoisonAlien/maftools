@@ -50,6 +50,7 @@
 #' @param fill Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.
 #' @param cohortSize Number of sequenced samples in the cohort. Default all samples from Cohort. You can manually specify the cohort size. Default \code{NULL}
 #' @param colors named vector of colors for each Variant_Classification.
+#' @param cBioPortal Adds annotations similar to cBioPortals MutationMapper and collapse Variants into Truncating and rest.
 #' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
 #' @param annoBorderCol border grid color for annotations. Default NA.
@@ -97,7 +98,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
                                additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9,
                                genesToIgnore = NULL, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
-                               colors = NULL, bgCol = "#CCCCCC", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
+                               colors = NULL, cBioPortal = FALSE, bgCol = "#CCCCCC", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
                                drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
                                sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL){
 
@@ -110,7 +111,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   }
 
   if(!is.null(genes)){ #If user provides a gene list
-    om = createOncoMatrix(m = maf, g = genes, add_missing = fill)
+    om = createOncoMatrix(m = maf, g = genes, add_missing = fill, cbio = cBioPortal)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
 
@@ -158,7 +159,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
     genes = as.character(pathways$Gene)
 
-    om = createOncoMatrix(m = maf, g = genes)
+    om = createOncoMatrix(m = maf, g = genes, cbio = cBioPortal)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
 
@@ -181,7 +182,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       genes = genes[fractMutated >= minMut, Hugo_Symbol]
     }
 
-    om = createOncoMatrix(m = maf, g = genes)
+    om = createOncoMatrix(m = maf, g = genes, cbio = cBioPortal)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
   }else { #If user does not provide gene list or MutSig results, draw TOP (default 20) genes
@@ -190,7 +191,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }else{
       genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
     }
-    om = createOncoMatrix(m = maf, g = genes)
+    om = createOncoMatrix(m = maf, g = genes, cbio = cBioPortal)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
   }
@@ -234,6 +235,23 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
   samp_sum = data.table::copy(getSampleSummary(x = maf))
   samp_sum[,total := NULL]
+
+  if(cBioPortal){
+    samp_sum = data.table::melt(data = samp_sum, id.vars = "Tumor_Sample_Barcode")
+    colnames(samp_sum)[2] = "Variant_Classification"
+    vc = c("Nonstop_Mutation", "Frame_Shift_Del", "Missense_Mutation",
+           "Nonsense_Mutation", "Splice_Site", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins")
+    vc.cbio = c("Truncating", "Truncating", "Missense", "Truncating", "Truncating", "Truncating",
+                "In-frame", "In-frame")
+    names(vc.cbio) = vc
+    samp_sum[,Variant_Classification_temp := vc.cbio[as.character(samp_sum$Variant_Classification)]]
+    samp_sum$Variant_Classification_temp = ifelse(test = is.na(samp_sum$Variant_Classification_temp), yes = as.character(samp_sum$Variant_Classification), no = samp_sum$Variant_Classification_temp)
+    samp_sum[,Variant_Classification := as.factor(as.character(Variant_Classification_temp))]
+    samp_sum[,Variant_Classification_temp := NULL]
+    samp_sum = samp_sum[,sum(value), .(Tumor_Sample_Barcode, Variant_Classification)]
+    samp_sum = data.table::dcast(data = samp_sum, formula = Tumor_Sample_Barcode~Variant_Classification, value.var = "V1")
+  }
+
   if("CNV_total" %in% colnames(samp_sum)){
     samp_sum[,CNV_total := NULL]
   }
@@ -297,17 +315,31 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     top_bar_data = t(samp_sum[colnames(numMat),, drop = FALSE])
   }
 
-  if(is.null(colors)){
-    vc_col = get_vcColors(websafe = FALSE)
+  #VC codes
+  if(cBioPortal){
+    if(is.null(colors)){
+      vc_col = grDevices::adjustcolor(col = c("black", "#33A02C", "brown"), alpha.f = 0.7)
+      vc_col = c('Truncating' = vc_col[1], 'Missense' = vc_col[2], 'In-frame' = vc_col[3], "Multi_Hit" = "#9b59b6", "pathway" = "#d35400")
+    }else{
+      vc_col = colors
+      if(!"pathway" %in% names(vc_col)){
+        vc_col = c(vc_col, "pathway" = "#535C68FF")
+      }
+    }
   }else{
-    vc_col = colors
-    if(!"pathway" %in% names(vc_col)){
-      vc_col = c(vc_col, "pathway" = "#535C68FF")
+    if(is.null(colors)){
+      vc_col = get_vcColors(websafe = FALSE)
+    }else{
+      vc_col = colors
+      if(!"pathway" %in% names(vc_col)){
+        vc_col = c(vc_col, "pathway" = "#535C68FF")
+      }
     }
   }
-  #VC codes
+
   vc_codes = update_vc_codes(om_op = om)
   vc_col = update_colors(x = vc_codes, y = vc_col)
+
 
   if(nrow(numMat) == 1){
     stop("Oncoplot requires at-least two genes for plottng.")

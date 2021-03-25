@@ -17,6 +17,7 @@
 #' OncogenicPathways(maf = laml)
 
 OncogenicPathways = function(maf, pathways = NULL, fontSize = 1, panelWidths = c(2, 4, 4)){
+
   altered_pws = get_pw_summary(maf = maf, pathways = pathways)
 
   altered_pws = altered_pws[!n_affected_genes %in% 0]
@@ -24,6 +25,8 @@ OncogenicPathways = function(maf, pathways = NULL, fontSize = 1, panelWidths = c
   if(nrow(altered_pws) == 0){
     stop("None of the provided pathways are altered!")
   }
+
+  nsamps = as.numeric(maf@summary[ID == "Samples", summary])
 
   lo = layout(mat = matrix(c(1, 2, 3), ncol = 3, nrow = 1), widths = panelWidths)
   par(mar = c(2, 2, 2, 0))
