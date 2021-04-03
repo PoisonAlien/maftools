@@ -4,12 +4,18 @@
 \alias{tcgaLoad}
 \title{Loads a TCGA cohort}
 \usage{
-tcgaLoad(study = NULL, source = "MC3")
+tcgaLoad(
+  study = NULL,
+  source = c("MC3", "Firehose"),
+  repo = c("github", "gitee")
+)
 }
 \arguments{
 \item{study}{Study names to load. Use  \code{\link{tcgaAvailable}} to see available options.}
 
 \item{source}{Source for MAF files. Can be \code{MC3} or \code{Firehose}. Default \code{MC3}.Argument may be abbreviated (M or F)}
+
+\item{repo}{one of "github" (default) and "gitee" (for users in China).}
 }
 \value{
 An object of class MAF.
@@ -21,9 +27,9 @@ Loads the user mentioned TCGA cohorts
 The function loads curated and pre-compiled MAF objects from TCGA cohorts. TCGA data are obtained from two sources namely, Broad Firehose repository, and MC3 project.
 }
 \examples{
-#Loads TCGA LAML cohort (default from MC3 project)
+# Loads TCGA LAML cohort (default from MC3 project)
 tcgaLoad(study = "LAML")
-#Loads TCGA LAML cohort (from Borad Firehose)
+# Loads TCGA LAML cohort (from Borad Firehose)
 tcgaLoad(study = "LAML", source = "Firehose")
 }
 \references{
