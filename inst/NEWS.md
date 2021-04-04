@@ -1,4 +1,4 @@
-# CHANGES IN VERSION 2.7.20 (GitHub/Bioc devel version)
+# CHANGES IN VERSION 2.7.30 (GitHub/Bioc devel version)
 ## BUG FIXES
 - `coOncoplot` not allowing more than one additional feature. Issue: [675](https://github.com/PoisonAlien/maftools/issues/675)
 
@@ -13,6 +13,8 @@
 - Added `geneMar` argument to `coBarplot`. Issue: [260](https://github.com/PoisonAlien/maftools/issues/260) 
 
 ## NEW FUNCTIONS
+- `cancerhotspots` Genotype known cancer hotspots from the tumor BAM file
+- `ntcounts` extract nucleotide counts for targeted variants from the BAM file.
 - `maftools` now natively loads TCGA cohorts. `tcgaAvailable` and `tcgaLoad` will display and load the desired cohorts.
 - Added `MAF` constructor function
 - Added `maf2mae` for converting `MAF` to `MultiAssayExperiment` class objects Issue: [640](https://github.com/PoisonAlien/maftools/issues/640) [293](https://github.com/waldronlab/MultiAssayExperiment/pull/293) Discussion: [285](https://github.com/waldronlab/MultiAssayExperiment/discussions/285)
