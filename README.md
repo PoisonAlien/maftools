@@ -9,6 +9,10 @@
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![Lines Of Code](https://tokei.rs/b1/github/poisonalien/maftools?category=code)](https://github.com/poisonalien/maftools)
 
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/PoisonAlien/maftools/workflows/R-CMD-check/badge.svg)](https://github.com/PoisonAlien/maftools/actions)
+  <!-- badges: end -->
+
 ## Introduction
 
 `maftools` provides a comprehensive set of functions for processing [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) files and to perform most commonly used analyses in cancer genomics. See [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html) for a detailed usage and a case study.
