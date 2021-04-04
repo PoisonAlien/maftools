@@ -2,7 +2,7 @@
 % Please edit documentation in R/cancerhotspots.R
 \name{cancerhotspots}
 \alias{cancerhotspots}
-\title{extract nucleotide counts/variant allele frequencies of targeted (somatic) variants from the BAM file.}
+\title{Genotype known cancer hotspots from the tumor BAM file}
 \usage{
 cancerhotspots(
   bam = NULL,
@@ -20,6 +20,8 @@ cancerhotspots(
 \arguments{
 \item{bam}{Input bam file. Required.}
 
+\item{refbuild}{Default "GRCh37". Can be "GRCh37", "GRCh38", "hg19", "hg38"}
+
 \item{mapq}{Map quality. Default 10}
 
 \item{sam_flag}{SAM FLAG to filter reads. Default 1024}
@@ -35,9 +37,12 @@ cancerhotspots(
 \item{fa}{Indexed fasta file. If provided, extracts and adds reference base to the output tsv.}
 
 \item{browse}{If TRUE opens the html file in browser}
-
-\item{bed}{Input BED file. Required. Should be one based coordinate}
 }
 \description{
-extract nucleotide counts/variant allele frequencies of targeted (somatic) variants from the BAM file.
+`cancerhotspots` allows rapid genotyping of known somatic variants from the tumor BAM files. This facilitates to get a quick overlook of known somatic hot-spots in a matter of minutes, without spending hours on variant calling and annotation. In simple words, it fetches nucleotide frequencies of known somatic hotspots and prioritizes them based on allele frequency.
+Output includes a browsable/sharable HTML report of candidate variants.
+Known cancerhotspots for both GRCh37 and GRCh38 assemblies (3180 variants) are included. This should be sufficient and cover most of the known driver genes/events. See Reference for details.
+}
+\references{
+Chang MT, Asthana S, Gao SP, et al. Identifying recurrent mutations in cancer reveals widespread lineage diversity and mutational specificity. Nat Biotechnol. 2016;34(2):155-163. doi:10.1038/nbt.3391
 }

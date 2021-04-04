@@ -12,9 +12,6 @@
 
 #include <R.h>
 
-
-
-void is_bam(char *fname);
 void printhead(FILE *fn, char *bam_fn);
 void printrow(FILE *fn,  char *chrom, char *start, char *ref, char *alt, char *gene, char *vc, char *pc, char *cosid, float vaf, float counts[]);
 void printargtbl(FILE *fn, int mapq, char *bam, int tot_var, int som_vars, float vaf, int cov, float doc, int treads);
@@ -360,7 +357,7 @@ void printhead(FILE *fn, char *bam_fn){
 
 
     //fprintf(fn, "<h3 >somaticfreq report </h3>");
-    fprintf(fn, "<h3> somaticfreq report</h3>");
+    fprintf(fn, "<h3> <a href=\"https://www.cancerhotspots.org/\">Cancer hotspots</a> </h3>");
 
     time_t t = time(NULL);
     struct tm cutime = *localtime(&t);

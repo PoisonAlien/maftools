@@ -27,7 +27,7 @@ Suggests: knitr, rmarkdown, BSgenome, Biostrings, NMF, mclust, berryFunctions, M
 VignetteBuilder: knitr
 biocViews: DataRepresentation, DNASeq, Visualization, DriverMutation, VariantAnnotation,
         FeatureExtraction, Classification, SomaticMutation, Sequencing, FunctionalGenomics, Survival
-NeedsCompilation: yes
+NeedsCompilation: no
 Packaged: 2016-04-08 02:06:05 UTC; anand
 LinkingTo: Rhtslib, zlibbioc
 SystemRequirements: GNU make
