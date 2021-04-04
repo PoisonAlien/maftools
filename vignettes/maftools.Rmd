@@ -346,7 +346,7 @@ print(pt.vs.rt)
 
 Above results show two genes PML and RARA which are highly mutated in Relapse APL compared to Primary APL. We can visualize these results as a [forestplot](https://en.wikipedia.org/wiki/Forest_plot).
 
-```{r, fig.width=4, fig.height=5.5, fig.align='left'}
+```{r, fig.width=6, fig.height=4.5, fig.align='left'}
 forestPlot(mafCompareRes = pt.vs.rt, pVal = 0.1)
 ```
 
@@ -725,7 +725,7 @@ laml_mae
 ```
 
 
-## Useful links
+# Useful links
 
 +--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
 | File formats                                                                                                       | Data Portals                                                                                    | Annotation tools                                                                              |
@@ -743,7 +743,7 @@ laml_mae
 |                                                                                                                    | [DGIdb](http://www.dgidb.org/) - Information on drug-gene interactions and the druggable genome |                                                                                               |
 +--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
 
-## Helpful packages/tools
+# Other helpful packages/tools
 
 Below are some more useful software packages for somatic variant analysis.
 

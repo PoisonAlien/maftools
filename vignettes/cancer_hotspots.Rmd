@@ -12,7 +12,7 @@ output:
     css: corp-styles.css
     highlight: pygments
 vignette: >
-  %\VignetteIndexEntry{03: Somatic report}
+  %\VignetteIndexEntry{03: Personlaized somatic report}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -87,11 +87,12 @@ CLI version of `cancerhotspots` can be found [here](https://github.com/PoisonAli
 loci = data.table::data.table(chr = c("seq1", "seq2"), pos = c(1340, 1483))
 loci
 loci_file = tempfile()
-data.table::fwrite(x = loci, file = loci_file, sep = "\t")
+data.table::fwrite(x = loci, file = loci_file, sep = "\t", col.names = FALSE)
 ```
 
 ```{r}
-bamfile = system.file("extdata", "ex1.bam", package = "Rsamtools") #BAM file
+#Example BAM file from Rsamtools package
+bamfile = system.file("extdata", "ex1.bam", package = "Rsamtools") 
 loci_rc = maftools::ntcounts(bam = bamfile, loci = loci_file) 
 #nucleotide counts
 loci_rc

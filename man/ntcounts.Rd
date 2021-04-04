@@ -2,7 +2,7 @@
 % Please edit documentation in R/ntcounts.R
 \name{ntcounts}
 \alias{ntcounts}
-\title{extract nucleotide counts fir targeted variants from the BAM file.}
+\title{extract nucleotide counts for targeted variants from the BAM file.}
 \usage{
 ntcounts(
   bam = NULL,

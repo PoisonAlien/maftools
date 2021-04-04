@@ -30,6 +30,10 @@ cancerhotspots = function(bam = NULL, refbuild = "GRCh37", mapq = 10, sam_flag =
     stop("Input file is not a BAM file: ", bam)
   }
 
+  if(!file.exists(bam)){
+    stop("BAM file does not exist: ", bam)
+  }
+
   if(is.null(op)){
     op = gsub(pattern = "\\.bam$", replacement = "", x = basename(bam), ignore.case = TRUE)
   }

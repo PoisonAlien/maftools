@@ -1,4 +1,4 @@
-#' extract nucleotide counts fir targeted variants from the BAM file.
+#' extract nucleotide counts for targeted variants from the BAM file.
 #' @description Given a BAM file and target loci, `ntcounts` fetches redcounts for A, T, G, C, Ins, and Del.
 #' @param bam Input bam file. Required.
 #' @param loci Loci file. First two columns should contain chromosome and position (1-based)
@@ -20,6 +20,10 @@ ntcounts = function(bam = NULL, loci = NULL, mapq = 10, sam_flag = 1024, op = NU
 
     if(bam_ext != ".bam"){
       stop("Input file is not a BAM file: ", x)
+    }
+
+    if(!file.exists(x)){
+      stop("BAM file does not exist: ", x)
     }
     gsub(pattern = "\\.bam$", replacement = "", x = basename(x), ignore.case = TRUE)
   })
