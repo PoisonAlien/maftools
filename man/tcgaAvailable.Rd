@@ -4,7 +4,10 @@
 \alias{tcgaAvailable}
 \title{Prints available TCGA datasets}
 \usage{
-tcgaAvailable()
+tcgaAvailable(repo = c("github", "gitee"))
+}
+\arguments{
+\item{repo}{one of "github" (default) and "gitee" (for users in China).}
 }
 \description{
 Prints available TCGA cohorts
