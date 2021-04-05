@@ -7,7 +7,7 @@
 tcgaAvailable(repo = c("github", "gitee"))
 }
 \arguments{
-\item{repo}{one of "github" (default) and "gitee" (for users in China).}
+\item{repo}{can be "github" (default) or "gitee". If `github` fails to fetch, switch to `gitee`}
 }
 \description{
 Prints available TCGA cohorts

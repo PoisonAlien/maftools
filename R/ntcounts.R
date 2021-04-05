@@ -6,7 +6,7 @@
 #' @param sam_flag SAM FLAG to filter reads. Default 1024
 #' @param op Output file basename. Default parses from BAM file
 #' @param fa Indexed fasta file. If provided, extracts and adds reference base to the output tsv.
-#' @rawNamespace useDynLib(maftools)
+#' @useDynLib maftools, .registration = TRUE
 #' @export
 
 ntcounts = function(bam = NULL, loci = NULL, mapq = 10, sam_flag = 1024, op = NULL, fa = NULL){

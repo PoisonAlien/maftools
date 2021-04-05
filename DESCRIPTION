@@ -1,7 +1,7 @@
 Package: maftools
 Type: Package
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 2.7.30
+Version: 2.7.35
 Date: 2015-12-14
 Authors@R: 
     person(given = "Anand",
@@ -20,7 +20,8 @@ Imports:
     RColorBrewer,
     methods,
     grDevices,
-    survival
+    survival,
+    Rhtslib
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Suggests: knitr, rmarkdown, BSgenome, Biostrings, NMF, mclust, berryFunctions, MultiAssayExperiment, RaggedExperiment, S4Vectors, GenomicRanges, IRanges

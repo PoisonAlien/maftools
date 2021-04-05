@@ -1,9 +1,9 @@
 #' Loads a TCGA cohort
 #'
 #' @description Loads the user mentioned TCGA cohorts
-#' @inheritParams tcgaAvailable
 #' @param study Study names to load. Use  \code{\link{tcgaAvailable}} to see available options.
-#' @param source Source for MAF files. Can be \code{MC3} or \code{Firehose}. Default \code{MC3}.Argument may be abbreviated (M or F)
+#' @param source Source for MAF files. Can be \code{MC3} or \code{Firehose}. Default \code{MC3}. Argument may be abbreviated (M or F)
+#' @param repo one of "github" (default) and "gitee".
 #' @examples
 #' # Loads TCGA LAML cohort (default from MC3 project)
 #' tcgaLoad(study = "LAML")

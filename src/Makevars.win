@@ -1,3 +1,0 @@
-RHTSLIB_LIBS=$(shell echo 'Rhtslib::pkgconfig("PKG_LIBS")'|\
-    "${R_HOME}/bin/R" --vanilla --slave)
-PKG_LIBS=$(RHTSLIB_LIBS)

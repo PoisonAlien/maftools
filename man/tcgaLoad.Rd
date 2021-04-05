@@ -13,9 +13,9 @@ tcgaLoad(
 \arguments{
 \item{study}{Study names to load. Use  \code{\link{tcgaAvailable}} to see available options.}
 
-\item{source}{Source for MAF files. Can be \code{MC3} or \code{Firehose}. Default \code{MC3}.Argument may be abbreviated (M or F)}
+\item{source}{Source for MAF files. Can be \code{MC3} or \code{Firehose}. Default \code{MC3}. Argument may be abbreviated (M or F)}
 
-\item{repo}{one of "github" (default) and "gitee" (for users in China).}
+\item{repo}{one of "github" (default) and "gitee".}
 }
 \value{
 An object of class MAF.

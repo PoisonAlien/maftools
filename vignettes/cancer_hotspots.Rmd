@@ -63,16 +63,14 @@ Above command generates an [HTML report](https://poisonalien.github.io/STAR_wrap
 
 ```{r, eval=FALSE}
 head(can_hs_tbl)
-```
 
-```
-loci fa_ref NT_change Hugo_Symbol Variant_Classification AA_change              Meta VAF A   T  G  C Ins Del
-1: 1:2491289     NA       G>A    TNFRSF14      Missense_Mutation     C111Y    deleterious(0)   0 0   0 21  0   0   0
-2: 1:2491290     NA       C>G    TNFRSF14      Missense_Mutation     C111W    deleterious(0)   0 0   0  0 21   0   0
-3: 1:8073432     NA       T>G      ERRFI1      Missense_Mutation     K409N    deleterious(0)   0 1  64  0  1   0   0
-4: 1:8073434     NA       T>G      ERRFI1      Missense_Mutation     K409Q deleterious(0.04)   0 0  63  0  0   0   0
-5: 1:8074313     NA       T>A      ERRFI1      Nonsense_Mutation     K116*                     0 0 106  0  0   0   0
-6: 1:9779982     NA       T>C      PIK3CD      Missense_Mutation     C416R   tolerated(0.26)   0 1  18  0  0   0   0
+# loci fa_ref NT_change Hugo_Symbol Variant_Classification AA_change              Meta VAF A   T  G  C Ins Del
+# 1: 1:2491289     NA       G>A    TNFRSF14      Missense_Mutation     C111Y    deleterious(0)   0 0   0 21  0   0   0
+# 2: 1:2491290     NA       C>G    TNFRSF14      Missense_Mutation     C111W    deleterious(0)   0 0   0  0 21   0   0
+# 3: 1:8073432     NA       T>G      ERRFI1      Missense_Mutation     K409N    deleterious(0)   0 1  64  0  1   0   0
+# 4: 1:8073434     NA       T>G      ERRFI1      Missense_Mutation     K409Q deleterious(0.04)   0 0  63  0  0   0   0
+# 5: 1:8074313     NA       T>A      ERRFI1      Nonsense_Mutation     K116*                     0 0 106  0  0   0   0
+# 6: 1:9779982     NA       T>C      PIK3CD      Missense_Mutation     C416R   tolerated(0.26)   0 1  18  0  0   0   0
 ```
 
 CLI version of `cancerhotspots` can be found [here](https://github.com/PoisonAlien/somaticfreq)
@@ -82,20 +80,22 @@ CLI version of `cancerhotspots` can be found [here](https://github.com/PoisonAli
 
 `ntcounts` function extracts nucleotide counts for targeted variants from the BAM file. It is functionally similar to [bam-readcount](https://github.com/genome/bam-readcount) utility and supports multiple BAM files and INDELS.
 
-```{r}
+```{r, eval=FALSE}
 #Generate a sample loci file - first two columns must contain chromsome name and position (1-based coordinate)
 loci = data.table::data.table(chr = c("seq1", "seq2"), pos = c(1340, 1483))
 loci
 loci_file = tempfile()
 data.table::fwrite(x = loci, file = loci_file, sep = "\t", col.names = FALSE)
-```
 
-```{r}
 #Example BAM file from Rsamtools package
 bamfile = system.file("extdata", "ex1.bam", package = "Rsamtools") 
 loci_rc = maftools::ntcounts(bam = bamfile, loci = loci_file) 
-#nucleotide counts
+
 loci_rc
+# $ex1
+#         loci fa_ref A  T G  C Ins Del
+# 1: seq1:1340     NA 1  0 0 62   0   0
+# 2: seq2:1483     NA 0 13 0  0   0   0
 ```
 
 

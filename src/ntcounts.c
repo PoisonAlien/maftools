@@ -77,7 +77,7 @@ void ntcounts(const char *bam, const char *bedfile, uint32_t q, uint32_t F, cons
     vars_gt = vars_gt + 1;
 
     if(vars_gt % 1000 == 0){
-      fprintf(stderr, "Processed %d entries..\n", vars_gt);
+      Rprintf("Processed %d entries..\n", vars_gt);
     }
 
     //For every read in the BAM file of target region

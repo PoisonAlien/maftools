@@ -76,14 +76,14 @@ void parse_bam (const char *bam, const char *bedfile, int d, int t, float v, con
     bam_hdr_t *bamHdr = sam_hdr_read(fp_in); //read header
     bam1_t *aln = bam_init1(); //initialize an alignment
 
-    fprintf(stderr, "Input BAM file           :  %s\n", bam);
-    fprintf(stderr, "Variants                 :  %s\n", bedfile);
-    fprintf(stderr, "VAF filter               :  %.3f\n", v);
-    fprintf(stderr, "min reads for t_allele   :  %d\n", t);
-    fprintf(stderr, "MAPQ filter              :  %d\n", q);
-    fprintf(stderr, "FLAG filter              :  %d\n", F);
-    fprintf(stderr, "Coverage filter          :  %d\n", d);
-    fprintf(stderr, "HTSlib version           :  %s\n\n", hts_version());
+    Rprintf("Input BAM file           :  %s\n", bam);
+    Rprintf("Variants                 :  %s\n", bedfile);
+    Rprintf("VAF filter               :  %.3f\n", v);
+    Rprintf("min reads for t_allele   :  %d\n", t);
+    Rprintf("MAPQ filter              :  %d\n", q);
+    Rprintf("FLAG filter              :  %d\n", F);
+    Rprintf("Coverage filter          :  %d\n", d);
+    Rprintf("HTSlib version           :  %s\n\n", hts_version());
 
     //For every loci in the BED file
     while(fgets(buff,1000,bed_fp) != NULL){
@@ -128,7 +128,7 @@ void parse_bam (const char *bam, const char *bedfile, int d, int t, float v, con
         vars_gt = vars_gt + 1;
 
         if(vars_gt % 1000 == 0){
-            fprintf(stderr, "Processed %d entries..\n", vars_gt);
+            Rprintf("Processed %d entries..\n", vars_gt);
         }
 
         //For every read in the BAM file of target region
@@ -288,13 +288,13 @@ void parse_bam (const char *bam, const char *bedfile, int d, int t, float v, con
     free(bn);
     free(bnn);
 
-    fprintf(stderr, "Done!\n\n");
-    fprintf(stderr, "Summary:\n");
-    fprintf(stderr, "Total variants processed :  %d\n", vars_gt);
-    fprintf(stderr, "Variants > %.2f threshold:  %d\n", v, som_vars);
-    fprintf(stderr, "Avg. depth of coverage   :  %.2f\n", mean_doc);
-    fprintf(stderr, "Output html report       :  %s\n", html_file);
-    fprintf(stderr, "Output TSV file          :  %s\n", tsv_file);
+    Rprintf("Done!\n\n");
+    Rprintf("Summary:\n");
+    Rprintf("Total variants processed :  %d\n", vars_gt);
+    Rprintf("Variants > %.2f threshold:  %d\n", v, som_vars);
+    Rprintf("Avg. depth of coverage   :  %.2f\n", mean_doc);
+    Rprintf("Output html report       :  %s\n", html_file);
+    Rprintf("Output TSV file          :  %s\n", tsv_file);
 
     if(novaf > 0){
         warning("Could not estimate VAF for %d variants. VAF has been set to -1 in %s.\nManually inspect them in IGV.\n", novaf, tsv_file);

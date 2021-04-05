@@ -1,7 +1,7 @@
 #' Prints available TCGA datasets
 #'
 #' @description Prints available TCGA cohorts
-#' @param repo one of "github" (default) and "gitee" (for users in China).
+#' @param repo can be "github" (default) or "gitee". If `github` fails to fetch, switch to `gitee`
 #' @examples
 #' tcgaAvailable()
 #' @export

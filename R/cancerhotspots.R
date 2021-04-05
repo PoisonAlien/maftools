@@ -12,7 +12,7 @@
 #' @param op Output file basename. Default parses from BAM file
 #' @param fa Indexed fasta file. If provided, extracts and adds reference base to the output tsv.
 #' @param browse If TRUE opens the html file in browser
-#' @rawNamespace useDynLib(maftools)
+#' @useDynLib maftools, .registration = TRUE
 #' @references Chang MT, Asthana S, Gao SP, et al. Identifying recurrent mutations in cancer reveals widespread lineage diversity and mutational specificity. Nat Biotechnol. 2016;34(2):155-163. doi:10.1038/nbt.3391
 #' @export
 cancerhotspots = function(bam = NULL, refbuild = "GRCh37", mapq = 10, sam_flag = 1024, vaf = 0.05, t_depth = 30, t_alt_count = 8,
