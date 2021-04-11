@@ -1,6 +1,6 @@
 #' extract nucleotide counts for targeted variants from the BAM file.
-#' @description Given a BAM file and target loci, `ntcounts` fetches redcounts for A, T, G, C, Ins, and Del.
-#' @param bam Input bam file. Required.
+#' @description Given a BAM file and target loci, `bamreadcounts` fetches redcounts for A, T, G, C, Ins, and Del. Function name is an homage to https://github.com/genome/bam-readcount
+#' @param bam Input bam file(s). Required.
 #' @param loci Loci file. First two columns should contain chromosome and position (1-based)
 #' @param mapq Map quality. Default 10
 #' @param sam_flag SAM FLAG to filter reads. Default 1024
@@ -9,7 +9,7 @@
 #' @useDynLib maftools, .registration = TRUE
 #' @export
 
-ntcounts = function(bam = NULL, loci = NULL, mapq = 10, sam_flag = 1024, op = NULL, fa = NULL){
+bamreadcounts = function(bam = NULL, loci = NULL, mapq = 10, sam_flag = 1024, op = NULL, fa = NULL){
 
   if(any(is.null(bam), is.null(loci))){
     stop("Missing BAM or loci file!")

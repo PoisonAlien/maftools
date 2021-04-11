@@ -14,10 +14,11 @@
 
 ## NEW FUNCTIONS
 - `cancerhotspots` Genotype known cancer hotspots from the tumor BAM file
-- `ntcounts` extract nucleotide counts for targeted variants from the BAM file.
+- `bamreadcounts` extract nucleotide counts for targeted variants from the BAM file.
 - `maftools` now natively loads TCGA cohorts. `tcgaAvailable` and `tcgaLoad` will display and load the desired cohorts.
 - Added `MAF` constructor function
 - Added `maf2mae` for converting `MAF` to `MultiAssayExperiment` class objects Issue: [640](https://github.com/PoisonAlien/maftools/issues/640) [293](https://github.com/waldronlab/MultiAssayExperiment/pull/293) Discussion: [285](https://github.com/waldronlab/MultiAssayExperiment/discussions/285)
+- Added `plotProtein` and `mafbarplot`
 
 # CHANGES IN VERSION 2.6.05 (BioC 3.12 version)
 ## BUG REPORTS

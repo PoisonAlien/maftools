@@ -12,7 +12,7 @@ output:
     css: corp-styles.css
     highlight: pygments
 vignette: >
-  %\VignetteIndexEntry{03: Personlaized somatic report}
+  %\VignetteIndexEntry{03: Somatic status of cancer hotspots}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -33,7 +33,12 @@ library(maftools)
 ```
 
 ```{r, eval=FALSE}
-can_hs_tbl = maftools::cancerhotspots(bam = "Tumor.bam", refbuild = "GRCh37", mapq = 10, sam_flag = 1024)
+can_hs_tbl = maftools::cancerhotspots(
+  bam = "Tumor.bam",
+  refbuild = "GRCh37",
+  mapq = 10,
+  sam_flag = 1024
+)
 ```
 
 ```
@@ -78,7 +83,7 @@ CLI version of `cancerhotspots` can be found [here](https://github.com/PoisonAli
 
 # Fetch readcounts for targetted loci
 
-`ntcounts` function extracts nucleotide counts for targeted variants from the BAM file. It is functionally similar to [bam-readcount](https://github.com/genome/bam-readcount) utility and supports multiple BAM files and INDELS.
+`bamreadcounts` function extracts nucleotide distribution for targeted loci from the BAM files. The function name is an homage to [bam-readcount](https://github.com/genome/bam-readcount) tool and additionally supports INDELS.
 
 ```{r, eval=FALSE}
 #Generate a sample loci file - first two columns must contain chromsome name and position (1-based coordinate)
@@ -89,7 +94,7 @@ data.table::fwrite(x = loci, file = loci_file, sep = "\t", col.names = FALSE)
 
 #Example BAM file from Rsamtools package
 bamfile = system.file("extdata", "ex1.bam", package = "Rsamtools") 
-loci_rc = maftools::ntcounts(bam = bamfile, loci = loci_file) 
+loci_rc = maftools::bamreadcounts(bam = bamfile, loci = loci_file) 
 
 loci_rc
 # $ex1

@@ -124,6 +124,8 @@ We can use `plotmafSummary` to plot the summary of the maf file, which displays 
 plotmafSummary(maf = laml, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
+Use `mafbarplot` for a minimal barplot of mutated genes.
+
 ## Oncoplots
 
 ### Drawing oncoplots
@@ -153,19 +155,23 @@ plotTiTv(res = laml.titv)
 
 `lollipopPlot` function requires us to have amino acid changes information in the maf file. However MAF files have no clear guidelines on naming the field for amino acid changes, with different studies having different field (or column) names for amino acid changes. By default, `lollipopPlot` looks for column `AAChange`, and if its not found in the MAF file, it prints all available fields with a warning message. For below example, MAF file contains amino acid changes under a field/column name 'Protein_Change'. We will manually specify this using argument `AACol`.
 
-```{r,fig.align='left', fig.width=4.5, fig.height=2.5}
-#lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
-lollipopPlot(maf = laml, gene = 'DNMT3A', AACol = 'Protein_Change', showMutationRate = TRUE)
-```
-
 By default lollipopPlot uses the longest isoform of the gene.
 
-### Labelling points.
-
-We can also label points on the `lollipopPlot` using argument `labelPos`. If `labelPos` is set to 'all', all of the points are highlighted.
-
 ```{r,fig.align='left', fig.width=4.5, fig.height=2.5}
-lollipopPlot(maf = laml, gene = 'DNMT3A', showDomainLabel = FALSE, labelPos = 882)
+#lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
+lollipopPlot(
+  maf = laml,
+  gene = 'DNMT3A',
+  AACol = 'Protein_Change',
+  showMutationRate = TRUE,
+  labelPos = 882
+)
+```
+
+General protein domains can be drawn with the function `plotProtein`
+
+```{r,fig.align='left', fig.width=5, fig.height=2}
+plotProtein(gene = "TP53", refSeqID = "NM_000546")
 ```
 
 ## Rainfall plots
@@ -725,7 +731,7 @@ laml_mae
 ```
 
 
-# Useful links
+# Useful links and tools
 
 +--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
 | File formats                                                                                                       | Data Portals                                                                                    | Annotation tools                                                                              |
@@ -742,8 +748,6 @@ laml_mae
 +--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
 |                                                                                                                    | [DGIdb](http://www.dgidb.org/) - Information on drug-gene interactions and the druggable genome |                                                                                               |
 +--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
-
-# Other helpful packages/tools
 
 Below are some more useful software packages for somatic variant analysis.
 
