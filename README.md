@@ -6,12 +6,7 @@
 [![bioc](http://www.bioconductor.org/shields/years-in-bioc/maftools.svg)](http://bioconductor.org/packages/devel/bioc/html/maftools.html)
 [![bioc](http://www.bioconductor.org/shields/build/devel/bioc/maftools.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/maftools/)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/poisonalien/maftools.svg)](https://github.com/poisonalien/maftools/issues)
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![Lines Of Code](https://tokei.rs/b1/github/poisonalien/maftools?category=code)](https://github.com/poisonalien/maftools)
-
-<!-- badges: start -->
   [![R-CMD-check](https://github.com/PoisonAlien/maftools/workflows/R-CMD-check/badge.svg)](https://github.com/PoisonAlien/maftools/actions)
-  <!-- badges: end -->
 
 ## Introduction
 
