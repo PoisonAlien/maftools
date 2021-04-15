@@ -47,9 +47,9 @@ A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/
 |                                                                                                                    | [DGIdb](http://www.dgidb.org/) - Information on drug-gene interactions and the druggable genome |                                                                                               |
 
 
-## Similar packages/tools
+## Useful packages/tools
 
-Below are some more useful software packages for somatic variant analysis (not necessarily similar to maftools)
+Below are some more useful software packages for somatic variant analysis
 
 * [TRONCO](https://github.com/BIMIB-DISCo/TRONCO) - Repository of the TRanslational ONCOlogy library (R)
 * [dndscv](https://github.com/im3sanger/dndscv) - dN/dS methods to quantify selection in cancer and somatic evolution (R)
