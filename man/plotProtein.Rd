@@ -40,6 +40,8 @@ plotProtein(
 
 \item{domainBorderCol}{Default "black". Set to NA to remove.}
 
+\item{showDomainLabel}{Default TRUE}
+
 \item{domainLabelSize}{text size for domain labels. Default 0.8}
 
 \item{titleSize}{font size for title and subtitle. Default c(1.2, 1)}

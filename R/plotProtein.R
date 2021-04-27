@@ -12,6 +12,7 @@
 #' @param titleSize font size for title and subtitle. Default c(1.2, 1)
 #' @param legendTxtSize Text size for legend. Default 0.8
 #' @param legendNcol Default 1
+#' @param showDomainLabel Default TRUE
 #' @export
 #' @examples
 #' par(mfrow = c(2, 1))

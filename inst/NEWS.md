@@ -3,6 +3,7 @@
 - `coOncoplot` not allowing more than one additional feature. Issue: [675](https://github.com/PoisonAlien/maftools/issues/675)
 
 ## ENHANCEMENTS
+- Added protein domains for the gene `FAM205A`. Issue: [701](https://github.com/PoisonAlien/maftools/issues/701)
 - `oncoplot` can now summarize `variant_classifications` similar to cBioPortal style. Issue: [686](https://github.com/PoisonAlien/maftools/issues/686) 
 - Added pathway support for `mafCompare()` or `clinicalEnrichment()`. Issue: [681](https://github.com/PoisonAlien/maftools/issues/681) 
 - Added default title for side and topbar plots to `oncoplot`. Issue: [682](https://github.com/PoisonAlien/maftools/issues/682) 
