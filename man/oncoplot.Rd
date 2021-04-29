@@ -26,6 +26,7 @@ oncoplot(
   path_order = NULL,
   selectedPathways = NULL,
   draw_titv = FALSE,
+  titv_col = NULL,
   showTumorSampleBarcodes = FALSE,
   barcode_mar = 4,
   barcodeSrt = 90,
@@ -110,6 +111,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{selectedPathways}{Manually provide the subset of pathway names to be seletced from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.}
 
 \item{draw_titv}{logical Includes TiTv plot. \code{FALSE}}
+
+\item{titv_col}{named vector of colors for each transition and transversion classes. Should be of length six with the names "C>T" "C>G" "C>A" "T>A" "T>C" "T>G".  Default NULL.}
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
 

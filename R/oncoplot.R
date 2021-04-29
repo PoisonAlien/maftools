@@ -28,6 +28,7 @@
 #' @param path_order Default `NULL` Manually specify the order of pathways
 #' @param selectedPathways Manually provide the subset of pathway names to be seletced from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
+#' @param titv_col named vector of colors for each transition and transversion classes. Should be of length six with the names "C>T" "C>G" "C>A" "T>A" "T>C" "T>G".  Default NULL.
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param barcode_mar Margin width for sample names. Default 4
 #' @param barcodeSrt Rotate sample labels. Default 90.
@@ -91,7 +92,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                rightBarData = NULL, rightBarLims = NULL,
                                topBarData = NULL, logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
-                               pathways = NULL, path_order = NULL, selectedPathways = NULL, draw_titv = FALSE,
+                               pathways = NULL, path_order = NULL, selectedPathways = NULL, draw_titv = FALSE, titv_col = NULL,
                                showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
                                anno_height = 1, legend_height = 4,
                                sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
@@ -986,7 +987,10 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(titv_dat)), ylim = c(0, 100),
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
 
-    titv_col = get_titvCol(alpha = 1)
+    if(is.null(titv_col)){
+      titv_col = get_titvCol(alpha = 1)
+    }
+
     for(i in 1:ncol(titv_dat)){
       x = titv_dat[,i]
       x = x[x > 0]
