@@ -31,6 +31,7 @@ Suggests:
     berryFunctions,
     Biostrings,
     BSgenome,
+    BSgenome.Hsapiens.UCSC.hg19,
     GenomicRanges,
     IRanges,
     knitr,
