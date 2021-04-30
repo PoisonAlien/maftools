@@ -41,7 +41,8 @@ Suggests:
     R.utils,
     RaggedExperiment,
     rmarkdown,
-    S4Vectors
+    S4Vectors,
+    pheatmap
 LinkingTo: 
     Rhtslib,
     zlibbioc
