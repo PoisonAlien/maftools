@@ -1,7 +1,8 @@
 #' extract nucleotide counts for targeted variants from the BAM file.
 #' @description Given a BAM file and target loci, `bamreadcounts` fetches redcounts for A, T, G, C, Ins, and Del. Function name is an homage to https://github.com/genome/bam-readcount
 #' @param bam Input bam file(s). Required.
-#' @param loci Loci file. First two columns should contain chromosome and position (1-based)
+#' @param loci Loci file. Can be a tsv file or a data.frame. First two columns should contain chromosome and position (by default assumes coordinates are 1-based)
+#' @param zerobased are coordinates zero-based. Default FALSE.
 #' @param mapq Map quality. Default 10
 #' @param sam_flag SAM FLAG to filter reads. Default 1024
 #' @param op Output file basename. Default parses from BAM file
@@ -9,7 +10,7 @@
 #' @useDynLib maftools, .registration = TRUE
 #' @export
 
-bamreadcounts = function(bam = NULL, loci = NULL, mapq = 10, sam_flag = 1024, op = NULL, fa = NULL){
+bamreadcounts = function(bam = NULL, loci = NULL, zerobased = FALSE, mapq = 10, sam_flag = 1024, op = NULL, fa = NULL){
 
   if(any(is.null(bam), is.null(loci))){
     stop("Missing BAM or loci file!")
@@ -30,26 +31,44 @@ bamreadcounts = function(bam = NULL, loci = NULL, mapq = 10, sam_flag = 1024, op
 
   if(is.null(op)){
     op = as.character(unlist(op_files))
-    op_files = lapply(op_files, function(x) {
-      paste0(x, ".tsv")
+    op_files = lapply(op, function(x) {
+      paste0(x, "_nucleotide_counts")
     })
+    op_files = as.character(unlist(op_files))
   }else{
     if(length(op) != length(bam)){
       stop("No. of output file names must be equal to no. of BAM files.")
     }
-    op_files = paste0(op, ".tsv")
+    op_files = paste0(op, "_nucleotide_counts")
   }
 
   if(is.null(fa)){
     fa = "NULL"
   }
 
+  if(is.data.frame(loci)){
+    colnames(loci)[c(1:2)] = c("chr", "start")
+  }else if(file.exists(loci)){
+    loci = data.table::fread(file = loci)
+    colnames(loci)[c(1:2)] = c("chr", "start")
+  }else{
+    stop("loci must be a data.frame or a tsv file!")
+  }
+  data.table::setDF(x = loci)
+
+  if(zerobased){
+    loci$start = as.numeric(loci$start) + 1
+  }
+
+  lfile = tempfile(pattern = 'bamrc_', fileext = ".tsv")
+  data.table::fwrite(x = loci[,c(1:2)], file = lfile, col.names = FALSE, sep = "\t", row.names = FALSE)
+
   lapply(seq_along(bam), function(idx){
-    withCallingHandlers(suppressWarnings(invisible(.Call("ntc", bam[idx], loci, mapq, sam_flag, fa, op[idx],  PACKAGE = "maftools"))))
+    withCallingHandlers(suppressWarnings(invisible(.Call("ntc", bam[idx], lfile, mapq, sam_flag, fa, op_files[idx],  PACKAGE = "maftools"))))
   })
 
   res = lapply(seq_along(op_files), function(x){
-    data.table::fread(file = op_files[[x]], sep = "\t", header = TRUE)
+    data.table::fread(file = paste0(op_files[x], ".tsv"), sep = "\t", header = TRUE)
   })
   names(res) = op
 

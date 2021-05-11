@@ -7,6 +7,7 @@
 bamreadcounts(
   bam = NULL,
   loci = NULL,
+  zerobased = FALSE,
   mapq = 10,
   sam_flag = 1024,
   op = NULL,
@@ -16,7 +17,9 @@ bamreadcounts(
 \arguments{
 \item{bam}{Input bam file(s). Required.}
 
-\item{loci}{Loci file. First two columns should contain chromosome and position (1-based)}
+\item{loci}{Loci file. Can be a tsv file or a data.frame. First two columns should contain chromosome and position (by default assumes coordinates are 1-based)}
+
+\item{zerobased}{are coordinates zero-based. Default FALSE.}
 
 \item{mapq}{Map quality. Default 10}
 

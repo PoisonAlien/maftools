@@ -85,16 +85,18 @@ CLI version of `cancerhotspots` can be found [here](https://github.com/PoisonAli
 
 `bamreadcounts` function extracts nucleotide distribution for targeted loci from the BAM files. The function name is an homage to [bam-readcount](https://github.com/genome/bam-readcount) tool and additionally supports INDELS.
 
-```{r, eval=FALSE}
-#Generate a sample loci file - first two columns must contain chromsome name and position (1-based coordinate)
+```{r}
+#Generate a sample loci - first two columns must contain chromosome name and position 
 loci = data.table::data.table(chr = c("seq1", "seq2"), pos = c(1340, 1483))
 loci
-loci_file = tempfile()
-data.table::fwrite(x = loci, file = loci_file, sep = "\t", col.names = FALSE)
+```
 
+Get readcounts for every nucleotide from a BAM file
+```{r, eval=FALSE}
 #Example BAM file from Rsamtools package
+#By default position are assumed to be in 1-based coordinate system
 bamfile = system.file("extdata", "ex1.bam", package = "Rsamtools") 
-loci_rc = maftools::bamreadcounts(bam = bamfile, loci = loci_file) 
+loci_rc = maftools::bamreadcounts(bam = bamfile, loci = loci) 
 
 loci_rc
 # $ex1
