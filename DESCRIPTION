@@ -42,7 +42,8 @@ Suggests:
     RaggedExperiment,
     rmarkdown,
     S4Vectors,
-    pheatmap
+    pheatmap,
+    curl
 LinkingTo: 
     Rhtslib,
     zlibbioc
