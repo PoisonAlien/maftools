@@ -55,12 +55,18 @@ tcgaLoad <- function(study = NULL, source = c("MC3", "Firehose"), repo = c("gith
   if (length(study.dat) > 1) {
     mafs <- lapply(seq_along(study.dat), function(i) {
       message("Loading ", cohorts$Study_Abbreviation[i], ". Please cite: ", doi[i], " for reference")
-      readRDS(file = url(study.dat[i], "rb"))
+      z = gzcon(con = url(study.dat[i], "rb"))
+      m = readRDS(file = z)
+      close(z)
+      m
     })
     names(mafs) <- cohorts$Study_Abbreviation
   } else {
     message("Loading ", cohorts$Study_Abbreviation, ". Please cite: ", doi, " for reference")
-    mafs <- readRDS(file = url(study.dat, "rb"))
+    z = gzcon(con = url(study.dat, "rb"))
+    mafs <- readRDS(file = z)
+    close(z)
+    mafs
   }
 
   mafs
