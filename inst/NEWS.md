@@ -1,3 +1,5 @@
+- Added `ORthr` and `featureLvls` arguments to plotEnrichmentResults. Issue: [715](https://github.com/PoisonAlien/maftools/issues/715)
+
 # CHANGES IN VERSION 2.8.0
 
 ## NEW FUNCTIONS
@@ -10,7 +12,7 @@
 
 ## ENHANCEMENTS
 - Added protein domains for the gene `ALMS1`. Issue: [705](https://github.com/PoisonAlien/maftools/issues/705)
-- Added `titv_col` argumtn to oncoplot. Issue: [702](https://github.com/PoisonAlien/maftools/issues/702)
+- Added `titv_col` argument to oncoplot. Issue: [702](https://github.com/PoisonAlien/maftools/issues/702)
 - Added protein domains for the gene `FAM205A`. Issue: [701](https://github.com/PoisonAlien/maftools/issues/701)
 - `oncoplot` can now summarize `variant_classifications` similar to cBioPortal style. Issue: [686](https://github.com/PoisonAlien/maftools/issues/686) 
 - Added pathway support for `mafCompare()` or `clinicalEnrichment()`. Issue: [681](https://github.com/PoisonAlien/maftools/issues/681) 

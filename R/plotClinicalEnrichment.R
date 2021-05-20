@@ -1,6 +1,8 @@
 #' Plots results from clinicalEnrichment analysis
 #' @param enrich_res results from \code{\link{clinicalEnrichment}} or \code{\link{signatureEnrichment}}
 #' @param pVal Default 0.05
+#' @param ORthr Default 1. Odds ratio threshold. >1 indicates positive enrichment in the group of interest.
+#' @param featureLvls Plot results from the selected levels. Default NULL, plots all.
 #' @param cols named vector of colors for factor in a clinical feature. Default NULL
 #' @param annoFontSize cex for annotation font size. Default 0.8
 #' @param geneFontSize cex for gene font size. Default 0.8
@@ -10,7 +12,7 @@
 #' @export
 #' @seealso \code{\link{clinicalEnrichment}} \code{\link{signatureEnrichment}}
 #'
-plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontSize = 0.8, geneFontSize = 0.8, legendFontSize = 0.8, showTitle = TRUE){
+plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls = NULL, cols = NULL, annoFontSize = 0.8, geneFontSize = 0.8, legendFontSize = 0.8, showTitle = TRUE){
 
   res = enrich_res$groupwise_comparision
 
@@ -20,12 +22,20 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, cols = NULL, annoFontS
     g1_tot = as.numeric(sapply(strsplit(x = res$n_mutated_group1, split = " of "), "[[", 2)),
     g2_muts = as.numeric(sapply(strsplit(x = res$n_mutated_group2, split = " of "), "[[", 1)),
     g2_tot = as.numeric(sapply(strsplit(x = res$n_mutated_group2, split = " of "), "[[", 2)),
-    P_value = res$p_value, Group1 = res$Group1, Group2 = "Res"
+    P_value = res$p_value, Group1 = res$Group1, Group2 = "Res", OR = res$OR
   )
 
-  plot.dat = plot.dat[P_value < pVal]
+  plot.dat = plot.dat[P_value < pVal][OR > ORthr][order(Group1, -OR)]
+
   if(nrow(plot.dat) < 1){
-    stop(paste0("No significant associations found at p-value < ", pVal))
+    stop(paste0("No significant associations found at p-value < ", pVal, " and OR < ", ORthr))
+  }
+
+  if(!is.null(featureLvls)){
+    plot.dat = plot.dat[Group1 %in% featureLvls]
+    if(nrow(plot.dat) < 1){
+      stop(paste0("No significant results found for ", paste(featureLvls, collapse = ", ")))
+    }
   }
 
   conf_int_g1 = lapply(1:nrow(plot.dat), function(i){
