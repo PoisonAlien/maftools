@@ -7,6 +7,8 @@
 plotEnrichmentResults(
   enrich_res,
   pVal = 0.05,
+  ORthr = 1,
+  featureLvls = NULL,
   cols = NULL,
   annoFontSize = 0.8,
   geneFontSize = 0.8,
@@ -18,6 +20,10 @@ plotEnrichmentResults(
 \item{enrich_res}{results from \code{\link{clinicalEnrichment}} or \code{\link{signatureEnrichment}}}
 
 \item{pVal}{Default 0.05}
+
+\item{ORthr}{Default 1. Odds ratio threshold. >1 indicates positive enrichment in the group of interest.}
+
+\item{featureLvls}{Plot results from the selected levels. Default NULL, plots all.}
 
 \item{cols}{named vector of colors for factor in a clinical feature. Default NULL}
 
