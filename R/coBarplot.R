@@ -162,9 +162,17 @@ get_col_df = function(m, g){
     return(data.frame(row.names = g, stringsAsFactors = FALSE))
   }
   ml = apply(createOncoMatrix(m = m, g = g, chatty = FALSE, add_missing = TRUE)[['oncoMatrix']], 1, table)
-  ml = lapply(ml, function(x){
-    data.frame(x)
-  })
+  if (!is.list(ml)) {
+    gene_name <- colnames(ml)[1]
+    ml <- list(
+      data.frame(Var1 = rownames(ml), Freq = ml[, gene_name])
+    )
+    names(ml) <- gene_name
+  } else {
+    ml = lapply(ml, function(x){
+      data.frame(x)
+    })
+  }
   ml = data.table::rbindlist(l = ml, use.names = TRUE, fill = TRUE, idcol = "Gene")
   ml = ml[!Var1 %in% ""]
   #CNV+Mutated = Complex_Event
