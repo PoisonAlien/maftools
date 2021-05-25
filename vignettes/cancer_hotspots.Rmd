@@ -22,7 +22,7 @@ vignette: >
 
 # Genotype cancer hotspots
 
-`cancerhotspots` allows rapid genotyping of [known somatic hotspots]((https://www.cancerhotspots.org/)) from the tumor BAM files. This facilitates to get a quick overlook of 3,181 known somatic hot-spots in a matter of minutes, without spending hours on variant calling and annotation. In simple words, it fetches nucleotide frequencies of known somatic hotspots and prioritizes them based on allele frequency. 
+`cancerhotspots` allows rapid genotyping of [known somatic hotspots](https://www.cancerhotspots.org/) from the tumor BAM files. This facilitates to get a quick overlook of 3,181 known somatic hot-spots in a matter of minutes, without spending hours on variant calling and annotation. In simple words, it fetches nucleotide frequencies of known somatic hotspots and prioritizes them based on allele frequency. 
 
 Output includes a browsable HTML file with variants passing the VAF/read depth filters and, a TSV file including nucleotide counts of all variants analyzed.
 
