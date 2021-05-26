@@ -1,6 +1,9 @@
-- Added `ORthr` and `featureLvls` arguments to plotEnrichmentResults. Issue: [715](https://github.com/PoisonAlien/maftools/issues/715)
+# CHANGES IN VERSION 2.8.05 (GitHub version)
 
-# CHANGES IN VERSION 2.8.0
+- Added `ORthr` and `featureLvls` arguments to plotEnrichmentResults. Issue: [715](https://github.com/PoisonAlien/maftools/issues/715)
+- Added `pseudoCount`argument to `MafCompare` for avoiding Inf values in estimated OR. Issue:  [718](https://github.com/PoisonAlien/maftools/issues/718)
+
+# CHANGES IN VERSION 2.8.0 (Bioconductor release version)
 
 ## NEW FUNCTIONS
 - `cancerhotspots` Genotype known cancer hotspots from the tumor BAM file

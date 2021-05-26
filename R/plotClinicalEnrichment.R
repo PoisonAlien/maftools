@@ -85,9 +85,12 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls
   data.table::setDF(x = conf_int_g1)
   data.table::setDF(x = conf_int_g2)
 
+  #return(plot.dat)
+
   par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=TRUE, mar = c(4,3,3.5,1)) #
   #plot(c(0, nrow(plot.dat)+15),c(0,0),xlim=c(0.5,33),las=2, ylim=c(-1,1),xlab="", xaxt="n", type="l")
   b = barplot(height = plot.dat$g1_muts_fract, ylim = c(-1.25, yl_max), axes = FALSE, border = 0.1, col = bar.cols)
+
   #text(b, plot.dat$g1_muts_fract+0.03 , plot.dat$g1_title ,cex = annoFontSize, las = 2, srt=90, adj=0, xpd=TRUE, font = 1)
   axis(side = 2, at = seq(-1, 1, 0.25), labels = c(rev(seq(0, 1, 0.25)), seq(0, 1, 0.25)[2:5]),
        lwd = 1.2, font.axis = 2, cex = 1.5, font = 1)
@@ -108,6 +111,15 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls
   text(b, -conf_int_g2$Upper-0.03 , plot.dat$g2_title ,cex = annoFontSize, las = 2, srt=90, adj=1, xpd=TRUE, font = 1)
 
   text(b, -0.75 , plot.dat$Hugo_Symbol ,cex = geneFontSize, las = 2, srt = 90, adj = 1, xpd = TRUE, font = 3)
+
+  # b = as.data.frame(b)
+  # b$Group = plot.dat$Group1
+  # b = split(b, b$Group)
+  # for(idx in seq_along(b)){
+  #   bg = b[[idx]]
+  #   rect(xleft = bg$V1[1], ybottom = 1, xright = bg$V1[length(bg$V1)], ytop = 1.1, col = cols[idx])
+  # }
+
   #par(xpd = T, mar = par()$mar + c(0,0,0,7))
   if(length(legend.cols) <= 4){
     n_col = 1

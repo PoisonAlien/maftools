@@ -9,6 +9,7 @@
 #' @param useCNV whether to include copy number events. Default TRUE if available.. Not applicable when `pathways = TRUE`
 #' @param pathways Summarize genes by pathways before comparing. Default `FALSE`
 #' @param custom_pw Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`, uses a predefined list of pathways. Applicable only when `pathways = TRUE`
+#' @param pseudoCount If TRUE, adds 1 to the contingency table with 0's to avoid `Inf` values in the estimated odds-ratio.
 #' @return result list
 #' @examples
 #' primary.apl <- system.file("extdata", "APL_primary.maf.gz", package = "maftools")
@@ -21,7 +22,7 @@
 #' @seealso \code{\link{forestPlot}}
 #' @seealso \code{\link{lollipopPlot2}}
 
-mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE, pathways = FALSE, custom_pw = NULL){
+mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE, pathways = FALSE, custom_pw = NULL, pseudoCount = FALSE){
 
   m1.gs <- getGeneSummary(x = m1)
   m2.gs <- getGeneSummary(x = m2)
@@ -88,8 +89,17 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
                      m1Mut = m.gs.meged[i,2]
                      m2Mut = m.gs.meged[i,3]
                      #print(i)
-                     xf = fisher.test(matrix(c(m1Mut, m1.sampleSize-m1Mut, m2Mut, m2.sampleSize-m2Mut),
-                                             byrow = TRUE, nrow = 2), conf.int = TRUE, conf.level = 0.95)
+
+                     ft_mat = matrix(c(m1Mut, m1.sampleSize-m1Mut, m2Mut, m2.sampleSize-m2Mut),
+                            byrow = TRUE, nrow = 2)
+
+                     if(length(which(x = ft_mat == 0)) > 0){
+                       if(pseudoCount){
+                         ft_mat = ft_mat + 1
+                       }
+                     }
+
+                     xf = fisher.test(ft_mat, conf.int = TRUE, conf.level = 0.95)
 
                      pval = xf$p.value
                      or = xf$estimate

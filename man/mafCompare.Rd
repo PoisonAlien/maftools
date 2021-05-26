@@ -12,7 +12,8 @@ mafCompare(
   minMut = 5,
   useCNV = TRUE,
   pathways = FALSE,
-  custom_pw = NULL
+  custom_pw = NULL,
+  pseudoCount = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ mafCompare(
 \item{pathways}{Summarize genes by pathways before comparing. Default `FALSE`}
 
 \item{custom_pw}{Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`, uses a predefined list of pathways. Applicable only when `pathways = TRUE`}
+
+\item{pseudoCount}{If TRUE, adds 1 to the contingency table with 0's to avoid `Inf` values in the estimated odds-ratio.}
 }
 \value{
 result list
