@@ -2,6 +2,7 @@
 
 - Added `ORthr` and `featureLvls` arguments to plotEnrichmentResults. Issue: [715](https://github.com/PoisonAlien/maftools/issues/715)
 - Added `pseudoCount`argument to `MafCompare` for avoiding Inf values in estimated OR. Issue:  [718](https://github.com/PoisonAlien/maftools/issues/718)
+- Added `compress`argument to `write.mafSummary` and now the output includes clinical data as well. Issue:  [720](https://github.com/PoisonAlien/maftools/issues/720)
 
 # CHANGES IN VERSION 2.8.0 (Bioconductor release version)
 
