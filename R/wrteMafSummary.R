@@ -30,7 +30,7 @@ write.mafSummary = function(maf, basename = NULL, compress = FALSE){
     ss = paste0(basename,'_sampleSummary.txt')
     su = paste0(basename,'_summary.txt')
     mf = paste0(basename,'_maftools.maf')
-    cd = paste0(basename,'_clinicalData.txx')
+    cd = paste0(basename,'_clinicalData.txt')
   }
   #write gene summary.
   write.table(x = getGeneSummary(maf), file = gs, sep='\t', quote = FALSE, row.names = FALSE)
