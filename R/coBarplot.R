@@ -32,10 +32,10 @@
 #' @return Returns nothing. Just draws plot.
 #'
 coBarplot = function(m1, m2, genes = NULL, orderBy = NULL,
-                     m1Name = NULL, m2Name = NULL, colors = NULL, 
+                     m1Name = NULL, m2Name = NULL, colors = NULL,
                      normalize = TRUE, yLims = NULL, borderCol = "gray",
                      titleSize = 1, geneSize = 0.8,
-                     showPct = TRUE, pctSize = 0.7, axisSize = 0.8, 
+                     showPct = TRUE, pctSize = 0.7, axisSize = 0.8,
                      showLegend = TRUE, legendTxtSize = 1, geneMar = 4){
 
   if(is.null(genes)){
@@ -60,7 +60,7 @@ coBarplot = function(m1, m2, genes = NULL, orderBy = NULL,
   }
 
   m2.gs = get_col_df(m = m2, g = genes)
-  
+
   if (ncol(m1.gs) == 0L & ncol(m2.gs) == 0L) {
     stop("Cannot plot genes without mutation!")
   } else if (ncol(m1.gs) == 0L) {
@@ -69,8 +69,8 @@ coBarplot = function(m1, m2, genes = NULL, orderBy = NULL,
   } else if (ncol(m2.gs) == 0L) {
     m2.gs <- m1.gs
     m2.gs[] <- 0
-  } 
-  
+  }
+
   m2.ss = as.numeric(m2@summary[ID %in% "Samples", summary])
   gs2.load = getGeneSummary(x = m2)[Hugo_Symbol %in% genes,.(Hugo_Symbol, AlteredSamples)]
   gs2.load[,AlteredSamples := round(AlteredSamples/m2.ss, digits = 2) * 100]
@@ -180,18 +180,12 @@ get_col_df = function(m, g){
   if(nrow(getGeneSummary(x = m)[Hugo_Symbol %in% g]) == 0){
     return(data.frame(row.names = g, stringsAsFactors = FALSE))
   }
-  ml = apply(createOncoMatrix(m = m, g = g, chatty = FALSE, add_missing = TRUE)[['oncoMatrix']], 1, table)
-  if (!is.list(ml)) {
-    gene_name <- colnames(ml)[1]
-    ml <- list(
-      data.frame(Var1 = rownames(ml), Freq = ml[, gene_name])
-    )
-    names(ml) <- gene_name
-  } else {
-    ml = lapply(ml, function(x){
-      data.frame(x)
-    })
-  }
+  ml = apply(createOncoMatrix(
+    m = m, g = g, chatty = FALSE, add_missing = TRUE)[['oncoMatrix']],
+    1, table, simplify = FALSE)
+  ml = lapply(ml, function(x){
+    data.frame(x)
+  })
   ml = data.table::rbindlist(l = ml, use.names = TRUE, fill = TRUE, idcol = "Gene")
   ml = ml[!Var1 %in% ""]
   #CNV+Mutated = Complex_Event
