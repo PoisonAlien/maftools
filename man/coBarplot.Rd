@@ -20,6 +20,7 @@ coBarplot(
   showPct = TRUE,
   pctSize = 0.7,
   axisSize = 0.8,
+  showLegend = TRUE,
   legendTxtSize = 1,
   geneMar = 4
 )
@@ -54,6 +55,8 @@ coBarplot(
 \item{pctSize}{Default 0.7}
 
 \item{axisSize}{Default 0.8}
+
+\item{showLegend}{Default TRUE.}
 
 \item{legendTxtSize}{Default 0.8}
 

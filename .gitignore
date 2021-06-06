@@ -40,3 +40,6 @@ unsrturl.bst
 .tm_properties
 .cloud
 .icloud
+src/maftools.so
+src/ntcounts.o
+src/somaticfreq.o

@@ -15,6 +15,7 @@
 #' @param showPct Default TRUE
 #' @param pctSize Default 0.7
 #' @param axisSize Default 0.8
+#' @param showLegend Default TRUE.
 #' @param legendTxtSize Default 0.8
 #' @param geneMar Default 4
 #' @export
@@ -30,8 +31,12 @@
 #' dev.off()
 #' @return Returns nothing. Just draws plot.
 #'
-coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name = NULL, colors = NULL, normalize = TRUE, yLims = NULL, borderCol = "gray", titleSize = 1, geneSize = 0.8,
-                     showPct = TRUE, pctSize = 0.7, axisSize = 0.8, legendTxtSize = 1, geneMar = 4){
+coBarplot = function(m1, m2, genes = NULL, orderBy = NULL,
+                     m1Name = NULL, m2Name = NULL, colors = NULL, 
+                     normalize = TRUE, yLims = NULL, borderCol = "gray",
+                     titleSize = 1, geneSize = 0.8,
+                     showPct = TRUE, pctSize = 0.7, axisSize = 0.8, 
+                     showLegend = TRUE, legendTxtSize = 1, geneMar = 4){
 
   if(is.null(genes)){
     m1.genes = getGeneSummary(m1)[1:5, Hugo_Symbol]
@@ -55,6 +60,17 @@ coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name
   }
 
   m2.gs = get_col_df(m = m2, g = genes)
+  
+  if (ncol(m1.gs) == 0L & ncol(m2.gs) == 0L) {
+    stop("Cannot plot genes without mutation!")
+  } else if (ncol(m1.gs) == 0L) {
+    m1.gs <- m2.gs
+    m1.gs[] <- 0
+  } else if (ncol(m2.gs) == 0L) {
+    m2.gs <- m1.gs
+    m2.gs[] <- 0
+  } 
+  
   m2.ss = as.numeric(m2@summary[ID %in% "Samples", summary])
   gs2.load = getGeneSummary(x = m2)[Hugo_Symbol %in% genes,.(Hugo_Symbol, AlteredSamples)]
   gs2.load[,AlteredSamples := round(AlteredSamples/m2.ss, digits = 2) * 100]
@@ -99,7 +115,8 @@ coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name
   }
 
   lo = matrix(data = c(1, 1, 2, 2), nrow = 2, byrow = TRUE)
-  graphics::layout(mat = lo, heights = c(4, 1.25))
+  if (showLegend) graphics::layout(mat = lo, heights = c(4, 1.25))
+  else graphics::layout(mat = lo, heights = c(20, 1.25))
 
   par(mar = c(2, geneMar, 1, 2))
   b1 = barplot(
@@ -149,10 +166,12 @@ coBarplot = function(m1, m2, genes = NULL, orderBy = NULL, m1Name = NULL, m2Name
   vcs = unique(c(rownames(m1.gs), rownames(m2.gs)))
   col = colors[vcs]
 
-  legend("topleft", legend = names(col), col = col,  bty = "n", border=NA,
-         xpd = TRUE, text.font = 1, pch = 15, xjust = 0, yjust = 0,
-         cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
-         pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
+  if (showLegend) {
+    legend("topleft", legend = names(col), col = col,  bty = "n", border=NA,
+           xpd = TRUE, text.font = 1, pch = 15, xjust = 0, yjust = 0,
+           cex = legendTxtSize, y.intersp = 1.5, x.intersp = 1,
+           pt.cex = 1.2 * legendTxtSize, ncol = ceiling(length(col)/4))
+  }
 
   invisible(list(m1 = m1.gs, m2 = m2.gs))
 }
