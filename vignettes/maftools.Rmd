@@ -170,7 +170,7 @@ lollipopPlot(
 
 General protein domains can be drawn with the function `plotProtein`
 
-```{r,fig.align='left', fig.width=5, fig.height=2}
+```{r,fig.align='left', fig.width=5, fig.height=1.2}
 plotProtein(gene = "TP53", refSeqID = "NM_000546")
 ```
 

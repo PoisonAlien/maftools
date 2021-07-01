@@ -145,10 +145,11 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   mtext(text = "Survival probability", side = 2, line = 2.5)
   #mtext(text = "Time", side = 1, line = 2)
 
-  legend(x = "topright", legend = c("Mutant", "WT"), col = col, bty = "n", lwd = 2, pch = 8)
+  legend(x = "topright", legend = c(paste0("Mutant [N= ", nrow(clinicalData[Group == "Mutant"]),"]"),
+                                    paste0("WT [N= ", nrow(clinicalData[Group == "WT"]),"]")), col = col, bty = "n", lwd = 2, pch = 8)
 
   title(main = NA,
-        sub = paste0("P-value: ", surv.diff.pval, "; ", "HR: ", hr), cex.main = 1, font.main= 4, col.main= "black",
+        sub = paste0("P-value: ", round(surv.diff.pval, digits = 4), "; ", "HR: ", hr), cex.main = 1, font.main= 4, col.main= "black",
         cex.sub = 1, font.sub = 3, col.sub = ifelse(test = surv.diff.pval < 0.05, yes = "red", no = "black"),
         line = 2.5, adj = 0)
   title(main = paste0(groupNames[1], " v/s ", groupNames[2]), adj = 0, font.main = 4)
