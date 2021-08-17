@@ -39,7 +39,6 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
   m2.sampleSize = mafCompareRes$SampleSummary[2, SampleSize]
 
   # newly added, deal with parameter color -> vc_col for usage   
-  vc_col = color
   if (length(color)==1){
     vc_col = c(color,color)
   }else if(length(color==2)){
