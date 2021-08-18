@@ -48,7 +48,15 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
   }
       
   if (is.null(names(vc_col))){
-      names(vc_col)=c(m1Name,m2Name)
+      names(vc_col)=c(m2Name,m1Name)
+  }else if (!(m1Name %in% names(vc_col)) && !(m2Name %in% names(vc_col))){
+          stop(paste0('\ninput named vector [color] must contain both group name, \nwhich should be like c(',
+                m1Name,', ', m2Name,') but now are ',list(names(vc_col)),'\n'))
+  }else if ( !(m1Name %in% names(vc_col)) || !(m2Name %in% names(vc_col)) ){
+    
+      stop(paste0('\nif you pass [color] with named vector, then both of the names matching group names must be Explicitly declared,\n',
+                  'which should be like c(',
+                m1Name,', ', m2Name,') but now are ',list(names(vc_col)),'\n'))
   }
   # end of newly added
     
