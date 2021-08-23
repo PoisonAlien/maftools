@@ -7,6 +7,7 @@
 #' @param geneFontSize Font size for gene symbols. Default 0.8
 #' @param titleSize font size for titles. Default 1.2
 #' @param lineWidth line width for CI bars. Default 1
+#' @param color vector of two colors for the lines. Default 'maroon' and 'royalblue'
 #' @export
 #' @return Nothing
 #' @seealso \code{\link{mafCompare}}
@@ -38,7 +39,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
   m1.sampleSize = mafCompareRes$SampleSummary[1, SampleSize]
   m2.sampleSize = mafCompareRes$SampleSummary[2, SampleSize]
 
-  # newly added, deal with parameter color -> vc_col for usage   
+  # newly added, deal with parameter color -> vc_col for usage
   if (length(color)==1){
     vc_col = c(color,color)
   }else if(length(color==2)){
@@ -46,26 +47,26 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
   }else{
     stop('colors length must be less equal than 2')
   }
-      
+
   if (is.null(names(vc_col))){
       names(vc_col)=c(m2Name,m1Name)
   }else if (!(m1Name %in% names(vc_col)) && !(m2Name %in% names(vc_col))){
           stop(paste0('\ninput named vector [color] must contain both group name, \nwhich should be like c(',
                 m1Name,', ', m2Name,') but now are ',list(names(vc_col)),'\n'))
   }else if ( !(m1Name %in% names(vc_col)) || !(m2Name %in% names(vc_col)) ){
-    
+
       stop(paste0('\nif you pass [color] with named vector, then both of the names matching group names must be Explicitly declared,\n',
                   'which should be like c(',
                 m1Name,', ', m2Name,') but now are ',list(names(vc_col)),'\n'))
   }
   # end of newly added
-    
+
   if(nrow(m.sigs) < 1){
     stop('No differetially mutated genes found !')
   }
 
   m.sigs$Hugo_Symbol = factor(x = m.sigs$Hugo_Symbol, levels = rev(m.sigs$Hugo_Symbol))
-  
+
   m.sigs$or_new = ifelse(test = m.sigs$or > 3, yes = 3, no = m.sigs$or)
   m.sigs$upper = ifelse(test = m.sigs$ci.up > 3, yes = 3, no = m.sigs$ci.up)
   m.sigs$lower = ifelse(test = m.sigs$ci.low > 3, yes = 3, no = m.sigs$ci.low)
@@ -102,7 +103,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
     }
 
   })
-  
+
   abline(v = 1, lty = 2, col = "gray", xpd = FALSE)
   axis(side = 1, at = 0:3, labels = c(0:3), font = 1, pos = 0.5, cex.axis = 1.3)
 
@@ -134,7 +135,7 @@ forestPlot = function(mafCompareRes, pVal = 0.05, fdr = NULL,
   text(x = 0.5, y = 1:nrow(m.sigs), labels = round(m.sigs$or, digits = 3),
        adj = 0.5, font = 1, cex = 1.4*(geneFontSize))
   title(main = "OR", cex.main = titleSize)
-  
+
   m.sigs$significance = ifelse(test =  as.numeric(m.sigs$pval) < 0.001, yes = "***", no =
                                  ifelse(test = as.numeric(m.sigs$pval) < 0.01, yes = "**", no =
                                           ifelse(test = as.numeric(m.sigs$pval) < 0.05, yes = "*", no = "NS")))

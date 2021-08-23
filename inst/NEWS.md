@@ -4,7 +4,9 @@
 - Fix error in `mafSurvGroup` while checking for mutants in `geneSet`. Added `minMut` argument to mitigate. Issue: [741](https://github.com/PoisonAlien/maftools/issues/741)
 
 ## ENHANCEMENTS
-- Added `ORthr` and `featureLvls` arguments to plotEnrichmentResults. Issue: [715](https://github.com/PoisonAlien/maftools/issues/715)
+- Fix the order of features and added colors for the lines in `forestPlot`. Thanks @biosunsci PR: [761](https://github.com/PoisonAlien/maftools/issues/761)
+- Added `pwLineCol` and `pwLineWd` for controlling the line color and line width around the pathways in `oncoplot`. Issue: [759](https://github.com/PoisonAlien/maftools/issues/759)
+- Added `ORthr` and `featureLvls` arguments to `plotEnrichmentResults`. Issue: [715](https://github.com/PoisonAlien/maftools/issues/715)
 - Added `pseudoCount`argument to `MafCompare` for avoiding Inf values in estimated OR. Issue:  [718](https://github.com/PoisonAlien/maftools/issues/718)
 - Added `compress`argument to `write.mafSummary` and now the output includes clinical data as well. Issue:  [720](https://github.com/PoisonAlien/maftools/issues/720)
 

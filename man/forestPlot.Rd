@@ -8,6 +8,7 @@ forestPlot(
   mafCompareRes,
   pVal = 0.05,
   fdr = NULL,
+  color = c("maroon", "royalblue"),
   geneFontSize = 0.8,
   titleSize = 1.2,
   lineWidth = 1
@@ -19,6 +20,8 @@ forestPlot(
 \item{pVal}{p-value threshold. Default 0.05.}
 
 \item{fdr}{fdr threshold. Default NULL. If provided uses adjusted pvalues (fdr).}
+
+\item{color}{vector of two colors for the lines. Default 'maroon' and 'royalblue'}
 
 \item{geneFontSize}{Font size for gene symbols. Default 0.8}
 

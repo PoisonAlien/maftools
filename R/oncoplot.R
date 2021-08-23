@@ -26,7 +26,9 @@
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param pathways Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`
 #' @param path_order Default `NULL` Manually specify the order of pathways
-#' @param selectedPathways Manually provide the subset of pathway names to be seletced from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.
+#' @param selectedPathways Manually provide the subset of pathway names to be selected from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.
+#' @param pwLineCol Color for the box around the pathways Default #535c68
+#' @param pwLineWd Line width for the box around the pathways Default Default 1
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param titv_col named vector of colors for each transition and transversion classes. Should be of length six with the names "C>T" "C>G" "C>A" "T>A" "T>C" "T>G".  Default NULL.
 #' @param showTumorSampleBarcodes logical to include sample names.
@@ -92,7 +94,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                rightBarData = NULL, rightBarLims = NULL,
                                topBarData = NULL, logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
-                               pathways = NULL, path_order = NULL, selectedPathways = NULL, draw_titv = FALSE, titv_col = NULL,
+                               pathways = NULL, path_order = NULL, selectedPathways = NULL, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
                                showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
                                anno_height = 1, legend_height = 4,
                                sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
@@ -693,7 +695,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     temp_dat[, row_id := nrow(temp_dat):1]
     temp_dat = split(temp_dat, as.factor(temp_dat$Pathway))
     lapply(temp_dat, function(td){
-      rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = "#535c68", lwd = 2)
+      rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = pwLineCol, lwd = pwLineWd)
     })
 
     #New percent alt with pathways

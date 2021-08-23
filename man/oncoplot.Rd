@@ -25,6 +25,8 @@ oncoplot(
   pathways = NULL,
   path_order = NULL,
   selectedPathways = NULL,
+  pwLineCol = "#535c68",
+  pwLineWd = 1,
   draw_titv = FALSE,
   titv_col = NULL,
   showTumorSampleBarcodes = FALSE,
@@ -108,7 +110,11 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{path_order}{Default `NULL` Manually specify the order of pathways}
 
-\item{selectedPathways}{Manually provide the subset of pathway names to be seletced from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.}
+\item{selectedPathways}{Manually provide the subset of pathway names to be selected from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.}
+
+\item{pwLineCol}{Color for the box around the pathways Default #535c68}
+
+\item{pwLineWd}{Line width for the box around the pathways Default Default 1}
 
 \item{draw_titv}{logical Includes TiTv plot. \code{FALSE}}
 
