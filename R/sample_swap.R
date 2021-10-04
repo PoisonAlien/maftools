@@ -3,11 +3,11 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
   build = match.arg(arg = build, choices = c("hg19", "hg38"))
 
   if(build == "hg19"){
-    #snps = system.file("extdata", "hg19_smash_snps.tsv.gz", package = "maftools") #MAF file
-    snps = "inst/extdata/hg19_smash_snps.tsv.gz"
+    snps = system.file("extdata", "hg19_smash_snps.tsv.gz", package = "maftools")
+    #snps = "inst/extdata/hg19_smash_snps.tsv.gz"
   }else{
-    snps = "inst/extdata/hg38_smash_snps.tsv.gz"
-    #snps = system.file("extdata", "hg38_smash_snps.tsv.gz", package = "maftools") #MAF file
+    #snps = "inst/extdata/hg38_smash_snps.tsv.gz"
+    snps = system.file("extdata", "hg38_smash_snps.tsv.gz", package = "maftools")
   }
   snps = data.table::fread(input = snps, sep = "\t")
 
