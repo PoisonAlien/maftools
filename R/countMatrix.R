@@ -60,5 +60,5 @@ mutCountMatrix = function(maf, includeSyn = FALSE, countOnly = NULL, removeNonMu
   maf.temp.copy = maf.temp.copy[,colnames(maf.dat.mat)]
   maf.dat.mat = maf.temp.copy
 
-  return(maf.dat.mat)
+  return(as.matrix(maf.dat.mat))
 }

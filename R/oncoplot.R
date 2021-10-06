@@ -1107,4 +1107,5 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       title(main = titleText, outer = TRUE, line = -1, cex.main = titleFontSize)
     }
   }
+  return(invisible(rownames(nm)))
 }

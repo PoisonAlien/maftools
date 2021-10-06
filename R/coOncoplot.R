@@ -55,7 +55,7 @@
 #' ##Plot
 #' coOncoplot(m1 = primary.apl, m2 = relapse.apl, m1Name = 'Primary APL', m2Name = 'Relapse APL')
 #' dev.off()
-#' @return Returns nothing. Just draws plot.
+#' @return Invisibly returns a list of sample names in their order of occurrences in M1 and M2 respectively.
 #'
 coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                        clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
@@ -117,7 +117,6 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
   #Get matrix dimensions and legends to adjust plot graphics::layout
   nm1 = print_mat(maf = m1, genes = genes, removeNonMutated = removeNonMutated,
                   test = TRUE, colors = colors)
-  #print(nm1)
   nm1_ncol = ncol(nm1[[1]])
   nm1_vc_cols = nm1[[2]]
 
@@ -146,6 +145,8 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         additionalFeature = additionalFeature1, additionalFeaturePch = additionalFeaturePch1,
                         additionalFeatureCex = additionalFeatureCex1, additionalFeatureCol = additionalFeatureCol1,
                         sepwd_genes = sepwd_genes1, sepwd_samples = sepwd_samples1, barcodemar = barcode_mar, genemar = outer_mar, sampleOrder = sampleOrder1)
+  m1_samp_order = m1_legend$sampOrder
+  m1_legend = m1_legend[[2]]
 
 
   if(is.null(clinicalFeatures1) & !is.null(clinicalFeatures2)){
@@ -179,6 +180,8 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                         additionalFeature = additionalFeature2, additionalFeaturePch = additionalFeaturePch2,
                         additionalFeatureCex = additionalFeatureCex2, additionalFeatureCol = additionalFeatureCol2,
                         sepwd_genes = sepwd_genes2, sepwd_samples = sepwd_samples2, barcodemar = barcode_mar, genemar = outer_mar, sampleOrder = sampleOrder2)
+  m2_samp_order = m2_legend$sampOrder
+  m2_legend = m2_legend[[2]]
 
   if(!is.null(clinicalFeatures1) & is.null(clinicalFeatures2)){
     plot.new()
@@ -279,5 +282,6 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
 
     }
   }
-  #title()
+
+  invisible(x = list(M1_sample_order = m1_samp_order, M2_sample_order = m2_samp_order))
 }
