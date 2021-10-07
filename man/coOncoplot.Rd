@@ -138,7 +138,7 @@ coOncoplot(
 \item{borderCol}{border grid color for wild-type (not-mutated) samples. Default 'white'}
 }
 \value{
-Returns nothing. Just draws plot.
+Invisibly returns a list of sample names in their order of occurrences in M1 and M2 respectively.
 }
 \description{
 Draw two oncoplots side by side for cohort comparision.

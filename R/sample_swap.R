@@ -1,6 +1,6 @@
 #' Identify sample swaps and similarities
 #' @description Given a list BAM files, the function genotypes known SNPs and identifies potentially related samples. For the source of SNPs, see reference
-#' @param bam Input bam files. Required.
+#' @param bams Input bam files. Required.
 #' @param build reference genome build. Default "hg19". Can be hg19 or hg38
 #' @param prefix Prefix to add or remove from contig names in SNP file. If BAm files are aligned GRCh37/38 genome, use prefix `chr` to `add`
 #' @param add If prefix is used, default is to add prefix to contig names in SNP file. If FALSE prefix will be removed from contig names.

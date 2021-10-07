@@ -15,6 +15,8 @@ sampleSwaps(
 )
 }
 \arguments{
+\item{bams}{Input bam files. Required.}
+
 \item{build}{reference genome build. Default "hg19". Can be hg19 or hg38}
 
 \item{prefix}{Prefix to add or remove from contig names in SNP file. If BAm files are aligned GRCh37/38 genome, use prefix `chr` to `add`}
@@ -26,8 +28,6 @@ sampleSwaps(
 \item{ncores}{Default 4. Each BAM file will be launched on a separate thread. Works only on Unix and macOS.}
 
 \item{...}{Additional arguments passed to \code{\link{bamreadcounts}}}
-
-\item{bam}{Input bam files. Required.}
 }
 \value{
 a list with results summarized
