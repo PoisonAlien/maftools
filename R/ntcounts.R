@@ -7,10 +7,11 @@
 #' @param sam_flag SAM FLAG to filter reads. Default 1024
 #' @param op Output file basename. Default parses from BAM file
 #' @param fa Indexed fasta file. If provided, extracts and adds reference base to the output tsv.
+#' @param nthreads Number of threads to use. Each BAM file will be launched on a separate thread. Works only on Unix and macOS.
 #' @useDynLib maftools, .registration = TRUE
 #' @export
 
-bamreadcounts = function(bam = NULL, loci = NULL, zerobased = FALSE, mapq = 10, sam_flag = 1024, op = NULL, fa = NULL){
+bamreadcounts = function(bam = NULL, loci = NULL, zerobased = FALSE, mapq = 10, sam_flag = 1024, op = NULL, fa = NULL, nthreads = 4){
 
   if(any(is.null(bam), is.null(loci))){
     stop("Missing BAM or loci file!")
@@ -42,6 +43,15 @@ bamreadcounts = function(bam = NULL, loci = NULL, zerobased = FALSE, mapq = 10, 
     op_files = paste0(op, "_nucleotide_counts")
   }
 
+  if(all(file.exists(op_files))){
+    warning("Counts are already generated!")
+    res = lapply(seq_along(op_files), function(x){
+      data.table::fread(file = paste0(op_files[x], ".tsv"), sep = "\t", header = TRUE)
+    })
+    names(res) = op
+    return(res)
+  }
+
   if(is.null(fa)){
     fa = "NULL"
   }
@@ -63,9 +73,11 @@ bamreadcounts = function(bam = NULL, loci = NULL, zerobased = FALSE, mapq = 10, 
   lfile = tempfile(pattern = 'bamrc_', fileext = ".tsv")
   data.table::fwrite(x = loci[,c(1:2)], file = lfile, col.names = FALSE, sep = "\t", row.names = FALSE)
 
-  lapply(seq_along(bam), function(idx){
+  cat("Fetching readcounts from BAM files..\n")
+  parallel::mclapply(seq_along(bam), function(idx){
+    cat("Processing", bam[idx], ":\n")
     withCallingHandlers(suppressWarnings(invisible(.Call("ntc", bam[idx], lfile, mapq, sam_flag, fa, op_files[idx],  PACKAGE = "maftools"))))
-  })
+  }, mc.cores = nthreads)
 
   res = lapply(seq_along(op_files), function(x){
     data.table::fread(file = paste0(op_files[x], ".tsv"), sep = "\t", header = TRUE)

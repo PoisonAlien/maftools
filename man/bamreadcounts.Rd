@@ -11,7 +11,8 @@ bamreadcounts(
   mapq = 10,
   sam_flag = 1024,
   op = NULL,
-  fa = NULL
+  fa = NULL,
+  nthreads = 4
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ bamreadcounts(
 \item{op}{Output file basename. Default parses from BAM file}
 
 \item{fa}{Indexed fasta file. If provided, extracts and adds reference base to the output tsv.}
+
+\item{nthreads}{Number of threads to use. Each BAM file will be launched on a separate thread. Works only on Unix and macOS.}
 }
 \description{
 Given a BAM file and target loci, `bamreadcounts` fetches redcounts for A, T, G, C, Ins, and Del. Function name is an homage to https://github.com/genome/bam-readcount
