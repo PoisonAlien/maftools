@@ -272,6 +272,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   }
 
   #Color codes for annoations
+  annotationColor = NULL
   if(!is.null(clinicalFeatures)){
     clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
 
@@ -338,9 +339,8 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
       mtext(text = colnames(annotation), side = 2,
             font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
     }
-
-    return(annotationColor)
   }
+  return(list(sampOrder = rownames(nm), annotationColor))
 }
 
 get_m12_annotation_colors = function(a1 = NULL, a1_cf = NULL,

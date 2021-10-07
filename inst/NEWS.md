@@ -1,3 +1,12 @@
+# CHANGES IN VERSION 2.8.07
+
+## BUG FIXES
+- Return `mutCountMatrix` output as a matrix Issue: [769](https://github.com/PoisonAlien/maftools/issues/769)
+
+## ENHANCEMENTS
+- Silently return sample order from `oncoplot` and `coOncoplots` Issue: [771](https://github.com/PoisonAlien/maftools/issues/771)
+
+
 # CHANGES IN VERSION 2.8.05
 
 ## BUG FIXES
