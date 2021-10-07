@@ -1,5 +1,8 @@
 # CHANGES IN VERSION 2.8.07
 
+## NEW FUNCTIONS
+- `sampleSwaps` Given a list BAM files, the function genotypes known SNPs and identifies potentially related samples.
+
 ## BUG FIXES
 - Return `mutCountMatrix` output as a matrix Issue: [769](https://github.com/PoisonAlien/maftools/issues/769)
 
