@@ -2,7 +2,7 @@
 #' @description Given a list BAM files, the function genotypes known SNPs and identifies potentially related samples. For the source of SNPs, see reference
 #' @param bams Input bam files. Required.
 #' @param build reference genome build. Default "hg19". Can be hg19 or hg38
-#' @param prefix Prefix to add or remove from contig names in SNP file. If BAm files are aligned GRCh37/38 genome, use prefix `chr` to `add`
+#' @param prefix Prefix to add or remove from contig names in SNP file. If BAM files are aligned GRCh37/38 genome, use prefix `chr` to `add`
 #' @param add If prefix is used, default is to add prefix to contig names in SNP file. If FALSE prefix will be removed from contig names.
 #' @param min_depth Minimum read depth for a SNP to be considered. Default 30.
 #' @param ncores Default 4. Each BAM file will be launched on a separate thread. Works only on Unix and macOS.
@@ -12,6 +12,10 @@
 #' @references Westphal, M., Frankhouser, D., Sonzone, C. et al. SMaSH: Sample matching using SNPs in humans. BMC Genomics 20, 1001 (2019). https://doi.org/10.1186/s12864-019-6332-7
 #'
 sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, min_depth = 30, ncores = 4 , ...){
+
+  if(length(bams) < 2){
+    stop("Needs 2 or more BAM files!")
+  }
 
   build = match.arg(arg = build, choices = c("hg19", "hg38"))
 
@@ -70,7 +74,11 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
 
   rc_bind = data.table::rbindlist(l = rc_af, idcol = "sample")
   rc_bind = rc_bind[!is.nan(vaf)]
+  if(nrow(rc_bind) == 0){
+    stop("Zero SNPs to analyze!")
+  }
   rc_bind = rc_bind[, total := ref_rc + alt_rc][total > min_depth]
+
 
   rc_df = data.table::dcast(data = rc_bind, loci ~ sample, value.var = 'vaf', fill = NA)
   data.table::setDF(x = rc_df, rownames = rc_df$loci)

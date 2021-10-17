@@ -29,7 +29,7 @@ If you find this tool useful, please cite:
 
 ------------------------------------------------------------------------
 
-***Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome ResarchPMID: 30341162](https://doi.org/10.1101/gr.239244.118)***
+***Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome Resarch. PMID: 30341162](https://doi.org/10.1101/gr.239244.118)***
 
 ------------------------------------------------------------------------
 
@@ -686,6 +686,108 @@ Use `clinQuery` argument in `subsetMaf` to select samples of interest based on t
 laml_m4 = subsetMaf(maf = laml, clinQuery = "FAB_classification %in% 'M4'")
 ```
 
+# Sample swap identification
+
+Human errors such as sample mislabeling are common among large cancer studies. This leads to sample pair mismatches which further causes erroneous results. `sampleSwaps()` function tries to identify such sample mismatches and relatedness by genotyping single nucleotide polymorphisms (SNPs) and measuring concordance among samples. 
+
+Below demonstration uses the dataset from [Hao et. al.](https://www.nature.com/articles/ng.3683) who performed multi-region whole exome sequencing from several individuals including a matched normal. 
+
+```{r, eval=FALSE}
+#Path to BAM files
+bams = c(
+  "DBW-40-N.bam",
+  "DBW-40-1T.bam",
+  "DBW-40-2T.bam",
+  "DBW-40-3T.bam",
+  "DBW-43-N.bam",
+  "DBW-43-1T.bam"
+)
+
+res = maftools::sampleSwaps(bams = bams, build = "hg19")
+# Fetching readcounts from BAM files..
+# Summarizing allele frequncy table..
+# Performing pairwise comparison..
+# Done!
+```
+
+The returned results is a list containing:
+
+  * a `matrix` of allele frequency table for every genotyped SNP
+  * a `data.frame` of readcounts for ref and alt allele for every genotyped SNP
+  * a table with pair-wise concordance among samples
+  * a list with potentially matched samples
+
+```{r, eval=FALSE}
+ res$pairwise_comparison
+```
+
+```{r}
+# X_bam     Y_bam concordant_snps discordant_snps fract_concordant_snps  cor_coef XY_possibly_paired
+#  1: DBW-40-1T DBW-40-2T            5488             571             0.9057600 0.9656484                Yes
+#  2: DBW-40-1T DBW-40-3T            5793             266             0.9560984 0.9758083                Yes
+#  3: DBW-40-1T  DBW-43-N            5534             525             0.9133520 0.9667620                Yes
+#  4: DBW-40-2T DBW-40-3T            5853             206             0.9660010 0.9817475                Yes
+#  5: DBW-40-2T  DBW-43-N            5131             928             0.8468394 0.9297096                Yes
+#  6: DBW-40-3T  DBW-43-N            5334             725             0.8803433 0.9550670                Yes
+#  7:  DBW-40-N DBW-43-1T            5709             350             0.9422347 0.9725684                Yes
+#  8: DBW-40-1T  DBW-40-N            2829            3230             0.4669087 0.3808831                 No
+#  9: DBW-40-1T DBW-43-1T            2796            3263             0.4614623 0.3755364                 No
+# 10: DBW-40-2T  DBW-40-N            2760            3299             0.4555207 0.3641647                 No
+# 11: DBW-40-2T DBW-43-1T            2736            3323             0.4515597 0.3579747                 No
+# 12: DBW-40-3T  DBW-40-N            2775            3284             0.4579964 0.3770581                 No
+# 13: DBW-40-3T DBW-43-1T            2753            3306             0.4543654 0.3721022                 No
+# 14:  DBW-40-N  DBW-43-N            2965            3094             0.4893547 0.3839140                 No
+# 15: DBW-43-1T  DBW-43-N            2876            3183             0.4746658 0.3797829                 No
+```
+
+
+```{r, eval=FALSE}
+res$BAM_matches
+```
+
+```{r}
+# [[1]]
+# [1] "DBW-40-1T" "DBW-40-2T" "DBW-40-3T" "DBW-43-N" 
+# 
+# [[2]]
+# [1] "DBW-40-2T" "DBW-40-3T" "DBW-43-N" 
+# 
+# [[3]]
+# [1] "DBW-40-3T" "DBW-43-N" 
+# 
+# [[4]]
+# [1] "DBW-40-N"  "DBW-43-1T"
+```
+
+Results can be visualized with the correlation plot.
+
+```{r, eval=FALSE}
+cor_table = cor(res$AF_table)
+```
+
+```{r, echo=FALSE}
+cor_table = structure(c(1, 0.971671361359591, 0.982608032160979, 0.381966662753787, 
+0.380812832617918, 0.97246945978859, 0.971671361359591, 1, 0.988268712494756, 
+0.365843547670381, 0.364768267525972, 0.933880555972565, 0.982608032160979, 
+0.988268712494756, 1, 0.376165783421095, 0.375700923176265, 0.959717559987264, 
+0.381966662753787, 0.365843547670381, 0.376165783421095, 1, 0.979259788301874, 
+0.385257303482557, 0.380812832617918, 0.364768267525972, 0.375700923176265, 
+0.979259788301874, 1, 0.384975386482912, 0.97246945978859, 0.933880555972565, 
+0.959717559987264, 0.385257303482557, 0.384975386482912, 1), .Dim = c(6L, 
+6L), .Dimnames = list(c("DBW-40-1T", "DBW-40-2T", "DBW-40-3T", 
+"DBW-40-N", "DBW-43-1T", "DBW-43-N"), c("DBW-40-1T", "DBW-40-2T", 
+"DBW-40-3T", "DBW-40-N", "DBW-43-1T", "DBW-43-N")))
+```
+
+```{r, fig.width=3, fig.height=1.5}
+pheatmap::pheatmap(cor_table, breaks = seq(0, 1, 0.01))
+```
+
+
+Above results indicate that sample `DBW-43-N` possibly matches with `DBW-40-1T`, `DBW-40-2T`, `DBW-40-3T` whereas, `DBW-40-N` is in-fact a normal for the sample `DBW-43-1T` suggesting a sample mislabeling.
+
+The list of 6059 SNPs used for genotyping are carefully compiled by [Westphal et. al.](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-6332-7) and are located in the exonic regions and hence can be used for WGS, as well as WGS BAM files. Please cite [Westphal et. al.](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-6332-7) if you find this function useful.
+
 # TCGA cohorts
 
 Analysis of TCGA cohorts with `maftools` is as easy as it can get. This is made possible by processing TCGA MAF files from [Broad firehose](https://gdac.broadinstitute.org/) and TCGA [MC3](https://gdc.cancer.gov/about-data/publications/mc3-2017) project. Every cohort is stored as an MAF object containing somatic mutations (no CNVs) along with the relevant clinical information. There are two functions
@@ -779,6 +881,7 @@ Below are some more useful software packages for somatic variant analysis.
 15. Ramos, A.H. et al. Oncotator: cancer variant annotation tool. Hum Mutat 36, E2423-9 (2015).
 16. Wang, K., Li, M. & Hakonarson, H. ANNOVAR: functional annotation of genetic variants from high-throughput sequencing data. Nucleic Acids Res 38, e164 (2010).
 17. Lawrence MS, Stojanov P, Polak P, Kryukov GV, Cibulskis K, Sivachenko A, Carter SL, Stewart C, Mermel CH, Roberts SA, et al: Mutational heterogeneity in cancer and the search for new cancer-associated genes. Nature 2013, 499:214-218.
+18. Westphal, M., Frankhouser, D., Sonzone, C. et al. SMaSH: Sample matching using SNPs in humans. BMC Genomics 20, 1001 (2019)
 
 # Session Info
 

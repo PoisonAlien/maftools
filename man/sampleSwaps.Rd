@@ -19,7 +19,7 @@ sampleSwaps(
 
 \item{build}{reference genome build. Default "hg19". Can be hg19 or hg38}
 
-\item{prefix}{Prefix to add or remove from contig names in SNP file. If BAm files are aligned GRCh37/38 genome, use prefix `chr` to `add`}
+\item{prefix}{Prefix to add or remove from contig names in SNP file. If BAM files are aligned GRCh37/38 genome, use prefix `chr` to `add`}
 
 \item{add}{If prefix is used, default is to add prefix to contig names in SNP file. If FALSE prefix will be removed from contig names.}
 
