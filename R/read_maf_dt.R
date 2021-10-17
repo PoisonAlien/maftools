@@ -23,7 +23,7 @@
 #' @param cnTable Custom copynumber data if gistic results are not available. Input file or a data.frame should contain three columns in aforementioned order with gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL.
 #' @param isTCGA Is input MAF file from TCGA source. If TRUE uses only first 12 characters from Tumor_Sample_Barcode.
 #' @param removeDuplicatedVariants removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.
-#' @param vc_nonSyn NULL. Provide manual list of variant classifications to be considered as non-synonymous. Rest will be considered as silent variants. Default uses Variant Classifications with High/Moderate variant consequences. http://asia.ensembl.org/Help/Glossary?id=535: "Frame_Shift_Del", "Frame_Shift_Ins", "Splice_Site", "Translation_Start_Site","Nonsense_Mutation", "Nonstop_Mutation", "In_Frame_Del","In_Frame_Ins", "Missense_Mutation"
+#' @param vc_nonSyn NULL. Provide manual list of variant classifications to be considered as non-synonymous. Rest will be considered as silent variants. Default uses Variant Classifications with High/Moderate variant consequences. https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html: "Frame_Shift_Del", "Frame_Shift_Ins", "Splice_Site", "Translation_Start_Site","Nonsense_Mutation", "Nonstop_Mutation", "In_Frame_Del","In_Frame_Ins", "Missense_Mutation"
 #' @param verbose TRUE logical. Default to be talkative and prints summary.
 #' @return An object of class MAF.
 #' @examples

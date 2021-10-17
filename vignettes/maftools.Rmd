@@ -77,6 +77,8 @@ maftools functions can be categorized into mainly Visualization and Analysis mod
 
 `read.maf` function reads MAF files, summarizes it in various ways and stores it as an MAF object. Even though MAF file is alone enough, it is recommended to provide annotations associated with samples in MAF. One can also integrate copy number data if available.
 
+Note that by default, Variants with [High/Moderate consequences](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) are considered as non-synonymous. You change this behavior with the argument `vc_nonSyn` in `read.maf`.
+
 ```{r results='hide', message=FALSE}
 library(maftools)
 ```
