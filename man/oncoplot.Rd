@@ -67,7 +67,8 @@ oncoplot(
   writeMatrix = FALSE,
   colbar_pathway = FALSE,
   showTitle = TRUE,
-  titleText = NULL
+  titleText = NULL,
+  showPct = TRUE
 )
 }
 \arguments{
@@ -197,6 +198,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{showTitle}{Default TRUE}
 
 \item{titleText}{Custom title. Default `NULL`}
+
+\item{showPct}{Default TRUE. Shows percent altered to the right side of the plot.}
 }
 \value{
 None.

@@ -70,6 +70,7 @@
 #' @param colbar_pathway Draw top column bar with respect to diplayed pathway. Default FALSE.
 #' @param showTitle Default TRUE
 #' @param titleText Custom title. Default `NULL`
+#' @param showPct Default TRUE. Shows percent altered to the right side of the plot.
 #' @return None.
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
@@ -103,7 +104,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                genesToIgnore = NULL, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
                                colors = NULL, cBioPortal = FALSE, bgCol = "#CCCCCC", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
                                drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
-                               sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL){
+                               sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL, showPct = TRUE){
 
 
   #Total samples
@@ -803,8 +804,10 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
   mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
         font = 3, line = 0.4, cex = fontSize, las = 2)
-  mtext(text = rev(percent_alt), side = 4, at = 1:ncol(nm),
-        font = 1, line = 0.4, cex = fontSize, las = 2, adj = 0.15)
+  if(showPct){
+    mtext(text = rev(percent_alt), side = 4, at = 1:ncol(nm),
+          font = 1, line = 0.4, cex = fontSize, las = 2, adj = 0.15)
+  }
 
   if(showTumorSampleBarcodes){
     text(x =1:nrow(nm), y = par("usr")[3] - 0.2,

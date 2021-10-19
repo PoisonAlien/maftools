@@ -7,4 +7,5 @@
 - Return `mutCountMatrix` output as a matrix Issue: [769](https://github.com/PoisonAlien/maftools/issues/769)
 
 ## ENHANCEMENTS
+- Added `showPct` argument to `oncoplot`. Issue: Issue: [771](https://github.com/PoisonAlien/maftools/issues/780)
 - Silently return sample order from `oncoplot` and `coOncoplots` Issue: [771](https://github.com/PoisonAlien/maftools/issues/771)
