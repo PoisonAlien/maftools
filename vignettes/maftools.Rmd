@@ -781,14 +781,14 @@ cor_table = structure(c(1, 0.971671361359591, 0.982608032160979, 0.3819666627537
 "DBW-40-3T", "DBW-40-N", "DBW-43-1T", "DBW-43-N")))
 ```
 
-```{r, fig.width=3, fig.height=1.5}
+```{r, fig.width=6, fig.height=4}
 pheatmap::pheatmap(cor_table, breaks = seq(0, 1, 0.01))
 ```
 
 
 Above results indicate that sample `DBW-43-N` possibly matches with `DBW-40-1T`, `DBW-40-2T`, `DBW-40-3T` whereas, `DBW-40-N` is in-fact a normal for the sample `DBW-43-1T` suggesting a sample mislabeling.
 
-The list of 6059 SNPs used for genotyping are carefully compiled by [Westphal et. al.](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-6332-7) and are located in the exonic regions and hence can be used for WGS, as well as WGS BAM files. Please cite [Westphal et. al.](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-6332-7) if you find this function useful.
+The list of 6059 SNPs used for genotyping are carefully compiled by [Westphal et. al.](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-6332-7) and are located in the exonic regions and hence can be used for WGS, as well as WXS BAM files. Please cite [Westphal et. al.](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-6332-7) if you find this function useful.
 
 # TCGA cohorts
 
