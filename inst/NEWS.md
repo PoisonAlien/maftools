@@ -1,4 +1,9 @@
-# CHANGES IN VERSION 3.0.00 (BioC 3.14 RC)
+# CHANGES IN VERSION 2.10.01
+
+## BUG FIXES
+- `coOncoplot` Ignores Annotation Colours. Issue: [786](https://github.com/PoisonAlien/maftools/issues/786)
+
+# CHANGES IN VERSION 2.10.00 (BC 3.14 release version)
 
 ## NEW FUNCTIONS
 - `sampleSwaps` Given a list BAM files, the function genotypes known SNPs and identifies potentially related samples.

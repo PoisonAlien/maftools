@@ -272,7 +272,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   }
 
   #Color codes for annoations
-  annotationColor = NULL
+  #annotationColor = NULL
   if(!is.null(clinicalFeatures)){
     clini_lvls = as.character(unlist(lapply(annotation, function(x) unique(as.character(x)))))
 
