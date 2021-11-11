@@ -2,6 +2,7 @@
 
 ## BUG FIXES
 - `coOncoplot` Ignores Annotation Colours. Issue: [786](https://github.com/PoisonAlien/maftools/issues/786)
+- `subsetMaf` Lost Columns if clinQuery Result is One Row. Issue: [785](https://github.com/PoisonAlien/maftools/issues/785)
 
 # CHANGES IN VERSION 2.10.00 (BC 3.14 release version)
 
