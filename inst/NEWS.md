@@ -1,5 +1,7 @@
 # CHANGES IN VERSION 2.10.01
 
+- Added PALB2 protein structure. Issue: [677](https://github.com/PoisonAlien/maftools/issues/677)
+
 ## BUG FIXES
 - `coOncoplot` Ignores Annotation Colours. Issue: [786](https://github.com/PoisonAlien/maftools/issues/786)
 - `subsetMaf` Lost Columns if clinQuery Result is One Row. Issue: [785](https://github.com/PoisonAlien/maftools/issues/785)
