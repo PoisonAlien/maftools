@@ -87,6 +87,7 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
 
   cat("Performing pairwise comparison..\n")
   rc_af_snps_found = rc_af[colnames(rc_df)]
+  samples_no_snps_found = setdiff(names(rc_af), colnames(rc_df))
   sample_matches = parallel::mclapply(seq_along(rc_af_snps_found), function(idx){
 
     x = rc_af_snps_found[[idx]]
@@ -144,6 +145,7 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
       fill = TRUE
     ),
     pairwise_comparison = data.table::rbindlist(sample_matches)[order(XY_possibly_paired, decreasing = TRUE)],
-    BAM_matches = pos_mathces
+    BAM_matches = pos_mathces,
+    samples_no_snps_found = samples_no_snps_found
   )
 }
