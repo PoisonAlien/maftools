@@ -86,19 +86,20 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
   rc_df = rc_df[complete.cases(rc_df),]
 
   cat("Performing pairwise comparison..\n")
-  sample_matches = parallel::mclapply(seq_along(rc_af), function(idx){
+  rc_af_snps_found = rc_af[colnames(rc_df)]
+  sample_matches = parallel::mclapply(seq_along(rc_af_snps_found), function(idx){
 
-    x = rc_af[[idx]]
-    if(idx == length(rc_af)){
+    x = rc_af_snps_found[[idx]]
+    if(idx == length(rc_af_snps_found)){
       return(NULL)
     }else{
-      rest_samps = seq_along(rc_af)[(idx+1):(length(rc_af))]
+      rest_samps = seq_along(rc_af_snps_found)[(idx+1):(length(rc_af_snps_found))]
     }
-    #rest_samps = setdiff(seq_along(rc_af), idx)
-    cat("Comparing", names(rc_af)[idx], "against rest..\n")
+    #rest_samps = setdiff(seq_along(rc_af_snps_found), idx)
+    cat("Comparing", names(rc_af_snps_found)[idx], "against rest..\n")
 
     x_compare = lapply(rest_samps,function(rest_idx){
-      y = rc_af[[rest_idx]]
+      y = rc_af_snps_found[[rest_idx]]
 
       concordant_snps = lapply(seq_along(1:nrow(y)), function(row_idx){
         fisher.test(x = matrix(c(x[row_idx, ref_rc], x[row_idx, alt_rc], y[row_idx, ref_rc], y[row_idx, alt_rc]), nrow = 2, ncol = 2))$p.value
@@ -108,8 +109,8 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
       cor_coef = cor.test(x$vaf, y$vaf)$estimate
 
       data.table::data.table(
-        X_bam = names(rc_af)[idx],
-        Y_bam = names(rc_af)[rest_idx],
+        X_bam = names(rc_af_snps_found)[idx],
+        Y_bam = names(rc_af_snps_found)[rest_idx],
         concordant_snps = concordant_snps[[1]],
         discordant_snps = concordant_snps[[2]],
         fract_concordant_snps = prop.table(concordant_snps)[[1]],
