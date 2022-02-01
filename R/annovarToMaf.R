@@ -180,7 +180,7 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     ann[, Variant_Type := ifelse(
       ref_alt_diff == 0 ,
       yes = ifelse(test = Ref != "-" & Alt != "-", yes = "SNP",
-      no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL")))
+      no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL")), no = NA)
     ]
 
     #Check for MNPs (they are neither INDELS nor SNPs)
