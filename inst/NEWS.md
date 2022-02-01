@@ -3,6 +3,8 @@
 - Added PALB2 protein structure. Issue: [677](https://github.com/PoisonAlien/maftools/issues/677)
 
 ## BUG FIXES
+- `annovarToMaf` struggles with Variant_Type. Issue: [803](https://github.com/PoisonAlien/maftools/issues/803)
+- `lollipopPlot2` and Domain Details for Further Analysis Issue: [794](https://github.com/PoisonAlien/maftools/issues/794)
 - `coOncoplot` Ignores Annotation Colours. Issue: [786](https://github.com/PoisonAlien/maftools/issues/786)
 - `subsetMaf` Lost Columns if clinQuery Result is One Row. Issue: [785](https://github.com/PoisonAlien/maftools/issues/785)
 

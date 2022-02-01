@@ -151,7 +151,18 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
     xlimPos = xlimPos[-(length(xlimPos)-1)]
   }
 
-  return(list(prot.snp.sumamry, xlimPos, lim.pos, lim.lab, cbioSubTitle, prot))
+  #Get domain overlap labels for each pos (Issue: #794)
+  data.table::setkey(x = prot, "Start", "End")
+  domain_olaps = data.table::foverlaps(
+    x = prot.snp.sumamry,
+    y = prot[, .(Start, End, Label)],
+    by.x = c("pos", "pos2"),
+    by.y = c("Start", "End"),
+    mult = "all"
+  )[, .(Start, End, Label, Variant_Classification, conv, pos, count)]
+  colnames(domain_olaps) = c("Domain_Start", "Domain_End", "Domain_Label", "Variant_Classification", "Conversion", "Position", "n_variants")
+
+  return(list(prot.snp.sumamry, xlimPos, lim.pos, lim.lab, cbioSubTitle, prot, domain_olaps))
 }
 
 

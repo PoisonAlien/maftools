@@ -77,6 +77,9 @@ lollipopPlot2(
 
 \item{verbose}{Default TRUE}
 }
+\value{
+invisible list of domain overlaps
+}
 \description{
 Compare two lollipop plots
 }

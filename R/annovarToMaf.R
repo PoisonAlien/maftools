@@ -177,7 +177,11 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     #Add Variant-type annotations based on difference between ref and alt alleles
     cat("-Adding Variant_Type\n")
     ann[,ref_alt_diff := nchar(Ref) - nchar(Alt)]
-    ann[, Variant_Type := ifelse(ref_alt_diff == 0 , yes = "SNP", no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL"))]
+    ann[, Variant_Type := ifelse(
+      ref_alt_diff == 0 ,
+      yes = ifelse(test = Ref != "-" & Alt != "-", yes = "SNP",
+      no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL")))
+    ]
 
     #Check for MNPs (they are neither INDELS nor SNPs)
     ann$Variant_Type = ifelse(

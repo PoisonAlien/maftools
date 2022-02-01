@@ -23,6 +23,7 @@
 #' @param domainBorderCol Default "black". Set to NA to remove.
 #' @param legendTxtSize Default 1.
 #' @param verbose Default TRUE
+#' @return invisible list of domain overlaps
 #' @importFrom grDevices colors colours
 #' @examples
 #' primary.apl <- system.file("extdata", "APL_primary.maf.gz", package = "maftools")
@@ -234,5 +235,7 @@ lollipopPlot2 = function(m1, m2, gene = NULL, AACol1 = NULL, AACol2 = NULL, m1_n
                    cex = legendTxtSize, title = "Domains",
                    title.adj = 0, pt.cex = 1.2 * legendTxtSize)
     }
+
+    invisible(list(M1 = m1.lp[[7]], M2 = m2.lp[[7]]))
 
 }
