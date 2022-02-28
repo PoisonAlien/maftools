@@ -7,7 +7,7 @@
 prep_ascat_t(
   t_counts = NULL,
   sample_name = NA,
-  min_depth = 30,
+  min_depth = 15,
   PLATFORM = "AffySNP6"
 )
 }
@@ -16,7 +16,7 @@ prep_ascat_t(
 
 \item{sample_name}{Sample name. Used as a basename for output files. Default NA, parses from t_counts file.}
 
-\item{min_depth}{Min read depth required to consider a marker. Default 30}
+\item{min_depth}{Min read depth required to consider a marker. Default 15}
 
 \item{PLATFORM}{Default AffySNP6. Only change if you have used custom loci. See here for available options https://www.crick.ac.uk/research/labs/peter-van-loo/software}
 }
@@ -24,5 +24,11 @@ prep_ascat_t(
 An \code{\link{ascat.loadData}} object; ascat data structure
 }
 \description{
-Prepare input files for ASCAT tumor only samples
+Function takes the output from \code{\link{gtSNPs}} and generates `logR` and `BAF` files required for ASCAT analysis.
+}
+\details{
+The function will filter SNPs with low coverage (default <15), estimate BAF, logR, and generates the input files for ASCAT. Tumor `logR` file will be normalized for median depth of coverage. In addition, it will run `ASCAT::ascat.loadData()` and `ASCAT::ascat.plotRawData()` for you and returns the `ASCAT` object that can be further processed with ASCAT functions. Alternatively, logR file can be segmented with \code{\link{segment_logR}}
+}
+\seealso{
+\code{\link{gtSNPs}} \code{\link{prep_ascat}} \code{\link{segment_logR}}
 }

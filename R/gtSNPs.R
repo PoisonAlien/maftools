@@ -1,10 +1,11 @@
-#' Extract nucleotide counts from targeted loci (SNPs)
+#' Genotype SNPs for ASCAT
+#' @description The function will generate tsv files `<tumor/normal>_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K loci from Affymetrix Genome-Wide Human SNP 6.0 Array. The process can be sped up by increasing `nthreads` which will launch each chromosome on a separate thread. Currently hg19 and hg38 are supported. Files need to be further processed with \code{\link{prep_ascat}} for tumor-normal pair, or \code{\link{prep_ascat_t}} for tumor only samples.
 #' @param t_bam Tumor BAM file. Required
 #' @param n_bam Normal BAM file. Recommended
-#' @param build Default hg19. Mutually exclusive with `loci`. Currently supported `hg19` and `hg38` and includes ~900K SNPs from Affymetrix Genome-Wide Human SNP 6.0 Array. SNP file has no `chr` prefix.
-#' @param prefix Prefix to add or remove from contig names in loci file. For example, in case BAM files have no `chr` prefix.
+#' @param build Default hg19. Mutually exclusive with `loci`. Currently supported `hg19` and `hg38` and includes ca. 900K SNPs from Affymetrix Genome-Wide Human SNP 6.0 Array. SNP file has no `chr` prefix.
+#' @param prefix Prefix to add or remove from contig names in loci file. For example, in case BAM files have `chr` prefix, set prefix = 'chr'
 #' @param add If prefix is used, default is to add prefix to contig names in loci file. If false prefix will be removed from contig names.
-#' @param mapq Map quality. Default 10
+#' @param mapq Minimum mapping quality. Default 10
 #' @param sam_flag SAM FLAG to filter reads. Default 1024
 #' @param loci A tab separated file with chr and position. If not available use `build` argument.
 #' @param zerobased are coordinates zero-based. Default FALSE. Use only if `loci` is used.
@@ -13,10 +14,11 @@
 #' @param nthreads Number of threads to use. Default 4. Each chromosome will be launched on a separate thread. Works only on Unix and macOS.
 #' @param verbose Default TRUE
 #' @export
+#' @seealso \code{\link{prep_ascat}} \code{\link{prep_ascat_t}} \code{\link{segment_logR}}
 #' @useDynLib maftools, .registration = TRUE
 #' @import data.table
 
-get_counts = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL, add = TRUE,
+gtSNPs = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL, add = TRUE,
                       mapq = 10, sam_flag = 1024, loci = NULL, fa = NULL, op = NULL,
                       zerobased = FALSE, nthreads = 4, verbose = TRUE){
 
@@ -98,7 +100,7 @@ get_counts = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL,
 
   loci_files = lapply(1:length(loci), function(idx){
     chrname = names(loci)[idx]
-    lfile = tempfile(pattern = paste0("chr",chrname, "_"), fileext = paste0("_loci.tsv"))
+    lfile = tempfile(pattern = paste0(chrname, "_"), fileext = paste0("_loci.tsv"))
     data.table::fwrite(x = loci[[idx]][,c(1:2)], file = lfile, col.names = FALSE, sep = "\t", row.names = FALSE)
     lfile
   })
@@ -144,6 +146,4 @@ get_counts = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL,
     cat(paste0(bam_idxstats[[idx]], "\n"), file = paste0(op_files[[idx]], ".tsv"))
     data.table::fwrite(x = res[[idx]], file = paste0(op_files[[idx]], ".tsv"), append = TRUE, sep = "\t", na = "NA", quote = FALSE, col.names = TRUE)
   })
-
-  res
 }

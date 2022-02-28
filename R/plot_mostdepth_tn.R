@@ -1,23 +1,23 @@
 #'Plot results from mosdepth output for Tumor/Normal pairs
 #' @param t_bed mosdepth output from tumor
-#' @param n_bed mosdepth output from normal
+#' @param n_bed mosdepth output from matched normal
 #' @param segment Whether to perform CBS segmentation. Default TRUE
 #' @param sample_name sample name. Default parses from `t_bed`
 #' @param col Colors. Default c("#95a5a6", "#7f8c8d")
 #' @export
 
-plot_mosdepth_tn = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name = NULL, col = c("#95a5a6", "#7f8c8d")){
-  
+plot_mosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name = NULL, col = c("#95a5a6", "#7f8c8d")){
+
   contigs = c(1:22, "X", "Y", paste0("chr", 1:22), "chrX", "chrY")
-  
+
   if(is.null(sample_name)){
     sample_name = gsub(x = basename(t_bed), pattern = "\\.regions\\.bed\\.gz$", replacement = "")
   }
-  
+
   if(is.null(plot_file)){
     plot_file = sample_name
   }
-  
+
   dat = lapply(X = c(t_bed, n_bed), function(x){
     x = data.table::fread(input = x)
     colnames(x) = c("chr", "start", "end", "doc")
@@ -26,32 +26,32 @@ plot_mosdepth_tn = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_n
     x = x[Chromosome %in% contigs]
     x
   })
-  
-  
+
+
   names(dat) = c("tumor", "normal")
   dat = merge(dat$tumor, dat$normal, by = c("Chromosome", "Start_Position", 'End_Position'), suffixes = c("_t", "_n"))
-  
+
   dat_xy = dat[Chromosome %in% c('X', 'Y', 'chrX', 'chrY')]
   datn = dat[!Chromosome %in% c('X', 'Y', 'chrX', 'chrY')]
   datn[, Chromosome := as.numeric(as.character(Chromosome))]
   datn = datn[order(Chromosome, Start_Position)]
   dat = rbind(datn, dat_xy)
-  
+
   #Get chr lengths
   chr.lens.dt = dat[,max(End_Position, na.rm = TRUE), .(Chromosome)]
   chr.lens = chr.lens.dt$V1
   names(chr.lens) = chr.lens.dt$Chromosome
-  
+
   map_ratio = sum(dat$doc_t, na.rm = TRUE)/sum(dat$doc_n, na.rm = TRUE)
   message("Coverage ratio T/N: ", round(map_ratio, digits = 3))
   dat$doc_n = dat$doc_n * map_ratio
-  
+
   dat[, logR := log2(doc_t+1) - log2(doc_n+1)]
-  
+
   cols = rep(x = col, length(chr.lens))
-  
+
   all_depth_spl = split(dat, dat$Chromosome)[names(chr.lens)]
-  
+
   seg.spl.transformed = all_depth_spl[[1]]
   if (nrow(seg.spl.transformed) > 0) {
     seg.spl.transformed$Start_Position_updated = seg.spl.transformed$Start_Position
@@ -61,24 +61,24 @@ plot_mosdepth_tn = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_n
   for (i in 2:length(all_depth_spl)) {
     x.seg = all_depth_spl[[i]]
     if (nrow(x.seg) > 0) {
-      x.seg$Start_Position_updated = x.seg$Start_Position + 
+      x.seg$Start_Position_updated = x.seg$Start_Position +
         chr.lens.sumsum[i - 1]
-      x.seg$End_Position_updated = x.seg$End_Position + 
+      x.seg$End_Position_updated = x.seg$End_Position +
         chr.lens.sumsum[i - 1]
     }
-    seg.spl.transformed = rbind(seg.spl.transformed, x.seg, 
+    seg.spl.transformed = rbind(seg.spl.transformed, x.seg,
                                 fill = TRUE)
   }
-  
+
   all_depth_spl = split(seg.spl.transformed, seg.spl.transformed$Chromosome)[names(chr.lens)]
-  
+
   cn_segs = NULL
   if(segment){
     message("Running CBS segmentation:")
     #samp.name = gsub(pattern = '.denoisedCR.tsv', replacement = '', x = copynumber_file)
     cn = DNAcopy::CNA(genomdat = data.table::rbindlist(l = all_depth_spl)[,logR], chrom = data.table::rbindlist(l = all_depth_spl)[,Chromosome], maploc = data.table::rbindlist(l = all_depth_spl)[,Start_Position],
                       data.type = "logratio", sampleid = sample_name, presorted = TRUE)
-    
+
     cn = DNAcopy::smooth.CNA(cn)
     cn = DNAcopy::segment(cn, alpha = 0.01, nperm = 10000, p.method = 'hybrid', min.width = 5, kmax = 25, nmin = 210,
                           eta = 0.05, trim = 0.025, undo.SD = 3, undo.prune = 0.05, undo.splits = 'sdundo', verbose = 2)
@@ -86,8 +86,8 @@ plot_mosdepth_tn = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_n
     colnames(cn_segs)[1:4] = c("Sample_Name", "Chromosome", "Start_Position", "End_Position")
     data.table::setDT(cn_segs)
     cn_segs = split(cn_segs, cn_segs$Chromosome)[names(all_depth_spl)]
-    
-    
+
+
     seg.spl.transformed = cn_segs[[1]]
     if (nrow(seg.spl.transformed) > 0) {
       seg.spl.transformed$Start_Position_updated = seg.spl.transformed$Start_Position
@@ -97,17 +97,17 @@ plot_mosdepth_tn = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_n
     for (i in 2:length(cn_segs)) {
       x.seg = cn_segs[[i]]
       if (nrow(x.seg) > 0) {
-        x.seg$Start_Position_updated = x.seg$Start_Position + 
+        x.seg$Start_Position_updated = x.seg$Start_Position +
           chr.lens.sumsum[i - 1]
-        x.seg$End_Position_updated = x.seg$End_Position + 
+        x.seg$End_Position_updated = x.seg$End_Position +
           chr.lens.sumsum[i - 1]
       }
-      seg.spl.transformed = rbind(seg.spl.transformed, x.seg, 
+      seg.spl.transformed = rbind(seg.spl.transformed, x.seg,
                                   fill = TRUE)
     }
     seg.spl.transformed = split(seg.spl.transformed, seg.spl.transformed$Chromosome)[names(chr.lens)]
   }
-  
+
   message("Plotting")
   #png(filename = paste0(sample_name, ".png"), width = 1024, height = 600, bg = "white")
   par(mar = c(4, 4, 3, 1))
@@ -128,6 +128,6 @@ plot_mosdepth_tn = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_n
   mtext(text = "logR", side = 2, line = 2)
   title(main = sample_name, adj = 0)
   #dev.off()
-  
+
   data.table::rbindlist(l = cn_segs, use.names = TRUE, fill = TRUE)
 }

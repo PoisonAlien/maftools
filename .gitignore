@@ -43,3 +43,4 @@ unsrturl.bst
 src/maftools.so
 src/ntcounts.o
 src/somaticfreq.o
+src/snpcounts.o
