@@ -10,7 +10,7 @@
 segment_logR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19", ...){
 
   if(is.null(sample_name)){
-    sample_name = gsub(pattern = "_nucleotide_counts.*.logR.txt", replacement = "", x = basename(path = tumor_logR))
+    sample_name = gsub(pattern = "\\.logR\\.txt", replacement = "", x = basename(path = tumor_logR))
   }
 
   tn = data.table::fread(input = tumor_logR)
@@ -30,7 +30,6 @@ segment_logR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19", .
   cn = DNAcopy::segment(cn, alpha = 0.01, nperm = 10000, p.method = 'hybrid', min.width = 5, kmax = 25, nmin = 210,
                         eta = 0.05, trim = 0.025, undo.SD = 3, undo.prune = 0.05, undo.splits = 'sdundo', verbose = 2)
 
-  return(cn)
   colnames(segs) = c("Sample",'Chromosome','Start','End','Num_Probes','Segment_Mean')
   write.table(segs, paste(sample_name, '_cbs.seg', sep=''), quote = FALSE, row.names = FALSE, sep='\t')
 
