@@ -18,6 +18,7 @@
 #' @param countsFontColor Default `black`
 #' @param colPal colPalBrewer palettes. See RColorBrewer::display.brewer.all() for details
 #' @param showSum show [sum] with gene names in plot, Default TRUE
+#' @param plotPadj Plot adj. p-values instead
 #' @param colNC Number of different colors in the palette, minimum 3, default 9
 #' @param nShiftSymbols shift if positive shift SigSymbols by n to the left, default = 5
 #' @param sigSymbolsSize size of symbols in the matrix and in legend
@@ -34,7 +35,7 @@
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
                                geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
                                showCounts = FALSE, countStats = 'all', countType = 'all',
-                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", showSum = TRUE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42), limitColorBreaks = TRUE){
+                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", showSum = TRUE, plotPadj = FALSE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42), limitColorBreaks = TRUE){
   #browser()
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
@@ -92,13 +93,25 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
                                   d
                         }), fill = TRUE)
 
-  sigPairsTbl = sigPairsTbl[!gene1 == gene2] #Remove doagonal elements
+  sigPairsTbl[, pAdj := p.adjust(pValue, method = 'fdr')]
   sigPairsTbl[is.na(sigPairsTbl)] = 0
   sigPairsTbl$Event = ifelse(test = sigPairsTbl$oddsRatio > 1, yes = "Co_Occurence", no = "Mutually_Exclusive")
   sigPairsTbl$pair = apply(X = sigPairsTbl[,.(gene1, gene2)], MARGIN = 1, FUN = function(x) paste(sort(unique(x)), collapse = ", "))
   sigPairsTbl[,event_ratio := `01`+`10`]
   sigPairsTbl[,event_ratio := paste0(`11`, '/', event_ratio)]
   sigPairsTblSig = sigPairsTbl[order(as.numeric(pValue))][!duplicated(pair)]
+
+  if(plotPadj){
+    sigPairsTblSig$pAdjLog = ifelse(sigPairsTblSig$oddsRatio > 1, yes = -log10(sigPairsTblSig$pAdj), no = log10(sigPairsTblSig$pAdj))
+    interactionsFDR = data.table::dcast(data = sigPairsTblSig, gene1 ~ gene2, value.var = 'pAdjLog')
+    data.table::setDF(interactionsFDR, rownames = interactionsFDR$gene1)
+    interactionsFDR$gene1 = NULL
+    interactions = interactionsFDR[rownames(interactions), colnames(interactions)]
+    interactions = as.matrix(interactions)
+    sigPairsTblSig$pAdjLog = NULL
+  }
+
+  sigPairsTblSig = sigPairsTblSig[!gene1 == gene2] #Remove diagonal elements
 
   #Source code borrowed from: https://www.nature.com/articles/ncomms6901
   if(nrow(interactions) >= 5){
@@ -217,9 +230,18 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
     if(showSigSymbols){
       points(x = n-nShiftSymbols, y = 0.7*n, pch = pvSymbols[2], cex = sigSymbolsSize) # "*"
-      text(x = n-nShiftSymbols, y = 0.7*n, paste0(" P < ", min(pvalue)), pos=4, cex = sigSymbolsFontSize, adj = 0)
+      if(plotPadj){
+        text(x = n-nShiftSymbols, y = 0.7*n, paste0(" fdr < ", min(pvalue)), pos=4, cex = sigSymbolsFontSize, adj = 0)
+      }else{
+        text(x = n-nShiftSymbols, y = 0.7*n, paste0(" fdr < ", min(pvalue)), pos=4, cex = sigSymbolsFontSize, adj = 0)
+      }
+
       points(x = n-nShiftSymbols, y = 0.65*n, pch = pvSymbols[1], cex = sigSymbolsSize) # "."
-      text(x = n-nShiftSymbols, y = 0.65*n, paste0(" P < ", max(pvalue)), pos=4, cex = sigSymbolsFontSize)
+      if(plotPadj){
+        text(x = n-nShiftSymbols, y = 0.65*n, paste0(" fdr < ", max(pvalue)), pos=4, cex = sigSymbolsFontSize)
+      }else{
+        text(x = n-nShiftSymbols, y = 0.65*n, paste0(" fdr < ", max(pvalue)), pos=4, cex = sigSymbolsFontSize)
+      }
     }
 
     #image(y = 1:8 +6, x=rep(n,2)+c(2,2.5)+1, z=matrix(c(1:8), nrow=1), col=brewer.pal(8,"PiYG"), add=TRUE)
@@ -234,7 +256,12 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     #atLims = seq(nrow(interactions), 0.9*nrow(interactions), length.out = 7)
     atLims = seq(0, 1, length.out = 7)
     axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurence)"), lwd=.5, cex.axis = sigSymbolsFontSize, line = 0.2)
-    text(x = 0.4, y = 0.5, labels = "-log10(P-value)", srt = 90, cex = sigSymbolsFontSize, xpd = TRUE)
+    if(plotPadj){
+      text(x = 0.4, y = 0.5, labels = "-log10(fdr)", srt = 90, cex = sigSymbolsFontSize, xpd = TRUE)
+    }else{
+      text(x = 0.4, y = 0.5, labels = "-log10(P-value)", srt = 90, cex = sigSymbolsFontSize, xpd = TRUE)
+    }
+
     #mtext(side=4, at = median(atLims), "-log10 (p-value)", las=3, cex = 0.9, line = 2.5, font = 1)
   }
 

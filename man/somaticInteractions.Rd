@@ -20,6 +20,7 @@ somaticInteractions(
   countsFontColor = "black",
   colPal = "BrBG",
   showSum = TRUE,
+  plotPadj = FALSE,
   colNC = 9,
   nShiftSymbols = 5,
   sigSymbolsSize = 2,
@@ -58,6 +59,8 @@ somaticInteractions(
 \item{colPal}{colPalBrewer palettes. See RColorBrewer::display.brewer.all() for details}
 
 \item{showSum}{show [sum] with gene names in plot, Default TRUE}
+
+\item{plotPadj}{Plot adj. p-values instead}
 
 \item{colNC}{Number of different colors in the palette, minimum 3, default 9}
 
