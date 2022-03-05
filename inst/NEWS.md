@@ -1,4 +1,8 @@
-# CHANGES IN VERSION 2.10.01
+# CHANGES IN VERSION 2.10.10 (GitHub master branch)
+
+- Added support for plotting adjusted p-values in `somaticInteractions`. Issue: [813](https://github.com/PoisonAlien/maftools/issues/813)
+
+# CHANGES IN VERSION 2.10.05 (BC 3.14 release version)
 
 - Added PALB2 protein structure. Issue: [677](https://github.com/PoisonAlien/maftools/issues/677)
 
@@ -8,7 +12,7 @@
 - `coOncoplot` Ignores Annotation Colours. Issue: [786](https://github.com/PoisonAlien/maftools/issues/786)
 - `subsetMaf` Lost Columns if clinQuery Result is One Row. Issue: [785](https://github.com/PoisonAlien/maftools/issues/785)
 
-# CHANGES IN VERSION 2.10.00 (BC 3.14 release version)
+# CHANGES IN VERSION 2.10.00
 
 ## NEW FUNCTIONS
 - `sampleSwaps` Given a list BAM files, the function genotypes known SNPs and identifies potentially related samples.
