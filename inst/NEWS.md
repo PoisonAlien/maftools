@@ -1,6 +1,7 @@
 # CHANGES IN VERSION 2.10.10 (GitHub master branch)
 
 - Added support for plotting adjusted p-values in `somaticInteractions`. Issue: [813](https://github.com/PoisonAlien/maftools/issues/813)
+- Added support for the protein structure `BECN2` Issue: [696](https://github.com/PoisonAlien/maftools/issues/696)
 
 # CHANGES IN VERSION 2.10.05 (BC 3.14 release version)
 
