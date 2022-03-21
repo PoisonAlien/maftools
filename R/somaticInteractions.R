@@ -233,14 +233,14 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
       if(plotPadj){
         text(x = n-nShiftSymbols, y = 0.7*n, paste0(" fdr < ", min(pvalue)), pos=4, cex = sigSymbolsFontSize, adj = 0)
       }else{
-        text(x = n-nShiftSymbols, y = 0.7*n, paste0(" fdr < ", min(pvalue)), pos=4, cex = sigSymbolsFontSize, adj = 0)
+        text(x = n-nShiftSymbols, y = 0.7*n, paste0(" P < ", min(pvalue)), pos=4, cex = sigSymbolsFontSize, adj = 0)
       }
 
       points(x = n-nShiftSymbols, y = 0.65*n, pch = pvSymbols[1], cex = sigSymbolsSize) # "."
       if(plotPadj){
         text(x = n-nShiftSymbols, y = 0.65*n, paste0(" fdr < ", max(pvalue)), pos=4, cex = sigSymbolsFontSize)
       }else{
-        text(x = n-nShiftSymbols, y = 0.65*n, paste0(" fdr < ", max(pvalue)), pos=4, cex = sigSymbolsFontSize)
+        text(x = n-nShiftSymbols, y = 0.65*n, paste0(" P < ", max(pvalue)), pos=4, cex = sigSymbolsFontSize)
       }
     }
 
