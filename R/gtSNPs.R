@@ -1,4 +1,4 @@
-#' Genotype SNPs for ASCAT
+#' Extract read counts from genetic markers for ASCAT analysis
 #' @description The function will generate tsv files `<tumor/normal>_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K loci from Affymetrix Genome-Wide Human SNP 6.0 Array. The process can be sped up by increasing `nthreads` which will launch each chromosome on a separate thread. Currently hg19 and hg38 are supported. Files need to be further processed with \code{\link{prep_ascat}} for tumor-normal pair, or \code{\link{prep_ascat_t}} for tumor only samples.
 #' @param t_bam Tumor BAM file. Required
 #' @param n_bam Normal BAM file. Recommended
@@ -14,11 +14,11 @@
 #' @param nthreads Number of threads to use. Default 4. Each chromosome will be launched on a separate thread. Works only on Unix and macOS.
 #' @param verbose Default TRUE
 #' @export
-#' @seealso \code{\link{prep_ascat}} \code{\link{prep_ascat_t}} \code{\link{segment_logR}}
+#' @seealso \code{\link{prep_ascat}} \code{\link{prep_ascat_t}} \code{\link{segmentLogR}}
 #' @useDynLib maftools, .registration = TRUE
 #' @import data.table
 
-gtSNPs = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL, add = TRUE,
+gtMarkers = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL, add = TRUE,
                       mapq = 10, sam_flag = 1024, loci = NULL, fa = NULL, op = NULL,
                       zerobased = FALSE, nthreads = 4, verbose = TRUE){
 

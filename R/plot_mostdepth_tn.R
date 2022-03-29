@@ -4,9 +4,10 @@
 #' @param segment Whether to perform CBS segmentation. Default TRUE
 #' @param sample_name sample name. Default parses from `t_bed`
 #' @param col Colors. Default c("#95a5a6", "#7f8c8d")
+#' @references Pedersen BS, Quinlan AR. Mosdepth: quick coverage calculation for genomes and exomes. Bioinformatics. 2018;34(5):867-868. doi:10.1093/bioinformatics/btx699
 #' @export
 
-plot_mosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name = NULL, col = c("#95a5a6", "#7f8c8d")){
+plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name = NULL, col = c("#95a5a6", "#7f8c8d")){
 
   contigs = c(1:22, "X", "Y", paste0("chr", 1:22), "chrX", "chrY")
 

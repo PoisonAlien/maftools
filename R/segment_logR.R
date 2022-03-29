@@ -7,7 +7,7 @@
 #' @seealso \code{\link{gtSNPs}} \code{\link{prep_ascat}}
 #' @export
 #' @import DNAcopy
-segment_logR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19", ...){
+segmentLogR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19", ...){
 
   if(is.null(sample_name)){
     sample_name = gsub(pattern = "\\.logR\\.txt", replacement = "", x = basename(path = tumor_logR))
@@ -15,7 +15,7 @@ segment_logR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19", .
 
   tn = data.table::fread(input = tumor_logR)
   colnames(tn)[1:4] = c('SNP', 'contig', 'pos', 'logR')
-  #tn$contig = gsub(pattern = 'chr', replacement = '', x = tn$contig, fixed = TRUE)
+  tn$contig = gsub(pattern = 'chr', replacement = '', x = tn$contig, fixed = TRUE)
   tnxy = tn[contig %in% c('X', 'Y')]
   tn = tn[!contig %in% c('X', 'Y')]
   #tn = tn[!contig == 'Y']

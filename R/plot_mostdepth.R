@@ -3,7 +3,7 @@
 #' @param col Colors. Default c("#95a5a6", "#7f8c8d")
 #' @export
 
-plot_mosdepth_t = function(bed = NULL, col = c("#95a5a6", "#7f8c8d")){
+plotMosdepth_t = function(bed = NULL, col = c("#95a5a6", "#7f8c8d")){
 
   tum_cov = data.table::fread(input = bed)
   colnames(tum_cov) = c("chr", "start", "end", "doc")
@@ -92,5 +92,4 @@ plot_mosdepth_t = function(bed = NULL, col = c("#95a5a6", "#7f8c8d")){
   title(main = "DOC Median centered")
 
   #dev.off()
-
 }
