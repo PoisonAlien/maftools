@@ -7,7 +7,7 @@
 #' @seealso \code{\link{gtSNPs}} \code{\link{prep_ascat}}
 #' @export
 #' @import DNAcopy
-segmentLogR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19", ...){
+segmentLogR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19"){
 
   if(is.null(sample_name)){
     sample_name = gsub(pattern = "\\.logR\\.txt", replacement = "", x = basename(path = tumor_logR))
@@ -30,10 +30,11 @@ segmentLogR = function(tumor_logR = NULL, sample_name = NULL, build = "hg19", ..
   cn = DNAcopy::segment(cn, alpha = 0.01, nperm = 10000, p.method = 'hybrid', min.width = 5, kmax = 25, nmin = 210,
                         eta = 0.05, trim = 0.025, undo.SD = 3, undo.prune = 0.05, undo.splits = 'sdundo', verbose = 2)
 
+  segs = cn$output
   colnames(segs) = c("Sample",'Chromosome','Start','End','Num_Probes','Segment_Mean')
   write.table(segs, paste(sample_name, '_cbs.seg', sep=''), quote = FALSE, row.names = FALSE, sep='\t')
 
-  png(filename = paste(sample_name, '_cbs.png', sep=''), width = 8, height = 4, bg = "white", paper = "special", units = "in", res = 70)
+  png(filename = paste(sample_name, '_cbs.png', sep=''), width = 8, height = 4, bg = "white", units = "in", res = 70)
   .dnaCopy_plotter(dc = cn, genome = build)
   dev.off()
 

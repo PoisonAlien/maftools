@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_mostdepth_tn.R
 \name{plotMosdepth}
 \alias{plotMosdepth}
-\title{Plot results from mosdepth output for Tumor/Normal pairs}
+\title{Plot results from mosdepth output for Tumor/Normal pair}
 \usage{
 plotMosdepth(
   t_bed = NULL,
@@ -17,14 +17,14 @@ plotMosdepth(
 
 \item{n_bed}{mosdepth output from matched normal}
 
-\item{segment}{Whether to perform CBS segmentation. Default TRUE}
+\item{segment}{Performs CBS segmentation. Default TRUE}
 
 \item{sample_name}{sample name. Default parses from `t_bed`}
 
 \item{col}{Colors. Default c("#95a5a6", "#7f8c8d")}
 }
 \description{
-Plot results from mosdepth output for Tumor/Normal pairs
+Plot results from mosdepth output for Tumor/Normal pair
 }
 \references{
 Pedersen BS, Quinlan AR. Mosdepth: quick coverage calculation for genomes and exomes. Bioinformatics. 2018;34(5):867-868. doi:10.1093/bioinformatics/btx699

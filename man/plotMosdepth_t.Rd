@@ -4,13 +4,25 @@
 \alias{plotMosdepth_t}
 \title{Plot results from mosdepth output}
 \usage{
-plotMosdepth_t(bed = NULL, col = c("#95a5a6", "#7f8c8d"))
+plotMosdepth_t(
+  bed = NULL,
+  col = c("#95a5a6", "#7f8c8d"),
+  sample_name = NULL,
+  segment = FALSE
+)
 }
 \arguments{
 \item{bed}{mosdepth output}
 
 \item{col}{Colors. Default c("#95a5a6", "#7f8c8d")}
+
+\item{sample_name}{sample name. Default parses from `bed`}
+
+\item{segment}{Performs CBS segmentation. Default FALSE}
 }
 \description{
 Plot results from mosdepth output
+}
+\references{
+Pedersen BS, Quinlan AR. Mosdepth: quick coverage calculation for genomes and exomes. Bioinformatics. 2018;34(5):867-868. doi:10.1093/bioinformatics/btx699
 }

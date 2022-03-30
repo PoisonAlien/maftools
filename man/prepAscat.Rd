@@ -9,7 +9,7 @@ prepAscat(
   n_counts = NULL,
   sample_name = NA,
   min_depth = 15,
-  normalize = FALSE
+  normalize = TRUE
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ prepAscat(
 
 \item{min_depth}{Min read depth required to consider a marker. Default 15}
 
-\item{normalize}{If TRUE, normalizes for library size. Default FALSE}
+\item{normalize}{If TRUE, normalizes for library size. Default TRUE}
 }
 \value{
 An \code{\link{ascat.loadData}} object; ascat data structure

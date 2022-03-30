@@ -1,7 +1,7 @@
-#'Plot results from mosdepth output for Tumor/Normal pairs
+#'Plot results from mosdepth output for Tumor/Normal pair
 #' @param t_bed mosdepth output from tumor
 #' @param n_bed mosdepth output from matched normal
-#' @param segment Whether to perform CBS segmentation. Default TRUE
+#' @param segment Performs CBS segmentation. Default TRUE
 #' @param sample_name sample name. Default parses from `t_bed`
 #' @param col Colors. Default c("#95a5a6", "#7f8c8d")
 #' @references Pedersen BS, Quinlan AR. Mosdepth: quick coverage calculation for genomes and exomes. Bioinformatics. 2018;34(5):867-868. doi:10.1093/bioinformatics/btx699
@@ -15,9 +15,9 @@ plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name 
     sample_name = gsub(x = basename(t_bed), pattern = "\\.regions\\.bed\\.gz$", replacement = "")
   }
 
-  if(is.null(plot_file)){
-    plot_file = sample_name
-  }
+  # if(is.null(plot_file)){
+  #   plot_file = sample_name
+  # }
 
   dat = lapply(X = c(t_bed, n_bed), function(x){
     x = data.table::fread(input = x)
@@ -86,8 +86,9 @@ plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name 
     cn_segs = DNAcopy::segments.p(x = cn)
     colnames(cn_segs)[1:4] = c("Sample_Name", "Chromosome", "Start_Position", "End_Position")
     data.table::setDT(cn_segs)
+    data.table::fwrite(x = cn_segs, file = paste0(sample_name, "_cbs.seg"), sep = "\t")
+    message("Segments are written to: ", paste(sample_name, '_cbs.seg', sep=''))
     cn_segs = split(cn_segs, cn_segs$Chromosome)[names(all_depth_spl)]
-
 
     seg.spl.transformed = cn_segs[[1]]
     if (nrow(seg.spl.transformed) > 0) {
@@ -129,6 +130,4 @@ plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name 
   mtext(text = "logR", side = 2, line = 2)
   title(main = sample_name, adj = 0)
   #dev.off()
-
-  data.table::rbindlist(l = cn_segs, use.names = TRUE, fill = TRUE)
 }

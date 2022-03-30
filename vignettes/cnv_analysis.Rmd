@@ -1,6 +1,16 @@
 ---
 title: "Copy number analysis"
-output: rmarkdown::html_vignette
+author: "Anand Mayakonda"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    self_contained: yes
+    css: corp-styles.css
+    highlight: pygments
 vignette: >
   %\VignetteIndexEntry{04: Copy number analysis}
   %\VignetteEngine{knitr::rmarkdown}
@@ -20,69 +30,85 @@ library(maftools)
 
 Note: This vignette not evaluated.
 
-## Introduction
+# Introduction
 
-`maftools` provides set of functions to facilitate using [ASCAT](https://github.com/VanLoo-lab/ascat) for tumor-normal WGS pairs.
-Although there exists [ascatNgs](https://github.com/cancerit/ascatNgs), it requires installation of perl and C modules. `maftools` bypasses these requirements entirely within R with the C code baked in. However, `maftools` only generates the required count inputs and the downstream analyses has to be done with [ASCAT](https://github.com/VanLoo-lab/ascat). 
+`maftools` provides set of functions to facilitate copy number analysis using [ASCAT](https://github.com/VanLoo-lab/ascat) for tumor-normal or tumor only WGS datasets.
+Although there exists [ascatNgs](https://github.com/cancerit/ascatNgs), it requires installation of perl and C modules to fetch the readcounts across the markers. `maftools` bypasses these requirements entirely within R with the C code baked in. However, `maftools` only generates the required readcounts, BAF and logR files. Downstream analyses has to be done with [ASCAT](https://github.com/VanLoo-lab/ascat). 
 
-If you find the below packages useful, please cite the ASCAT publication
+ASCAT is not available on CRAN or Bioconductor and needs to be installed from [GitHub](https://github.com/VanLoo-lab/ascat)
+
+```{r, eval=FALSE}
+remotes::install_github(repo = 'VanLoo-lab/ascat/ASCAT')
+```
+
+If you use the functions for CNV analysis, please cite the ASCAT publication
 
 ------------------------------------------------------------------------
 ***Van Loo P, Nordgard SH, Lingjærde OC, et al. Allele-specific copy number analysis of tumors. Proc Natl Acad Sci U S A. 2010;107(39):16910-16915. doi:10.1073/pnas.1009843107***
 ------------------------------------------------------------------------
 
-### Step-1: Get nucleotide counts for genetic markers with `gtMarkers`
+# Step-1: Get nucleotide counts for genetic markers 
 
-Below command will generate two tsv files `tumor_nucleotide_counts.tsv` and `normal_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K SNPs from [Affymetrix Genome-Wide Human SNP 6.0 Array](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL6801). The process can be sped up by increasing `nthreads` which will launch each chromosome on a separate thread. 
+Below command will generate two tsv files `tumor_nucleotide_counts.tsv` and `normal_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K SNPs from [Affymetrix Genome-Wide Human SNP 6.0 Array](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL6801). The process can be sped up linearly by increasing `nthreads` which will launch each chromosome on a separate thread. 
 Currently `hg19` and `hg38` are supported.
 
 ```{r, eval=FALSE}
 #Matched normal BAM files are strongly recommended
-counts = maftools::gtMarkers(t_bam = "tumor.bam", n_bam = "normal.bam", build = "hg19")
+counts = maftools::gtMarkers(t_bam = "tumor.bam",
+                             n_bam = "normal.bam",
+                             build = "hg19")
 ```
 
-### Step-2: Prepare input files for ASCAT with `prepAscat()`
+# Step-2: Prepare input files for ASCAT with `prepAscat()`
 
-#### Tumor-Normal pair
+## Tumor-Normal pair
 
-Below command will filter SNPs with low coverage (default <30), estimate BAF, logR, and generates the input files for ASCAT.
+Below command takes `tumor` and `normal_nucleotide_counts.tsv` files, filter SNPs with low coverage (default <15), estimate BAF, logR, and generates the input files for ASCAT.
 
 In addition, if [ASCAT](https://github.com/VanLoo-lab/ascat) is installed, it will run `ASCAT::ascat.loadData()` and `ASCAT::ascat.plotRawData()` for you and returns the ASCAT object that can be further processed with further downstream ASCAT functions.
 
 ```{r, eval=FALSE}
 library(ASCAT)
-ascat.bc = maftools::prepAscat(t_counts = "tumor_nucleotide_counts.tsv", n_counts = "normal_nucleotide_counts.tsv", sample_name = "tumor")
+ascat.bc = maftools::prepAscat(t_counts = "tumor_nucleotide_counts.tsv",
+                               n_counts = "normal_nucleotide_counts.tsv",
+                               sample_name = "tumor")
 
-# Markers: 901235
-# Removed 3072 duplicated loci
-# Markers > 30: 25246
+# Library sizes:
+# Tumor:  1830168947
+# Normal: 1321201848
+# Library size difference: 1.385
+# ------
+# Counts file: tumor_nucleotide_counts.tsv
+# Markers: 932148
+# Removed 2982 duplicated loci
+# Markers > 15: 928607
 # ------
 # Counts file: normal_nucleotide_counts.tsv
-# Markers: 901235
-# Removed 3072 duplicated loci
-# Markers > 30: 31387
+# Markers: 932148
+# Removed 2982 duplicated loci
+# Markers > 15: 928311
 # ------
-# Final number SNPs: 23765
+# Final number SNPs: 928107
 # Generated following files:
-# tumor.tumour.BAF.txt
-# tumor.tumour.logR.txt
-# tumor.normal.BAF.txt
-# tumor.normal.logR.txt
+# tumor_nucleotide_counts.tumour.BAF.txt
+# tumor_nucleotide_counts.tumour.logR.txt
+# tumor_nucleotide_counts.normal.BAF.txt
+# tumor_nucleotide_counts.normal.logR.txt
 # ------
-# Running ASCAT::ascat.loadData:
+# Running ASCAT::ascat.loadData()
 # [1] Reading Tumor LogR data...
 # [1] Reading Tumor BAF data...
 # [1] Reading Germline LogR data...
 # [1] Reading Germline BAF data...
 # [1] Registering SNP locations...
 # [1] Splitting genome in distinct chunks...
-# Running ASCAT::ascat.plotRawData:
+# Running ASCAT::ascat.plotRawData()
 # [1] Plotting tumor data
 # [1] Plotting germline data
-# Returned ASCAT object
+# Returned ASCAT object!
 ```
 
-The returned `ASCAT` object can be passed to downstream ASCAT functions:
+Returned `ASCAT` object can be passed to downstream ASCAT functions. Below code chunk shows a minimal usage with ASCAT. See [here](https://github.com/VanLoo-lab/ascat/tree/master/ExampleData) for further workflow examples. 
 
 ```{r, eval=FALSE}
 ascat.bc = ASCAT::ascat.aspcf(ascat.bc)
@@ -90,22 +116,24 @@ ASCAT::ascat.plotSegmentedData(ascat.bc)
 ascat.output = ASCAT::ascat.runAscat(ascat.bc) 
 ```
 
-#### Tumor only
+## Tumor only
+
+In tumor only mode, readcounts are normalized for median depth of coverage across autosomes. 
 
 ```{r, eval=FALSE}
-ascat.bc = maftools::prepAscat_t(t_counts = "tumor_nucleotide_counts.tsv", sample_name = "tumoronly")
+ascat.bc = maftools::prepAscat_t(t_counts = "tumor_nucleotide_counts.tsv", sample_name = "tumor_only")
 
 # Library sizes:
-# Tumor: 1239964831
+# Tumor: 1830168947
 # Counts file: tumor_nucleotide_counts.tsv
-# Markers: 930104
-# Removed 15 duplicated loci
-# Markers > 30: 829579
+# Markers: 932148
+# Removed 2982 duplicated loci
+# Markers > 15: 928607
+# Median depth of coverage (autosomes): 76
 # ------
-# Median depth of coverage: 59
 # Generated following files:
-# tumoronly.tumour.BAF.txt
-# tumoronly.tumour.logR.txt
+# tumor_only.tumour.BAF.txt
+# tumor_only.tumour.logR.txt
 # ------
 # Running ASCAT::ascat.loadData:
 # [1] Reading Tumor LogR data...
@@ -126,9 +154,9 @@ ASCAT::ascat.plotSegmentedData(ascat.bc)
 ascat.output = ASCAT::ascat.runAscat(ascat.bc) 
 ```
 
-### CBS segmentation
+## CBS segmentation
 
-Alternatively, tumor logR files generated by `prep_ascat()` can be processed with `segment_logR()` function that performs circular binary segmentation using [DNAcopy](https://bioconductor.org/packages/release/bioc/html/DNAcopy.html) and plots the results
+Alternatively, tumor logR files generated by `prep_ascat()` can be processed with `segmentLogR()` function that performs circular binary segmentation using [DNAcopy](https://bioconductor.org/packages/release/bioc/html/DNAcopy.html).
 
 ```{r, eval=FALSE}
 maftools::segmentLogR(tumor_logR = "tumor.tumour.logR.txt", sample_name = "tumor")
@@ -159,5 +187,91 @@ maftools::segmentLogR(tumor_logR = "tumor.tumour.logR.txt", sample_name = "tumor
 #   current chromosome: MT 
 #   current chromosome: X 
 #   current chromosome: Y 
-# Segments are written to: tumor_cbs.seg
+# Segments are written to: tumor_only.tumour_cbs.seg
+# Segments are plotted to: tumor_only.tumour_cbs.png
 ```
+
+# Processing Mosdepth output
+
+[Mosdepth](https://github.com/brentp/mosdepth) offers the fastest way to estimate coverage metrics from WGS bam files. Output generated by mosdepth can be processed with maftools function `plotMosdepth` and `plotMosdepth_t` for CNV analysis by performing segmentation and plotting.
+
+Below `mosdepth` command generates `tumor.regions.bed.gz` and `normal.regions.bed.gz` that contains depth of coverage across the genome in fixed windows.
+
+```
+mosdepth -n -b 5000 tumor tumor.bam
+mosdepth -n -b 5000 normal normal.bam
+```
+
+The output can be imported and analyzed with `maftools` in tumor/normal or tumor only mode.
+
+If you use the functions for CNV analysis, please cite the mosdepth publication
+
+------------------------------------------------------------------------
+***Pedersen BS, Quinlan AR. Mosdepth: quick coverage calculation for genomes and exomes. Bioinformatics. 2018;34(5):867-868. doi:10.1093/bioinformatics/btx699***
+------------------------------------------------------------------------
+
+## Tumor normal pair
+
+```{r, eval=FALSE}
+plotMosdepth(
+  t_bed = "tumor.regions.bed.gz",
+  n_bed = "normal.regions.bed.gz",
+  segment = TRUE,
+  sample_name = "tumor",
+  col = c("#95a5a6", "#7f8c8d")
+)
+
+# Coverage ratio T/N: 1.821
+# Running CBS segmentation:
+# Analyzing: tumor01 
+#   current chromosome: 1 
+#   current chromosome: 2 
+#   current chromosome: 3 
+#   current chromosome: 4 
+#   current chromosome: 5 
+#   current chromosome: 6 
+#   current chromosome: 7 
+#   current chromosome: 8 
+#   current chromosome: 9 
+#   current chromosome: 10 
+#   current chromosome: 11 
+#   current chromosome: 12 
+#   current chromosome: 13 
+#   current chromosome: 14 
+#   current chromosome: 15 
+#   current chromosome: 16 
+#   current chromosome: 17 
+#   current chromosome: 18 
+#   current chromosome: 19 
+#   current chromosome: 20 
+#   current chromosome: 21 
+#   current chromosome: 22 
+#   current chromosome: X 
+#   current chromosome: Y 
+# Segments are written to: tumor01_cbs.seg
+# Plotting
+```
+
+<p align="left">
+<img src="https://user-images.githubusercontent.com/8164062/160853005-4f79ae83-8fb1-493c-b240-2b794274c36d.png" height="320" width="700">
+</p>
+
+## Tumor only 
+
+Above tumor sample without the germline control, normalized for median depth of coverage
+
+```{r, eval=FALSE}
+plotMosdepth_t(bed = "tumor.regions.bed.gz")
+```
+
+<p align="left">
+<img src="https://user-images.githubusercontent.com/8164062/160853684-85021668-a515-4e3d-8ccb-dddf992098d9.png" height="320" width="700">
+</p>
+
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
