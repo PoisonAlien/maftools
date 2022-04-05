@@ -9,6 +9,8 @@
 
 plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name = NULL, col = c("#95a5a6", "#7f8c8d")){
 
+  if(any(is.null(t_bed) | is.null(n_bed))) stop("Missing tumor or normal bed files!")
+
   contigs = c(1:22, "X", "Y", paste0("chr", 1:22), "chrX", "chrY")
 
   if(is.null(sample_name)){

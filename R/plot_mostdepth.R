@@ -8,6 +8,11 @@
 
 plotMosdepth_t = function(bed = NULL, col = c("#95a5a6", "#7f8c8d"), sample_name = NULL, segment = FALSE){
 
+
+  if(is.null(bed)){
+    stop("Missing bed file!")
+  }
+
   tum_cov = data.table::fread(input = bed)
   colnames(tum_cov) = c("chr", "start", "end", "doc")
 

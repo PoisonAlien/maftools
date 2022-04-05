@@ -28,12 +28,12 @@ knitr::opts_chunk$set(
 library(maftools)
 ```
 
-Note: This vignette not evaluated.
+Note: This vignette was not evaluated.
 
 # Introduction
 
-`maftools` provides set of functions to facilitate copy number analysis using [ASCAT](https://github.com/VanLoo-lab/ascat) for tumor-normal or tumor only WGS datasets.
-Although there exists [ascatNgs](https://github.com/cancerit/ascatNgs), it requires installation of perl and C modules to fetch the readcounts across the markers. `maftools` bypasses these requirements entirely within R with the C code baked in. However, `maftools` only generates the required readcounts, BAF and logR files. Downstream analyses has to be done with [ASCAT](https://github.com/VanLoo-lab/ascat). 
+`maftools` provides a set of functions to facilitate copy number analysis using [ASCAT](https://github.com/VanLoo-lab/ascat) for tumor-normal or tumor-only WGS datasets.
+Although there exists [ascatNgs](https://github.com/cancerit/ascatNgs), it requires the installation of Perl and C modules to fetch the read counts across the markers. `maftools` bypass these requirements entirely within R with the C code baked in. However, `maftools` only generates the required read counts, BAF, and logR files. Downstream analyses have to be done with [ASCAT](https://github.com/VanLoo-lab/ascat). 
 
 ASCAT is not available on CRAN or Bioconductor and needs to be installed from [GitHub](https://github.com/VanLoo-lab/ascat)
 
@@ -41,7 +41,7 @@ ASCAT is not available on CRAN or Bioconductor and needs to be installed from [G
 remotes::install_github(repo = 'VanLoo-lab/ascat/ASCAT')
 ```
 
-If you use the functions for CNV analysis, please cite the ASCAT publication
+If you use maftools functions for CNV analysis, please cite the ASCAT publication
 
 ------------------------------------------------------------------------
 ***Van Loo P, Nordgard SH, Lingjærde OC, et al. Allele-specific copy number analysis of tumors. Proc Natl Acad Sci U S A. 2010;107(39):16910-16915. doi:10.1073/pnas.1009843107***
@@ -108,7 +108,7 @@ ascat.bc = maftools::prepAscat(t_counts = "tumor_nucleotide_counts.tsv",
 # Returned ASCAT object!
 ```
 
-Returned `ASCAT` object can be passed to downstream ASCAT functions. Below code chunk shows a minimal usage with ASCAT. See [here](https://github.com/VanLoo-lab/ascat/tree/master/ExampleData) for further workflow examples. 
+Returned `ASCAT` object can be passed to downstream ASCAT functions. The below code chunk shows minimal usage with ASCAT. See [here](https://github.com/VanLoo-lab/ascat/tree/master/ExampleData) for further workflow examples. 
 
 ```{r, eval=FALSE}
 ascat.bc = ASCAT::ascat.aspcf(ascat.bc)
@@ -118,7 +118,7 @@ ascat.output = ASCAT::ascat.runAscat(ascat.bc)
 
 ## Tumor only
 
-In tumor only mode, readcounts are normalized for median depth of coverage across autosomes. 
+In tumor-only mode, read counts are normalized for median depth of coverage across autosomes. 
 
 ```{r, eval=FALSE}
 ascat.bc = maftools::prepAscat_t(t_counts = "tumor_nucleotide_counts.tsv", sample_name = "tumor_only")
@@ -202,7 +202,7 @@ mosdepth -n -b 5000 tumor tumor.bam
 mosdepth -n -b 5000 normal normal.bam
 ```
 
-The output can be imported and analyzed with `maftools` in tumor/normal or tumor only mode.
+The output `{prefix}.regions.bed.gz` can be imported and analyzed with `maftools` in tumor/normal or tumor only mode.
 
 If you use the functions for CNV analysis, please cite the mosdepth publication
 
@@ -253,7 +253,7 @@ plotMosdepth(
 ```
 
 <p align="left">
-<img src="https://user-images.githubusercontent.com/8164062/160853005-4f79ae83-8fb1-493c-b240-2b794274c36d.png" height="320" width="700">
+<img src="https://user-images.githubusercontent.com/8164062/160853005-4f79ae83-8fb1-493c-b240-2b794274c36d.png" height="350" width="700">
 </p>
 
 ## Tumor only 
@@ -267,7 +267,6 @@ plotMosdepth_t(bed = "tumor.regions.bed.gz")
 <p align="left">
 <img src="https://user-images.githubusercontent.com/8164062/160853684-85021668-a515-4e3d-8ccb-dddf992098d9.png" height="320" width="700">
 </p>
-
 
 # Session Info
 
