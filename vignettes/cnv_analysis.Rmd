@@ -95,22 +95,23 @@ ascat.bc = maftools::prepAscat(t_counts = "tumor_nucleotide_counts.tsv",
 # tumor_nucleotide_counts.normal.BAF.txt
 # tumor_nucleotide_counts.normal.logR.txt
 # ------
-# Running ASCAT::ascat.loadData()
-# [1] Reading Tumor LogR data...
-# [1] Reading Tumor BAF data...
-# [1] Reading Germline LogR data...
-# [1] Reading Germline BAF data...
-# [1] Registering SNP locations...
-# [1] Splitting genome in distinct chunks...
-# Running ASCAT::ascat.plotRawData()
-# [1] Plotting tumor data
-# [1] Plotting germline data
-# Returned ASCAT object!
 ```
 
-Returned `ASCAT` object can be passed to downstream ASCAT functions. The below code chunk shows minimal usage with ASCAT. See [here](https://github.com/VanLoo-lab/ascat/tree/master/ExampleData) for further workflow examples. 
+Generated BAF and logR files can be processed with [ASCAT functions](https://www.crick.ac.uk/research/labs/peter-van-loo/software). 
+The below code chunk shows minimal usage with ASCAT. See [here](https://github.com/VanLoo-lab/ascat/tree/master/ExampleData) for further workflow examples. 
 
 ```{r, eval=FALSE}
+
+ascat.bc = ASCAT::ascat.loadData(
+  Tumor_LogR_file = "tumor_nucleotide_counts.tumour.logR.txt",
+  Tumor_BAF_file = "tumor_nucleotide_counts.tumour.BAF.txt",
+  Germline_LogR_file = "tumor_nucleotide_counts.normal.logR.txt",
+  Germline_BAF_file = "tumor_nucleotide_counts.normal.BAF.txt",
+  chrs = c(1:22, "X", "Y"),
+  sexchromosomes = c("X", "Y")
+)
+
+ASCAT::ascat.plotRawData(ASCATobj = ascat.bc, img.prefix = "tumor")
 ascat.bc = ASCAT::ascat.aspcf(ascat.bc)
 ASCAT::ascat.plotSegmentedData(ascat.bc)
 ascat.output = ASCAT::ascat.runAscat(ascat.bc) 
@@ -135,21 +136,21 @@ ascat.bc = maftools::prepAscat_t(t_counts = "tumor_nucleotide_counts.tsv", sampl
 # tumor_only.tumour.BAF.txt
 # tumor_only.tumour.logR.txt
 # ------
-# Running ASCAT::ascat.loadData:
-# [1] Reading Tumor LogR data...
-# [1] Reading Tumor BAF data...
-# [1] Registering SNP locations...
-# [1] Splitting genome in distinct chunks...
-# Running ASCAT::ascat.plotRawData()
-# [1] Plotting tumor data
-# Returned ASCAT object!
 ```
 
 The returned `ASCAT` object can be processed with _ASCAT without matched normal data protocol_:
 
 ```{r, eval=FALSE}
+ascat.bc = ASCAT::ascat.loadData(
+  Tumor_LogR_file = "tumor_only.tumour.logR.txt",
+  Tumor_BAF_file = "tumor_only.tumour.BAF.txt",
+  chrs = c(1:22, "X", "Y"),
+  sexchromosomes = c("X", "Y")
+)
+
+ASCAT::ascat.plotRawData(ASCATobj = ascat.bc, img.prefix = "tumor_only")
 ascat.gg = ASCAT::ascat.predictGermlineGenotypes(ascat.bc) 
-ascat.bc = ASCAT::ascat.aspcf(ascat.bc,ascat.gg=ascat.gg) 
+ascat.bc = ASCAT::ascat.aspcf(ascat.bc, ascat.gg=ascat.gg) 
 ASCAT::ascat.plotSegmentedData(ascat.bc)
 ascat.output = ASCAT::ascat.runAscat(ascat.bc) 
 ```
