@@ -1,7 +1,7 @@
 Type: Package
 Package: maftools
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 2.10.10
+Version: 2.11.10
 Date: 2021-04-30
 Authors@R: 
     person(given = "Anand",
@@ -26,7 +26,8 @@ Imports:
     methods,
     RColorBrewer,
     Rhtslib,
-    survival
+    survival,
+    DNAcopy
 Suggests: 
     berryFunctions,
     Biostrings,
