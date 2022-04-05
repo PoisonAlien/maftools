@@ -5,7 +5,7 @@
 #' @param sample_name Sample name. Used as a basename for output files. Default NA, parses from `t_counts` file.
 #' @param min_depth Min read depth required to consider a marker. Default 15
 #' @return Generates logR and BAF files required by ASCAT
-#' @seealso \code{\link{gtMarkers}} \code{\link{prep_ascat}} \code{\link{segmentLogR}}
+#' @seealso \code{\link{gtMarkers}} \code{\link{prepAscat}} \code{\link{segmentLogR}}
 #' @references Van Loo P, Nordgard SH, Lingjærde OC, et al. Allele-specific copy number analysis of tumors. Proc Natl Acad Sci U S A. 2010;107(39):16910-16915. doi:10.1073/pnas.1009843107
 #' @export
 

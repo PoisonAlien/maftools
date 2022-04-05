@@ -1,5 +1,5 @@
 #' Extract read counts from genetic markers for ASCAT analysis
-#' @description The function will generate tsv files `<tumor/normal>_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K loci from Affymetrix Genome-Wide Human SNP 6.0 Array. The process can be sped up by increasing `nthreads` which will launch each chromosome on a separate thread. Currently hg19 and hg38 are supported. Files need to be further processed with \code{\link{prep_ascat}} for tumor-normal pair, or \code{\link{prep_ascat_t}} for tumor only samples.
+#' @description The function will generate tsv files `<tumor/normal>_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K loci from Affymetrix Genome-Wide Human SNP 6.0 Array. The process can be sped up by increasing `nthreads` which will launch each chromosome on a separate thread. Currently hg19 and hg38 are supported. Files need to be further processed with \code{\link{prepAscat}} for tumor-normal pair, or \code{\link{prepAscat_t}} for tumor only samples.
 #' @param t_bam Tumor BAM file. Required
 #' @param n_bam Normal BAM file. Recommended
 #' @param build Default hg19. Mutually exclusive with `loci`. Currently supported `hg19` and `hg38` and includes ca. 900K SNPs from Affymetrix Genome-Wide Human SNP 6.0 Array. SNP file has no `chr` prefix.
@@ -14,7 +14,7 @@
 #' @param nthreads Number of threads to use. Default 4. Each chromosome will be launched on a separate thread. Works only on Unix and macOS.
 #' @param verbose Default TRUE
 #' @export
-#' @seealso \code{\link{prep_ascat}} \code{\link{prep_ascat_t}} \code{\link{segmentLogR}}
+#' @seealso \code{\link{prepAscat}} \code{\link{prepAscat_t}} \code{\link{segmentLogR}}
 #' @useDynLib maftools, .registration = TRUE
 #' @import data.table
 

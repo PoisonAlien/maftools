@@ -48,8 +48,8 @@ gtMarkers(
 \item{verbose}{Default TRUE}
 }
 \description{
-The function will generate tsv files `<tumor/normal>_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K loci from Affymetrix Genome-Wide Human SNP 6.0 Array. The process can be sped up by increasing `nthreads` which will launch each chromosome on a separate thread. Currently hg19 and hg38 are supported. Files need to be further processed with \code{\link{prep_ascat}} for tumor-normal pair, or \code{\link{prep_ascat_t}} for tumor only samples.
+The function will generate tsv files `<tumor/normal>_nucleotide_counts.tsv` that can be used for downstream analysis. Note that the function will process ~900K loci from Affymetrix Genome-Wide Human SNP 6.0 Array. The process can be sped up by increasing `nthreads` which will launch each chromosome on a separate thread. Currently hg19 and hg38 are supported. Files need to be further processed with \code{\link{prepAscat}} for tumor-normal pair, or \code{\link{prepAscat_t}} for tumor only samples.
 }
 \seealso{
-\code{\link{prep_ascat}} \code{\link{prep_ascat_t}} \code{\link{segmentLogR}}
+\code{\link{prepAscat}} \code{\link{prepAscat_t}} \code{\link{segmentLogR}}
 }

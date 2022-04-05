@@ -33,5 +33,5 @@ The function will filter SNPs with low coverage (default <15), estimate BAF, log
 Van Loo P, Nordgard SH, Lingjærde OC, et al. Allele-specific copy number analysis of tumors. Proc Natl Acad Sci U S A. 2010;107(39):16910-16915. doi:10.1073/pnas.1009843107
 }
 \seealso{
-\code{\link{gtMarkers}} \code{\link{prep_ascat_t}} \code{\link{segmentLogR}}
+\code{\link{gtMarkers}} \code{\link{prepAscat_t}} \code{\link{segmentLogR}}
 }
