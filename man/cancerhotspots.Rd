@@ -46,3 +46,6 @@ Known cancerhotspots for both GRCh37 and GRCh38 assemblies (3180 variants) are i
 \references{
 Chang MT, Asthana S, Gao SP, et al. Identifying recurrent mutations in cancer reveals widespread lineage diversity and mutational specificity. Nat Biotechnol. 2016;34(2):155-163. doi:10.1038/nbt.3391
 }
+\seealso{
+\code{\link{cancerhotspotsAggr}}
+}
