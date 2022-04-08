@@ -20,6 +20,9 @@ plotMosdepth_t(
 
 \item{segment}{Performs CBS segmentation. Default FALSE}
 }
+\value{
+Invisibly returns \code{\link{DNAcopy}} object if `segment` is `TRUE`
+}
 \description{
 Plot results from mosdepth output
 }

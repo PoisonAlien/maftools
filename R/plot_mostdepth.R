@@ -5,7 +5,7 @@
 #' @param segment Performs CBS segmentation. Default FALSE
 #' @references Pedersen BS, Quinlan AR. Mosdepth: quick coverage calculation for genomes and exomes. Bioinformatics. 2018;34(5):867-868. doi:10.1093/bioinformatics/btx699
 #' @export
-
+#' @return Invisibly returns \code{\link{DNAcopy}} object if `segment` is `TRUE`
 plotMosdepth_t = function(bed = NULL, col = c("#95a5a6", "#7f8c8d"), sample_name = NULL, segment = FALSE){
 
 
@@ -46,6 +46,7 @@ plotMosdepth_t = function(bed = NULL, col = c("#95a5a6", "#7f8c8d"), sample_name
   all_depth[, doc_norm := log2(doc) - log2(med_cov)]
 
   cn_segs = NULL
+  cn = NULL
   if(segment){
     message("Running CBS segmentation:")
     #samp.name = gsub(pattern = '.denoisedCR.tsv', replacement = '', x = copynumber_file)
@@ -141,4 +142,6 @@ plotMosdepth_t = function(bed = NULL, col = c("#95a5a6", "#7f8c8d"), sample_name
   axis(side = 1, at = cumsum(as.numeric(chr.lens)), labels = names(chr.lens))
   axis(side = 2, at = seq(-3, 3, 1), las = 2)
   title(main = "DOC Median centered")
+
+  invisible(cn)
 }

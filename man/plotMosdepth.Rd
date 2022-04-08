@@ -23,6 +23,9 @@ plotMosdepth(
 
 \item{col}{Colors. Default c("#95a5a6", "#7f8c8d")}
 }
+\value{
+Invisibly returns \code{\link{DNAcopy}} object if `segment` is `TRUE`
+}
 \description{
 Plot results from mosdepth output for Tumor/Normal pair
 }

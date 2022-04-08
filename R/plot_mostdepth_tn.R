@@ -6,6 +6,7 @@
 #' @param col Colors. Default c("#95a5a6", "#7f8c8d")
 #' @references Pedersen BS, Quinlan AR. Mosdepth: quick coverage calculation for genomes and exomes. Bioinformatics. 2018;34(5):867-868. doi:10.1093/bioinformatics/btx699
 #' @export
+#' @return Invisibly returns \code{\link{DNAcopy}} object if `segment` is `TRUE`
 
 plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name = NULL, col = c("#95a5a6", "#7f8c8d")){
 
@@ -76,6 +77,7 @@ plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name 
   all_depth_spl = split(seg.spl.transformed, seg.spl.transformed$Chromosome)[names(chr.lens)]
 
   cn_segs = NULL
+  cn = NULL
   if(segment){
     message("Running CBS segmentation:")
     #samp.name = gsub(pattern = '.denoisedCR.tsv', replacement = '', x = copynumber_file)
@@ -132,4 +134,6 @@ plotMosdepth = function(t_bed = NULL, n_bed = NULL, segment = TRUE, sample_name 
   mtext(text = "logR", side = 2, line = 2)
   title(main = sample_name, adj = 0)
   #dev.off()
+
+  invisible(cn)
 }

@@ -29,6 +29,12 @@ A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/
 <img src="https://user-images.githubusercontent.com/8164062/97981605-d8a59500-1dd2-11eb-9f5e-cc808f7b3f91.gif" height="320">
 </p>
 
+Besides the MAF files, maftools also facilitates processing of BAM files. Please refer to below vignettes and sections to learn more.
+
+- [Copy number analysis](https://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/cnv_analysis.html) with [ASCAT](https://github.com/VanLoo-lab/ascat) and [mosdepth](https://github.com/brentp/mosdepth)
+- [Generate personalized cancer report](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/cancer_hotspots.html) for known somatic [hotspots](https://www.cancerhotspots.org/)
+- [Sample mismatch and relatedness analysis](https://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html#12_Sample_swap_identification)
+
 ## Citation
 
 **_Mayakonda A, Lin DC, Assenov Y, Plass C, Koeffler HP. 2018. Maftools: efficient and comprehensive analysis of somatic variants in cancer. [Genome Research](https://doi.org/10.1101/gr.239244.118). PMID: [30341162](https://www.ncbi.nlm.nih.gov/pubmed/?term=30341162)_**
