@@ -1,4 +1,5 @@
-# CHANGES IN VERSION 2.12.00 (GitHub master branch/BC 3.15 RC)
+# CHANGES IN VERSION 2.12.00
+(GitHub master branch/BC 3.15 RC)
 
 ## NEW FUNCTIONS
 - `gtMarkers`, `prepAscat`, `prepAscat_t`, `segmentLogR` provides interface to copy number analysis with ASCAT. 
