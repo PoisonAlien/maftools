@@ -78,12 +78,12 @@ plotClusters = function(clusters, tsb = NULL, genes = NULL, showCNvars = FALSE, 
 
     #Are there genes to highlight?
     if(!is.null(genes)){
-      if(genes == "CN_altered"){
+      if("CN_altered" %in% genes){
         if(nrow(tsb.dat.cn.vars) > 0){
           segments(x0 = tsb.dat.cn.vars[, t_vaf], y0 = 0, x1 = tsb.dat.cn.vars[, t_vaf], y1 = 0.1 * max(tsb_dens$y, na.rm = TRUE), lwd = 1)
           text(x = tsb.dat.cn.vars[, t_vaf], y = 0.1 * max(tsb_dens$y, na.rm = TRUE), srt = 90, font = 3, labels = tsb.dat.cn.vars[, Hugo_Symbol], adj = 0)
         }
-      }else if(genes == 'all'){
+      }else if('all' %in% genes){
         segments(x0 = tsb.dat[, t_vaf], y0 = 0, x1 = tsb.dat[, t_vaf], y1 = 0.1 * max(tsb_dens$y, na.rm = TRUE), lwd = 1)
         text(x = tsb.dat[, t_vaf], y = 0.1 * max(tsb_dens$y, na.rm = TRUE),
              srt = 90, font = 3, labels = tsb.dat[, Hugo_Symbol], adj = 0, cex = 1)

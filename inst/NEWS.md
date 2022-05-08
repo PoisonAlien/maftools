@@ -1,5 +1,12 @@
+# CHANGES IN VERSION 2.12.05
+(GitHub master branch)
+
+## BUG FIXES
+- genes parameter in plotClusters can't accept list of genes Issue: [828](https://github.com/PoisonAlien/maftools/issues/828)
+
+
 # CHANGES IN VERSION 2.12.00
-(GitHub master branch/BC 3.15 RC)
+(BC 3.15)
 
 ## NEW FUNCTIONS
 - `gtMarkers`, `prepAscat`, `prepAscat_t`, `segmentLogR` provides interface to copy number analysis with ASCAT. 
