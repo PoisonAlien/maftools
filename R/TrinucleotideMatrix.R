@@ -71,6 +71,12 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
     query = query[!Chromosome %in% ignoreChr]
   }
 
+  if(nrow(query[is.na(Start_Position)]) > 0){
+    cat("-Removed", nrow(query[is.na(Start_Position)]), "loci with NAs\n")
+  }
+
+  query = query[!is.na(Start_Position)]
+
   if(nrow(query) == 0){
     stop('Zero SNPs to analyze!')
   }

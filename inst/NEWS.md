@@ -2,7 +2,8 @@
 (GitHub master branch)
 
 ## BUG FIXES
-- genes parameter in plotClusters can't accept list of genes Issue: [828](https://github.com/PoisonAlien/maftools/issues/828)
+- genes parameter in `plotClusters` can't accept list of genes. Issue: [828](https://github.com/PoisonAlien/maftools/issues/828)
+- Ignore NAs while generating `trinucleotideMatrix`. Issue: [841](https://github.com/PoisonAlien/maftools/issues/841)
 
 ## ENHANCEMENTS
 - Added protein structure for NRIP1. Issue: [832](https://github.com/PoisonAlien/maftools/issues/832)
