@@ -7,7 +7,7 @@
 
 ## ENHANCEMENTS
 - Added protein structure for NRIP1. Issue: [832](https://github.com/PoisonAlien/maftools/issues/832)
-- Added protein structure for SETBP1. Issue: [832](https://github.com/PoisonAlien/maftools/issues/832)
+- Added protein structure for SETBP1. Issue: [696](https://github.com/PoisonAlien/maftools/issues/696)
 
 # CHANGES IN VERSION 2.12.00
 (BC 3.15)
