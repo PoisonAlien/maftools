@@ -88,7 +88,7 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
   plist = lapply(genes, function(x){
           if(pathways){
             pathgenes = pathdb[[x]][,Gene]
-            g = unique(unlist(genesToBarcodes(maf = maf, genes = x, justNames = TRUE, verbose = FALSE)))
+            g = unique(unlist(genesToBarcodes(maf = maf, genes = pathgenes, justNames = TRUE, verbose = FALSE)))
           }else{
             g = unique(genesToBarcodes(maf = maf, genes = x, justNames = TRUE)[[1]])
           }
