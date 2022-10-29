@@ -56,10 +56,17 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     vc.cast.cnv = vc.cast[,c('Tumor_Sample_Barcode', colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')]), with =FALSE]
     vc.cast.cnv$CNV_total = rowSums(vc.cast.cnv[,2:ncol(vc.cast.cnv)], na.rm = TRUE)
 
-    vc.cast = vc.cast[,!colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')], with =FALSE]
-    vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
+    ## if the vc.cast only has 3 columns: Tumor_Sample_Barcode, Amp, Del
+    if(sum(!(colnames(vc.cast) %in% c('Amp', 'Del')))==1){
+      vc.cast = vc.cast.cnv
+      NCBI_Build = NA ## this is to NA value if input does not have NCBI info, this will prevent later summarize error
+      Center = NA ## same reason as NCBI_Build
+    } else {
+      vc.cast = vc.cast[,!colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')], with =FALSE]
+      vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
 
-    vc.cast = merge(vc.cast, vc.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
+      vc.cast = merge(vc.cast, vc.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
+    }
 
     vc.mean = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, mean))))
     vc.median = as.numeric(as.character(c(NA, NA, NA, NA, apply(vc.cast[,2:ncol(vc.cast), with = FALSE], 2, median))))
@@ -78,10 +85,14 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   if(any(colnames(vt.cast) %in% c('CNV'))){
     vt.cast.cnv = vt.cast[,c('Tumor_Sample_Barcode', colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')]), with =FALSE]
 
-    vt.cast = vt.cast[,!colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')], with =FALSE]
-    vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
-
-    vt.cast = merge(vt.cast, vt.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV, decreasing = TRUE)]
+    ## if vt.cast only has two columns: Tumor_Sample_Barcode, CNV
+    if(sum(!(colnames(vt.cast) %in% c('CNV')))==1){
+      vt.cast = vt.cast.cnv
+    } else {
+      vt.cast = vt.cast[,!colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')], with =FALSE]
+      vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
+      vt.cast = merge(vt.cast, vt.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV, decreasing = TRUE)]
+    }
   }else{
     vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])][order(total, decreasing = TRUE)]
   }
@@ -93,11 +104,16 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   if(any(colnames(hs.cast) %in% c('Amp', 'Del'))){
     hs.cast.cnv = hs.cast[,c('Hugo_Symbol', colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')]), with = FALSE]
     hs.cast.cnv$CNV_total = rowSums(x = hs.cast.cnv[,2:ncol(hs.cast.cnv), with = FALSE], na.rm = TRUE)
+    ##if hs.cast only has 3 columns: Hugo_Symbol, Amp, Del
+    if(sum(!(colnames(hs.cast) %in% c('Amp', 'Del')))==1){
+      hs.cast = hs.cast.cnv
+      colnames(hs.cast) = c("Hugo_Symbol", "Amp", "Del", "total" ) ## rename it to "total" prevent later hs.cast sorting error
+    } else {
+      hs.cast = hs.cast[,!colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with = FALSE]
+      hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE], na.rm = TRUE)]
 
-    hs.cast = hs.cast[,!colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with = FALSE]
-    hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE], na.rm = TRUE)]
-
-    hs.cast = merge(hs.cast, hs.cast.cnv, by = 'Hugo_Symbol', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
+      hs.cast = merge(hs.cast, hs.cast.cnv, by = 'Hugo_Symbol', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
+    }
   }else{
     hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE])]
     hs.cast = hs.cast[order(total, decreasing = TRUE)]
