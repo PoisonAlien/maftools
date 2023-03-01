@@ -8,12 +8,14 @@
 #' @param clinicalFeatures2 columns names from `clinical.data` slot of m2 \code{MAF} to be drawn in the plot. Dafault NULL.
 #' @param annotationColor1 list of colors to use for `clinicalFeatures1` Default NULL.
 #' @param annotationColor2 list of colors to use for `clinicalFeatures2` Default NULL.
+#' @param sortByM1 sort by mutation frequency in `m1`
+#' @param sortByM2 sort by mutation frequency in `m2`
 #' @param sortByAnnotation1 logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort
 #' @param annotationOrder1 Manually specify order for annotations for `clinicalFeatures1`. Works only for first value. Default NULL.
 #' @param sortByAnnotation2 same as above but for m2
 #' @param annotationOrder2 Manually specify order for annotations for `clinicalFeatures2`. Works only for first value. Default NULL.
-#' @param sampleOrder1 Manually speify sample names in m1 for oncolplot ordering. Default NULL.
-#' @param sampleOrder2 Manually speify sample names in m2 for oncolplot ordering. Default NULL.
+#' @param sampleOrder1 Manually specify sample names in m1 for oncolplot ordering. Default NULL.
+#' @param sampleOrder2 Manually specify sample names in m2 for oncolplot ordering. Default NULL.
 #' @param additionalFeature1 a vector of length two indicating column name in the MAF and the factor level to be highlighted.
 #' @param additionalFeaturePch1 Default 20
 #' @param additionalFeatureCol1 Default "white"
@@ -59,7 +61,7 @@
 #'
 coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                        clinicalFeatures1 = NULL, clinicalFeatures2 = NULL,
-                       annotationColor1 = NULL, annotationColor2 = NULL, annotationFontSize = 1.2,
+                       annotationColor1 = NULL, annotationColor2 = NULL, annotationFontSize = 1.2, sortByM1 = FALSE, sortByM2 = FALSE,
                        sortByAnnotation1 = FALSE, annotationOrder1 = NULL, sortByAnnotation2 = FALSE, annotationOrder2 = NULL,
                       sampleOrder1 = NULL, sampleOrder2 = NULL,
                       additionalFeature1 = NULL, additionalFeaturePch1 = 20, additionalFeatureCol1 = "white", additionalFeatureCex1 = 0.9,
@@ -71,16 +73,24 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                        bgCol = "#CCCCCC", borderCol = "white"){
 
   if(is.null(genes)){
-    m1.genes = getGeneSummary(m1)[1:5]
-    m2.genes = getGeneSummary(m2)[1:5]
-    mdt = merge(m1.genes[,.(Hugo_Symbol, MutatedSamples)], m2.genes[,.(Hugo_Symbol, MutatedSamples)], by = 'Hugo_Symbol', all = TRUE)
-    mdt$MutatedSamples.x[is.na(mdt$MutatedSamples.x)] = 0
-    mdt$MutatedSamples.y[is.na(mdt$MutatedSamples.y)] = 0
-    mdt$max = apply(mdt[,.(MutatedSamples.x, MutatedSamples.y)], 1, max)
-    mdt = mdt[order(max, decreasing = TRUE)]
+    genes = unique(c(getGeneSummary(m1)[1:5, Hugo_Symbol], getGeneSummary(m2)[1:5, Hugo_Symbol]))
+  }
+
+  m1.genes = getGeneSummary(x = m1)[Hugo_Symbol %in% genes]
+  m2.genes = getGeneSummary(x = m2)[Hugo_Symbol %in% genes]
+    mdt = merge(m1.genes[,.(Hugo_Symbol, MutatedSamples)], m2.genes[,.(Hugo_Symbol, MutatedSamples)], by = 'Hugo_Symbol', all = TRUE, suffixes = c("_m1", "_m2"))
+    mdt$MutatedSamples_m1[is.na(mdt$MutatedSamples_m1)] = 0
+    mdt$MutatedSamples_m2[is.na(mdt$MutatedSamples_m2)] = 0
+    mdt$max = apply(mdt[,.(MutatedSamples_m1, MutatedSamples_m2)], 1, max)
+    if(sortByM1){
+      mdt = mdt[order(MutatedSamples_m1, decreasing = TRUE)]
+    }else if(sortByM2){
+      mdt = mdt[order(MutatedSamples_m2, decreasing = TRUE)]
+    }else{
+      mdt = mdt[order(max, decreasing = TRUE)]
+    }
 
     genes = mdt[,Hugo_Symbol]
-  }
 
   m1.sampleSize = m1@summary[3, summary]
   m2.sampleSize = m2@summary[3, summary]

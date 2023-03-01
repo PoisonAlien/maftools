@@ -7,6 +7,7 @@
 
 ## ENHANCEMENTS
 - Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
+- Added `sortByM1` and `sortByM2` argument to `coOncoplot`. Issue: [888](https://github.com/PoisonAlien/maftools/issues/888)
 
 
 # CHANGES IN VERSION 2.12.05

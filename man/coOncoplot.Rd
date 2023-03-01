@@ -15,6 +15,8 @@ coOncoplot(
   annotationColor1 = NULL,
   annotationColor2 = NULL,
   annotationFontSize = 1.2,
+  sortByM1 = FALSE,
+  sortByM2 = FALSE,
   sortByAnnotation1 = FALSE,
   annotationOrder1 = NULL,
   sortByAnnotation2 = FALSE,
@@ -71,6 +73,10 @@ coOncoplot(
 
 \item{annotationFontSize}{font size for annotations Default 1.2}
 
+\item{sortByM1}{sort by mutation frequency in `m1`}
+
+\item{sortByM2}{sort by mutation frequency in `m2`}
+
 \item{sortByAnnotation1}{logical sort oncomatrix (samples) by provided `clinicalFeatures1`. Sorts based on first `clinicalFeatures1`.  Defaults to FALSE. column-sort}
 
 \item{annotationOrder1}{Manually specify order for annotations for `clinicalFeatures1`. Works only for first value. Default NULL.}
@@ -79,9 +85,9 @@ coOncoplot(
 
 \item{annotationOrder2}{Manually specify order for annotations for `clinicalFeatures2`. Works only for first value. Default NULL.}
 
-\item{sampleOrder1}{Manually speify sample names in m1 for oncolplot ordering. Default NULL.}
+\item{sampleOrder1}{Manually specify sample names in m1 for oncolplot ordering. Default NULL.}
 
-\item{sampleOrder2}{Manually speify sample names in m2 for oncolplot ordering. Default NULL.}
+\item{sampleOrder2}{Manually specify sample names in m2 for oncolplot ordering. Default NULL.}
 
 \item{additionalFeature1}{a vector of length two indicating column name in the MAF and the factor level to be highlighted.}
 
