@@ -2,6 +2,16 @@
 (GitHub master branch)
 
 ## BUG FIXES
+
+
+## ENHANCEMENTS
+- Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
+- Added protein structure for SETBP1. Issue: [696](https://github.com/PoisonAlien/maftools/issues/696)
+
+# CHANGES IN VERSION 2.12.05
+(GitHub master branch)
+
+## BUG FIXES
 - genes parameter in `plotClusters` can't accept list of genes. Issue: [828](https://github.com/PoisonAlien/maftools/issues/828)
 - Ignore NAs while generating `trinucleotideMatrix`. Issue: [841](https://github.com/PoisonAlien/maftools/issues/841)
 

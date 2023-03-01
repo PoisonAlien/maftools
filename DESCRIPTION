@@ -1,7 +1,7 @@
 Type: Package
 Package: maftools
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 2.12.05
+Version: 2.14.05
 Date: 2021-04-30
 Authors@R: 
     person(given = "Anand",
@@ -57,5 +57,5 @@ Encoding: UTF-8
 LazyData: TRUE
 NeedsCompilation: no
 Packaged: 2016-04-08 02:06:05 UTC; anand
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 SystemRequirements: GNU make

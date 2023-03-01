@@ -16,6 +16,7 @@
 #' @param leftBarData Data for leftside barplot. Must be a data.frame with two columns containing gene names and values. Default `NULL`
 #' @param leftBarLims limits for `leftBarData`. Default `NULL`.
 #' @param topBarData Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.
+#' @param topBarLims limits for `topBarData`. Default `NULL`.
 #' @param rightBarData Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.
 #' @param rightBarLims limits for `rightBarData`. Default `NULL`.
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
@@ -93,7 +94,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                drawRowBar = TRUE, drawColBar = TRUE,
                                leftBarData = NULL, leftBarLims = NULL,
                                rightBarData = NULL, rightBarLims = NULL,
-                               topBarData = NULL, logColBar = FALSE, includeColBarCN = TRUE,
+                               topBarData = NULL, topBarLims = NULL, logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
                                pathways = NULL, path_order = NULL, selectedPathways = NULL, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
                                showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
@@ -452,16 +453,20 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       top_bar_data[is.infinite(top_bar_data)] = 0
     }
 
-    plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(top_bar_data)), ylim = c(0, max(colSums(x = top_bar_data, na.rm = TRUE))),
+    if(is.null(topBarLims)){
+      topBarLims = round(c(0, max(colSums(x = top_bar_data, na.rm = TRUE))), digits = 2)
+    }
+
+    plot(x = NA, y = NA, type = "n", xlim = c(0,ncol(top_bar_data)), ylim = topBarLims,
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
-    axis(side = 2, at = c(0, round(max(colSums(top_bar_data, na.rm = TRUE)))), las = 2, line = 0.5)
+    axis(side = 2, at = c(0, max(topBarLims, na.rm = TRUE)), las = 2, line = 0.5)
     for(i in 1:ncol(top_bar_data)){
       x = top_bar_data[,i]
       names(x) = rownames(top_bar_data)
       x = x[!x == 0]
       if(length(x) > 0){
         rect(xleft = i-1, ybottom = c(0, cumsum(x)[1:(length(x)-1)]), xright = i-0.1,
-             ytop = cumsum(x), col = vc_col[names(x)], border = NA, lwd = 0)
+             ytop = cumsum(x), col = vc_col[names(x)], border = NA, lwd = 0, xpd = FALSE)
       }
     }
     if(logColBar){
@@ -500,13 +505,17 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
     extdata <- extdata[colnames(top_bar_data),]
 
-    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = range(extdata[,"barheights"], na.rm = TRUE),
+    if(is.null(topBarLims)){
+      topBarLims = round(range(extdata[,"barheights"], na.rm = TRUE), digits = 2)
+    }
+
+    plot(x = NA, y = NA, type = "n", xlim = c(0,nrow(extdata)), ylim = topBarLims,
          axes = FALSE, frame.plot = FALSE, xlab = NA, ylab = NA, xaxs = "i")
-    axis(side = 2, at = round(range(extdata[,"barheights"], na.rm = TRUE)), las = 2, line = 0.5)
+    axis(side = 2, at = topBarLims, las = 2, line = 0.5)
 
     for(i in 1:nrow(extdata)){
       graphics::rect(xleft = i-1, xright = i-0.1, ybottom = 0, ytop = as.numeric(extdata[i, "barheights"]),
-                     col = "#535c68", border = NA, lwd = 0)
+                     col = "#535c68", border = NA, lwd = 0, xpd = FALSE)
     }
     title(ylab = topbar_title, font = 1, cex.lab = legendFontSize, xpd = TRUE)
   }
