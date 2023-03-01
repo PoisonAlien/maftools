@@ -7,7 +7,7 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
                      title = NULL, title_size = 1.2, barcode_size = 0.4, sepwd_samples = 0.1, sepwd_genes = 0.1){
 
   tsbs = levels(getSampleSummary(x = maf)[,Tumor_Sample_Barcode])
-  genes = as.character(genes)
+  genes = unique(as.character(genes))
 
   om = createOncoMatrix(m = maf, g = genes)
   if(is.null(om)){

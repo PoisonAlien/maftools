@@ -2,11 +2,12 @@
 (GitHub master branch)
 
 ## BUG FIXES
+- Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)
 
 
 ## ENHANCEMENTS
 - Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
-- Added protein structure for SETBP1. Issue: [696](https://github.com/PoisonAlien/maftools/issues/696)
+
 
 # CHANGES IN VERSION 2.12.05
 (GitHub master branch)

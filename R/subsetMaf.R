@@ -95,7 +95,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
 
   if(!is.null(genes)){
     #message("-subsetting by genes..")
-    genes = as.character(genes)
+    genes = unique(as.character(genes))
     maf.dat = maf.dat[Hugo_Symbol %in% genes, ]
     maf.silent = maf.silent[Hugo_Symbol %in% genes, ]
   }

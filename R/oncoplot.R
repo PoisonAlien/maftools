@@ -116,6 +116,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   }
 
   if(!is.null(genes)){ #If user provides a gene list
+    genes = unique(as.character(genes))
     om = createOncoMatrix(m = maf, g = genes, add_missing = fill, cbio = cBioPortal)
     numMat = om$numericMatrix
     mat_origin = om$oncoMatrix
