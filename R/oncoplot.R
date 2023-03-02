@@ -15,10 +15,16 @@
 #' @param drawRowBar logical. Plots righ barplot for each gene. Default \code{TRUE}.
 #' @param leftBarData Data for leftside barplot. Must be a data.frame with two columns containing gene names and values. Default `NULL`
 #' @param leftBarLims limits for `leftBarData`. Default `NULL`.
+#' @param leftBarVline Draw vertical lines at these values. Default `NULL`.
+#' @param leftBarVlineCol Line color for `leftBarVline` Default gray70
 #' @param topBarData Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.
 #' @param topBarLims limits for `topBarData`. Default `NULL`.
+#' @param topBarHline Draw horizontal lines at these values. Default `NULL`.
+#' @param topBarHlineCol Line color for `topBarHline.` Default gray70
 #' @param rightBarData Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.
 #' @param rightBarLims limits for `rightBarData`. Default `NULL`.
+#' @param rightBarVline Draw vertical lines at these values. Default `NULL`.
+#' @param rightBarVlineCol Line color for `rightBarVline` Default gray70
 #' @param logColBar Plot top bar plot on log10 scale. Default \code{FALSE}.
 #' @param includeColBarCN Whether to include CN in column bar plot. Default TRUE
 #' @param clinicalFeatures columns names from `clinical.data` slot of \code{MAF} to be drawn in the plot. Dafault NULL.
@@ -92,9 +98,9 @@
 #' @export
 oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, altered = FALSE,
                                drawRowBar = TRUE, drawColBar = TRUE,
-                               leftBarData = NULL, leftBarLims = NULL,
-                               rightBarData = NULL, rightBarLims = NULL,
-                               topBarData = NULL, topBarLims = NULL, logColBar = FALSE, includeColBarCN = TRUE,
+                               leftBarData = NULL, leftBarLims = NULL, leftBarVline = NULL, leftBarVlineCol = 'gray70',
+                               rightBarData = NULL, rightBarLims = NULL,rightBarVline = NULL, rightBarVlineCol = 'gray70',
+                               topBarData = NULL, topBarLims = NULL, topBarHline = NULL, topBarHlineCol = 'gray70', logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
                                pathways = NULL, path_order = NULL, selectedPathways = NULL, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
                                showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
@@ -475,6 +481,9 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }else{
       mtext(text = "TMB", side = 2, line = 2, cex = 0.6)
     }
+    if(!is.null(topBarHline)){
+      abline(h = topBarHline, lty = 2, col = topBarHlineCol, xpd = FALSE)
+    }
   }else if(!is.null(topBarData) & drawColBar){
     # Draw extra clinical data in top
     if(drawRowBar){
@@ -519,6 +528,9 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                      col = "#535c68", border = NA, lwd = 0, xpd = FALSE)
     }
     title(ylab = topbar_title, font = 1, cex.lab = legendFontSize, xpd = TRUE)
+    if(!is.null(topBarHline)){
+      abline(h = topBarHline, lty = 2, col = topBarHlineCol)
+    }
   }
 
   #03: Draw scale for right barplot
@@ -594,6 +606,9 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
     axis(side = 3, at = rev(-exprs_bar_lims), outer = FALSE, line = 0.25, labels = rev(exprs_bar_lims))
     mtext(text = leftBarTitle, side = 3, line = 0.50, cex = 0.6)
+    if(!is.null(leftBarVline)){
+      abline(h = leftBarVline, lty = 2, col = leftBarVlineCol, xpd = FALSE)
+    }
   }
 
   #04: Draw the main matrix
@@ -857,6 +872,9 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                xright = cumsum(x), col = vc_col[vc_codes[names(x)]], border = NA, lwd = 0)
         }
       }
+      if(!is.null(rightBarVline)){
+        abline(v = rightBarVline, lty = 2, col = rightBarVlineCol, xpd = FALSE)
+      }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
       mtext(text = rightBarTitle, side = 3, line = 0.5, cex = 0.6)
     }else{
@@ -867,6 +885,9 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
         x = rev(rightBarData$exprn)[i]
         rect(ybottom = i-1, xleft = x, ytop = i-0.1,
              xright = 0, col = "#535c68", border = NA, lwd = 0)
+      }
+      if(!is.null(rightBarVline)){
+        abline(v = rightBarVline, lty = 2, col = rightBarVlineCol, xpd = FALSE)
       }
       axis(side = 3, at = side_bar_lims, outer = FALSE, line = 0.25)
       mtext(text = rightBarTitle, side = 3, line = 0.5, cex = 0.6)

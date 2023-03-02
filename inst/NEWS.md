@@ -1,4 +1,4 @@
-# CHANGES IN VERSION 2.12.05
+# CHANGES IN VERSION 2.14.05
 (GitHub master branch)
 
 ## BUG FIXES
@@ -9,6 +9,7 @@
 ## ENHANCEMENTS
 - Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
 - Added `sortByM1` and `sortByM2` argument to `coOncoplot`. Issue: [888](https://github.com/PoisonAlien/maftools/issues/888)
+- Added arguments `leftBarVline`, `leftBarVlineCol`, `rightBarVline`, `rightBarVlineCol` `topBarHline` `topBarHlineCol` to `oncoplot`. Issue: [874](https://github.com/PoisonAlien/maftools/issues/874)
 
 
 # CHANGES IN VERSION 2.12.05
