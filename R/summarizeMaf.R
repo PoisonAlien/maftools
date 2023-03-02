@@ -16,9 +16,14 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
         cat(NCBI_Build)
       }
     }
+
+    if(length(NCBI_Build) == 0){
+      NCBI_Build = NA
+    }
   }else{
     NCBI_Build = NA
   }
+
 
   if('Center' %in% colnames(maf)){
     Center = unique(maf[!Variant_Type %in% 'CNV', Center])
@@ -29,6 +34,9 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
         cat('--Mutiple centers found\n')
         cat(Center)
       }
+    }
+    if(length(Center) == 0){
+      Center = NA
     }
   }else{
     Center = NA
@@ -57,7 +65,11 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     vc.cast.cnv$CNV_total = rowSums(vc.cast.cnv[,2:ncol(vc.cast.cnv)], na.rm = TRUE)
 
     vc.cast = vc.cast[,!colnames(vc.cast)[colnames(vc.cast) %in% c('Amp', 'Del')], with =FALSE]
-    vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
+    if(ncol(vc.cast) > 1){
+      vc.cast[,total:=rowSums(vc.cast[,2:ncol(vc.cast), with = FALSE])]
+    }else{
+      vc.cast[,total:= 0]
+    }
 
     vc.cast = merge(vc.cast, vc.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
 
@@ -79,7 +91,11 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     vt.cast.cnv = vt.cast[,c('Tumor_Sample_Barcode', colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')]), with =FALSE]
 
     vt.cast = vt.cast[,!colnames(vt.cast)[colnames(vt.cast) %in% c('CNV')], with =FALSE]
-    vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
+    if(ncol(vt.cast) > 1){
+      vt.cast = vt.cast[,total:=rowSums(vt.cast[,2:ncol(vt.cast), with = FALSE])]
+    }else{
+      vt.cast[,total:= 0]
+    }
 
     vt.cast = merge(vt.cast, vt.cast.cnv, by = 'Tumor_Sample_Barcode', all = TRUE)[order(total, CNV, decreasing = TRUE)]
   }else{
@@ -95,7 +111,11 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
     hs.cast.cnv$CNV_total = rowSums(x = hs.cast.cnv[,2:ncol(hs.cast.cnv), with = FALSE], na.rm = TRUE)
 
     hs.cast = hs.cast[,!colnames(hs.cast)[colnames(hs.cast) %in% c('Amp', 'Del')], with = FALSE]
-    hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE], na.rm = TRUE)]
+    if(ncol(hs.cast) > 1){
+      hs.cast[,total:=rowSums(hs.cast[,2:ncol(hs.cast), with = FALSE], na.rm = TRUE)]
+    }else{
+      hs.cast[,total:= 0]
+    }
 
     hs.cast = merge(hs.cast, hs.cast.cnv, by = 'Hugo_Symbol', all = TRUE)[order(total, CNV_total, decreasing = TRUE)]
   }else{

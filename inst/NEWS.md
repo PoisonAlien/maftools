@@ -2,6 +2,7 @@
 (GitHub master branch)
 
 ## BUG FIXES
+- Bug fix in `subsetMaf` while handling only CNV events. [908](https://github.com/PoisonAlien/maftools/issues/908)
 - Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)
 
 

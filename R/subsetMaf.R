@@ -168,6 +168,7 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
       stop("Subsetting has resulted in zero non-synonymous variants!")
     }
 
+    #return(list(nonSyn = maf.dat, syn = maf.silent, clinicalData = maf.anno))
     m = MAF(nonSyn = maf.dat, syn = maf.silent, clinicalData = maf.anno)
 
     # mafSummary = summarizeMaf(maf.dat, chatty = FALSE, anno = maf.anno)
