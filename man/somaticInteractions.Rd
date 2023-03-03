@@ -19,6 +19,7 @@ somaticInteractions(
   countsFontSize = 0.8,
   countsFontColor = "black",
   colPal = "BrBG",
+  revPal = FALSE,
   showSum = TRUE,
   plotPadj = FALSE,
   colNC = 9,
@@ -57,6 +58,8 @@ somaticInteractions(
 \item{countsFontColor}{Default `black`}
 
 \item{colPal}{colPalBrewer palettes. See RColorBrewer::display.brewer.all() for details}
+
+\item{revPal}{Reverse the color palette. Default FALSE}
 
 \item{showSum}{show [sum] with gene names in plot, Default TRUE}
 

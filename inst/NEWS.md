@@ -11,6 +11,7 @@
 - Added `data` argument to `lollipopPlot` function. Issue: [894](https://github.com/PoisonAlien/maftools/issues/894)
 - Added `sortByM1` and `sortByM2` argument to `coOncoplot`. Issue: [888](https://github.com/PoisonAlien/maftools/issues/888)
 - Added arguments `leftBarVline`, `leftBarVlineCol`, `rightBarVline`, `rightBarVlineCol` `topBarHline` `topBarHlineCol` to `oncoplot`. Issue: [874](https://github.com/PoisonAlien/maftools/issues/874)
+- Added `revPal` argument to `somaticInteractions`. Issue: [859](https://github.com/PoisonAlien/maftools/issues/859)
 
 # CHANGES IN VERSION 2.14.0
 (Bioconductor release version)

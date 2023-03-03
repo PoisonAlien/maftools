@@ -17,6 +17,7 @@
 #' @param countsFontSize Default 0.8
 #' @param countsFontColor Default `black`
 #' @param colPal colPalBrewer palettes. See RColorBrewer::display.brewer.all() for details
+#' @param revPal Reverse the color palette. Default FALSE
 #' @param showSum show [sum] with gene names in plot, Default TRUE
 #' @param plotPadj Plot adj. p-values instead
 #' @param colNC Number of different colors in the palette, minimum 3, default 9
@@ -35,7 +36,7 @@
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
                                geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
                                showCounts = FALSE, countStats = 'all', countType = 'all',
-                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", showSum = TRUE, plotPadj = FALSE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42), limitColorBreaks = TRUE){
+                               countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", revPal = FALSE, showSum = TRUE, plotPadj = FALSE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42), limitColorBreaks = TRUE){
   #browser()
   if(is.null(genes)){
     genes = getGeneSummary(x = maf)[1:top, Hugo_Symbol]
@@ -122,6 +123,9 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
 
     col_pal = RColorBrewer::brewer.pal(9, colPal)
+    if(revPal){
+      col_pal = rev(col_pal)
+    }
     col_pal = grDevices::colorRampPalette(colors = col_pal)
     col_pal = col_pal(m*n-1)
 
