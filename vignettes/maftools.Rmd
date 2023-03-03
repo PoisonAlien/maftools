@@ -165,6 +165,8 @@ plotTiTv(res = laml.titv)
 
 By default lollipopPlot uses the longest isoform of the gene.
 
+### MAF as an input
+
 ```{r,fig.align='left', fig.width=4.5, fig.height=2.5}
 #lollipop plot for DNMT3A, which is one of the most frequent mutated gene in Leukemia.
 lollipopPlot(
@@ -174,6 +176,17 @@ lollipopPlot(
   showMutationRate = TRUE,
   labelPos = 882
 )
+```
+
+### Custom data as an input
+
+Instead of an `MAF` a custom data can also be used for plotting. Input should be a two column data frame with pos and counts.
+
+```{r, fig.align='left', fig.width=4.5, fig.height=2.5}
+#example data
+my_data = data.frame(pos = sample.int(912, 15, replace = TRUE), count = sample.int(30, 15, replace = TRUE))
+head(my_data)
+lollipopPlot(data = my_data, gene = "DNMT3A")
 ```
 
 General protein domains can be drawn with the function `plotProtein`

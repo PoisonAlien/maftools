@@ -8,6 +8,7 @@
 
 ## ENHANCEMENTS
 - Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
+- Added `data` argument to `lollipopPlot` function. Issue: [894](https://github.com/PoisonAlien/maftools/issues/894)
 - Added `sortByM1` and `sortByM2` argument to `coOncoplot`. Issue: [888](https://github.com/PoisonAlien/maftools/issues/888)
 - Added arguments `leftBarVline`, `leftBarVlineCol`, `rightBarVline`, `rightBarVlineCol` `topBarHline` `topBarHlineCol` to `oncoplot`. Issue: [874](https://github.com/PoisonAlien/maftools/issues/874)
 
