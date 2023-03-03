@@ -3,17 +3,20 @@
 
 ## BUG FIXES
 - Bug fix in `subsetMaf` while handling only CNV events. [908](https://github.com/PoisonAlien/maftools/issues/908)
+- Error handling when no deep/shallow CNV events found. [899](https://github.com/PoisonAlien/maftools/issues/899)
 - Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)
-
 
 ## ENHANCEMENTS
 - Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
 - Added `sortByM1` and `sortByM2` argument to `coOncoplot`. Issue: [888](https://github.com/PoisonAlien/maftools/issues/888)
 - Added arguments `leftBarVline`, `leftBarVlineCol`, `rightBarVline`, `rightBarVlineCol` `topBarHline` `topBarHlineCol` to `oncoplot`. Issue: [874](https://github.com/PoisonAlien/maftools/issues/874)
 
+# CHANGES IN VERSION 2.14.0
+(Bioconductor release version)
+
+- No changes
 
 # CHANGES IN VERSION 2.12.05
-(GitHub master branch)
 
 ## BUG FIXES
 - genes parameter in `plotClusters` can't accept list of genes. Issue: [828](https://github.com/PoisonAlien/maftools/issues/828)

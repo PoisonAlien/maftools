@@ -73,8 +73,14 @@ readGistic = function(gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gi
   if(cnLevel == 'all'){
     all.lesions.melt = all.lesions.melt[value %in% c(1, 2)] #1 = shallow amp/del; 2 = deep amp/del
   }else if(cnLevel == 'deep'){
+    if(nrow(all.lesions.melt[value %in% 2]) == 0){
+      stop("No deep events found!")
+    }
     all.lesions.melt = all.lesions.melt[value %in% 2] #1 = shallow amp/del; 2 = deep amp/del
   }else if(cnLevel == 'shallow'){
+    if(nrow(all.lesions.melt[value %in% 1]) == 0){
+      stop("No shallow events found!")
+    }
     all.lesions.melt = all.lesions.melt[value %in% 1] #1 = shallow amp/del; 2 = deep amp/del
   }
 
