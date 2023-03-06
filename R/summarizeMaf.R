@@ -8,6 +8,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   if('NCBI_Build' %in% colnames(maf)){
     NCBI_Build = unique(maf[!Variant_Type %in% 'CNV', NCBI_Build])
     NCBI_Build = NCBI_Build[!is.na(NCBI_Build)]
+    if (length(NCBI_Build)==0) NCBI_Build=NA 
 
     if(chatty){
       if(length(NCBI_Build) > 1){
