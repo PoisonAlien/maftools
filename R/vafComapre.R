@@ -113,7 +113,7 @@ vafCompare = function(m1, m2, genes = NULL, top = 5, vafCol1 = NULL, vafCol2 = N
       if(is(sig, class2 = "try-error")){
         sig = NA
       }
-      if(!is.na(sig)){
+      if(!identical(sig, NA)){
         sig = sig$p.value
         if(sig < 0.01){
           #segments(x0 = 1, y0 = 1, x1 = 2, y1 = 1, col = "black")
