@@ -7,6 +7,7 @@
 - Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)
 
 ## ENHANCEMENTS
+- Added `leftMar` and `topMar` arguments to `somaticInteractions`. Issue: [913](https://github.com/PoisonAlien/maftools/issues/913)
 - Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
 - Added `data` argument to `lollipopPlot` function. Issue: [894](https://github.com/PoisonAlien/maftools/issues/894)
 - Added `sortByM1` and `sortByM2` argument to `coOncoplot`. Issue: [888](https://github.com/PoisonAlien/maftools/issues/888)

@@ -12,6 +12,8 @@ somaticInteractions(
   returnAll = TRUE,
   geneOrder = NULL,
   fontSize = 0.8,
+  leftMar = 4,
+  topMar = 4,
   showSigSymbols = TRUE,
   showCounts = FALSE,
   countStats = "all",
@@ -44,6 +46,10 @@ somaticInteractions(
 \item{geneOrder}{Plot the results in given order. Default NULL.}
 
 \item{fontSize}{cex for gene names. Default 0.8}
+
+\item{leftMar}{Left margin. Default 4}
+
+\item{topMar}{Top margin. Default 4}
 
 \item{showSigSymbols}{Default TRUE. Heighlight significant pairs}
 

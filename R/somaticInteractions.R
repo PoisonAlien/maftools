@@ -10,6 +10,8 @@
 #' @param pvalue Default c(0.05, 0.01) p-value threshold. You can provide two values for upper and lower threshold.
 #' @param returnAll If TRUE returns test statistics for all pair of tested genes. Default FALSE, returns for only genes below pvalue threshold.
 #' @param fontSize cex for gene names. Default 0.8
+#' @param leftMar Left margin. Default 4
+#' @param topMar Top margin. Default 4
 #' @param showSigSymbols Default TRUE. Heighlight significant pairs
 #' @param showCounts Default TRUE. Include number of events in the plot
 #' @param countStats Default `all`. Can be `all` or `sig`
@@ -34,7 +36,7 @@
 #' @export
 
 somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.01), returnAll = TRUE,
-                               geneOrder = NULL, fontSize = 0.8, showSigSymbols = TRUE,
+                               geneOrder = NULL, fontSize = 0.8, leftMar = 4, topMar = 4, showSigSymbols = TRUE,
                                showCounts = FALSE, countStats = 'all', countType = 'all',
                                countsFontSize = 0.8, countsFontColor = "black", colPal = "BrBG", revPal = FALSE, showSum = TRUE, plotPadj = FALSE, colNC=9, nShiftSymbols = 5, sigSymbolsSize=2,sigSymbolsFontSize=0.9, pvSymbols = c(46,42), limitColorBreaks = TRUE){
   #browser()
@@ -152,7 +154,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
       rownames(gene_sum) = paste0(apply(gene_sum, 1, paste, collapse = ' ['), ']')
     }
 
-    par(bty="n", mar = c(1, 4, 4, 2)+.1, las=2, fig = c(0, 1, 0, 1))
+    par(bty="n", mar = c(1, leftMar, topMar, 2)+.1, las=2, fig = c(0, 1, 0, 1))
 
     # adjust breaks for colors according to predefined legend values
     breaks = NA
