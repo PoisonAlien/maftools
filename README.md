@@ -2,17 +2,15 @@
 
 ## maftools - An R package to summarize, analyze and visualize MAF files
 
-[![bioc](http://www.bioconductor.org/shields/downloads/maftools.svg)](https://bioconductor.org/packages/stats/bioc/maftools/) 
-[![bioc](http://www.bioconductor.org/shields/years-in-bioc/maftools.svg)](http://bioconductor.org/packages/devel/bioc/html/maftools.html)
-[![bioc](http://www.bioconductor.org/shields/build/devel/bioc/maftools.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/maftools/)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/poisonalien/maftools.svg)](https://github.com/poisonalien/maftools/issues)
-  [![R-CMD-check](https://github.com/PoisonAlien/maftools/workflows/R-CMD-check/badge.svg)](https://github.com/PoisonAlien/maftools/actions)
+[![R-CMD-check](https://github.com/PoisonAlien/maftools/workflows/R-CMD-check/badge.svg)](https://github.com/PoisonAlien/maftools/actions)
 
 ## Introduction
 
 `maftools` provides a comprehensive set of functions for processing [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) files and to perform most commonly used analyses in cancer genomics. See [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html) for a detailed usage and a case study.
 
 ## Installation
+
 ```{r}
 #Install from Bioconductor repository
 BiocManager::install("maftools")
@@ -26,7 +24,7 @@ BiocManager::install("PoisonAlien/maftools")
 A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/full/10.1056/nejmoa1301689) as a case study can be found [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html).
 
 <p align="left">
-<img src="https://user-images.githubusercontent.com/8164062/97981605-d8a59500-1dd2-11eb-9f5e-cc808f7b3f91.gif" height="320">
+<img src="https://user-images.githubusercontent.com/8164062/97981605-d8a59500-1dd2-11eb-9f5e-cc808f7b3f91.gif" height="320" height="400">
 </p>
 
 Besides the MAF files, maftools also facilitates processing of BAM files. Please refer to below vignettes and sections to learn more.
