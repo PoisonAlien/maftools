@@ -7,6 +7,7 @@
 - Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)
 
 ## ENHANCEMENTS
+- Emit warnings when fishers test can not be performed during `somaticInteractions`. Issue: [921](https://github.com/PoisonAlien/maftools/issues/921)
 - Added `leftMar` and `topMar` arguments to `somaticInteractions`. Issue: [913](https://github.com/PoisonAlien/maftools/issues/913)
 - Added `toptBarLims` argument to oncoplot. Issue: [910](https://github.com/PoisonAlien/maftools/issues/910)
 - Added `data` argument to `lollipopPlot` function. Issue: [894](https://github.com/PoisonAlien/maftools/issues/894)
