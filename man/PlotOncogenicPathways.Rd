@@ -8,6 +8,7 @@ PlotOncogenicPathways(
   maf,
   pathways = NULL,
   fullPathway = FALSE,
+  pathdb = NULL,
   removeNonMutated = TRUE,
   tsgCol = "red",
   ogCol = "royalblue",
@@ -23,6 +24,8 @@ PlotOncogenicPathways(
 \item{pathways}{Name of pathways to be drawn}
 
 \item{fullPathway}{Include all genes from the pathway. Defaulr FALS only plots mutated genes}
+
+\item{pathdb}{A tsv file or a data frame containing pathway to gene mappings. If not provided uses the default resource. Data must contain at least two columns with pathway name and gene names. Optionally a third column with OG or TSG information can be added.}
 
 \item{removeNonMutated}{Default TRUE}
 
