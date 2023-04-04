@@ -66,9 +66,43 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
     mutMat = rbind(mutMat, missing.tsbs)
   }
 
+  #return(mutMat)
+
   #pairwise fisher test source code borrowed from: https://www.nature.com/articles/ncomms6901
-  interactions = sapply(1:ncol(mutMat), function(i) sapply(1:ncol(mutMat), function(j) {f<- try(fisher.test(mutMat[,i], mutMat[,j]), silent=TRUE); if(class(f)=="try-error") NA else ifelse(f$estimate>1, -log10(f$p.val),log10(f$p.val))} ))
-  oddsRatio <- oddsGenes <- sapply(1:ncol(mutMat), function(i) sapply(1:ncol(mutMat), function(j) {f<- try(fisher.test(mutMat[,i], mutMat[,j]), silent=TRUE); if(class(f)=="try-error") f=NA else f$estimate} ))
+  interactions = sapply(1:ncol(mutMat), function(i)
+    sapply(1:ncol(mutMat), function(j) {
+      f = try(fisher.test(mutMat[, i], mutMat[, j]), silent = TRUE)
+      if (class(f) == "try-error"){
+        if(all(mutMat[,i] == mutMat[,j])){
+          if(colnames(mutMat)[i] != colnames(mutMat)[j]){
+            warning("All the samples are in the same direction for the genes ", colnames(mutMat)[i], " and ",  colnames(mutMat)[j], "! Could not perform Fisher test.")
+          }
+          NA
+        }else{
+          if(colnames(mutMat)[i] != colnames(mutMat)[j]){
+            warning("Contigency table could not created for the genes ", colnames(mutMat)[i], " and ",  colnames(mutMat)[j], "! Could not perform Fisher test.")
+          }
+          NA
+        }
+      }else{
+        ifelse(f$estimate > 1,-log10(f$p.val), log10(f$p.val))
+      }
+    }))
+  #return(interactions)
+  oddsRatio <-
+    oddsGenes <-
+    sapply(1:ncol(mutMat), function(i)
+      sapply(1:ncol(mutMat), function(j) {
+        f = try(fisher.test(mutMat[, i], mutMat[, j]), silent = TRUE)
+        if (class(f) == "try-error")
+          if(all(mutMat[,i] == mutMat[,j])){
+            NA
+          }else{
+            NA
+          }
+        else
+          f$estimate
+      }))
   rownames(interactions) = colnames(interactions) = rownames(oddsRatio) = colnames(oddsRatio) = colnames(mutMat)
 
   sigPairs = which(x = 10^-abs(interactions) < 1, arr.ind = TRUE)
@@ -84,7 +118,8 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
                                   x = sigPairs[i,]
                                   g1 = rownames(interactions[x[1], x[2], drop = FALSE])
                                   g2 = colnames(interactions[x[1], x[2], drop = FALSE])
-                                  tbl = as.data.frame(table(apply(X = mutMat[,c(g1, g2), drop = FALSE], 1, paste, collapse = "")))
+                                  #tbl = as.data.frame(table(apply(X = mutMat[,c(g1, g2), drop = FALSE], 1, paste, collapse = "")))
+                                  tbl = as.data.frame(table(factor(apply(X = mutMat[,c(g1, g2), drop = FALSE], 1, paste, collapse = ""), levels = c("00", "01","11", "10"))))
                                   combn = data.frame(t(tbl$Freq))
                                   colnames(combn) = tbl$Var1
                                   pval = 10^-abs(interactions[x[1], x[2]])
