@@ -721,7 +721,8 @@ get_pw_summary = function(maf, pathways = NULL){
   altered_pws = as.data.frame(t(data.frame(lapply(altered_pws, length))))
   data.table::setDT(x = altered_pws, keep.rownames = TRUE)
   colnames(altered_pws) = c("Pathway", "n_affected_genes")
-  altered_pws$Pathway = gsub(pattern = "\\.", replacement = "-", x = altered_pws$Pathway)
+  #altered_pws$Pathway = gsub(pattern = "\\.", replacement = "-", x = altered_pws$Pathway)
+  altered_pws$Pathway = names(pathdb)
   altered_pws = merge(pathdb_size, altered_pws, all.x = TRUE)
 
   altered_pws[, fraction_affected := n_affected_genes/N]
