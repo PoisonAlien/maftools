@@ -729,6 +729,6 @@ get_pw_summary = function(maf, pathways = NULL){
   altered_pws$Mutated_samples = unlist(mut_load)
   nsamps = as.numeric(maf@summary[ID == "Samples", summary])
   altered_pws[,Fraction_mutated_samples := Mutated_samples/nsamps]
-  altered_pws = altered_pws[order(n_affected_genes, fraction_affected, decreasing = FALSE)]
+  #altered_pws = altered_pws[order(n_affected_genes, fraction_affected, decreasing = FALSE)]
   altered_pws
 }
