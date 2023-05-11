@@ -34,6 +34,7 @@
 #' @param pathways Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`
 #' @param path_order Default `NULL` Manually specify the order of pathways
 #' @param selectedPathways Manually provide the subset of pathway names to be selected from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.
+#' @param showOnlyPathway Shows only rows corresponing to the pathways. Default FALSE.
 #' @param pwLineCol Color for the box around the pathways Default #535c68
 #' @param pwLineWd Line width for the box around the pathways Default Default 1
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
@@ -102,7 +103,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                rightBarData = NULL, rightBarLims = NULL,rightBarVline = NULL, rightBarVlineCol = 'gray70',
                                topBarData = NULL, topBarLims = NULL, topBarHline = NULL, topBarHlineCol = 'gray70', logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
-                               pathways = NULL, path_order = NULL, selectedPathways = NULL, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
+                               pathways = NULL, path_order = NULL, selectedPathways = NULL, showOnlyPathway = FALSE, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
                                showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
                                anno_height = 1, legend_height = 4,
                                sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
@@ -401,7 +402,13 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     mat_origin_path[mat_origin_path == 0] = ""
     mat_origin_path[mat_origin_path == "99"] = "pathway"
     mat_origin_path = mat_origin_path[,colnames(mat_origin), drop = FALSE]
-    mat_origin = rbind(mat_origin, mat_origin_path)
+    if(showOnlyPathway){
+      mat_origin = mat_origin_path
+      numMat = numMat[rownames(mat_origin),, drop = FALSE]
+    }else{
+      mat_origin = rbind(mat_origin, mat_origin_path)
+    }
+
     mat_origin = mat_origin[rownames(numMat), colnames(numMat), drop = FALSE]
   }
 
@@ -1087,6 +1094,9 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
   }
 
+  if(showOnlyPathway){
+    leg_classes = leg_classes['pathway']
+  }
   lep = legend("topleft", legend = names(leg_classes),
                col = leg_classes, border = NA, bty = "n",
                ncol= 2, pch = leg_classes_pch, xpd = TRUE, xjust = 0, yjust = 0, cex = legendFontSize)
