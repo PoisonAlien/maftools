@@ -165,37 +165,37 @@ gisticChromPlot2v = function(
     g1 = getCytobandSummary(gistic1)
 
     g1[, `:=`(Chromosome, sapply(strsplit(x = g1$Wide_Peak_Limits, 
-                                          split = ":"), "[", 1))]
+        split = ":"), "[", 1))]
     g1[, `:=`(loc, sapply(strsplit(x = g1$Wide_Peak_Limits, split = ":"), 
-                          "[", 2))]
+        "[", 2))]
     g1[, `:=`(Start_Position, sapply(strsplit(x = g1$loc, split = "-"), 
-                                     "[", 1))]
+        "[", 1))]
     g1[, `:=`(End_Position, sapply(strsplit(x = g1$loc, split = "-"), 
-                                   "[", 2))]
+        "[", 2))]
 
     g1.lin = transformSegments(segmentedData = g1[, .(Chromosome, 
-                                                      Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
+        Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
 
     gis1.scores = transformSegments(segmentedData = gistic1@gis.scores, 
-                                    build = ref.build)
+        build = ref.build)
 
     #
     g2 = getCytobandSummary(gistic2)
 
     g2[, `:=`(Chromosome, sapply(strsplit(x = g2$Wide_Peak_Limits, 
-                                          split = ":"), "[", 1))]
+        split = ":"), "[", 1))]
     g2[, `:=`(loc, sapply(strsplit(x = g2$Wide_Peak_Limits, split = ":"), 
-                          "[", 2))]
+        "[", 2))]
     g2[, `:=`(Start_Position, sapply(strsplit(x = g2$loc, split = "-"), 
-                                     "[", 1))]
+        "[", 1))]
     g2[, `:=`(End_Position, sapply(strsplit(x = g2$loc, split = "-"), 
-                                   "[", 2))]
+        "[", 2))]
 
     g2.lin = transformSegments(segmentedData = g2[, .(Chromosome, 
-                                                      Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
+        Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
 
     gis2.scores = transformSegments(segmentedData = gistic2@gis.scores, 
-                                    build = ref.build)
+        build = ref.build)
 
 
 
@@ -224,36 +224,36 @@ gisticChromPlot2v = function(
             COLORS = color
         }
     }
-
+    
 
 
     gis.scores$VC = gis.scores$Variant_Classification
     gis.scores$Variant_Classification = ifelse(test = as.numeric(gis.scores$fdr) > 
-                                                   fdrCutOff.log10, yes = gis.scores$Variant_Classification, no = "neutral")
+        fdrCutOff.log10, yes = gis.scores$Variant_Classification, no = "neutral")
 
     gis.scores$Variant_Classification = factor(gis.scores$Variant_Classification, 
-                                               levels = c("neutral", "Amp", "Del"))
+        levels = c("neutral", "Amp", "Del"))
     gis.scores$value = ifelse(test = gis.scores$loc == 
-                                  "left", yes = -gis.scores$G_Score, no = gis.scores$G_Score)
-
+        "left", yes = -gis.scores$G_Score, no = gis.scores$G_Score)
+    
     if (ref.build == "hg19") {
         chr.lens = c(249250621, 243199373, 198022430, 191154276, 
-                     180915260, 171115067, 159138663, 146364022, 141213431, 
-                     135534747, 135006516, 133851895, 115169878, 107349540, 
-                     102531392, 90354753, 81195210, 78077248, 59128983, 
-                     63025520, 48129895, 51304566, 155270560, 59373566)
+            180915260, 171115067, 159138663, 146364022, 141213431, 
+            135534747, 135006516, 133851895, 115169878, 107349540, 
+            102531392, 90354753, 81195210, 78077248, 59128983, 
+            63025520, 48129895, 51304566, 155270560, 59373566)
     }else if (ref.build == "hg18") {
         chr.lens = c(247249719, 242951149, 199501827, 191273063, 
-                     180857866, 170899992, 158821424, 146274826, 140273252, 
-                     135374737, 134452384, 132349534, 114142980, 106368585, 
-                     100338915, 88827254, 78774742, 76117153, 63811651, 
-                     62435964, 46944323, 49691432, 154913754, 57772954)
+            180857866, 170899992, 158821424, 146274826, 140273252, 
+            135374737, 134452384, 132349534, 114142980, 106368585, 
+            100338915, 88827254, 78774742, 76117153, 63811651, 
+            62435964, 46944323, 49691432, 154913754, 57772954)
     }else if (ref.build == "hg38") {
         chr.lens = c(248956422, 242193529, 198295559, 190214555, 
-                     181538259, 170805979, 159345973, 145138636, 138394717, 
-                     133797422, 135086622, 133275309, 114364328, 107043718, 
-                     101991189, 90338345, 83257441, 80373285, 58617616, 
-                     64444167, 46709983, 50818468, 156040895, 57227415)
+            181538259, 170805979, 159345973, 145138636, 138394717, 
+            133797422, 135086622, 133275309, 114364328, 107043718, 
+            101991189, 90338345, 83257441, 80373285, 58617616, 
+            64444167, 46709983, 50818468, 156040895, 57227415)
     } else {
         stop("ref.build can only be hg18, hg19 or hg38")
     }
@@ -261,7 +261,7 @@ gisticChromPlot2v = function(
     nchrs = length(unique(gis.scores$Chromosome))
     chr.labels = c(1:22, "X", "Y")
     chr.tbl = data.table::data.table(chr = chr.labels, start = c(1, 
-                                                                 chr.lens.cumsum[1:length(chr.lens.cumsum) - 1]), end = chr.lens.cumsum)
+        chr.lens.cumsum[1:length(chr.lens.cumsum) - 1]), end = chr.lens.cumsum)
     chr.tbl$color = rep(c("black", "white"), length = nrow(chr.tbl))
 
     # 找寻xy轴的范围
@@ -300,10 +300,10 @@ gisticChromPlot2v = function(
     if (cytobandOffset=='auto'){
         cytobandOffset = signif((ylims[2] - ylims[1]) * 0.015,2)
     }
-
+    
 
     gis.scores$ystart = ifelse(test = gis.scores$loc == 
-                                   "left", yes = -cytobandOffset, no = cytobandOffset)
+        "left", yes = -cytobandOffset, no = cytobandOffset)
     # gis.scores$Variant_Classification = factor(x = as.character(gis.scores$Variant_Classification), 
     #     levels = c("neutral", "Amp", "Del"))
 
@@ -311,9 +311,9 @@ gisticChromPlot2v = function(
     gis.scores.splt = split(gis.scores, as.factor(gis.scores$Variant_Classification))
 
 
-    make.custom(10,12) 
+    # make.custom(10,12) 
     ## --- plot 开始绘图 ---
-
+    
     # 设置子fig的layout
     layout.matrix <- matrix(c(2, 1, 3), nrow = 1, ncol = 3)
     layout(mat = layout.matrix, widths = c(2,8,2))
@@ -325,40 +325,40 @@ gisticChromPlot2v = function(
     # 画组名title（中上外框）
     center = which(y_lims==0)
     text(y = xlims[2], x = y_lims[center-1]
-         ,labels = g1Name , adj = 0
-         ,cex = 1
-         ,pos = 3
-         ,font=3, xpd = TRUE)
+                 ,labels = g1Name , adj = 0
+                 ,cex = 1
+                 ,pos = 3
+                 ,font=3, xpd = TRUE)
     text(y = xlims[2], x = y_lims[center+1]
-         ,labels = g2Name , adj = 1
-         ,cex = 1
-         ,pos = 3
-         ,font=3, xpd = TRUE)
+                 ,labels = g2Name , adj = 1
+                 ,cex = 1
+                 ,pos = 3
+                 ,font=3, xpd = TRUE)
     #mtext(text = g1Name, at =  ,side = 3, line = 0, cex = 1)
     #mtext(text = g2Name, at = y_lims[(length(y_lims) + 3) / 2] ,side = 3, line = 0, cex = 1)
-
+    
     # 画主数据线
     for (n in names(gis.scores.splt)){
         if (n =='neutral' || n == type){
             df.and = gis.scores.splt[[n]]
             colour = COLORS[n]
 
-            df = df.and %>% filter(loc=='left')
+            df = df.and %>% dplyr::filter(loc=='left')
             segments(x0 = df$ystart
-                     ,y0 = xlims[2] - df$Start_Position_updated
-                     ,x1 = df$value * ratio.l+ df$ystart
-                     ,y1 = xlims[2] - df$End_Position_updated
-                     ,col = colour
-                     ,lwd = 1.5
+                ,y0 = xlims[2] - df$Start_Position_updated
+                ,x1 = df$value * ratio.l+ df$ystart
+                ,y1 = xlims[2] - df$End_Position_updated
+                ,col = colour
+                ,lwd = 1.5
             )
             # lines(x = df$value + df$ystart, y = xlims[2] - df$Start_Position_updated, col=colour,lwd=1.5)
-            df = df.and %>% filter(loc=='right')
+            df = df.and %>% dplyr::filter(loc=='right')
             segments(x0 = df$ystart 
-                     ,y0 = xlims[2] - df$Start_Position_updated
-                     ,x1 = df$value * ratio.r + df$ystart
-                     ,y1 = xlims[2] - df$End_Position_updated
-                     ,col = colour
-                     ,lwd = 1.5
+                ,y0 = xlims[2] - df$Start_Position_updated
+                ,x1 = df$value * ratio.r + df$ystart
+                ,y1 = xlims[2] - df$End_Position_updated
+                ,col = colour
+                ,lwd = 1.5
             )
             # lines(x = df$value + df$ystart, y = xlims[2] - df$Start_Position_updated, col=colour,lwd=1.5)
         }
@@ -386,7 +386,7 @@ gisticChromPlot2v = function(
         markBands = c(5,5)
     }
     if (!is.null(markBands)){
-        ordered.g.lin = g.lin[order(qvalues)] %>% filter(Variant_Classification == type)
+        ordered.g.lin = g.lin[order(qvalues)] %>% dplyr::filter(Variant_Classification == type)
         if (all(length(markBands) == 1 & markBands == "all")) {
             markBandsdf = ordered.g.lin
         }else if (length(markBands)==1 && is.numeric(markBands) && markBands >= 1){
@@ -397,8 +397,8 @@ gisticChromPlot2v = function(
             markBandsdf = ordered.g.lin[1:markBands,]
         } else if (length(markBands)==2 && is.numeric(markBands) ){
             markBands = as.integer(markBands)
-            m1 = ordered.g.lin %>% filter(loc == 'left') %>% head(markBands[1])
-            m2 = ordered.g.lin %>% filter(loc == 'right') %>% head(markBands[2])
+            m1 = ordered.g.lin %>% dplyr::filter(loc == 'left') %>% head(markBands[1])
+            m2 = ordered.g.lin %>% dplyr::filter(loc == 'right') %>% head(markBands[2])
             markBandsdf = rbind(m1,m2)
         }
 
@@ -407,30 +407,30 @@ gisticChromPlot2v = function(
             message("Available cytobands: ")
             print(getCytobandSummary(x = gistic)[qvalues < fdrCutOff])
             stop(paste("Could not find provided cytobands:", paste(markBands, 
-                                                                   collapse = ", ")))
+                collapse = ", ")))
         }
 
         # gis.scores的区间比markBandsdf(g.lin)的区间要小，"Start_Position_updated", "End_Position_updated"
         # 在两表中不是一一对应, 所以要用foverlap找区间对应关系，而用left_join等keyjoin的方法则不行
         gs = gis.scores.splt[[type]]
         data.table::setkey(x = gs, Start_Position_updated, 
-                           End_Position_updated)
+            End_Position_updated)
         cps.l =  data.table::foverlaps(
             by.x = c("Start_Position_updated", "End_Position_updated")
             ,by.y = c("Start_Position_updated", "End_Position_updated")
             ,x = markBandsdf[loc=='left'][, .(Variant_Classification, Cytoband,Chromosome, Start_Position_updated, End_Position_updated,loc)]
             ,y = gs[loc=='left'][, .(Start_Position_updated, End_Position_updated, loc, Variant_Classification, value,ystart,Chromosome)]
-        )
+            )
         cps.r = data.table::foverlaps(
             by.x = c("Start_Position_updated", "End_Position_updated")
             ,by.y = c("Start_Position_updated", "End_Position_updated")
             ,x = markBandsdf[loc=='right'][, .(Variant_Classification, Cytoband,Chromosome, Start_Position_updated, End_Position_updated,loc)]
             ,y = gs[loc=='right'][, .(Start_Position_updated, End_Position_updated, loc, Variant_Classification, value,ystart,Chromosome)]
-        )
-        cyto_peaks_scores = rbind(cps.l,cps.r) %>% arrange(loc,Cytoband,desc(abs(value))) %>% distinct(loc,Cytoband,.keep_all = TRUE)
+            )
+        cyto_peaks_scores = rbind(cps.l,cps.r) %>% dplyr::arrange(loc,Cytoband,desc(abs(value))) %>% dplyr::distinct(loc,Cytoband,.keep_all = TRUE)
 
-        #     cyto_peaks_scores = cyto_peaks_scores[order(Cytoband, value, 
-        #         decreasing = TRUE)][Cytoband %in% mb$Cytoband] %>% distinct(Cytoband,ystart, .keep_all = TRUE)
+    #     cyto_peaks_scores = cyto_peaks_scores[order(Cytoband, value, 
+    #         decreasing = TRUE)][Cytoband %in% mb$Cytoband] %>% dplyr::distinct(Cytoband,ystart, .keep_all = TRUE)
         # drop rows with NA values
         cyto_peaks_scores = cyto_peaks_scores[complete.cases(cyto_peaks_scores)]
 
@@ -442,30 +442,30 @@ gisticChromPlot2v = function(
         for (i in 1:nrow(cyto_peaks_scores)){
             pos = cyto_peaks_scores[i,Start_Position_updated]
             mtext(at = xlims[2] - pos, # y = cyto_peaks_scores$ylims,#cyto_peaks_scores$amp + cyto_peaks_scores$ystart, 
-                  text = cyto_peaks_scores[i,Cytoband], side= cyto_peaks_scores[i,pos]
+                text = cyto_peaks_scores[i,Cytoband], side= cyto_peaks_scores[i,pos]
                   , font = 3, cex = txtSize, las=1)
-            #     lines(x=p,y=c(1,0.8,0.55),lwd = 0.5, col= mut_dat[i,colour])
+        #     lines(x=p,y=c(1,0.8,0.55),lwd = 0.5, col= mut_dat[i,colour])
             rug(x = xlims[2] - pos ,side = cyto_peaks_scores[i,pos],col = COLORS[type],ticksize = rugTickSize*0.1)
         }
     }
-
-
+    
+    
     if (!is.null(mutGenes) && is.null(mutGenes1) && is.null(mutGenes2)){
         if(is.numeric(mutGenes)){
             mutGenes = as.integer(mutGenes)
         }
         mutGenes1 = mutGenes
         mutGenes2 = mutGenes
-        print(str_flatten(c('both 1,2 use mutGenes values',mutGenes)))
+        print(stringr::str_flatten(c('both 1,2 use mutGenes values',mutGenes)))
     }
-
+    
     # 画左Label
     if (!is.null(maf1) && labelGenes) {
         if (is.null(mutGenes1)){
-            mutGenes.app = maf1 %>% getGeneSummary() %>% head(50) %>% pull(Hugo_Symbol)
+            mutGenes.app = maf1 %>% getGeneSummary() %>% head(50) %>% dplyr::pull(Hugo_Symbol)
             print('maf1 set, mutGenes.app is null, by default label top 50 genes')
         }else if (is.numeric(mutGenes1)){
-            mutGenes.app = maf1 %>% getGeneSummary() %>% head(mutGenes1) %>% pull(Hugo_Symbol)
+            mutGenes.app = maf1 %>% getGeneSummary() %>% head(mutGenes1) %>% dplyr::pull(Hugo_Symbol)
         }else if (is.character(mutGenes1)){
             mutGenes.app = mutGenes1
         }else{
@@ -473,33 +473,33 @@ gisticChromPlot2v = function(
         }
 
         mut_dat = transformSegments(segmentedData = maf1@data[, 
-                                                              .(Chromosome, Start_Position, End_Position, Hugo_Symbol)], 
-                                    build = ref.build)
+            .(Chromosome, Start_Position, End_Position, Hugo_Symbol)], 
+            build = ref.build)
 
         # 同gis.scores的区间比markBandsdf, mut_dat(g.lin)的区间比gis1.scores的区间要小，"Start_Position_updated", "End_Position_updated"
         # 在两表中不是一一对应, 所以要用foverlap找区间对应关系，而用left_join等keyjoin的方法则不行
         mut_dat = mut_dat[Hugo_Symbol %in% mutGenes.app]
         data.table::setkey(x = mut_dat, Start_Position_updated, End_Position_updated)
-        gs = gis.scores %>% filter(VC == type, loc=='left')
+        gs = gis.scores %>% dplyr::filter(VC == type, loc=='left')
         data.table::setkey(x = gs, Start_Position_updated, End_Position_updated)
         mut_dat = data.table::foverlaps(y = gs, x = mut_dat, mult = "all")
 
         if (nrow(mut_dat[duplicated(Hugo_Symbol)]) > 0) {
             warning("Multiple CNV region overlaps found for follwing genes. Using the most significant entry for highlighting.", 
-                    immediate. = TRUE)
+                immediate. = TRUE)
             mut_dat = mut_dat[order(G_Score, decreasing = TRUE)][!duplicated(Hugo_Symbol)]
             mut_dat = mut_dat[complete.cases(mut_dat)]
-            #         dups = mut_dat[duplicated(Hugo_Symbol)][, .N, Hugo_Symbol][, Hugo_Symbol]
-            #         err = mut_dat[order(Hugo_Symbol, -G_Score)][Hugo_Symbol %in% 
-            #             dups, .(Hugo_Symbol, Chromosome, Start_Position, 
-            #             End_Position, Variant_Classification, fdr, G_Score)]
+    #         dups = mut_dat[duplicated(Hugo_Symbol)][, .N, Hugo_Symbol][, Hugo_Symbol]
+    #         err = mut_dat[order(Hugo_Symbol, -G_Score)][Hugo_Symbol %in% 
+    #             dups, .(Hugo_Symbol, Chromosome, Start_Position, 
+    #             End_Position, Variant_Classification, fdr, G_Score)]
         }else{
             err = NULL
         }
 
         mut_dat = mut_dat %>% 
-            filter(!is.na(Variant_Classification)) %>% 
-            arrange(Chromosome,Start_Position_updated)
+            dplyr::filter(!is.na(Variant_Classification)) %>% 
+            dplyr::arrange(Chromosome,Start_Position_updated)
         mut_dat$anno_Position = seq(from = xlims[1], to = xlims[2],length.out = nrow(mut_dat)) %>% round(0)
 
         CLS = COLORS
@@ -510,7 +510,7 @@ gisticChromPlot2v = function(
         par(mar = c(4, 0.2, 0.2, 0.2)) # c(bottom, left, top, right)
         # 建坐标轴
         plot(NA, NA, ylim = c(0, chr.lens.cumsum[length(chr.lens.cumsum)]), 
-             xlim = c(0, 1), axes = FALSE, xlab = NA, ylab = NA)
+            xlim = c(0, 1), axes = FALSE, xlab = NA, ylab = NA)
         # 画外框
         # rect(xleft = ylims[1],ybottom = xlims[1],xright = ylims[2],ytop = xlims[2])
         # pos (1=bottom, 2=left, 3=top, 4=right).
@@ -539,10 +539,10 @@ gisticChromPlot2v = function(
     # 画右Label
     if (!is.null(maf2) && labelGenes) {
         if (is.null(mutGenes2)){
-            mutGenes.app = maf2 %>% getGeneSummary() %>% head(50) %>% pull(Hugo_Symbol)
+            mutGenes.app = maf2 %>% getGeneSummary() %>% head(50) %>% dplyr::pull(Hugo_Symbol)
             print('maf2 set, mutGenes.app is null, by default label top 50 genes')
         }else if (is.numeric(mutGenes2)){
-            mutGenes.app = maf2 %>% getGeneSummary() %>% head(mutGenes2) %>% pull(Hugo_Symbol)
+            mutGenes.app = maf2 %>% getGeneSummary() %>% head(mutGenes2) %>% dplyr::pull(Hugo_Symbol)
         }else if (is.character(mutGenes2)){
             mutGenes.app = mutGenes2
         }else{
@@ -550,33 +550,33 @@ gisticChromPlot2v = function(
         }
 
         mut_dat = transformSegments(segmentedData = maf2@data[, 
-                                                              .(Chromosome, Start_Position, End_Position, Hugo_Symbol)], 
-                                    build = ref.build)
+            .(Chromosome, Start_Position, End_Position, Hugo_Symbol)], 
+            build = ref.build)
 
         # 同gis.scores的区间比markBandsdf, mut_dat(g.lin)的区间比gis1.scores的区间要小，"Start_Position_updated", "End_Position_updated"
         # 在两表中不是一一对应, 所以要用foverlap找区间对应关系，而用left_join等keyjoin的方法则不行
         mut_dat = mut_dat[Hugo_Symbol %in% mutGenes.app]
         data.table::setkey(x = mut_dat, Start_Position_updated, End_Position_updated)
-        gs = gis.scores %>% filter(VC == type, loc=='right')
+        gs = gis.scores %>% dplyr::filter(VC == type, loc=='right')
         data.table::setkey(x = gs, Start_Position_updated, End_Position_updated)
         mut_dat = data.table::foverlaps(y = gs, x = mut_dat, mult = "all")
 
         if (nrow(mut_dat[duplicated(Hugo_Symbol)]) > 0) {
             warning("Multiple CNV region overlaps found for follwing genes. Using the most significant entry for highlighting.", 
-                    immediate. = TRUE)
+                immediate. = TRUE)
             mut_dat = mut_dat[order(G_Score, decreasing = TRUE)][!duplicated(Hugo_Symbol)]
             mut_dat = mut_dat[complete.cases(mut_dat)]
-            #         dups = mut_dat[duplicated(Hugo_Symbol)][, .N, Hugo_Symbol][, Hugo_Symbol]
-            #         err = mut_dat[order(Hugo_Symbol, -G_Score)][Hugo_Symbol %in% 
-            #             dups, .(Hugo_Symbol, Chromosome, Start_Position, 
-            #             End_Position, Variant_Classification, fdr, G_Score)]
+    #         dups = mut_dat[duplicated(Hugo_Symbol)][, .N, Hugo_Symbol][, Hugo_Symbol]
+    #         err = mut_dat[order(Hugo_Symbol, -G_Score)][Hugo_Symbol %in% 
+    #             dups, .(Hugo_Symbol, Chromosome, Start_Position, 
+    #             End_Position, Variant_Classification, fdr, G_Score)]
         }else{
             err = NULL
         }
 
         mut_dat = mut_dat %>% 
-            filter(!is.na(Variant_Classification)) %>% 
-            arrange(Chromosome,Start_Position_updated)
+            dplyr::filter(!is.na(Variant_Classification)) %>% 
+            dplyr::arrange(Chromosome,Start_Position_updated)
         mut_dat$anno_Position = seq(from = xlims[1], to = xlims[2],length.out = nrow(mut_dat)) %>% round(0)
 
         CLS = COLORS
@@ -610,22 +610,23 @@ gisticChromPlot2v = function(
             #lines(y=rep(0,3), x = c(0,0.2,0.45), lwd=2,col='blue')
         }
     }
+    ## only for test usage
     # list(
     #     g1Name = g1Name,
     #     g2Name = g2Name,
-    #     
+
     #     type = type,
     #     markBands = markBands,
     #     labelGenes = labelGenes,
     #     y_lims = y_lims,
-    #     
+
     #     mutGenes = mutGenes,
     #     mutGenes1 = mutGenes1,
     #     mutGenes2 = mutGenes2,
-    #     
+
     #     fdrCutOff = fdrCutOff,
     #     symmetric = symmetric,
-    #     
+
     #     color = color,
     #     ref.build = ref.build,
     #     cytobandOffset = cytobandOffset,
