@@ -91,33 +91,23 @@ yload_gistic = function(gistic_res_dir){
 #'
 #' @examples
 #' \dontrun{
-#' snv.j = db.importing('./export_jp/wes_snv_all.dfx')
-#' snv.tcga = db.importing('./export_tcga/wes_snv_all.dfx')
-#'
-#' maf.tcga = read.maf(snv.tcga)
-#' maf.j = read.maf(snv.j)
-#'
-#' gistic_res_dir = './export_big/gistic_TCGA/_ALL_/'
-#' g.tcga = yload_gistic(gistic_res_dir)
-#'
-#' gistic_res_dir = './export_jp/gistic_JP/_ALL_/'
-#' g.j = yload_gistic(gistic_res_dir)
-#'
-#' plt = expr(
-#' yplot_gisticChromPlot2(gistic1 = g.tcga, gistic2 = g.j ,
-#'   g1Name = 'TCGA',g2Name = 'JP', type='Amp',
-#'   maf1 = maf2, maf2 = maf1,
-#'   mutGenes = 50)
-#' )
-#' eval(plt)
-#'
-#' plt = expr(
-#' yplot_gisticChromPlot2(gistic1 = g.tcga, gistic2 = g.j,
-#'   g1Name = 'TCGA',g2Name = 'JP', type='Amp', symmetric = FALSE,
-#'   maf1 = maf2, maf2 = maf1,
-#'   mutGenes = 50)
-#' )
-#' eval(plt)
+#' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
+#' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
+#' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
+#' scores.gis <- system.file("extdata", "scores.gistic", package = "maftools")
+#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = #' del.genes, gisticScoresFile = scores.gis, isTCGA = TRUE)
+#' 
+#' # or you can use new helper function to quickly read gistic results into new object:
+#' gistic_res_folder = system.file("extdata",package = "maftools")
+#' laml.gistic2 = yload_gistic(gistic_res_folder)
+#' # NOTE:
+#' # to quickly show the plots, I have to use the data inside the maftools, so the left and right part of the plot is mirrored, but
+#' # in practise you will send different GISTIC and MAF objects to `gistic1`,`gistc2`, `maf1`,`maf2`, the function will also work well.
+#' 
+#' laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
+#' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
+#' laml = read.maf(maf = laml.maf, clinicalData = laml.clin)
+#' laml2 = laml
 #' }
 gisticChromPlot2v = function(
         gistic1 = NULL,
