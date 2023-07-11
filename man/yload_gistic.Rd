@@ -10,7 +10,7 @@ yload_gistic(gistic_res_dir)
 \item{gistic_res_dir}{the path to the GISTIC2.0 output folder}
 }
 \value{
-LoadedGisticObj object which contains a GISTIC object and a broad table
+LoadedGisticObj object which contains a GISTIC object and a broad data table
 }
 \description{
 Read the gscore and broad data from a GISTIC2.0 output folder

@@ -3,7 +3,6 @@
 #' @param gistic_res_dir  the path to the GISTIC2.0 output folder
 #'
 #' @return LoadedGisticObj object which contains a GISTIC object and a broad data table
-#' @export
 #'
 #' @examples
 #' gistic_res_folder = system.file("extdata",package = "maftools")
@@ -41,7 +40,7 @@ yload_gistic = function(gistic_res_dir){
 
 #' Co-plot version of gisticChromPlot()
 #'
-#' @description Use two GISTIC object or/and two MAF obejct to view a vertical arranged version of
+#' @description Use two GISTIC object or/and two MAF objects to view a vertical arranged version of
 #'   Gistic Chromosome plot results on the Amp or Del G-scores.
 #'
 #' @param gistic1 data will be plotted on the left side, yload_gistic() or readGistic() returned
@@ -50,14 +49,20 @@ yload_gistic = function(gistic_res_dir){
 #'   object
 #' @param g1Name the title of the left side
 #' @param g2Name the title of the right side
-#' @param type default 'Amp', c('Amp',"Del"), choose one to plot
-#' @param markBands default TRUE, integer of length 1 or 2 or TRUE, mark
-#' @param labelGenes if you want to label some genes you are interested along the chromosome, set
-#'   TRUE
-#' @param y_lims default NULL, auto determine the G-score ranges (x axis lims) of the plot. You can
-#'   set it to c(-6,6), the left plot values must be negative and right positve, the abs values of
-#'   the y_lims will be annotated as the x-axis tick labels. If you set y_lims to not NULL values,
-#'   then the `symmetric` will be auto set to FALSE
+#' @param type default 'Amp', c('Amp',"Del"), choose one to plot, only focal events are shown, 'Amp'
+#'   only shows the Amplification events, and 'Del' only shows the Deletion events. You can get both
+#'   types plots by running the function 2 times setting `type` to 'Amp' and 'Del' respectively.
+#' @param markBands default TRUE, integer of length 1 or 2 or TRUE, mark cytoband names of the outer
+#'   side of the plot
+#' @param labelGenes if you want to label some genes you are interested along the chromosome, set it
+#'   to TRUE
+#' @param y_lims default NULL,control the G-score's axis limits, when set to NULL, auto determine
+#'   the G-score ranges (x axis lims) of the plot. Actually the "x_lims" in the vertical version of
+#'   the plot, as the plot is transformed from the horizontal version which the G-scores is plotted
+#'   on the y axis, we just keep the name of the "y_lims". You can set it to c(-6,6), the left plot
+#'   values must be negative and right positve, the abs values of the y_lims will be annotated as
+#'   the x-axis tick labels. If you set y_lims to NOT NULL values, then the `symmetric` will be auto
+#'   set to FALSE
 #' @param maf1,maf2 if labelGenes==TRUE, you need to provide read.maf() object, the genes mutation
 #'   info collected from the maf1 is shown on the left side, while maf2 on the right side. the genes
 #'   selected are controled by the mutGenes or mutGenes1 or mutGenes1 parameter, see following.
@@ -81,9 +86,9 @@ yload_gistic = function(gistic_res_dir){
 #' @param color NULL or a named vector. the color of the G-score lines, default NULL which will set
 #'   the color c(Amp = "red", Del = "blue", neutral = 'gray70')
 #' @param ref.build default "hg19", c('hg18','hg19','hg38') supported at current.(same as maftools
-#'   other functions)
-#' @param cytobandOffset default 'auto', the width of the chromosome rects(Y axis at 0 point of X
-#'   axis). by default will be 1.5% of the width of x axis.
+#'   other functions `ref.build` parameter)
+#' @param cytobandOffset default 'auto', the width of the chromosome rects (Y axis at 0 point of X
+#'   axis). by default will be 1.5% of the width of the whole x axis length.
 #' @param txtSize the zoom value of most of the texts
 #' @param cytobandTxtSize textsize of the cytoband annotation
 #' @param mutGenesTxtSize textsize of the mutGenes annotation
