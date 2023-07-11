@@ -19,8 +19,7 @@ License: MIT + file LICENSE
 URL: https://github.com/PoisonAlien/maftools
 BugReports: https://github.com/PoisonAlien/maftools/issues
 Depends: 
-    R (>= 3.3),
-    magrittr
+    R (>= 3.3)
 Imports: 
     data.table,
     grDevices,
@@ -29,7 +28,7 @@ Imports:
     Rhtslib,
     survival,
     DNAcopy,
-    dplyr
+    stringr
 Suggests: 
     berryFunctions,
     Biostrings,
