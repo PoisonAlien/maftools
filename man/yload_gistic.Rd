@@ -17,6 +17,6 @@ Read the gscore and broad data from a GISTIC2.0 output folder
 }
 \examples{
 gistic_res_folder = system.file("extdata",package = "maftools")
-laml.gistic = yload_gistic(gistic_res_folder)
+laml.gistic.bundle = yload_gistic(gistic_res_folder)
 
 }

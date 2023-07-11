@@ -27,8 +27,7 @@ Imports:
     RColorBrewer,
     Rhtslib,
     survival,
-    DNAcopy,
-    stringr
+    DNAcopy
 Suggests: 
     berryFunctions,
     Biostrings,

@@ -3,17 +3,18 @@
 #' @param gistic_res_dir  the path to the GISTIC2.0 output folder
 #'
 #' @return LoadedGisticObj object which contains a GISTIC object and a broad data table
-#'
+#' @export
 #' @examples
 #' gistic_res_folder = system.file("extdata",package = "maftools")
-#' laml.gistic = yload_gistic(gistic_res_folder)
+#' laml.gistic.bundle = yload_gistic(gistic_res_folder)
 #'
 yload_gistic = function(gistic_res_dir){
   res = list()
 
   lf = list.files(gistic_res_dir)
-  lf = lf[stringr::str_starts(lf,'all_lesions.conf_')]
-  conf = stringr::str_sub(lf,18,-5)
+  lf = lf[startsWith(lf,'all_lesions.conf_')]
+  # get 99 from "all_lesions.conf_99.txt", get 95 from "all_lesions.conf_95.txt", etc.
+  conf = substring(lf,18,nchar(lf)-4)
   res$conf = as.numeric(conf)
 
   all.lesions <- file.path(gistic_res_dir, paste0("all_lesions.conf_",conf,".txt"))
