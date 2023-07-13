@@ -89,7 +89,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       if(is.na(yaxisLim)){
         bh = ceiling(max(d, na.rm = TRUE) * 10)/10 #Bar height
       }else{
-        bh = 0.3
+        bh = yaxisLim
       }
 
       barplot(d, xaxt = "n", yaxt = "n", col = colors, beside = TRUE, ylim = c(-0.1, bh),
