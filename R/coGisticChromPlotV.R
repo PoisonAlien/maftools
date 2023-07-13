@@ -5,8 +5,11 @@
 #' @return LoadedGisticObj object which contains a GISTIC object and a broad data table
 #' @export
 #' @examples
+#' \dontrun{
+#'
 #' gistic_res_folder = system.file("extdata",package = "maftools")
 #' laml.gistic.bundle = yload_gistic(gistic_res_folder)
+#' }
 #'
 yload_gistic = function(gistic_res_dir){
   res = list()
@@ -27,8 +30,9 @@ yload_gistic = function(gistic_res_dir){
 
   res$gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gis, isTCGA = TRUE)
   if (file.exists(scores.broad)){
-    res$broad = utils::read.table(scores.broad, sep = "\t", header = T, quote = "", stringsAsFactors = F,
-                                  comment.char = "", na.strings = "", )
+    res$broad = data.table::fread(scores.broad, sep = "\t",
+                                  header = TRUE, quote = "", stringsAsFactors = FALSE, skip = "#",
+                                  na.strings = "")
   }else{
     res$broad = NULL
   }
@@ -37,7 +41,6 @@ yload_gistic = function(gistic_res_dir){
 
   res
 }
-
 
 #' Co-plot version of gisticChromPlot()
 #'
@@ -89,7 +92,7 @@ yload_gistic = function(gistic_res_dir){
 #' @param ref.build default "hg19", c('hg18','hg19','hg38') supported at current.(same as maftools
 #'   other functions `ref.build` parameter)
 #' @param cytobandOffset default 'auto', the width of the chromosome rects (Y axis at 0 point of X
-#'   axis). by default will be 1.5% of the width of the whole x axis length.
+#'   axis). by default will be 0.015 of the width of the whole x axis length.
 #' @param txtSize the zoom value of most of the texts
 #' @param cytobandTxtSize textsize of the cytoband annotation
 #' @param mutGenesTxtSize textsize of the mutGenes annotation
