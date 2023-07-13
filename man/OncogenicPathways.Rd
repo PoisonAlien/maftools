@@ -2,7 +2,7 @@
 % Please edit documentation in R/oncoPathway.R
 \name{OncogenicPathways}
 \alias{OncogenicPathways}
-\title{Enrichment of known oncogenic pathways}
+\title{Enrichment of known oncogenic signalling pathways}
 \usage{
 OncogenicPathways(maf, pathways = NULL, fontSize = 1, panelWidths = c(2, 4, 4))
 }

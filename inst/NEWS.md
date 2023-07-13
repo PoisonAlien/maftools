@@ -1,7 +1,11 @@
 # CHANGES IN VERSION 2.17.0
 (GitHub master branch)
 
+## NEW FUNCTIONS
+- `coGisticChromPlot` for plotting two GISTIC objects side-by-side. [954](https://github.com/PoisonAlien/maftools/pull/954)
+
 ## BUG FIXES
+- Bug fix in `plotSignatures` for hardcoded axis limits. [949](https://github.com/PoisonAlien/maftools/issues/949)
 - Bug fix in `subsetMaf` while handling only CNV events. [908](https://github.com/PoisonAlien/maftools/issues/908)
 - Error handling when no deep/shallow CNV events found. [899](https://github.com/PoisonAlien/maftools/issues/899)
 - Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)

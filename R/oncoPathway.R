@@ -1,4 +1,4 @@
-#' Enrichment of known oncogenic pathways
+#' Enrichment of known oncogenic signalling pathways
 #' @description Checks for enrichment of known oncogenic pathways
 #' @references Sanchez-Vega F, Mina M, Armenia J, Chatila WK, Luna A, La KC, Dimitriadoy S, Liu DL, Kantheti HS, Saghafinia S et al. 2018. Oncogenic Signaling Pathways in The Cancer Genome Atlas. Cell 173: 321-337 e310
 #'

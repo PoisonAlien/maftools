@@ -113,6 +113,7 @@ trinucleotideMatrix = function(maf, ref_genome = NULL, prefix = NULL,
                                        downstream = query$End_Position+20)
 
   cat("-Extracting 5' and 3' adjacent bases\n")
+  #return(extract.tbl)
   ss = BSgenome::getSeq(x = ref_genome, names = extract.tbl[,Chromosome], start = extract.tbl[,Start] , end = extract.tbl[,End], as.character = TRUE)
 
   cat('-Extracting +/- 20bp around mutated bases for background C>T estimation\n')

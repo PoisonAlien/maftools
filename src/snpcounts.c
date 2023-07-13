@@ -53,7 +53,7 @@ void snpcounts(const char *bam, const char *bedfile, uint32_t q, uint32_t F, con
   strcat(tsv_file, ".tsv");
 
   //Open bed file
-  int nloci = countlines(bedfile);
+  //int nloci = countlines(bedfile);
 
   FILE *bed_fp;
   bed_fp = fopen(bedfile, "r");

@@ -7,6 +7,7 @@ proj.user
 .icloud
 inst/doc
 vignettes/.gitignore
+vignettes/.html
 .gitignore
 .renviron
 .rprofile
@@ -15,6 +16,7 @@ vignettes/.gitignore
 .rhistory
 .rapp.history
 .o
+.html
 .sl
 .so
 .dylib
@@ -44,3 +46,5 @@ src/maftools.so
 src/ntcounts.o
 src/somaticfreq.o
 src/snpcounts.o
+/doc/
+/Meta/

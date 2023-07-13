@@ -1,56 +1,13 @@
-#' Read the gscore and broad data from a GISTIC2.0 output folder
-#'
-#' @param gistic_res_dir  the path to the GISTIC2.0 output folder
-#'
-#' @return LoadedGisticObj object which contains a GISTIC object and a broad data table
-#' @export
-#' @examples
-#' \dontrun{
-#'
-#' gistic_res_folder = system.file("extdata",package = "maftools")
-#' laml.gistic.bundle = yload_gistic(gistic_res_folder)
-#' }
-#'
-yload_gistic = function(gistic_res_dir){
-  res = list()
-
-  lf = list.files(gistic_res_dir)
-  lf = lf[startsWith(lf,'all_lesions.conf_')]
-  # get 99 from "all_lesions.conf_99.txt", get 95 from "all_lesions.conf_95.txt", etc.
-  conf = substring(lf,18,nchar(lf)-4)
-  res$conf = as.numeric(conf)
-
-  all.lesions <- file.path(gistic_res_dir, paste0("all_lesions.conf_",conf,".txt"))
-  amp.genes <- file.path(gistic_res_dir, paste0("amp_genes.conf_",conf,".txt"))
-  del.genes <- file.path(gistic_res_dir, paste0("del_genes.conf_",conf,".txt"))
-  scores.gis <- file.path(gistic_res_dir, "scores.gistic")
-  scores.broad <- file.path(gistic_res_dir, "broad_significance_results.txt")
-
-  stopifnot(file.exists(all.lesions) & file.exists(amp.genes) & file.exists(del.genes) & file.exists(scores.gis))
-
-  res$gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = del.genes, gisticScoresFile = scores.gis, isTCGA = TRUE)
-  if (file.exists(scores.broad)){
-    res$broad = data.table::fread(scores.broad, sep = "\t",
-                                  header = TRUE, quote = "", stringsAsFactors = FALSE, skip = "#",
-                                  na.strings = "")
-  }else{
-    res$broad = NULL
-  }
-
-  class(res) = c('LoadedGisticObj',class(res))
-
-  res
-}
 
 #' Co-plot version of gisticChromPlot()
 #'
 #' @description Use two GISTIC object or/and two MAF objects to view a vertical arranged version of
 #'   Gistic Chromosome plot results on the Amp or Del G-scores.
 #'
-#' @param gistic1 data will be plotted on the left side, yload_gistic() or readGistic() returned
-#'   object
-#' @param gistic2 data will be plotted on the right side, yload_gistic() or readGistic() returned
-#'   object
+#' @author bio_sun - https://github.com/biosunsci
+#'
+#' @param gistic1 first \code{GISTIC} object
+#' @param gistic2 second \code{GISTIC} object
 #' @param g1Name the title of the left side
 #' @param g2Name the title of the right side
 #' @param type default 'Amp', c('Amp',"Del"), choose one to plot, only focal events are shown, 'Amp'
@@ -60,14 +17,8 @@ yload_gistic = function(gistic_res_dir){
 #'   side of the plot
 #' @param labelGenes if you want to label some genes you are interested along the chromosome, set it
 #'   to TRUE
-#' @param y_lims default NULL,control the G-score's axis limits, when set to NULL, auto determine
-#'   the G-score ranges (x axis lims) of the plot. Actually the "x_lims" in the vertical version of
-#'   the plot, as the plot is transformed from the horizontal version which the G-scores is plotted
-#'   on the y axis, we just keep the name of the "y_lims". You can set it to c(-6,6), the left plot
-#'   values must be negative and right positve, the abs values of the y_lims will be annotated as
-#'   the x-axis tick labels. If you set y_lims to NOT NULL values, then the `symmetric` will be auto
-#'   set to FALSE
-#' @param maf1,maf2 if labelGenes==TRUE, you need to provide read.maf() object, the genes mutation
+#' @param gLims Controls the G-score's axis limits. Default NULL.
+#' @param maf1,maf2 if labelGenes==TRUE, you need to provide \code{\link{MAF}} object, the genes mutation
 #'   info collected from the maf1 is shown on the left side, while maf2 on the right side. the genes
 #'   selected are controled by the mutGenes or mutGenes1 or mutGenes1 parameter, see following.
 #' @param mutGenes,mutGenes1,mutGenes2 default NULL, could be NULL, number, or character vector of
@@ -89,8 +40,7 @@ yload_gistic = function(gistic_res_dir){
 #'   the 0 of the x axis in the middle which eventually make the plot more symmetric.
 #' @param color NULL or a named vector. the color of the G-score lines, default NULL which will set
 #'   the color c(Amp = "red", Del = "blue", neutral = 'gray70')
-#' @param ref.build default "hg19", c('hg18','hg19','hg38') supported at current.(same as maftools
-#'   other functions `ref.build` parameter)
+#' @param ref.build default "hg19", c('hg18','hg19','hg38') supported at current.
 #' @param cytobandOffset default 'auto', the width of the chromosome rects (Y axis at 0 point of X
 #'   axis). by default will be 0.015 of the width of the whole x axis length.
 #' @param txtSize the zoom value of most of the texts
@@ -103,18 +53,10 @@ yload_gistic = function(gistic_res_dir){
 #'
 #' @examples
 #' \dontrun{
-#' all.lesions <- system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
-#' amp.genes <- system.file("extdata", "amp_genes.conf_99.txt", package = "maftools")
-#' del.genes <- system.file("extdata", "del_genes.conf_99.txt", package = "maftools")
-#' scores.gis <- system.file("extdata", "scores.gistic", package = "maftools")
-#' laml.gistic = readGistic(gisticAllLesionsFile = all.lesions, gisticAmpGenesFile = amp.genes, gisticDelGenesFile = #' del.genes, gisticScoresFile = scores.gis, isTCGA = TRUE)
-#'
-#' # or you can use new helper function to quickly read gistic results into new object:
 #' gistic_res_folder = system.file("extdata",package = "maftools")
-#' laml.gistic2 = yload_gistic(gistic_res_folder)
-#' # NOTE:
-#' # to quickly show the plots, I have to use the data inside the maftools, so the left and right part of the plot is mirrored, but
-#' # in practise you will send different GISTIC and MAF objects to `gistic1`,`gistc2`, `maf1`,`maf2`, the function will also work well.
+#' laml.gistic = readGistic(gistic_res_folder)
+#' laml.gistic2 = readGistic(gistic_res_folder)
+#'
 #'
 #' laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 #' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
@@ -126,7 +68,7 @@ yload_gistic = function(gistic_res_dir){
 #'                    symmetric = TRUE, g1Name = 'TCGA1',
 #'                    g2Name = 'TCGA2', maf1 = laml, maf2 = laml2, mutGenes = 30)
 #' }
-coGisticChromPlotV = function(gistic1 = NULL,
+coGisticChromPlot = function(gistic1 = NULL,
                               gistic2 = NULL,
                               g1Name = "",
                               g2Name = "",
@@ -134,7 +76,7 @@ coGisticChromPlotV = function(gistic1 = NULL,
                               type = 'Amp',
                               markBands = TRUE,
                               labelGenes = TRUE,
-                              y_lims = NULL,
+                              gLims = NULL,
 
                               maf1 = NULL,
                               maf2 = NULL,
@@ -153,16 +95,10 @@ coGisticChromPlotV = function(gistic1 = NULL,
                               cytobandTxtSize = 1,
                               mutGenesTxtSize = 0.6,
                               rugTickSize = 0.1) {
+
+
   fdrCutOff.log10 = -log10(fdrCutOff)
-
-  if ('LoadedGisticObj' %in% class(gistic1)) {
-    gistic1 = gistic1$gistic
-  }
   stopifnot('GISTIC' %in% class(gistic1))
-
-  if ('LoadedGisticObj' %in% class(gistic2)) {
-    gistic2 = gistic2$gistic
-  }
   stopifnot('GISTIC' %in% class(gistic2))
 
   #
@@ -270,90 +206,7 @@ coGisticChromPlotV = function(gistic1 = NULL,
     no = gis.scores$G_Score
   )
 
-  if (ref.build == "hg19") {
-    chr.lens = c(
-      249250621,
-      243199373,
-      198022430,
-      191154276,
-      180915260,
-      171115067,
-      159138663,
-      146364022,
-      141213431,
-      135534747,
-      135006516,
-      133851895,
-      115169878,
-      107349540,
-      102531392,
-      90354753,
-      81195210,
-      78077248,
-      59128983,
-      63025520,
-      48129895,
-      51304566,
-      155270560,
-      59373566
-    )
-  } else if (ref.build == "hg18") {
-    chr.lens = c(
-      247249719,
-      242951149,
-      199501827,
-      191273063,
-      180857866,
-      170899992,
-      158821424,
-      146274826,
-      140273252,
-      135374737,
-      134452384,
-      132349534,
-      114142980,
-      106368585,
-      100338915,
-      88827254,
-      78774742,
-      76117153,
-      63811651,
-      62435964,
-      46944323,
-      49691432,
-      154913754,
-      57772954
-    )
-  } else if (ref.build == "hg38") {
-    chr.lens = c(
-      248956422,
-      242193529,
-      198295559,
-      190214555,
-      181538259,
-      170805979,
-      159345973,
-      145138636,
-      138394717,
-      133797422,
-      135086622,
-      133275309,
-      114364328,
-      107043718,
-      101991189,
-      90338345,
-      83257441,
-      80373285,
-      58617616,
-      64444167,
-      46709983,
-      50818468,
-      156040895,
-      57227415
-    )
-  } else {
-    stop("ref.build can only be hg18, hg19 or hg38")
-  }
+  chr.lens = getContigLens(build = ref.build)
 
   chr.lens.cumsum = cumsum(chr.lens)
   nchrs = length(unique(gis.scores$Chromosome))
@@ -366,13 +219,13 @@ coGisticChromPlotV = function(gistic1 = NULL,
 
   # 找寻xy轴的范围
   xlims = c(0, chr.lens.cumsum[length(chr.lens.cumsum)])
-  if (is.null(y_lims)) {
+  if (is.null(gLims)) {
     y_lims = pretty(gis.scores[gis.scores$VC == type, ][, value], na.rm = TRUE)
   } else {
     # y_lims_basic = pretty(gis.scores[gis.scores$VC==type,][, value], na.rm = TRUE)
-    y_lims = pretty(y_lims, na.rm = TRUE)
+    y_lims = pretty(gLims, na.rm = TRUE)
     # 解决conflicts de custom_lims vs symmetric
-    message('As you set y_lims not NULL, forced symmetric = FALSE')
+    #message('As you set y_lims not NULL, forced symmetric = FALSE')
     symmetric = FALSE
   }
   ylims = range(y_lims)

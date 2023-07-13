@@ -154,7 +154,7 @@ inferHeterogeneity = function(maf, tsb = NULL, top = 5, vafCol = NULL, segFile =
       }else{
         #More than 7 clusters possible ? May not be biologically meaningful.
         #Use finite mixture model
-        tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7, verbose = FALSE)
+        tsb.cluster = mclust::densityMclust(tsb.dat[,t_vaf], G = 1:7, verbose = FALSE, plot = FALSE)
         tsb.dat$cluster = as.character(tsb.cluster$classification)
         abs.med.dev = abs(tsb.dat[,t_vaf] - median(tsb.dat[,t_vaf])) #absolute deviation from median vaf
         pat.mad = median(abs.med.dev) * 100
