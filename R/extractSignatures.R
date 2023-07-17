@@ -68,17 +68,17 @@ extractSignatures = function(mat, n = NULL, plotBestFitRes = FALSE, parallel = 4
     colnames(w) = paste('Signature', 1:ncol(w),sep='_')
 
     #Contribution
-    h = NMF::coef(conv.mat.nmf)
-    colnames(h) = colnames(mat) #correct colnames (seems to be mssing with low mutation load)
+    h_abs = NMF::coef(conv.mat.nmf)
+    colnames(h_abs) = colnames(mat) #correct colnames (seems to be mssing with low mutation load)
     #For single signature, contribution will be 100% per sample
     if(n == 1){
-      h = h/h
+      h = h_abs/h_abs
       rownames(h) = paste('Signature', '1', sep = '_')
     }else{
-      h = apply(h, 2, function(x) x/sum(x)) #Scale contributions (coefs)
-      rownames(h) = paste('Signature', 1:nrow(h),sep='_')
+      h = apply(h_abs, 2, function(x) x/sum(x)) #Scale contributions (coefs)
+      rownames(h_abs) = rownames(h) = paste('Signature', 1:nrow(h),sep='_')
     }
 
     message("-Finished in",data.table::timetaken(start_time))
-    return(list(signatures = w, contributions = h, nmfObj = conv.mat.nmf))
+    return(list(signatures = w, contributions = h, nmfObj = conv.mat.nmf, contributions_abs = h_abs))
 }

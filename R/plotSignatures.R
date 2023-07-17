@@ -4,11 +4,12 @@
 #'
 #' @param nmfRes results from \code{\link{extractSignatures}}
 #' @param contributions If TRUE plots contribution of signatures in each sample.
+#' @param absolute Whether to plot absolute contributions. Default FALSE.
 #' @param color colors for each Ti/Tv conversion class. Default NULL
 #' @param patient_order User defined ordering of samples. Default NULL.
 #' @param title_size size of title. Default 1.3
 #' @param axis_lwd axis width. Default 2.
-#' @param font_size font size. Default 1.2
+#' @param font_size font size. Default 0.6
 #' @param show_title If TRUE compares signatures to COSMIC signatures and prints them as title
 #' @param sig_db Only applicable if show_title is TRUE. Can be \code{legacy} or \code{SBS}. Default \code{legacy}
 #' @param show_barcodes Default FALSE
@@ -18,11 +19,16 @@
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'
-plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, patient_order = NULL,
-                          font_size = 1.2, show_title = TRUE, sig_db = "legacy", axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, yaxisLim = 0.3, ...){
+plotSignatures = function(nmfRes = NULL, contributions = FALSE, absolute = FALSE, color = NULL, patient_order = NULL,
+                          font_size = 0.6, show_title = TRUE, sig_db = "legacy", axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, yaxisLim = 0.3, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
-  contrib = nmfRes$contributions
+  if(absolute){
+    contrib = nmfRes$contributions_abs
+  }else{
+    contrib = nmfRes$contributions
+  }
+
   coSineMat = nmfRes$coSineSimMat
 
   if(contributions){
@@ -45,7 +51,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
       axis(side = 1, at = b, labels = colnames(contrib), lwd = 2, cex.axis = font_size,
            las = 2, line = 0.2, hadj = 0.8, font = 1, tick = FALSE)
-      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 1, las = 2, cex.axis = 0.9)
+      axis(side = 2, at = pretty(contrib), lwd = 1, font = 1, las = 2, cex.axis = 0.9)
       mtext(text = "Signature exposures", side = 2, font = 1, cex = 1, line = 2.8)
       plot.new()
       par(mar = c(2, 3, 0, 0))
@@ -56,7 +62,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, color = NULL, pa
       lo = graphics::layout(mat = matrix(data = c(1, 2), nrow = 2), heights = c(6, 2))
       par(mar = c(3, 4, 2, 1))
       b = barplot(contrib, axes = FALSE, horiz = FALSE, col = cols, border = NA, names.arg = rep("", ncol(contrib)))
-      axis(side = 2, at = seq(0, 1, 0.25), lwd = 3, font = 1, las = 2, cex.axis = 0.9)
+      axis(side = 2, at = pretty(contrib), lwd = 1, font = 1, las = 2, cex.axis = 0.9)
       mtext(text = "Signature exposure", side = 2, font = 1, cex = 1, line = 2.8)
       plot.new()
       par(mar = c(2, 3, 0, 0))

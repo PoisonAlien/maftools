@@ -7,9 +7,10 @@
 plotSignatures(
   nmfRes = NULL,
   contributions = FALSE,
+  absolute = FALSE,
   color = NULL,
   patient_order = NULL,
-  font_size = 1.2,
+  font_size = 0.6,
   show_title = TRUE,
   sig_db = "legacy",
   axis_lwd = 2,
@@ -24,11 +25,13 @@ plotSignatures(
 
 \item{contributions}{If TRUE plots contribution of signatures in each sample.}
 
+\item{absolute}{Whether to plot absolute contributions. Default FALSE.}
+
 \item{color}{colors for each Ti/Tv conversion class. Default NULL}
 
 \item{patient_order}{User defined ordering of samples. Default NULL.}
 
-\item{font_size}{font size. Default 1.2}
+\item{font_size}{font size. Default 0.6}
 
 \item{show_title}{If TRUE compares signatures to COSMIC signatures and prints them as title}
 

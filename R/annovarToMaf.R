@@ -117,24 +117,16 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
       ncRNA_splicing = "RNA"
     )
 
-    ann_exonic = ann[Func.refGene %in% 'exonic']
-    ann_res = ann[!Func.refGene %in% 'exonic']
-    if(nrow(ann_exonic) ==0 & nrow(ann_res) == 0){
-      stop("No suitable exonic or intronic variants found!")
-    }
+    #Choose first entry for mixed annotations (e.g; exonic;splicing)
+    ann[, Func.refGene := unlist(data.table::tstrsplit(x = as.character(Func.refGene), split = ";", keep = 1))]
+    ann[, ExonicFunc.refGene := unlist(data.table::tstrsplit(x = as.character(ExonicFunc.refGene), split = ";", keep = 1))]
+    ann$Variant_Classification = ifelse(is.na(ann$ExonicFunc.refGene), annovar_values[ann$Func.refGene], annovar_values[ann$ExonicFunc.refGene])
 
-    #Exonic variants
-    if(nrow(ann_exonic) > 0){
-      cat("-Processing Exonic variants\n")
+    if(nrow(ann[!is.na(AAChange.refGene)]) > 0){
+      cat("--Extracting tx, exon, txchange and aa-change\n")
+      ann_change = ann[!is.na(AAChange.refGene)]
+      aa_change = unlist(data.table::tstrsplit(x = as.character(ann_change$AAChange.refGene),split = ',', fixed = TRUE, keep = 1))
 
-      #Choose first entry for mixed annotations (e.g; exonic;splicing)
-      ann_exonic[, Func.refGene := data.table::tstrsplit(x = as.character(ann_exonic$Func.refGene), split = ";", keep = 1)]
-      cat("--Adding Variant_Classification\n")
-      ann_exonic[,Variant_Classification := annovar_values[ExonicFunc.refGene]]
-
-      #Parse aa-change for exonic variants
-      cat("--Parsing aa-change\n")
-      aa_change = unlist(data.table::tstrsplit(x = as.character(ann_exonic$AAChange.refGene),split = ',', fixed = TRUE, keep = 1))
       aa_tbl = lapply(aa_change, function(x){
         x = unlist(strsplit(x = x, split = ":", fixed = TRUE))
 
@@ -155,80 +147,34 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
         data.table::data.table(tx, exon, txChange, aaChange)
       })
       aa_tbl = data.table::rbindlist(l = aa_tbl)
-
-      if(length(aa_change) != nrow(ann_exonic)){
-        stop("Something went wrong parsing aa-change")
+      if(length(aa_change) != nrow(ann_change)){
+        stop("Something went wrong while parsing aa-change")
       }
-      ann_exonic = cbind(ann_exonic, aa_tbl)
-    }
-
-    #Non-exonic variants
-    if(nrow(ann_res) > 0){
-      cat("-Processing Non-exonic variants\n")
-      ann_res[, Func.refGene := data.table::tstrsplit(x = as.character(ann_res$Func.refGene), split = ";", keep = 1)]
-      cat("--Adding Variant_Classification\n")
-      ann_res[,Variant_Classification := annovar_values[Func.refGene]]
-      #Merge exonic and non-exonic variants
-      ann = data.table::rbindlist(l = list(ann_exonic, ann_res), use.names = TRUE, fill = TRUE)
-    }else{
-      ann = ann_exonic
+      ann_change = cbind(ann_change, aa_tbl)
+      ann = data.table::rbindlist(l = list(ann_change, ann[is.na(AAChange.refGene)]), use.names = TRUE, fill = TRUE)
     }
 
     #Add Variant-type annotations based on difference between ref and alt alleles
     cat("-Adding Variant_Type\n")
+    ann$Variant_Type = ifelse(endsWith(x = ann$Variant_Classification, suffix = "_Del"), yes = "DEL", no = NA)
+    ann$Variant_Type = ifelse(endsWith(x = ann$Variant_Classification, suffix = "_Ins"), yes = "INS", no = ann$Variant_Type)
+    ann$Variant_Type = ifelse(ann$Variant_Classification %in% c("Missense_Mutation", "Silent") , yes = "SNP", no = ann$Variant_Type)
+
+    ann[,ref_alt_len := nchar(Ref) + nchar(Alt)]
     ann[,ref_alt_diff := nchar(Ref) - nchar(Alt)]
-    ann[, Variant_Type := ifelse(
-      ref_alt_diff == 0 ,
-      yes = ifelse(test = Ref != "-" & Alt != "-", yes = "SNP",
-      no = ifelse(ref_alt_diff < 0 , yes = "INS", no = "DEL")), no = NA)
-    ]
+    ann$Variant_Type = ifelse(ann$ref_alt_diff < 0 , yes = "INS", no = ann$Variant_Type)
+    ann$Variant_Type = ifelse(ann$ref_alt_diff > 0 , yes = "DEL", no = ann$Variant_Type)
 
-    #Check for MNPs (they are neither INDELS nor SNPs)
-    ann$Variant_Type = ifelse(
-        test = ann$Variant_Type == "SNP",
-        yes = ifelse(
-          test = nchar(ann$Ref) > 1,
-          yes = "MNP",
-          no = "SNP"
-        ),
-        no = ann$Variant_Type
-      )
-
-    #Annotate MNPs as Unknown VC
-    ann_mnps = ann[Variant_Type %in% "MNP"]
-    if(nrow(ann_mnps) > 0){
-      ann = ann[!Variant_Type %in% "MNP"]
-      ann_mnps[,Variant_Classification := "Unknown"]
-      ann = rbind(ann, ann_mnps)
-      rm(ann_mnps)
-    }
-
-    #Frameshift_INDEL, Inframe_INDEL are annotated by annovar without INS or DEL status
-    #Parse this based on difference between ref and alt alleles
-    ann_indel = ann[Variant_Classification %in% c("Frameshift_INDEL", "Inframe_INDEL")]
-    if(nrow(ann_indel) > 0){
-      cat("-Fixing ambiguous INDEL annotations\n")
-      ann = ann[!Variant_Classification %in% c("Frameshift_INDEL", "Inframe_INDEL")]
-      vc_fixed = lapply(1:nrow(ann_indel), function(i) {
-        x = ann_indel[i, Variant_Classification]
-        if (x == "Frameshift_INDEL") {
-          if (ann_indel[i, ref_alt_diff] > 0) {
-            return("Frame_Shift_Del")
-          } else{
-            return("Frame_Shift_Ins")
-          }
-        } else if (x == "Inframe_INDEL") {
-          if (ann_indel[i, ref_alt_diff] > 0) {
-            return("In_Frame_Del")
-          } else{
-            return("In_Frame_Ins")
-          }
-        } else{
-          return(x)
-        }
-      })
-      ann_indel[,Variant_Classification := unlist(vc_fixed)]
-      ann = rbind(ann, ann_indel)
+     #For ambiguous variants such as DNPs, TNPs and ONPs
+    if(nrow(ann[is.na(Variant_Type)]) > 0){
+      ann[, ref_alt := paste(Ref, Alt, sep = ">")]
+      ann_na = ann[is.na(Variant_Type)]
+      ann_na$Variant_Type = ifelse(test = ann_na$ref_alt %in% paste("-", c("A", "T", "G", "C"), sep = ">"), yes = "INS",
+                                   no = ifelse(test = ann_na$ref_alt %in% paste(c("A", "T", "G", "C"), "-", sep = ">"), yes = "DEL",
+                                               no = ifelse(ann_na$ref_alt_len == 2, yes = "SNP", no = ifelse(test = ann_na$ref_alt_len == 4, yes = "DNP",
+                                                                                                             no = "ONP"))))
+      ann[, ref_alt := NULL]
+      ann = data.table::rbindlist(l = list(ann[!is.na(Variant_Type)], ann_na), use.names = TRUE, fill = TRUE)
     }
 
   #Annovar ensGene doesn't provide HGNC gene symbols as Hugo_Symbol. We will change them manually.
@@ -246,13 +192,17 @@ annovarToMaf = function(annovar, Center = NULL, refBuild = 'hg19', tsbCol = NULL
     }
   }
     ann[, ref_alt_diff := NULL]
+    ann[, ref_alt_len := NULL]
+
+    #MAF requires Hugo_Symbols to be set to Unknown in case of IGR mutations
+    ann$Hugo_Symbol = ifelse(ann$Variant_Classification == "IGR", yes = "Unknown", no = ann$Hugo_Symbol)
+    ann$Hugo_Symbol = ifelse(is.na(ann$Hugo_Symbol), yes = "Unknown", no = ann$Hugo_Symbol)
 
   #Re-roganize columns
   colnames(ann)[match(c("Chr", "Start", "End", "Ref", "Alt"), colnames(ann))] = c("Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2")
   ord1 = colnames(x = ann)[colnames(x = ann) %in% c("Hugo_Symbol", "Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2", "Variant_Classification", "Variant_Type", "Tumor_Sample_Barcode", "tx", "exon", "txChange", "aaChange")]
   ord2 = colnames(x = ann)[!colnames(x = ann) %in% c("Hugo_Symbol", "Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2", "Variant_Classification", "Variant_Type", "Tumor_Sample_Barcode", "tx", "exon", "txChange", "aaChange")]
   ann = ann[,c(ord1, ord2), with = FALSE]
-
 
   if(!is.null(basename)){
     data.table::fwrite(x = ann, file = paste(basename, 'maf', sep='.'), sep='\t')

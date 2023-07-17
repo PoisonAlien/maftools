@@ -2,15 +2,20 @@
 (GitHub master branch)
 
 ## NEW FUNCTIONS
-- `coGisticChromPlot` for plotting two GISTIC objects side-by-side. [954](https://github.com/PoisonAlien/maftools/pull/954)
+- `coGisticChromPlot` for plotting two GISTIC objects side-by-side. PR by [biosunsci](https://github.com/biosunsci) [954](https://github.com/PoisonAlien/maftools/pull/954)
+- `readGistic` can take gistic output directory as an input. PR by [biosunsci](https://github.com/biosunsci) [954](https://github.com/PoisonAlien/maftools/pull/954)
 
 ## BUG FIXES
+- Bug fix in `oncoplot` for drawing borders. [958](https://github.com/PoisonAlien/maftools/issues/958)
 - Bug fix in `plotSignatures` for hardcoded axis limits. [949](https://github.com/PoisonAlien/maftools/issues/949)
 - Bug fix in `subsetMaf` while handling only CNV events. [908](https://github.com/PoisonAlien/maftools/issues/908)
 - Error handling when no deep/shallow CNV events found. [899](https://github.com/PoisonAlien/maftools/issues/899)
 - Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)
 
 ## ENHANCEMENTS
+- Improved `annovarToMaf` with better handling of indels and `Variant_Type`. Issue: [940](https://github.com/PoisonAlien/maftools/issues/940)
+- Include absolute contribution of each signature in `extractSignatures` output. Issue: [939](https://github.com/PoisonAlien/maftools/issues/939)
+- Added `DSEL` protein to the database. Issue: [933](https://github.com/PoisonAlien/maftools/issues/933)
 - Added `showOnlyPathway` argument to `oncoplot`
 - Added `pathdb` argument to `PlotOncogenicPathways`. Issue: [923](https://github.com/PoisonAlien/maftools/issues/923)
 - Emit warnings when fishers test can not be performed during `somaticInteractions`. Issue: [921](https://github.com/PoisonAlien/maftools/issues/921)

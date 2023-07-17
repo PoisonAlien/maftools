@@ -37,18 +37,18 @@ validateMaf = function(maf, rdup = TRUE, isTCGA = isTCGA, chatty = TRUE){
     if(chatty){
       cat('--Found ', nrow(maf[Hugo_Symbol %in% ""]), ' variants with no Gene Symbols\n')
       #print(maf[Hugo_Symbol %in% "", required.fields, with = FALSE])
-      cat("--Annotating them as 'UnknownGene' for convenience\n")
+      cat("--Annotating them as 'Unknown' for convenience\n")
     }
-    maf$Hugo_Symbol = ifelse(test = maf$Hugo_Symbol == "", yes = 'UnknownGene', no = maf$Hugo_Symbol)
+    maf$Hugo_Symbol = ifelse(test = maf$Hugo_Symbol == "", yes = 'Unknown', no = maf$Hugo_Symbol)
   }
 
   if(nrow(maf[is.na(Hugo_Symbol)]) > 0){
     if(chatty){
       cat('--Found ', nrow(maf[is.na(Hugo_Symbol) > 0]), ' variants with no Gene Symbols\n')
       #print(maf[is.na(Hugo_Symbol), required.fields, with =FALSE])
-      cat("--Annotating them as 'UnknownGene' for convenience\n")
+      cat("--Annotating them as 'Unknown' for convenience\n")
     }
-    maf$Hugo_Symbol = ifelse(test = is.na(maf$Hugo_Symbol), yes = 'UnknownGene', no = maf$Hugo_Symbol)
+    maf$Hugo_Symbol = ifelse(test = is.na(maf$Hugo_Symbol), yes = 'Unknown', no = maf$Hugo_Symbol)
   }
 
   if(isTCGA){
