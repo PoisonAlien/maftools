@@ -102,7 +102,7 @@ oncoplot(
 
 \item{leftBarVlineCol}{Line color for `leftBarVline` Default gray70}
 
-\item{rightBarData}{Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.}
+\item{rightBarData}{Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distribution by variant classification. This option is applicable when only `drawRowBar` is TRUE.}
 
 \item{rightBarLims}{limits for `rightBarData`. Default `NULL`.}
 
@@ -110,7 +110,7 @@ oncoplot(
 
 \item{rightBarVlineCol}{Line color for `rightBarVline` Default gray70}
 
-\item{topBarData}{Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.}
+\item{topBarData}{Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame containing sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.}
 
 \item{topBarLims}{limits for `topBarData`. Default `NULL`.}
 

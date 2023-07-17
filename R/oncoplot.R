@@ -22,11 +22,11 @@
 #' @param leftBarLims limits for `leftBarData`. Default `NULL`.
 #' @param leftBarVline Draw vertical lines at these values. Default `NULL`.
 #' @param leftBarVlineCol Line color for `leftBarVline` Default gray70
-#' @param topBarData Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame contaning sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.
+#' @param topBarData Default `NULL` which draws absolute number of mutation load for each sample. Can be overridden by choosing one clinical indicator(Numeric) or by providing a two column data.frame containing sample names and values for each sample. This option is applicable when only `drawColBar` is TRUE.
 #' @param topBarLims limits for `topBarData`. Default `NULL`.
 #' @param topBarHline Draw horizontal lines at these values. Default `NULL`.
 #' @param topBarHlineCol Line color for `topBarHline.` Default gray70
-#' @param rightBarData Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distibution by variant classification. This option is applicable when only `drawRowBar` is TRUE.
+#' @param rightBarData Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distribution by variant classification. This option is applicable when only `drawRowBar` is TRUE.
 #' @param rightBarLims limits for `rightBarData`. Default `NULL`.
 #' @param rightBarVline Draw vertical lines at these values. Default `NULL`.
 #' @param rightBarVlineCol Line color for `rightBarVline` Default gray70
@@ -457,9 +457,6 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
   #02: Draw top bar plot
   if(drawColBar & is.null(topBarData)){
-    print("I am here")
-    print(setdiff(colnames(top_bar_data), colnames(numMat)))
-    return(list(colnames(top_bar_data), colnames(numMat)))
     top_bar_data = top_bar_data[,colnames(numMat), drop = FALSE]
     if(drawRowBar){
       par(mar = c(0.25 , gene_mar, 2, 3), xpd = TRUE)
@@ -499,6 +496,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
     if(!is.null(topBarHline)){
       abline(h = topBarHline, lty = 2, col = topBarHlineCol, xpd = FALSE)
+      mtext(text = topBarHline, side = 2, las = 2, cex = 0.6, line = 0.7)
     }
   }else if(!is.null(topBarData) & drawColBar){
     # Draw extra clinical data in top
@@ -724,8 +722,8 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   }
 
   #Add grids
-  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
-  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
+  abline(h = (0:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
+  abline(v = (0:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
 
   #Add boxes if pathways are opted
   if(!is.null(pathways)){
@@ -999,8 +997,8 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
 
     #Add grids
-    abline(h = (1:ncol(nm)) + 0.5, col = annoBorderCol, lwd = sepwd_genes)
-    abline(v = (1:nrow(nm)) + 0.5, col = annoBorderCol, lwd = sepwd_samples)
+    abline(h = (0:(ncol(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_genes)
+    abline(v = (0:(nrow(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_samples)
     mtext(text = colnames(annotation), side = 4,
           font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
 
