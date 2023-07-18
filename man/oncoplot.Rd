@@ -38,6 +38,7 @@ oncoplot(
   draw_titv = FALSE,
   titv_col = NULL,
   showTumorSampleBarcodes = FALSE,
+  tsbToPIDs = NULL,
   barcode_mar = 4,
   barcodeSrt = 90,
   gene_mar = 5,
@@ -146,6 +147,8 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 \item{titv_col}{named vector of colors for each transition and transversion classes. Should be of length six with the names "C>T" "C>G" "C>A" "T>A" "T>C" "T>G".  Default NULL.}
 
 \item{showTumorSampleBarcodes}{logical to include sample names.}
+
+\item{tsbToPIDs}{Custom names for Tumor_Sample_Barcodes. Can be a column name in clinicaldata or a 2 column data.frame of Tumor_Sample_Barcodes to patient ID mappings. Applicable only when `showTumorSampleBarcodes = TRUE`. Default NULL.}
 
 \item{barcode_mar}{Margin width for sample names. Default 4}
 

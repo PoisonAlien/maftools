@@ -69,6 +69,8 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
     colnames(clinicalData)[colnames(clinicalData) %in% Status] = 'Status'
   }
 
+  names(col) = groupNames
+
   if(!is.null(genes)){
     #genesTSB = unique(as.character(subsetMaf(maf = maf, includeSyn = FALSE, genes = genes)[,Tumor_Sample_Barcode]))
     genesTSB = genesToBarcodes(maf = maf, genes = genes, justNames = TRUE)
@@ -134,8 +136,8 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
        frame.plot = FALSE, axes = FALSE, xlab = NA, ylab = NA)
   abline(h = y_lims, v = x_lims, lty = 2, col = grDevices::adjustcolor(col = "gray70", alpha.f = 0.5), lwd = 0.75)
 
-  points(surv.dat[Group %in% "Mutant", Time], y = surv.dat[Group %in% "Mutant", survProb], pch = 8, col = col [1])
-  points(surv.dat[Group %in% "WT", Time], y = surv.dat[Group %in% "WT", survProb], pch = 8, col = col [2])
+  points(surv.dat[Group %in% names(col)[1], Time], y = surv.dat[Group %in% names(col)[1], survProb], pch = 8, col = col [1])
+  points(surv.dat[Group %in% names(col)[2], Time], y = surv.dat[Group %in% names(col)[2], survProb], pch = 8, col = col [2])
 
   lines(surv.km[1], col = col[1], lty = 1, lwd = 2, conf.int=FALSE)
   lines(surv.km[2], col = col[2], lty = 1, lwd = 2, conf.int=FALSE)
@@ -143,10 +145,13 @@ mafSurvival = function(maf, genes = NULL, samples = NULL, clinicalData = NULL, t
   axis(side = 1, at = x_lims)
   axis(side = 2, at = y_lims, las = 2)
   mtext(text = "Survival probability", side = 2, line = 2.5)
-  #mtext(text = "Time", side = 1, line = 2)
+  mtext(text = time, side = 1, line = 2, adj = 1)
 
-  legend(x = "topright", legend = c(paste0("Mutant [N= ", nrow(clinicalData[Group == "Mutant"]),"]"),
-                                    paste0("WT [N= ", nrow(clinicalData[Group == "WT"]),"]")), col = col, bty = "n", lwd = 2, pch = 8)
+  cd_n = clinicalData[,.N,Group] #numbers per group
+  data.table::setDF(x = cd_n, rownames = cd_n$Group)
+
+  cd_n = cd_n[names(col),, drop = FALSE]
+  legend(x = "topright", legend = apply(cd_n, 1, paste, collapse = ":"), col = col, bty = "n", lwd = 2, pch = 8)
 
   title(main = NA,
         sub = paste0("P-value: ", round(surv.diff.pval, digits = 4), "; ", "HR: ", hr), cex.main = 1, font.main= 4, col.main= "black",

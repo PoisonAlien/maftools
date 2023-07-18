@@ -45,6 +45,7 @@
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
 #' @param titv_col named vector of colors for each transition and transversion classes. Should be of length six with the names "C>T" "C>G" "C>A" "T>A" "T>C" "T>G".  Default NULL.
 #' @param showTumorSampleBarcodes logical to include sample names.
+#' @param tsbToPIDs Custom names for Tumor_Sample_Barcodes. Can be a column name in clinicaldata or a 2 column data.frame of Tumor_Sample_Barcodes to patient ID mappings. Applicable only when `showTumorSampleBarcodes = TRUE`. Default NULL.
 #' @param barcode_mar Margin width for sample names. Default 4
 #' @param barcodeSrt Rotate sample labels. Default 90.
 #' @param gene_mar Margin width for gene names. Default 5
@@ -109,7 +110,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                topBarData = NULL, topBarLims = NULL, topBarHline = NULL, topBarHlineCol = 'gray70', logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
                                pathways = NULL, path_order = NULL, selectedPathways = NULL, showOnlyPathway = FALSE, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
-                               showTumorSampleBarcodes = FALSE, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
+                               showTumorSampleBarcodes = FALSE, tsbToPIDs = NULL, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
                                anno_height = 1, legend_height = 4,
                                sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
                                sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
@@ -849,8 +850,34 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   }
 
   if(showTumorSampleBarcodes){
-    text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
-         labels = rownames(nm), srt = barcodeSrt, font = 1, cex = SampleNamefontSize, adj = 1)
+
+    if(!is.null(tsbToPIDs)){
+      if(is.data.frame(x = tsbToPIDs)){
+        colnames(x = tsbToPIDs) = c("Tumor_Sample_Barcode", "PID")
+        rownames(tsbToPIDs) = tsbToPIDs$Tumor_Sample_Barcode
+      }else{
+        clin = getClinicalData(x = maf)
+        if(!tsbToPIDs %in% colnames(clin)){
+          stop(tsbToPIDs, " does not exist in the clinical data!")
+        }
+        data.table::setDF(x = clin, rownames = clin$Tumor_Sample_Barcode)
+        tsbToPIDs = clin[,c("Tumor_Sample_Barcode", tsbToPIDs)]
+        colnames(x = tsbToPIDs) = c("Tumor_Sample_Barcode", "PID")
+      }
+
+      if(all(rownames(nm) %in% rownames(tsbToPIDs))){
+        text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+             labels = tsbToPIDs[rownames(nm), 2], srt = barcodeSrt, font = 1, cex = SampleNamefontSize, adj = 1)
+      }else{
+        missing_tsb = setdiff(rownames(nm), rownames(tsbToPIDs))
+        warning("Follwing Tumor_Sample_Barcodes are missing corresponding PIDs: ", paste(missing_tsb, collapse = ", "))
+        text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+             labels = tsbToPIDs[rownames(nm), 2], srt = barcodeSrt, font = 1, cex = SampleNamefontSize, adj = 1)
+      }
+    }else{
+      text(x =1:nrow(nm), y = par("usr")[3] - 0.2,
+           labels = rownames(nm), srt = barcodeSrt, font = 1, cex = SampleNamefontSize, adj = 1)
+    }
   }
 
   #05: Draw right side barplot
