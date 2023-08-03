@@ -226,7 +226,7 @@ Genes can be auto grouped based on their pathway belongings. Currently maftools 
 1. [oncogenic signalling pathways](https://doi.org/10.1016/j.cell.2018.03.035): A curated list of 10 signalling pathways
 2. Catalog of known driver genes classified by their [biological processes](https://doi.org/10.1016/j.cell.2018.02.060)
 
-By setting `pathways` argument either `sigpw` or `smgbp` - cohort can be summariyed by altered pathways.
+By setting `pathways` argument either `sigpw` or `smgbp` - cohort can be summarized by altered pathways.
 `pathways` argument also accepts a custom pathway list in the form of a two column tsv file or a data.frame containing gene names and their corresponding pathway.
 
 ### Oncogenic siganlling pathways
