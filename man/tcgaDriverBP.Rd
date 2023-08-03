@@ -18,11 +18,6 @@ tcgaDriverBP(m, genes = NULL, top = 20, fontSize = 0.7)
 \description{
 A small function which uses known cancer driver genes and their associatd pathways from TCGA cohorts. See reference for details
 }
-\examples{
-laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-laml <- read.maf(maf = laml.maf)
-tcgaDriverBP(m = laml)
-}
 \references{
 Bailey MH, Tokheim C, Porta-Pardo E, et al. Comprehensive Characterization of Cancer Driver Genes and Mutations . Cell. 2018;173(2):371–385.e18. doi:10.1016/j.cell.2018.02.060
 }
