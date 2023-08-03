@@ -14,13 +14,8 @@
 #' @param showTumorSampleBarcodes logical to include sample names.
 #' @param SampleNamefontSize font size for sample names. Default 10
 #' @param sampleOrder Manually speify sample names for oncolplot ordering. Default NULL.
-#' @seealso \code{\link{OncogenicPathways}}
-#' @export
-#' @examples
-#' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
-#' laml <- read.maf(maf = laml.maf)
-#' PlotOncogenicPathways(maf = laml, pathways = "RTK-RAS")
-PlotOncogenicPathways = function(maf, pathways = NULL, fullPathway = FALSE, pathdb = NULL,
+
+plotPathways = function(maf, pathways = NULL, fullPathway = FALSE, pathdb = NULL,
                                  removeNonMutated = TRUE, tsgCol = "red", ogCol = "royalblue", fontSize = 0.6, showTumorSampleBarcodes = FALSE, sampleOrder = NULL, SampleNamefontSize = 0.6){
 
 

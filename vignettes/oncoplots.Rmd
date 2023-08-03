@@ -221,16 +221,31 @@ getFields(x = laml)
 ```
 
 ## Group by Pathways
-Genes can be auto grouped based on their Biological processess by setting `pathways = 'auto'` or by providing custom pathway list in the form of a two column tsv file or a data.frame containing gene names and their corresponding pathway.
+Genes can be auto grouped based on their pathway belongings. Currently maftools has two pathway databases, 
 
-### Auto
-setting `pathways = 'auto'` draws top 3 most affected pathways
-```{r}
-oncoplot(maf = laml, pathways = "auto", gene_mar = 8, fontSize = 0.6)
+1. [oncogenic signalling pathways](https://doi.org/10.1016/j.cell.2018.03.035): A curated list of 10 signalling pathways
+2. Catalog of known driver genes classified by their [biological processes](https://doi.org/10.1016/j.cell.2018.02.060)
+
+By setting `pathways` argument either `sigpw` or `smgbp` - cohort can be summariyed by altered pathways.
+`pathways` argument also accepts a custom pathway list in the form of a two column tsv file or a data.frame containing gene names and their corresponding pathway.
+
+### Oncogenic siganlling pathways
+
+setting `pathways = 'sigpw'` to draw 5 most affected pathways
+
+```{r, fig.height = 8, fig.width = 10}
+oncoplot(maf = laml, pathways = "sigpw", gene_mar = 8, fontSize = 0.6, topPathways = 5)
 ```
 
-### Custom pathways
-```{r}
+### Biological processes of known drivers
+
+```{r, fig.height = 8, fig.width = 10}
+oncoplot(maf = laml, pathways = "smgbp", gene_mar = 8, fontSize = 0.8, topPathways = 5)
+```
+
+
+### Custom pathway list
+```{r, fig.height = 7, fig.width = 10}
 pathways = data.frame(
   Genes = c(
     "TP53",
@@ -261,6 +276,14 @@ pathways = data.frame(
 head(pathways)
 
 oncoplot(maf = laml, pathways = pathways, gene_mar = 8, fontSize = 0.6)
+```
+
+### Collapse pathways
+
+By setting `collapsePathway = TRUE`..
+
+```{r}
+oncoplot(maf = laml, pathways = "sigpw", gene_mar = 8, fontSize = 0.6, topPathways = 5, collapsePathway = TRUE)
 ```
 
 

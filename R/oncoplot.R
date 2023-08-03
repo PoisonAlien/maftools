@@ -37,9 +37,10 @@
 #' @param annotationDat If MAF file was read without clinical data, provide a custom \code{data.frame} with a column \code{Tumor_Sample_Barcode} containing sample names along with rest of columns with annotations.
 #' You can specify which columns to be drawn using `clinicalFeatures` argument.
 #' @param pathways Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`
+#' @param topPathways Top most altered pathways to draw. Default 3. Mutually exclusive with `selectedPathways`
 #' @param path_order Default `NULL` Manually specify the order of pathways
 #' @param selectedPathways Manually provide the subset of pathway names to be selected from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.
-#' @param showOnlyPathway Shows only rows corresponing to the pathways. Default FALSE.
+#' @param collapsePathway Shows only rows corresponding to the pathways. Default FALSE.
 #' @param pwLineCol Color for the box around the pathways Default #535c68
 #' @param pwLineWd Line width for the box around the pathways Default Default 1
 #' @param draw_titv logical Includes TiTv plot. \code{FALSE}
@@ -63,7 +64,7 @@
 #' @param additionalFeatureCol Default "gray70"
 #' @param additionalFeatureCex Default 0.9
 #' @param genesToIgnore do not show these genes in Oncoplot. Default NULL.
-#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.
+#' @param removeNonMutated Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.
 #' @param fill Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.
 #' @param cohortSize Number of sequenced samples in the cohort. Default all samples from Cohort. You can manually specify the cohort size. Default \code{NULL}
 #' @param colors named vector of colors for each Variant_Classification.
@@ -101,7 +102,7 @@
 #' names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
 #' fabcolors = list(FAB_classification = fabcolors)
 #' oncoplot(maf = laml, colors = col, clinicalFeatures = 'FAB_classification', sortByAnnotation = TRUE, annotationColor = fabcolors)
-#' @seealso \code{\link{oncostrip}}
+#' @seealso \code{\link{pathways}}
 #' @export
 oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, altered = FALSE,
                                drawRowBar = TRUE, drawColBar = TRUE,
@@ -109,13 +110,13 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                rightBarData = NULL, rightBarLims = NULL,rightBarVline = NULL, rightBarVlineCol = 'gray70',
                                topBarData = NULL, topBarLims = NULL, topBarHline = NULL, topBarHlineCol = 'gray70', logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
-                               pathways = NULL, path_order = NULL, selectedPathways = NULL, showOnlyPathway = FALSE, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
+                               pathways = NULL, topPathways = 3,path_order = NULL, selectedPathways = NULL, collapsePathway = FALSE, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
                                showTumorSampleBarcodes = FALSE, tsbToPIDs = NULL, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
                                anno_height = 1, legend_height = 4,
                                sortByAnnotation = FALSE, groupAnnotationBySize = TRUE, annotationOrder = NULL,
                                sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
                                additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9,
-                               genesToIgnore = NULL, removeNonMutated = TRUE, fill = TRUE, cohortSize = NULL,
+                               genesToIgnore = NULL, removeNonMutated = FALSE, fill = TRUE, cohortSize = NULL,
                                colors = NULL, cBioPortal = FALSE, bgCol = "#CCCCCC", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
                                drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
                                sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL, showPct = TRUE){
@@ -157,17 +158,27 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
         pathways = pathways[Pathway %in% selectedPathways]
       }
     }else{
-      pathways = system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
-      pathways = data.table::fread(file = pathways, skip = "Gene")
+      pathways = match.arg(arg = pathways, choices = c("sigpw", "smgbp"))
+      pathwayLoad = get_pw_summary(maf = maf, pathways = pathways)
+
+      if(pathways == "sigpw"){
+        pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
+        #message("Summarizing signalling pathways [Sanchez-Vega et al., https://doi.org/10.1016/j.cell.2018.03.035]")
+      }else{
+        #message("Summarizing known driver genes [Bailey et al., https://doi.org/10.1016/j.cell.2018.02.060]")
+        pathdb <- system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
+      }
+
+      pathways = data.table::fread(file = pathdb, skip = "Gene")
       pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-      pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
-      pathwayLoad = pathway_load(maf = maf) #Get top mutated known pathways
+      #pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
+
 
       if(is.null(selectedPathways)){
-        message("Drawing upto top 3 mutated pathways")
+        message("Drawing upto top ", topPathways, " mutated pathways")
         print(pathwayLoad)
-        if(ncol(pathwayLoad) >= 3){
-          pathways = pathways[Pathway %in% pathwayLoad[1:3, Pathway]]
+        if(ncol(pathwayLoad) >= topPathways){
+          pathways = pathways[Pathway %in% pathwayLoad[1:topPathways, Pathway]]
         }else{
           pathways = pathways[Pathway %in% pathwayLoad[, Pathway]]
         }
@@ -408,10 +419,9 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     mat_origin_path[mat_origin_path == 0] = ""
     mat_origin_path[mat_origin_path == "99"] = "pathway"
     mat_origin_path = mat_origin_path[,colnames(mat_origin), drop = FALSE]
-    if(showOnlyPathway){
+    if(collapsePathway){
       mat_origin = mat_origin_path
       numMat = numMat[rownames(mat_origin),, drop = FALSE]
-      numMat = sortByGeneOrder(m = numMat, g = rownames(numMat))
     }else{
       mat_origin = rbind(mat_origin, mat_origin_path)
     }
@@ -735,9 +745,11 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     #return(temp_dat)
     temp_dat[, row_id := nrow(temp_dat):1]
     temp_dat = split(temp_dat, as.factor(temp_dat$Pathway))
-    lapply(temp_dat, function(td){
-      rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = pwLineCol, lwd = pwLineWd)
-    })
+    if(!collapsePathway){
+      lapply(temp_dat, function(td){
+        rect(xleft = 0.5, ybottom = min(td$row_id)-0.499, xright = nrow(nm)+0.5, ytop = max(td$row_id)+0.499, border = pwLineCol, lwd = pwLineWd)
+      })
+    }
 
     #New percent alt with pathways
     percent_alt = rev(paste0(apply(nm, 2, function(x){
@@ -1128,7 +1140,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
   }
 
-  if(showOnlyPathway){
+  if(collapsePathway){
     leg_classes = leg_classes['pathway']
   }
   lep = legend("topleft", legend = names(leg_classes),
@@ -1174,7 +1186,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
     altStat = paste0("Altered in ", ncol(numMat), " (", round(ncol(numMat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
   }else{
-    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE))))
+    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE, verbose = FALSE))))
     altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
   }
 

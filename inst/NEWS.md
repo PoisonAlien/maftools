@@ -2,6 +2,7 @@
 (GitHub master branch)
 
 ## NEW FUNCTIONS
+- `pathways` and `plotPathways`for summarizing & visualizing pathways Issue: [956](https://github.com/PoisonAlien/maftools/issues/956)
 - `coGisticChromPlot` for plotting two GISTIC objects side-by-side. PR by [biosunsci](https://github.com/biosunsci) [954](https://github.com/PoisonAlien/maftools/pull/954)
 - `readGistic` can take gistic output directory as an input. PR by [biosunsci](https://github.com/biosunsci) [954](https://github.com/PoisonAlien/maftools/pull/954)
 
@@ -14,6 +15,7 @@
 - Bug fix in `oncoplot` for duplicated values in gene list. [889](https://github.com/PoisonAlien/maftools/issues/889)
 
 ## ENHANCEMENTS
+- Added argument `collapsePathway` to `oncoplot`. Issue: [956](https://github.com/PoisonAlien/maftools/issues/956)
 - Improved `annovarToMaf` with better handling of indels and `Variant_Type`. Issue: [940](https://github.com/PoisonAlien/maftools/issues/940)
 - Include absolute contribution of each signature in `extractSignatures` output. Issue: [939](https://github.com/PoisonAlien/maftools/issues/939)
 - Added `tsbToPIDs` for custom names in `oncoplot`. Issue: Issue: [936](https://github.com/PoisonAlien/maftools/issues/936)
@@ -32,8 +34,9 @@
 # CHANGES IN VERSION 2.16.0
 (Bioconductor release version)
 
+- No changes
+
 # CHANGES IN VERSION 2.14.0
-(Bioconductor release version)
 
 - No changes
 

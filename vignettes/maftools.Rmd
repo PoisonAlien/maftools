@@ -448,19 +448,18 @@ Please cite [DGIdb article](https://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcg
 
 ## Oncogenic Signaling Pathways
 
-`OncogenicPathways` function checks for enrichment of known Oncogenic Signaling Pathways in TCGA cohorts [11](#references).
+`pathways` function checks for enrichment of known Oncogenic Signaling Pathways from TCGA cohorts [11](#references).
 
-```{r OncogenicPathways, fig.width=3.5, fig.height=3}
-OncogenicPathways(maf = laml)
+```{r OncogenicPathways, fig.width=7, fig.height=6}
+pws = pathways(maf = laml, plotType = 'treemap')
 ```
 
-Its also possible to visualize complete pathway.
+Its also possible to visualize the results
 
-```{r PlotOncogenicPathways, fig.width=6, fig.height=2.5}
-PlotOncogenicPathways(maf = laml, pathways = "RTK-RAS")
+```{r PlotOncogenicPathways, fig.width=6, fig.height=3.5}
+plotPathways(maf = laml, pathlist = pws)
 ```
 
-Tumor suppressor genes are in red, and oncogenes are in blue font.
 
 ## Tumor heterogeneity and MATH scores
 
@@ -657,6 +656,8 @@ var.annovar.maf = annovarToMaf(annovar = var.annovar, Center = 'CSI-NUS', refBui
 ```
 
 Annovar, when used with Ensemble as a gene annotation source, uses ensemble gene IDs as Gene names. In that case, use `annovarToMaf` with argument `table` set to `ensGene` which converts ensemble gene IDs into HGNC symbols.
+
+If you prefer to do the conversion outside R, there is also a python script which is much faster and doesn't load the whole file into memory. See [annovar2maf](https://github.com/PoisonAlien/annovar2maf) for details.
 
 ## Converting ICGC Simple Somatic Mutation Format to MAF
 
@@ -865,21 +866,15 @@ laml_mae
 
 # Useful links and tools
 
-+--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
-| File formats                                                                                                       | Data Portals                                                                                    | Annotation tools                                                                              |
-+:==================================================================================================================:+:===============================================================================================:+:=============================================================================================:+
-| [Mutation Annotation Format](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/)                            | [TCGA](http://cancergenome.nih.gov)                                                             | [vcf2maf](https://github.com/mskcc/vcf2maf) - for converting your VCF files to MAF            |
-+--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
-| [Variant Call Format](https://en.wikipedia.org/wiki/Variant_Call_Format)                                           | [ICGC](https://docs.icgc.org/)                                                                  | Ensembl Variant Effect Predictor [VEP](http://www.ensembl.org/info/docs/tools/vep/index.html) |
-+--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
-| ICGC [Simple Somatic Mutation Format](https://docs.icgc.org/submission/guide/icgc-simple-somatic-mutation-format/) | [Broad Firehose](https://gdac.broadinstitute.org/)                                              | [Annovar](https://doc-openbio.readthedocs.io/projects/annovar/en/latest/)                     |
-+--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
-|                                                                                                                    | [cBioPortal](https://www.cbioportal.org/)                                                       | [Funcotator](https://gatk.broadinstitute.org/hc/en-us/articles/360037224432-Funcotator)       |
-+--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
-|                                                                                                                    | [CIViC](https://civicdb.org/home) - Clinical interpretation of variants in cancer               |                                                                                               |
-+--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
-|                                                                                                                    | [DGIdb](http://www.dgidb.org/) - Information on drug-gene interactions and the druggable genome |                                                                                               |
-+--------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
+| File Fomats                                                                                                        | Data portals                                                                                    | Annotation tools                                                                                                                       |
+|--------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| [Mutation Annotation Format](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/)                            | [TCGA](http://cancergenome.nih.gov)                                                             | [vcf2maf](https://github.com/mskcc/vcf2maf) - for converting your VCF files to MAF                                                     |
+| [Variant Call Format](https://en.wikipedia.org/wiki/Variant_Call_Format)                                           | [ICGC](https://docs.icgc.org/)                                                                  | [annovar2maf](https://github.com/PoisonAlien/annovar2maf) - for converting annovar output files to MAF                                 |
+| ICGC [Simple Somatic Mutation Format](https://docs.icgc.org/submission/guide/icgc-simple-somatic-mutation-format/) | [Broad Firehose](https://gdac.broadinstitute.org/)                                              | [bcftools csq](https://samtools.github.io/bcftools/howtos/csq-calling.html) - Rapid annotations of VCF files with variant consequences |
+|                                                                                                                    | [cBioPortal](https://www.cbioportal.org/)                                                       | [Annovar](https://annovar.openbioinformatics.org/en/latest/)                                                              |
+|                                                                                                                    | [PeCan](https://pecan.stjude.cloud/)                                                            | [Funcotator](https://gatk.broadinstitute.org/hc/en-us/articles/360037224432-Funcotator)                                                |
+|                                                                                                                    | [CIViC](https://civicdb.org/home) - Clinical interpretation of variants in cancer               |                                                                                                                                        |
+|                                                                                                                    | [DGIdb](http://www.dgidb.org/) - Information on drug-gene interactions and the druggable genome |                                                                                                                                        |
 
 Below are some more useful software packages for somatic variant analysis.
 

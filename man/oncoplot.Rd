@@ -30,9 +30,10 @@ oncoplot(
   annotationColor = NULL,
   annotationDat = NULL,
   pathways = NULL,
+  topPathways = 3,
   path_order = NULL,
   selectedPathways = NULL,
-  showOnlyPathway = FALSE,
+  collapsePathway = FALSE,
   pwLineCol = "#535c68",
   pwLineWd = 1,
   draw_titv = FALSE,
@@ -56,7 +57,7 @@ oncoplot(
   additionalFeatureCol = "gray70",
   additionalFeatureCex = 0.9,
   genesToIgnore = NULL,
-  removeNonMutated = TRUE,
+  removeNonMutated = FALSE,
   fill = TRUE,
   cohortSize = NULL,
   colors = NULL,
@@ -132,11 +133,13 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{pathways}{Default `NULL`. Can be `auto`, or a two column data.frame/tsv-file with genes and correspoding pathway mappings.`}
 
+\item{topPathways}{Top most altered pathways to draw. Default 3. Mutually exclusive with `selectedPathways`}
+
 \item{path_order}{Default `NULL` Manually specify the order of pathways}
 
 \item{selectedPathways}{Manually provide the subset of pathway names to be selected from `pathways`. Default NULL. In case `pathways` is `auto` draws top 3 altered pathways.}
 
-\item{showOnlyPathway}{Shows only rows corresponing to the pathways. Default FALSE.}
+\item{collapsePathway}{Shows only rows corresponding to the pathways. Default FALSE.}
 
 \item{pwLineCol}{Color for the box around the pathways Default #535c68}
 
@@ -184,7 +187,7 @@ You can specify which columns to be drawn using `clinicalFeatures` argument.}
 
 \item{genesToIgnore}{do not show these genes in Oncoplot. Default NULL.}
 
-\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{TRUE}.}
+\item{removeNonMutated}{Logical. If \code{TRUE} removes samples with no mutations in the oncoplot for better visualization. Default \code{FALSE}.}
 
 \item{fill}{Logical. If \code{TRUE} draws genes and samples as blank grids even when they are not altered.}
 
@@ -262,5 +265,5 @@ Bailey, Matthew H et al. “Comprehensive Characterization of Cancer Driver Gene
 Sanchez-Vega, Francisco et al. “Oncogenic Signaling Pathways in The Cancer Genome Atlas.” Cell vol. 173,2 (2018): 321-337.e10. doi:10.1016/j.cell.2018.03.035
 }
 \seealso{
-\code{\link{oncostrip}}
+\code{\link{pathways}}
 }

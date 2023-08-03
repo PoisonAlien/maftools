@@ -681,12 +681,19 @@ update_colors = function(x, y){
 
 #Get pathway summary from an MAF
 get_pw_summary = function(maf, pathways = NULL){
-  if(is.null(pathways)){
-    pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
-    pathdb = data.table::fread(input = pathdb)
+  if(pathways %in% c("sigpw", "smgbp")){
+    if(pathways == "sigpw"){
+      pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
+      message("Summarizing signalling pathways [Sanchez-Vega et al., https://doi.org/10.1016/j.cell.2018.03.035]")
+    }else{
+      message("Summarizing known driver genes [Bailey et al., https://doi.org/10.1016/j.cell.2018.02.060]")
+      pathdb <- system.file("extdata", "BP_SMGs.txt.gz", package = "maftools")
+    }
+    pathdb = data.table::fread(file = pathdb)
+    colnames(pathdb)[1:2] = c("Pathway", "Gene")
   }else{
     pathdb = data.table::copy(x = pathways)
-    colnames(pathdb) = c("Gene", "Pathway")
+    colnames(pathdb)[1:2] = c("Pathway", "Gene")
     data.table::setDT(x = pathdb)
   }
   pathdb_size = pathdb[,.N,Pathway]
@@ -694,13 +701,7 @@ get_pw_summary = function(maf, pathways = NULL){
 
 
   altered_pws = lapply(pathdb, function(pw){
-    x = suppressMessages(try(genesToBarcodes(maf = maf, genes = pw$Gene)))
-    if(class(x) == "try-error"){
-      pw_genes = NULL
-    }else{
-      pw_genes = names(genesToBarcodes(maf = maf, genes = pw$Gene, justNames = TRUE, verbose = FALSE))
-    }
-    pw_genes
+    names(genesToBarcodes(maf = maf, genes = pw$Gene, justNames = TRUE, verbose = FALSE))
   })
 
   mut_load = lapply(altered_pws, function(x){
@@ -711,23 +712,32 @@ get_pw_summary = function(maf, pathways = NULL){
         genesToBarcodes(
           maf = maf,
           genes = x,
-          justNames = TRUE
+          justNames = TRUE, verbose = FALSE
         )
       ))))
     }
     nsamps
   })
 
+  pathdb = lapply(pathdb, function(x){x$Gene})
+
+  temp_names = names(altered_pws) #Spaces are not handled properly when converting list to df
+
   altered_pws = as.data.frame(t(data.frame(lapply(altered_pws, length))))
   data.table::setDT(x = altered_pws, keep.rownames = TRUE)
+  altered_pws$rn = temp_names
   colnames(altered_pws) = c("Pathway", "n_affected_genes")
-  altered_pws$Pathway = gsub(pattern = "\\.", replacement = "-", x = altered_pws$Pathway)
+  altered_pws$Mutated_samples = as.numeric(unlist(mut_load[altered_pws$Pathway]))
+  #altered_pws$Pathway = gsub(pattern = "\\.", replacement = "-", x = altered_pws$Pathway)
   altered_pws = merge(pathdb_size, altered_pws, all.x = TRUE)
 
   altered_pws[, fraction_affected := n_affected_genes/N]
-  altered_pws$Mutated_samples = unlist(mut_load)
   nsamps = as.numeric(maf@summary[ID == "Samples", summary])
   altered_pws[,Fraction_mutated_samples := Mutated_samples/nsamps]
   altered_pws = altered_pws[order(n_affected_genes, fraction_affected, decreasing = FALSE)]
-  altered_pws
+
+  altered_pws = altered_pws[,.(Pathway, N, n_affected_genes, fraction_affected, Mutated_samples, Fraction_mutated_samples)]
+  attr(x = altered_pws, which = "genes") = pathdb
+  altered_pws[order(-Fraction_mutated_samples)]
+
 }
