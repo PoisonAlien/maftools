@@ -30,6 +30,7 @@
 - Added `sortByM1` and `sortByM2` argument to `coOncoplot`. Issue: [888](https://github.com/PoisonAlien/maftools/issues/888)
 - Added arguments `leftBarVline`, `leftBarVlineCol`, `rightBarVline`, `rightBarVlineCol` `topBarHline` `topBarHlineCol` to `oncoplot`. Issue: [874](https://github.com/PoisonAlien/maftools/issues/874)
 - Added `revPal` argument to `somaticInteractions`. Issue: [859](https://github.com/PoisonAlien/maftools/issues/859)
+- Fix legend and color codes for numeric annotations in `oncoplot`. Issue: [363](https://github.com/PoisonAlien/maftools/issues/363)
 
 # CHANGES IN VERSION 2.16.0
 (Bioconductor release version)

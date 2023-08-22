@@ -1148,37 +1148,70 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
   x_axp = 0+lep$rect$w
 
+  #print(annotation)
+  #return(annotationColor)
+
   if(!is.null(clinicalFeatures)){
+    #Check which of the clinicalFeatures are of numeric
+    ann_classes = lapply(names(annotationColor), function(ac){
+      temp_anno = data.table::copy(maf@clinical.data)
+      data.table::setDF(temp_anno)
+      ac_idx = which(colnames(temp_anno) == ac)
+      is.numeric(temp_anno[,ac_idx])
+    })
+    num_start = 0.1 #numeric legend starts from here
+    num_width = 0.1
+    num_incr = 0.2
 
     for(i in 1:ncol(annotation)){
       #x = unique(annotation[,i])
       x = annotationColor[[i]]
+      is_num = ann_classes[[i]]
       xt = names(x)
-      if("NA" %in% xt){
-        xt = xt[!xt %in% "NA"]
-        xt = sort(xt, decreasing = FALSE)
-        xt = c(xt, "NA")
-        x = x[xt]
+
+      if(is_num){
+        x_range = as.numeric(names(x))
+        x_range = x_range[!is.na(x_range)]
+        x_range = x_range[!is.infinite(x_range)]
+        x_range = range(x_range)
+
+        image(
+          y = c(0.1, 0.2),
+          x = seq(num_start, num_start+num_width, length.out = 200),
+          z = t(matrix(seq(0,1,length.out = 200), nrow= 1)),
+          col = x, xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, xlab = NA, ylab = NA, add = TRUE
+        )
+        text(x = c(num_start, num_start+num_width), y = 0.2, labels = x_range, pos = 3)
+        text(x = num_start+(num_width/2), y = 0.1, labels = clinicalFeatures[i], pos = 1, adj = 1)
+        num_start = num_start + num_incr
+
       }else{
-        xt = sort(xt, decreasing = FALSE)
-        x = x[xt]
+        if("NA" %in% xt){
+          xt = xt[!xt %in% "NA"]
+          xt = sort(xt, decreasing = FALSE)
+          xt = c(xt, "NA")
+          x = x[xt]
+        }else{
+          xt = sort(xt, decreasing = FALSE)
+          x = x[xt]
+        }
+
+        if(length(x) <= 4){
+          n_col = 1
+        }else{
+          n_col = (length(x) %/% 4)+1
+        }
+        names(x)[is.na(names(x))] = "NA"
+
+        lep = legend(x = x_axp, y = 1, legend = names(x),
+                     col = x, border = NA,
+                     ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
+                     cex = annotationFontSize, title = rev(names(annotation))[i],
+                     title.adj = 0)
+        x_axp = x_axp + lep$rect$w
+
       }
-
-      if(length(x) <= 4){
-        n_col = 1
-      }else{
-        n_col = (length(x) %/% 4)+1
       }
-      names(x)[is.na(names(x))] = "NA"
-
-      lep = legend(x = x_axp, y = 1, legend = names(x),
-                   col = x, border = NA,
-                   ncol= n_col, pch = 15, xpd = TRUE, xjust = 0, bty = "n",
-                   cex = annotationFontSize, title = rev(names(annotation))[i],
-                   title.adj = 0)
-      x_axp = x_axp + lep$rect$w
-
-    }
   }
 
   if(removeNonMutated){
