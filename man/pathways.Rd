@@ -28,8 +28,6 @@ pathways(
 \item{plotType}{Can be 'treemap' or 'bar'. Set NA to suppress plotting. Default NA}
 
 \item{col}{Default #f39c12}
-
-\item{fontsize}{Defalt 1}
 }
 \value{
 fraction of altered pathway. attr genes contain pathway contents

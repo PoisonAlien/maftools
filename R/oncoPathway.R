@@ -12,7 +12,6 @@
 #' @param plotType Can be 'treemap' or 'bar'. Set NA to suppress plotting. Default NA
 #' @param fontSize Default 1
 #' @param panelWidths Default c(2, 4, 4)
-#' @param fontsize Defalt 1
 #' @param col Default #f39c12
 #' @return fraction of altered pathway. attr genes contain pathway contents
 #' @seealso \code{\link{plotPathways}}
@@ -28,10 +27,10 @@ pathways = function(maf, pathdb = "sigpw", pathways = NULL, fontSize = 1, panelW
   if(is.null(pathways)){
     pathways = match.arg(arg = pathdb, choices = c("sigpw", "smgbp"))
   }else{
-    if(file.exists(pathways)){
-      pathways = data.table::fread(file = pathways)
+    if(is.data.frame(pathways)){
       colnames(pathways)[1:2] = c("Pathway", "Gene")
-    }else if(is.data.frame(pathways)){
+    } else if(file.exists(pathways)){
+      pathways = data.table::fread(file = pathways)
       colnames(pathways)[1:2] = c("Pathway", "Gene")
     }
   }

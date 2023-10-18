@@ -7,8 +7,8 @@
 #' @param m2Name optional name for second cohort
 #' @param minMut Consider only genes with minimum this number of samples mutated in atleast one of the cohort for analysis. Helful to ignore single mutated genes. Default 5.
 #' @param useCNV whether to include copy number events. Default TRUE if available.. Not applicable when `pathways = TRUE`
-#' @param pathways Summarize genes by pathways before comparing. Default `FALSE`
-#' @param custom_pw Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`, uses a predefined list of pathways. Applicable only when `pathways = TRUE`
+#' @param pathways Summarize genes by pathways before comparing. Can be either `sigpw` or `smgbp`,  `sigpw` uses known oncogenic signalling pathways (Sanchez/Vega et al) whereas `smgbp` uses pan cancer significantly mutated genes classified according to biological process (Bailey et al). Default \code{NULL}
+#' @param custom_pw Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`. This argument is mutually exclusive with \code{pathdb}
 #' @param pseudoCount If TRUE, adds 1 to the contingency table with 0's to avoid `Inf` values in the estimated odds-ratio.
 #' @return result list
 #' @examples
@@ -22,7 +22,7 @@
 #' @seealso \code{\link{forestPlot}}
 #' @seealso \code{\link{lollipopPlot2}}
 
-mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE, pathways = FALSE, custom_pw = NULL, pseudoCount = FALSE){
+mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV = TRUE, pathways = NULL, custom_pw = NULL, pseudoCount = FALSE){
 
   m1.gs <- getGeneSummary(x = m1)
   m2.gs <- getGeneSummary(x = m2)
@@ -43,13 +43,28 @@ mafCompare = function(m1, m2, m1Name = NULL, m2Name = NULL, minMut = 5, useCNV =
     SampleSize = c(m1.sampleSize, m2.sampleSize)
   )
 
-  if(pathways){
+  if(!is.null(custom_pw)){
+
+    if(is.data.frame(custom_pw)){
+      colnames(custom_pw)[1:2] = c("Pathway", "Gene")
+    } else if(file.exists(custom_pw)){
+      custom_pw = data.table::fread(file = custom_pw)
+      colnames(custom_pw)[1:2] = c("Pathway", "Gene")
+    }
+
     m1_pw = get_pw_summary(maf = m1, pathways = custom_pw)[,.(Pathway, Mutated_samples)]
     m2_pw = get_pw_summary(maf = m2, pathways = custom_pw)[,.(Pathway, Mutated_samples)]
 
     m.gs.meged = merge(m1_pw, m2_pw, by = "Pathway", all = TRUE)
     m.gs.meged = as.data.frame(m.gs.meged)
 
+  }else if(!is.null(pathways)){
+    pw_db = match.arg(arg = pathways, choices = c("sigpw", "smgbp"))
+    m1_pw = get_pw_summary(maf = m1, pathways = pw_db)[,.(Pathway, Mutated_samples)]
+    m2_pw = get_pw_summary(maf = m2, pathways = pw_db)[,.(Pathway, Mutated_samples)]
+
+    m.gs.meged = merge(m1_pw, m2_pw, by = "Pathway", all = TRUE)
+    m.gs.meged = as.data.frame(m.gs.meged)
   }else{
     if(useCNV){
       m1.genes = as.character(m1.gs[AlteredSamples >= minMut,Hugo_Symbol])
