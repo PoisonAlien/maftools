@@ -11,7 +11,7 @@ mafCompare(
   m2Name = NULL,
   minMut = 5,
   useCNV = TRUE,
-  pathways = FALSE,
+  pathways = NULL,
   custom_pw = NULL,
   pseudoCount = FALSE
 )
@@ -29,9 +29,9 @@ mafCompare(
 
 \item{useCNV}{whether to include copy number events. Default TRUE if available.. Not applicable when `pathways = TRUE`}
 
-\item{pathways}{Summarize genes by pathways before comparing. Default `FALSE`}
+\item{pathways}{Summarize genes by pathways before comparing. Can be either `sigpw` or `smgbp`,  `sigpw` uses known oncogenic signalling pathways (Sanchez/Vega et al) whereas `smgbp` uses pan cancer significantly mutated genes classified according to biological process (Bailey et al). Default \code{NULL}}
 
-\item{custom_pw}{Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`, uses a predefined list of pathways. Applicable only when `pathways = TRUE`}
+\item{custom_pw}{Optional. Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`. This argument is mutually exclusive with \code{pathdb}}
 
 \item{pseudoCount}{If TRUE, adds 1 to the contingency table with 0's to avoid `Inf` values in the estimated odds-ratio.}
 }

@@ -7,6 +7,7 @@
 - `readGistic` can take gistic output directory as an input. PR by [biosunsci](https://github.com/biosunsci) [954](https://github.com/PoisonAlien/maftools/pull/954)
 
 ## BUG FIXES
+- Bug fixes while processing custom pathways
 - Bug fix in `oncoplot` for drawing borders. [958](https://github.com/PoisonAlien/maftools/issues/958)
 - Bug fix in `plotSignatures` for hardcoded axis limits. [949](https://github.com/PoisonAlien/maftools/issues/949)
 - Bug fix in `mafSurvival` legend when samples argument is give. [937](https://github.com/PoisonAlien/maftools/issues/937)

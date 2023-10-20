@@ -681,7 +681,12 @@ update_colors = function(x, y){
 
 #Get pathway summary from an MAF
 get_pw_summary = function(maf, pathways = NULL){
-  if(pathways %in% c("sigpw", "smgbp")){
+
+  if(is(pathways, class2 = "data.frame")){
+    pathdb = data.table::copy(x = pathways)
+    colnames(pathdb)[1:2] = c("Pathway", "Gene")
+    data.table::setDT(x = pathdb)
+  }else if(pathways %in% c("sigpw", "smgbp")){
     if(pathways == "sigpw"){
       pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
       message("Summarizing signalling pathways [Sanchez-Vega et al., https://doi.org/10.1016/j.cell.2018.03.035]")
@@ -691,11 +696,9 @@ get_pw_summary = function(maf, pathways = NULL){
     }
     pathdb = data.table::fread(file = pathdb)
     colnames(pathdb)[1:2] = c("Pathway", "Gene")
-  }else{
-    pathdb = data.table::copy(x = pathways)
-    colnames(pathdb)[1:2] = c("Pathway", "Gene")
-    data.table::setDT(x = pathdb)
   }
+
+
   pathdb_size = pathdb[,.N,Pathway]
   pathdb = split(pathdb, as.factor(pathdb$Pathway))
 
