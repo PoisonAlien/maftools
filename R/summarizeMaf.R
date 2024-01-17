@@ -180,7 +180,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
       }
     }else{
       if(file.exists(anno)){
-        sample.anno = data.table::fread(anno, stringsAsFactors = FALSE)
+        sample.anno = data.table::fread(anno, stringsAsFactors = FALSE, fill = TRUE)
         if(!'Tumor_Sample_Barcode' %in% colnames(sample.anno)){
           message(paste0('Available fields in ', basename(anno), '..'))
           print(colnames(sample.anno))
@@ -201,7 +201,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   #   sample.anno = as.data.frame(apply(sample.anno, 2, function(y) trimws(y))) #remove trailing whitespaces
   # }
 
-  sample.anno[sample.anno == ""] = NA #Replace blanks with NA
+  #sample.anno[sample.anno == ""] = NA #Replace blanks with NA
   #sample.anno = as.data.frame(apply(sample.anno, 2, function(y) gsub(pattern = " ", replacement = "_", x = y))) #replace spaces with _
   data.table::setDT(x = sample.anno)
   if(ncol(sample.anno) == 1){
