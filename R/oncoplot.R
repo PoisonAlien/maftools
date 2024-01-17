@@ -1048,7 +1048,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
 
     #Add grids
-    #abline(h = (0:(ncol(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_genes)
+    rect(xleft = 0.5, ybottom = (0:(ncol(annotation))) + 0.5, xright = nrow(annotation)+0.5, ytop = (0:(ncol(annotation))) + 0.5, border = annoBorderCol, lwd = 0.7)
     abline(v = (0:(nrow(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_samples)
     mtext(text = colnames(annotation), side = 4,
           font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
