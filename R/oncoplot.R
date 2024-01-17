@@ -68,7 +68,7 @@
 #' @param cohortSize Number of sequenced samples in the cohort. Default all samples from Cohort. You can manually specify the cohort size. Default \code{NULL}
 #' @param colors named vector of colors for each Variant_Classification.
 #' @param cBioPortal Adds annotations similar to cBioPortals MutationMapper and collapse Variants into Truncating and rest.
-#' @param bgCol Background grid color for wild-type (not-mutated) samples. Default gray - "#CCCCCC"
+#' @param bgCol Background grid color for wild-type (not-mutated) samples. Default "#ecf0f1"
 #' @param borderCol border grid color (not-mutated) samples. Default 'white'.
 #' @param annoBorderCol border grid color for annotations. Default NA.
 #' @param numericAnnoCol color palette used for numeric annotations. Default 'YlOrBr' from RColorBrewer
@@ -85,7 +85,10 @@
 #' @param showTitle Default TRUE
 #' @param titleText Custom title. Default `NULL`
 #' @param showPct Default TRUE. Shows percent altered to the right side of the plot.
-#' @return None.
+#' @returns Invisibly returns a list with components
+#' 1. `oncomatrix` A matrix used for drawing the oncoplot. Values are numeric coded for each variant classification
+#' 2. `vc_legend` A mapping of variant classification to numeric values in the oncomatrix
+#' 3. `vc_color` Color coding used for each variant classification
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
 #' laml.clin = system.file('extdata', 'tcga_laml_annot.tsv', package = 'maftools')
@@ -116,7 +119,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                sortByMutation = FALSE, keepGeneOrder = FALSE, GeneOrderSort = TRUE, sampleOrder = NULL,
                                additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "gray70", additionalFeatureCex = 0.9,
                                genesToIgnore = NULL, removeNonMutated = FALSE, fill = TRUE, cohortSize = NULL,
-                               colors = NULL, cBioPortal = FALSE, bgCol = "#CCCCCC", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
+                               colors = NULL, cBioPortal = FALSE, bgCol = "#ecf0f1", borderCol = 'white', annoBorderCol = NA, numericAnnoCol = NULL,
                                drawBox = FALSE, fontSize = 0.8, SampleNamefontSize = 1, titleFontSize = 1.5, legendFontSize = 1.2, annotationFontSize = 1.2,
                                sepwd_genes = 0.5, sepwd_samples = 0.25, writeMatrix = FALSE, colbar_pathway = FALSE, showTitle = TRUE, titleText = NULL, showPct = TRUE){
 
@@ -411,16 +414,26 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       x
     })
     numMat = do.call(rbind, nm)
-
     #Add pathway information to the character matrix
     mat_origin_path = rownames(numMat)[!rownames(numMat) %in% rownames(mat_origin)]
+
     mat_origin_path = numMat[mat_origin_path,, drop = FALSE]
     mat_origin_path[mat_origin_path == 0] = ""
     mat_origin_path[mat_origin_path == "99"] = "pathway"
     mat_origin_path = mat_origin_path[,colnames(mat_origin), drop = FALSE]
     if(collapsePathway){
+      #print(mat_origin_path)
       mat_origin = mat_origin_path
       numMat = numMat[rownames(mat_origin),, drop = FALSE]
+      row_ord = names(sort(apply(numMat, 1, function(x) length(x[x == 0])), decreasing = FALSE))
+      numMat = numMat[row_ord,, drop = FALSE]
+      tnumMat = t(numMat) #transposematrix
+      numMat = t(tnumMat[do.call(order, c(as.list(as.data.frame(tnumMat)), decreasing = TRUE)), ]) #sort
+
+      if(sortByAnnotation){
+        numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = FALSE)
+      }
+      #return(numMat)
     }else{
       mat_origin = rbind(mat_origin, mat_origin_path)
     }
@@ -1035,7 +1048,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     }
 
     #Add grids
-    abline(h = (0:(ncol(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_genes)
+    #abline(h = (0:(ncol(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_genes)
     abline(v = (0:(nrow(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_samples)
     mtext(text = colnames(annotation), side = 4,
           font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
@@ -1214,13 +1227,14 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       }
   }
 
-  if(removeNonMutated){
-    #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
-    altStat = paste0("Altered in ", ncol(numMat), " (", round(ncol(numMat)/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
-  }else{
-    mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE, verbose = FALSE))))
-    altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
-  }
+  n_mut_samps = length(which(colSums(numMat) != 0))
+  altStat = paste0("Altered in ", n_mut_samps, " (", round(n_mut_samps/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
+  # if(removeNonMutated){
+  #   #mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(mat), justNames = TRUE))))
+  # }else{
+  #   mutSamples = length(unique(unlist(genesToBarcodes(maf = maf, genes = rownames(numMat), justNames = TRUE, verbose = FALSE))))
+  #   altStat = paste0("Altered in ", mutSamples, " (", round(mutSamples/totSamps, digits = 4)*100, "%) of ", totSamps, " samples.")
+  # }
 
   if(showTitle){
     if(is.null(titleText)){
@@ -1229,5 +1243,6 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       title(main = titleText, outer = TRUE, line = -1, cex.main = titleFontSize)
     }
   }
-  return(invisible(rownames(nm)))
+
+  return(invisible(list(oncomatrix = numMat, vc_legend = vc_codes, vc_color = leg_classes)))
 }

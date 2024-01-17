@@ -8,7 +8,7 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
   if('NCBI_Build' %in% colnames(maf)){
     NCBI_Build = unique(maf[!Variant_Type %in% 'CNV', NCBI_Build])
     NCBI_Build = NCBI_Build[!is.na(NCBI_Build)]
-    if (length(NCBI_Build)==0) NCBI_Build=NA 
+    if (length(NCBI_Build)==0) NCBI_Build=NA
 
     if(chatty){
       if(length(NCBI_Build) > 1){
@@ -191,14 +191,15 @@ summarizeMaf = function(maf, anno = NULL, chatty = TRUE){
 
   #clean up annotation data
   colnames(sample.anno) = gsub(pattern = ' ', replacement = '_', x = colnames(sample.anno), fixed = TRUE) #replace spaces in column names for annotation data
-  if(nrow(sample.anno) == 1){
-    temp_colnames = colnames(sample.anno)
-    sample.anno = as.data.frame(apply(sample.anno, 2, function(y) trimws(y))) #remove trailing whitespaces
-    sample.anno = data.frame(t(unlist(sample.anno, use.names = FALSE)))
-    colnames(sample.anno) = temp_colnames
-  }else{
-    sample.anno = as.data.frame(apply(sample.anno, 2, function(y) trimws(y))) #remove trailing whitespaces
-  }
+  #Do not remove whitespaces - which coerces columns to character. Issue: #997
+  # if(nrow(sample.anno) == 1){
+  #   temp_colnames = colnames(sample.anno)
+  #   sample.anno = as.data.frame(apply(sample.anno, 2, function(y) trimws(y))) #remove trailing whitespaces
+  #   sample.anno = data.frame(t(unlist(sample.anno, use.names = FALSE)))
+  #   colnames(sample.anno) = temp_colnames
+  # }else{
+  #   sample.anno = as.data.frame(apply(sample.anno, 2, function(y) trimws(y))) #remove trailing whitespaces
+  # }
 
   sample.anno[sample.anno == ""] = NA #Replace blanks with NA
   #sample.anno = as.data.frame(apply(sample.anno, 2, function(y) gsub(pattern = " ", replacement = "_", x = y))) #replace spaces with _

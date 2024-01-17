@@ -1,5 +1,15 @@
-# CHANGES IN VERSION 2.17.0
+# CHANGES IN VERSION 2.18.1
 (GitHub master branch)
+
+## BUG FIXES
+- MAJOR: `read.maf` by default coerces clinical data columns to character. This bug fix avoids it and is auto detected. Issue: [997](https://github.com/PoisonAlien/maftools/issues/997)
+
+## ENHANCEMENTS
+- Better sorting of oncoplot with `collapsePathway`
+- Changed default background for oncoplot from `gray` to `#ecf0f1`
+
+# CHANGES IN VERSION 2.18.0
+(Bioconductor release branch)
 
 ## NEW FUNCTIONS
 - `pathways` and `plotPathways`for summarizing & visualizing pathways Issue: [956](https://github.com/PoisonAlien/maftools/issues/956)
