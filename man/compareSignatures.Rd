@@ -4,12 +4,12 @@
 \alias{compareSignatures}
 \title{Compares identified denovo mutational signatures to known COSMIC signatures}
 \usage{
-compareSignatures(nmfRes, sig_db = "legacy", verbose = TRUE)
+compareSignatures(nmfRes, sig_db = "SBS_v34", verbose = TRUE)
 }
 \arguments{
 \item{nmfRes}{results from \code{\link{extractSignatures}}}
 
-\item{sig_db}{can be \code{legacy} or \code{SBS}. Default \code{legacy}}
+\item{sig_db}{can be \code{legacy}, \code{SBS}, \code{SBS_v34}. Default \code{SBS_v34}}
 
 \item{verbose}{Default TRUE}
 }

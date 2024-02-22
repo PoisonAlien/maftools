@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 library(maftools)
 ```
 
-```{r}
+```{r readmaf}
 #path to TCGA LAML MAF file
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 #clinical information containing survival information and histology. This is optional
@@ -43,7 +43,7 @@ laml = read.maf(maf = laml.maf,
 ```
 
 ## Including Transition/Transversions into oncoplot
-```{r}
+```{r insTiTv}
 #By default the function plots top20 mutated genes
 oncoplot(maf = laml, draw_titv = TRUE)
 ```
@@ -51,7 +51,7 @@ oncoplot(maf = laml, draw_titv = TRUE)
 
 ## Changing colors for variant classifications 
 
-```{r}
+```{r vcCols}
 #One can use any colors, here in this example color palette from RColorBrewer package is used
 vc_cols = RColorBrewer::brewer.pal(n = 8, name = 'Paired')
 names(vc_cols) = c(
@@ -79,7 +79,7 @@ There are two ways one include CN status into MAF.
 ### GISTIC results
 Most widely used tool for copy number analysis from large scale studies is GISTIC and we can simultaneously read gistic results along with MAF. GISTIC generates numerous files but we need mainly four files `all_lesions.conf_XX.txt`, `amp_genes.conf_XX.txt`, `del_genes.conf_XX.txt`, `scores.gistic` where XX is confidence level. These files contain significantly altered genomic regions along with amplified and deleted genes respectively.
 
-```{r, fig.height=5,fig.width=10, fig.align='left'}
+```{r gistic, fig.height=5,fig.width=10, fig.align='left'}
 #GISTIC results LAML
 all.lesions =
   system.file("extdata", "all_lesions.conf_99.txt", package = "maftools")
@@ -103,7 +103,7 @@ laml.plus.gistic = read.maf(
 )
 ```
 
-```{r, fig.align='left',fig.height=5,fig.width=10, eval=T, fig.align='left'}
+```{r oncoplot1, fig.align='left',fig.height=5,fig.width=10, eval=T, fig.align='left'}
 oncoplot(maf = laml.plus.gistic, top = 10)
 ```
 
@@ -113,7 +113,7 @@ This plot shows frequent deletions in TP53 gene which is located on one of the s
 In case there is no GISTIC results available, one can generate a table containing CN status for known genes in known samples. This can be easily created and read along with MAF file.
 
 For example lets create a dummy CN alterations for `DNMT3A` in random 20 samples.
-```{r}
+```{r oncoplotCN}
 set.seed(seed = 1024)
 barcodes = as.character(getSampleSummary(x = laml)[,Tumor_Sample_Barcode])
 #Random 20 samples
@@ -150,7 +150,7 @@ oncoplot(maf = laml.plus.cn, top = 5)
 `leftBarData`, `rightBarData` and `topBarData` arguments can be used to display additional values as barplots. Below example demonstrates adding gene expression values and mutsig q-values as left and right side bars respectivelly.
 
 
-```{r, fig.height=7,fig.width=10, eval=T, fig.align='left'}
+```{r oncoplotBar, fig.height=7,fig.width=10, eval=T, fig.align='left'}
 #Selected AML driver genes
 aml_genes = c("TP53", "WT1", "PHF6", "DNMT3A", "DNMT3B", "TET1", "TET2", "IDH1", "IDH2", "FLT3", "KIT", "KRAS", "NRAS", "RUNX1", "CEBPA", "ASXL1", "EZH2", "KDM6A")
 
@@ -178,18 +178,18 @@ oncoplot(
 
 ## Including annotations
 Annotations are stored in `clinical.data` slot of MAF.
-```{r}
+```{r getCD}
 getClinicalData(x = laml)
 ```
 
 Include `FAB_classification` from clinical data as one of the sample annotations. 
-```{r}
+```{r oncoplotFAB}
 oncoplot(maf = laml, genes = aml_genes, clinicalFeatures = 'FAB_classification')
 ```
 
 More than one annotations can be included by passing them to the argument `clinicalFeatures`. Above plot can be further enhanced by sorting according to annotations. Custom colors can be specified as a list of named vectors for each levels.
  
-```{r}
+```{r oncoplotFABcolors}
 #Color coding for FAB classification
 fabcolors = RColorBrewer::brewer.pal(n = 8,name = 'Spectral')
 names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
@@ -209,14 +209,14 @@ oncoplot(
 If you prefer to highlight mutations by a specific attribute, you can use `additionalFeature` argument.
 
 Example: Highlight all mutations where alt allele is C. 
-```{r}
+```{r oncoplotHglt}
 oncoplot(maf = laml, genes = aml_genes,
          additionalFeature = c("Tumor_Seq_Allele2", "C"))
 ```
 
 Note that first argument (Tumor_Seq_Allele2) must a be column in MAF file, and second argument (C) is a value in that column. If you want to know what columns are present in the MAF file, use `getFields`.
 
-```{r}
+```{r getFileds}
 getFields(x = laml)
 ```
 
@@ -233,19 +233,19 @@ By setting `pathways` argument either `sigpw` or `smgbp` - cohort can be summari
 
 setting `pathways = 'sigpw'` to draw 5 most affected pathways
 
-```{r, fig.height = 8, fig.width = 10}
+```{r sigpw, fig.height = 8, fig.width = 10}
 oncoplot(maf = laml, pathways = "sigpw", gene_mar = 8, fontSize = 0.6, topPathways = 5)
 ```
 
 ### Biological processes of known drivers
 
-```{r, fig.height = 8, fig.width = 10}
+```{r sigbp, fig.height = 8, fig.width = 10}
 oncoplot(maf = laml, pathways = "smgbp", gene_mar = 8, fontSize = 0.8, topPathways = 5)
 ```
 
 
 ### Custom pathway list
-```{r, fig.height = 7, fig.width = 10}
+```{r customPW, fig.height = 7, fig.width = 10}
 pathways = data.frame(
   Genes = c(
     "TP53",
@@ -282,14 +282,14 @@ oncoplot(maf = laml, pathways = pathways, gene_mar = 8, fontSize = 0.6)
 
 By setting `collapsePathway = TRUE`..
 
-```{r}
+```{r collapsePW}
 oncoplot(maf = laml, pathways = "sigpw", gene_mar = 8, fontSize = 0.6, topPathways = 5, collapsePathway = TRUE)
 ```
 
 
 ## Combining everything
 
-```{r, fig.height = 8, fig.width = 10}
+```{r everything, fig.height = 8, fig.width = 10}
 oncoplot(
   maf = laml.plus.gistic,
   draw_titv = TRUE,

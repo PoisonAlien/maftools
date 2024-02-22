@@ -39,8 +39,7 @@ coGisticChromPlot(
 \item{g2Name}{the title of the right side}
 
 \item{type}{default 'Amp', c('Amp',"Del"), choose one to plot, only focal events are shown, 'Amp'
-only shows the Amplification events, and 'Del' only shows the Deletion events. You can get both
-types plots by running the function 2 times setting `type` to 'Amp' and 'Del' respectively.}
+only shows the Amplification events, and 'Del' only shows the Deletion events.}
 
 \item{markBands}{default TRUE, integer of length 1 or 2 or TRUE, mark cytoband names of the outer
 side of the plot}

@@ -12,11 +12,11 @@ plotSignatures(
   patient_order = NULL,
   font_size = 0.6,
   show_title = TRUE,
-  sig_db = "legacy",
-  axis_lwd = 2,
+  sig_db = "SBS_v34",
+  axis_lwd = 1,
   title_size = 0.9,
   show_barcodes = FALSE,
-  yaxisLim = 0.3,
+  yaxisLim = NA,
   ...
 )
 }
@@ -35,15 +35,15 @@ plotSignatures(
 
 \item{show_title}{If TRUE compares signatures to COSMIC signatures and prints them as title}
 
-\item{sig_db}{Only applicable if show_title is TRUE. Can be \code{legacy} or \code{SBS}. Default \code{legacy}}
+\item{sig_db}{Only applicable if show_title is TRUE. can be \code{legacy}, \code{SBS}, \code{SBS_v34}. Default \code{SBS_v34}}
 
-\item{axis_lwd}{axis width. Default 2.}
+\item{axis_lwd}{axis width. Default 1.}
 
 \item{title_size}{size of title. Default 1.3}
 
 \item{show_barcodes}{Default FALSE}
 
-\item{yaxisLim}{Default 0.3. If NA autoscales.}
+\item{yaxisLim}{Default NA.}
 
 \item{...}{further plot options passed to \code{\link{barplot}}}
 }

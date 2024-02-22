@@ -8,19 +8,19 @@
 #' @param color colors for each Ti/Tv conversion class. Default NULL
 #' @param patient_order User defined ordering of samples. Default NULL.
 #' @param title_size size of title. Default 1.3
-#' @param axis_lwd axis width. Default 2.
+#' @param axis_lwd axis width. Default 1.
 #' @param font_size font size. Default 0.6
 #' @param show_title If TRUE compares signatures to COSMIC signatures and prints them as title
-#' @param sig_db Only applicable if show_title is TRUE. Can be \code{legacy} or \code{SBS}. Default \code{legacy}
+#' @param sig_db Only applicable if show_title is TRUE. can be \code{legacy}, \code{SBS}, \code{SBS_v34}. Default \code{SBS_v34}
 #' @param show_barcodes Default FALSE
-#' @param yaxisLim Default 0.3. If NA autoscales.
+#' @param yaxisLim Default NA.
 #' @param ... further plot options passed to \code{\link{barplot}}
 #' @return Nothing
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{plotSignatures}}
 #' @export
 #'
 plotSignatures = function(nmfRes = NULL, contributions = FALSE, absolute = FALSE, color = NULL, patient_order = NULL,
-                          font_size = 0.6, show_title = TRUE, sig_db = "legacy", axis_lwd = 2, title_size = 0.9, show_barcodes = FALSE, yaxisLim = 0.3, ...){
+                          font_size = 0.6, show_title = TRUE, sig_db = "SBS_v34", axis_lwd = 1, title_size = 0.9, show_barcodes = FALSE, yaxisLim = NA, ...){
 
   conv.mat.nmf.signatures = nmfRes$signatures
   if(absolute){
@@ -71,9 +71,7 @@ plotSignatures = function(nmfRes = NULL, contributions = FALSE, absolute = FALSE
              cex = 1.2, pt.cex = 1.5, horiz = TRUE)
     }
   }else{
-    if(show_title){
-      comp_res = compareSignatures(nmfRes = nmfRes, verbose = FALSE, sig_db = sig_db)
-    }
+    comp_res = compareSignatures(nmfRes = nmfRes, verbose = FALSE, sig_db = sig_db)
 
     plotData = as.data.frame(t(conv.mat.nmf.signatures))
     nsigs = nrow(plotData)

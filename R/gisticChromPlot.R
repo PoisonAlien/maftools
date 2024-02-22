@@ -32,7 +32,7 @@ gisticChromPlot = function(gistic = NULL, fdrCutOff = 0.1, markBands = NULL,
   g[,loc := sapply(strsplit(x = g$Wide_Peak_Limits, split = ':'), '[', 2)]
   g[,Start_Position := sapply(strsplit(x = g$loc, split = '-'), '[', 1)]
   g[,End_Position := sapply(strsplit(x = g$loc, split = '-'), '[', 2)]
-  g.lin = transformSegments(segmentedData = g[,.(Chromosome, Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)])
+  g.lin = transformSegments(segmentedData = g[,.(Chromosome, Start_Position, End_Position, qvalues, Cytoband, Variant_Classification)], build = ref.build)
 
   if(is.null(color)){
     color = c('Amp' = 'red', 'Del' = 'blue')

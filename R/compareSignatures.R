@@ -4,25 +4,19 @@
 #' @details SBS signature database was obtained from https://www.synapse.org/#!Synapse:syn11738319.7
 #'
 #' @param nmfRes results from \code{\link{extractSignatures}}
-#' @param sig_db can be \code{legacy} or \code{SBS}. Default \code{legacy}
+#' @param sig_db can be \code{legacy}, \code{SBS}, \code{SBS_v34}. Default \code{SBS_v34}
 #' @param verbose Default TRUE
 #' @return list containing cosine smilarities, aetiologies if available, and best match.
 #' @seealso \code{\link{trinucleotideMatrix}} \code{\link{extractSignatures}} \code{\link{plotSignatures}}
 #' @export
 #'
-compareSignatures = function(nmfRes, sig_db = "legacy", verbose = TRUE){
+compareSignatures = function(nmfRes, sig_db = "SBS_v34", verbose = TRUE){
 
-  sig_db = match.arg(arg = sig_db, choices = c("legacy", "SBS"))
+  sig_db = match.arg(arg = sig_db, choices = c("legacy", "SBS", "SBS_v34"))
 
-  if(sig_db == "legacy"){
-    sigs_db = readRDS(file = system.file('extdata', 'legacy_signatures.RDs', package = 'maftools'))
-    sigs = sigs_db$db
-    aetiology = sigs_db$aetiology
-  }else{
-    sigs_db = readRDS(file = system.file('extdata', 'SBS_signatures.RDs', package = 'maftools'))
-    sigs = sigs_db$db
-    aetiology = sigs_db$aetiology
-  }
+  sigs_db = readRDS(file = system.file('extdata', paste0(sig_db, '_signatures.RDs'), package = 'maftools'))
+  sigs = sigs_db$db
+  aetiology = sigs_db$aetiology
 
   w = nmfRes$signatures
   sigs = sigs[rownames(w),]

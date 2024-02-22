@@ -11,8 +11,7 @@
 #' @param g1Name the title of the left side
 #' @param g2Name the title of the right side
 #' @param type default 'Amp', c('Amp',"Del"), choose one to plot, only focal events are shown, 'Amp'
-#'   only shows the Amplification events, and 'Del' only shows the Deletion events. You can get both
-#'   types plots by running the function 2 times setting `type` to 'Amp' and 'Del' respectively.
+#'   only shows the Amplification events, and 'Del' only shows the Deletion events.
 #' @param markBands default TRUE, integer of length 1 or 2 or TRUE, mark cytoband names of the outer
 #'   side of the plot
 #' @param labelGenes if you want to label some genes you are interested along the chromosome, set it
