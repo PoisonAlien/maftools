@@ -8,6 +8,7 @@
 - Better sorting of oncoplot with `collapsePathway`
 - Changed default background for oncoplot from `gray` to `#ecf0f1`
 - Changed default signature database to SBS_v3.4 (from legacy)
+- Update tmb function
 
 ## NEW FUNCTIONS
 - `gisticCompare()` for comparing two GISTIC objects

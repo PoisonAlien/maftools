@@ -4,14 +4,31 @@
 \alias{tmb}
 \title{Estimate Tumor Mutation Burden}
 \usage{
-tmb(maf, captureSize = 50, logScale = TRUE)
+tmb(
+  maf,
+  captureRegions = NULL,
+  captureSize = 50,
+  logScale = TRUE,
+  ignoreCNV = TRUE,
+  plotType = "classic",
+  pointcol = "#2c3e50"
+)
 }
 \arguments{
 \item{maf}{maf \code{\link{MAF}} object}
 
-\item{captureSize}{capture size for input MAF in MBs. Default 50MB.}
+\item{captureRegions}{capture regions. Default NULL. If provided sub-sets variants within the capture regions for TMB estimation.
+Can be a data.frame or a tsv with first three columns containing chromosome, start and end position.}
+
+\item{captureSize}{capture size for input MAF in MBs. Default 50MB. Mutually exclusive with \code{captureRegions}}
 
 \item{logScale}{Default TRUE. For plotting purpose only.}
+
+\item{ignoreCNV}{Default TRUE. Ignores all the variants annotated as `CNV` in the `Variant_Type` column of MAF}
+
+\item{plotType}{Can be "classic" or "boxplot"}
+
+\item{pointcol}{Default #2c3e50}
 }
 \value{
 data.table with TMB for every sample
