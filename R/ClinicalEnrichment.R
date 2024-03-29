@@ -85,6 +85,10 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
     }
   }
 
+  if(length(genes) == 0){
+    stop("None of the genes are mutated in more than ", minMut, " samples. Try decreasing minMut.")
+  }
+
   plist = lapply(genes, function(x){
           if(pathways){
             pathgenes = pathdb[[x]][,Gene]
@@ -142,7 +146,6 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
         })
 
   plist = data.table::rbindlist(l = plist, fill = TRUE)
-  print(plist)
 
   pw.pvals = plist[Analysis %in% "Pairwise",.(Hugo_Symbol, Feature_1, Feature_2, n_mutated_Feature1, n_mutated_Feature2, fdr)][order(fdr)]
   gw.pvals = plist[Analysis %in% "Group",.(Hugo_Symbol, Group1, Group2, n_mutated_group1, n_mutated_group2, p_value, OR, OR_low, OR_high)][order(p_value)]
