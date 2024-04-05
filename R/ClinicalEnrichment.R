@@ -85,6 +85,10 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
     }
   }
 
+  if(length(genes) == 0){
+    stop("None of the genes are mutated in more than ", minMut, " samples. Try decreasing minMut.")
+  }
+
   plist = lapply(genes, function(x){
           if(pathways){
             pathgenes = pathdb[[x]][,Gene]
