@@ -155,8 +155,8 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
     na_pos = maf.dat[is.na(Start_Position) | is.na(End_Position)]
     na_pos_silent = maf.silent[is.na(Start_Position) | is.na(End_Position)]
 
-    maf.dat = maf.dat[!is.na(Start_Position)][!is.na(Start_Position)]
-    maf.silent = maf.silent[!is.na(Start_Position)][!is.na(Start_Position)]
+    maf.dat = maf.dat[!is.na(Start_Position)][!is.na(End_Position)]
+    maf.silent = maf.silent[!is.na(Start_Position)][!is.na(End_Position)]
 
     maf.dat = data.table::foverlaps(x = maf.dat, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
     maf.silent = data.table::foverlaps(x = maf.silent, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
