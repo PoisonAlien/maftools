@@ -137,6 +137,8 @@ custom.cn.data = data.frame(
 
 head(custom.cn.data)
 
+# Its recommended to also include additional columns Chromosome, Start_Position, End_Position
+
 laml.plus.cn = read.maf(maf = laml.maf,
                         cnTable = custom.cn.data,
                         verbose = FALSE)

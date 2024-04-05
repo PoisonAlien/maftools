@@ -3,6 +3,7 @@
 
 ## BUG FIXES
 - MAJOR: `read.maf` by default coerces clinical data columns to character. This bug fix avoids it and is auto detected. Issue: [997](https://github.com/PoisonAlien/maftools/issues/997)
+- Handle missing `NA`s while sub-setting for ranges. Issue: [1013](https://github.com/PoisonAlien/maftools/issues/1013)
 
 ## ENHANCEMENTS
 - Better sorting of oncoplot with `collapsePathway`

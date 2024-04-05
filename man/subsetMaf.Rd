@@ -11,6 +11,7 @@ subsetMaf(
   query = NULL,
   clinQuery = NULL,
   ranges = NULL,
+  keepNA = FALSE,
   mult = "first",
   fields = NULL,
   mafObj = TRUE,
@@ -32,6 +33,8 @@ subsetMaf(
 \item{clinQuery}{query by clinical variable.}
 
 \item{ranges}{subset by ranges. data.frame with 3 column (chr, start, end). Overlaps are identified by  \code{\link{foverlaps}} function with arguments `type = within`, `mult = all`, `nomatch = NULL`}
+
+\item{keepNA}{Keep NAs while sub-setting for ranges. Default `FALSE` - removes rows with missing loci prior to overlapping. Set to TRUE to keep them as is.}
 
 \item{mult}{When multiple loci in `ranges` match to the variants maf, mult=. controls which values are returned - "all" , "first" (default) or "last". This value is passed to `mult` argument of \code{\link{foverlaps}}}
 

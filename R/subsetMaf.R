@@ -14,6 +14,7 @@
 #' @param isTCGA Is input MAF file from TCGA source.
 #' @param dropLevels Default TRUE.
 #' @param restrictTo restrict subset operations to these. Can be 'all', 'cnv', or 'mutations'. Default 'all'. If 'cnv' or 'mutations', subset operations will only be applied on copy-number or mutation data respectively, while retaining other parts as is.
+#' @param keepNA Keep NAs while sub-setting for ranges. Default `FALSE` - removes rows with missing loci prior to overlapping. Set to TRUE to keep them as is.
 #' @return subset table or an object of class \code{\link{MAF-class}}
 #' @seealso \code{\link{getFields}}
 #' @examples
@@ -32,7 +33,7 @@
 #'
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, ranges = NULL, mult = "first", fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
+subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, ranges = NULL, keepNA = FALSE, mult = "first", fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
 
   if(all(c(is.null(tsb), is.null(genes), is.null(query), is.null(ranges), is.null(clinQuery)))){
     stop("Please provide sample names or genes or a query or ranges to subset by.")
@@ -150,9 +151,28 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
     maf.silent$Start_Position = as.numeric(as.character(maf.silent$Start_Position))
     maf.silent$End_Position = as.numeric(as.character(maf.silent$End_Position))
 
+    #Remove NAs prior to foverlaps
+    na_pos = maf.dat[is.na(Start_Position) | is.na(End_Position)]
+    na_pos_silent = maf.silent[is.na(Start_Position) | is.na(End_Position)]
+
+    maf.dat = maf.dat[!is.na(Start_Position)][!is.na(Start_Position)]
+    maf.silent = maf.silent[!is.na(Start_Position)][!is.na(Start_Position)]
+
     maf.dat = data.table::foverlaps(x = maf.dat, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
     maf.silent = data.table::foverlaps(x = maf.silent, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
     message(paste0(nrow(maf.dat)+nrow(maf.silent), " variants within provided ranges"))
+
+    if(keepNA){
+      maf.dat = data.table::rbindlist(l = list(maf.dat, na_pos), use.names = TRUE, fill = TRUE)
+      maf.silent = data.table::rbindlist(l = list(maf.silent, na_pos_silent), use.names = TRUE, fill = TRUE)
+      if(nrow(na_pos)+nrow(na_pos_silent) > 0){
+        warning("Added back ", nrow(na_pos)+nrow(na_pos_silent), " rows with no loci info.")
+      }
+    }else{
+      if(nrow(na_pos)+nrow(na_pos_silent) > 0){
+        warning("Removed ", nrow(na_pos)+nrow(na_pos_silent), " rows with no loci info.")
+      }
+    }
   }
 
 
