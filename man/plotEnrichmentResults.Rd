@@ -13,7 +13,8 @@ plotEnrichmentResults(
   annoFontSize = 0.8,
   geneFontSize = 0.8,
   legendFontSize = 0.8,
-  showTitle = TRUE
+  showTitle = TRUE,
+  ylims = c(-1, 1)
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ plotEnrichmentResults(
 \item{legendFontSize}{cex for legend font size. Default 0.8}
 
 \item{showTitle}{Default TRUE}
+
+\item{ylims}{Default c(-1, 1)}
 }
 \value{
 returns nothing.

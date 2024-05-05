@@ -101,9 +101,17 @@ tcgaCompare = function(maf, capture_size = NULL, tcga_capture_size = 35.8, cohor
     colnames(pt.test.pval) = c("Cohort1", "Cohort2", "Pval")
     tcga.cohort[, plot_total := total]
   }else{
+    names(capture_size) = cohortName
     message(paste0("Capture size [TCGA]:  ", tcga_capture_size))
-    message(paste0("Capture size [Input]: ", capture_size))
-    maf.mutload[,total_perMB := total/capture_size]
+    message(paste0("Capture size [Input]: ", paste(capture_size, collapse = ", ")))
+    #maf.mutload[,total_perMB := total/capture_size]
+    maf.mutload.spl = split(maf.mutload, maf.mutload$cohort)
+    maf.mutload.spl = lapply(names(maf.mutload.spl), function(m){
+      x = maf.mutload.spl[[m]]
+      x[, total_perMB := total / capture_size[m]]
+      x
+    })
+    maf.mutload = data.table::rbindlist(l = maf.mutload.spl, use.names = TRUE, fill = TRUE)
     tcga.cohort[,total_perMB := total/tcga_capture_size]
     tcga.cohort = rbind(tcga.cohort, maf.mutload)
     message("Performing pairwise t-test for differences in mutation burden (per MB)..")

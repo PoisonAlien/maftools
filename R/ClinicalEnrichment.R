@@ -37,7 +37,6 @@ clinicalEnrichment = function(maf, clinicalFeature = NULL, annotationDat = NULL,
     }
   }
 
-
   colnames(cd)[2] = 'cf'
   cd$cf = as.character(cd$cf)
   cf.tbl = table(cd$cf)

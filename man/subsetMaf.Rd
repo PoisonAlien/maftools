@@ -18,7 +18,8 @@ subsetMaf(
   includeSyn = TRUE,
   isTCGA = FALSE,
   dropLevels = TRUE,
-  restrictTo = "all"
+  restrictTo = "all",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ subsetMaf(
 \item{dropLevels}{Default TRUE.}
 
 \item{restrictTo}{restrict subset operations to these. Can be 'all', 'cnv', or 'mutations'. Default 'all'. If 'cnv' or 'mutations', subset operations will only be applied on copy-number or mutation data respectively, while retaining other parts as is.}
+
+\item{verbose}{Default TRUE}
 }
 \value{
 subset table or an object of class \code{\link{MAF-class}}

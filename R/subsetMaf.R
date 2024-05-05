@@ -15,6 +15,7 @@
 #' @param dropLevels Default TRUE.
 #' @param restrictTo restrict subset operations to these. Can be 'all', 'cnv', or 'mutations'. Default 'all'. If 'cnv' or 'mutations', subset operations will only be applied on copy-number or mutation data respectively, while retaining other parts as is.
 #' @param keepNA Keep NAs while sub-setting for ranges. Default `FALSE` - removes rows with missing loci prior to overlapping. Set to TRUE to keep them as is.
+#' @param verbose Default TRUE
 #' @return subset table or an object of class \code{\link{MAF-class}}
 #' @seealso \code{\link{getFields}}
 #' @examples
@@ -33,7 +34,9 @@
 #'
 #' @export
 
-subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, ranges = NULL, keepNA = FALSE, mult = "first", fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE, dropLevels = TRUE, restrictTo = 'all'){
+subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NULL, ranges = NULL,
+                     keepNA = FALSE, mult = "first", fields = NULL, mafObj = TRUE, includeSyn = TRUE, isTCGA = FALSE,
+                     dropLevels = TRUE, restrictTo = 'all', verbose = TRUE){
 
   if(all(c(is.null(tsb), is.null(genes), is.null(query), is.null(ranges), is.null(clinQuery)))){
     stop("Please provide sample names or genes or a query or ranges to subset by.")
@@ -52,17 +55,25 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
     if(!is.null(tsb)){
       warning("sample names provided to tsb argument will be over written by clinical query", immediate. = TRUE)
     }
-    message("-subsetting by clinical data..")
+
+    if(verbose){
+      message("-subsetting by clinical data..")
+    }
+
     maf.anno = maf.anno[eval(parse(text = clinQuery))]
 
     tsb = unique(as.character(maf.anno[,Tumor_Sample_Barcode]))
     if(length(tsb) > 0){
-      message(paste0('--', length(tsb)), " samples meet the clinical query")
+      if(verbose){
+        message(paste0('--', length(tsb)), " samples meet the clinical query")
+      }
     }else{
       if(all(c(is.null(query), is.null(genes)))){
         stop("--None of the samples meet the clinical query", call. = FALSE)
       }else{
-        message("--None of the samples meet the clinical query")
+        if(verbose){
+          message("--None of the samples meet the clinical query")
+        }
         maf.anno <- data.table::copy(x = maf@clinical.data)
       }
       tsb = NULL
@@ -113,7 +124,9 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
     default.fields = unique(c(default.fields, fields))
 
     if(length(default.fields[!default.fields %in% colnames(maf.dat)]) > 0){
-      message("Missing fields. Ignoring them.. ")
+      if(verbose){
+        message("Missing fields. Ignoring them.. ")
+      }
       print(default.fields[!default.fields %in% colnames(maf.dat)])
       default.fields = default.fields[default.fields %in% colnames(maf.dat)]
     }
@@ -160,17 +173,23 @@ subsetMaf = function(maf, tsb = NULL, genes = NULL, query = NULL, clinQuery = NU
 
     maf.dat = data.table::foverlaps(x = maf.dat, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
     maf.silent = data.table::foverlaps(x = maf.silent, y = ranges, type = "within", nomatch = NULL, verbose = FALSE, mult = mult)
-    message(paste0(nrow(maf.dat)+nrow(maf.silent), " variants within provided ranges"))
+    if(verbose){
+      message(paste0(nrow(maf.dat)+nrow(maf.silent), " variants within provided ranges"))
+    }
 
     if(keepNA){
       maf.dat = data.table::rbindlist(l = list(maf.dat, na_pos), use.names = TRUE, fill = TRUE)
       maf.silent = data.table::rbindlist(l = list(maf.silent, na_pos_silent), use.names = TRUE, fill = TRUE)
       if(nrow(na_pos)+nrow(na_pos_silent) > 0){
-        warning("Added back ", nrow(na_pos)+nrow(na_pos_silent), " rows with no loci info.")
+        if(verbose){
+          warning("Added back ", nrow(na_pos)+nrow(na_pos_silent), " rows with no loci info.")
+        }
       }
     }else{
       if(nrow(na_pos)+nrow(na_pos_silent) > 0){
-        warning("Removed ", nrow(na_pos)+nrow(na_pos_silent), " rows with no loci info.")
+        if(verbose){
+          warning("Removed ", nrow(na_pos)+nrow(na_pos_silent), " rows with no loci info.")
+        }
       }
     }
   }

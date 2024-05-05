@@ -8,11 +8,13 @@
 #' @param geneFontSize cex for gene font size. Default 0.8
 #' @param legendFontSize cex for legend font size. Default 0.8
 #' @param showTitle Default TRUE
+#' @param ylims Default c(-1, 1)
 #' @return returns nothing.
 #' @export
 #' @seealso \code{\link{clinicalEnrichment}} \code{\link{signatureEnrichment}}
 #'
-plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls = NULL, cols = NULL, annoFontSize = 0.8, geneFontSize = 0.8, legendFontSize = 0.8, showTitle = TRUE){
+plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls = NULL, cols = NULL,
+                                 annoFontSize = 0.8, geneFontSize = 0.8, legendFontSize = 0.8, showTitle = TRUE, ylims = c(-1, 1)){
 
   res = enrich_res$groupwise_comparision
 
@@ -87,12 +89,12 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls
 
   #return(plot.dat)
 
-  par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=TRUE, mar = c(4,3,3.5,1)) #
+  par(bty="n", mgp = c(0.5,0.5,0), las=1, tcl=-.25, font.main=4, xpd=TRUE, mar = c(6,3,3.5,1)) #
   #plot(c(0, nrow(plot.dat)+15),c(0,0),xlim=c(0.5,33),las=2, ylim=c(-1,1),xlab="", xaxt="n", type="l")
-  b = barplot(height = plot.dat$g1_muts_fract, ylim = c(-1.25, yl_max), axes = FALSE, border = 0.1, col = bar.cols)
+  b = barplot(height = plot.dat$g1_muts_fract, ylim = ylims, axes = FALSE, border = 0.1, col = bar.cols)
 
   #text(b, plot.dat$g1_muts_fract+0.03 , plot.dat$g1_title ,cex = annoFontSize, las = 2, srt=90, adj=0, xpd=TRUE, font = 1)
-  axis(side = 2, at = seq(-1, 1, 0.25), labels = c(rev(seq(0, 1, 0.25)), seq(0, 1, 0.25)[2:5]),
+  axis(side = 2, at = pretty(ylims), labels = abs(pretty(ylims)),
        lwd = 1.2, font.axis = 2, cex = 1.5, font = 1)
 
   for(i in 1:nrow(conf_int_g1)){
@@ -110,7 +112,7 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls
   }
   text(b, -conf_int_g2$Upper-0.03 , plot.dat$g2_title ,cex = annoFontSize, las = 2, srt=90, adj=1, xpd=TRUE, font = 1)
 
-  text(b, -0.75 , plot.dat$Hugo_Symbol ,cex = geneFontSize, las = 2, srt = 90, adj = 1, xpd = TRUE, font = 3)
+  text(b, min(ylims) , plot.dat$Hugo_Symbol ,cex = geneFontSize, las = 2, srt = 45, adj = 1, xpd = TRUE, font = 3)
 
   # b = as.data.frame(b)
   # b$Group = plot.dat$Group1
@@ -126,9 +128,9 @@ plotEnrichmentResults = function(enrich_res, pVal = 0.05, ORthr = 1, featureLvls
   }else{
     n_col = (length(legend.cols) %/% 4)+1
   }
-  legend(x = 0, y = -1.1, pt.lwd = 2, ncol = n_col,
+  add_legend("bottomleft", pt.lwd = 2, ncol = n_col,
          legend = c(names(legend.cols), "Rest"), fill = c(legend.cols, "gray70"),
-         bty = "n", cex = legendFontSize, border=NA, xpd = TRUE, text.font = 3)
+         bty = "n", cex = legendFontSize, border = NA, xpd = TRUE, text.font = 3)
   if(showTitle){
     title(main = enrich_res$clinicalFeature, adj = 0, cex.main = 1, outer = FALSE, font.main = 1)
   }

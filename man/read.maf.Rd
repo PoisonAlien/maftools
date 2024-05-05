@@ -42,7 +42,7 @@ read.maf(
 
 \item{cnLevel}{level of CN changes to use. Can be 'all', 'deep' or 'shallow'. Default uses all i.e, genes with both 'shallow' or 'deep' CN changes}
 
-\item{cnTable}{Custom copynumber data if gistic results are not available. Input file or a data.frame should contain three columns in aforementioned order with gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL.}
+\item{cnTable}{Custom copynumber data if gistic results are not available. Input file or a data.frame should contain three columns in aforementioned order with gene name, Sample name and copy number status (either 'Amp' or 'Del'). Default NULL. Recommended to include additional columns `Chromosome` `Start_Position` `End_Position`}
 
 \item{isTCGA}{Is input MAF file from TCGA source. If TRUE uses only first 12 characters from Tumor_Sample_Barcode.}
 

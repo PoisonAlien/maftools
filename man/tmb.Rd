@@ -11,7 +11,8 @@ tmb(
   logScale = TRUE,
   ignoreCNV = TRUE,
   plotType = "classic",
-  pointcol = "#2c3e50"
+  pointcol = "#2c3e50",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -26,7 +27,7 @@ Can be a data.frame or a tsv with first three columns containing chromosome, sta
 
 \item{ignoreCNV}{Default TRUE. Ignores all the variants annotated as `CNV` in the `Variant_Type` column of MAF}
 
-\item{plotType}{Can be "classic" or "boxplot"}
+\item{plotType}{Can be "classic" or "boxplot". Set to `NA` for no plot.}
 
 \item{pointcol}{Default #2c3e50}
 }
