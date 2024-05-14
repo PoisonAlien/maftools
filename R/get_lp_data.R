@@ -145,7 +145,7 @@ get_lp_data = function(maf, geneID = NULL, AACol = NULL, refSeqID = NULL, protei
   }
 
   xlimPos = pretty(0:max(prot$aa.length))
-  xlimPos[length(xlimPos)] = max(prot$aa.length)+3
+  xlimPos[length(xlimPos)] = max(prot$aa.length)
 
   if(xlimPos[length(xlimPos)] - xlimPos[length(xlimPos)-1] <= 10){
     xlimPos = xlimPos[-(length(xlimPos)-1)]
