@@ -30,6 +30,8 @@ Can be a data.frame or a tsv with first three columns containing chromosome, sta
 \item{plotType}{Can be "classic" or "boxplot". Set to `NA` for no plot.}
 
 \item{pointcol}{Default #2c3e50}
+
+\item{verbose}{Default TRUE}
 }
 \value{
 data.table with TMB for every sample

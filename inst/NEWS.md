@@ -1,5 +1,5 @@
-# CHANGES IN VERSION 2.18.1
-(GitHub master branch)
+# CHANGES IN VERSION 2.20.1
+(GitHub master branch - version bumped from 2.18.1 to 2.20.1 to match BC release branch)
 
 ## BUG FIXES
 - Bug fix in `tmb` while handling multiple MAFs. Issue: [1018](https://github.com/PoisonAlien/maftools/issues/1018)
@@ -12,12 +12,13 @@
 - Changed default background for oncoplot from `gray` to `#ecf0f1`
 - Changed default signature database to SBS_v3.4 (from legacy)
 - Update tmb function
+- Added `PPDPFL` to protein domain database Issue: [1025](https://github.com/PoisonAlien/maftools/issues/1025)
 
 ## NEW FUNCTIONS
 - `gisticCompare()` for comparing two GISTIC objects
 
 # CHANGES IN VERSION 2.18.0
-(Bioconductor release branch)
+(Bioconductor release branch - 2.20.0)
 
 ## NEW FUNCTIONS
 - `pathways` and `plotPathways`for summarizing & visualizing pathways Issue: [956](https://github.com/PoisonAlien/maftools/issues/956)
@@ -52,7 +53,6 @@
 - Fix legend and color codes for numeric annotations in `oncoplot`. Issue: [363](https://github.com/PoisonAlien/maftools/issues/363)
 
 # CHANGES IN VERSION 2.16.0
-(Bioconductor release version)
 
 - No changes
 

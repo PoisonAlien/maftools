@@ -8,6 +8,7 @@
 #' @param ignoreCNV Default TRUE. Ignores all the variants annotated as `CNV` in the `Variant_Type` column of MAF
 #' @param plotType Can be "classic" or "boxplot". Set to `NA` for no plot.
 #' @param pointcol Default #2c3e50
+#' @param verbose Default TRUE
 #' @return data.table with TMB for every sample
 #' @examples
 #' laml.maf <- system.file("extdata", "tcga_laml.maf.gz", package = "maftools")
