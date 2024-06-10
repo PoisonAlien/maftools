@@ -27,6 +27,11 @@ bamreadcounts = function(bam = NULL, loci = NULL, zerobased = FALSE, mapq = 10, 
     if(!file.exists(x)){
       stop("BAM file does not exist: ", x)
     }
+
+    if(!file.exists(paste0(bam , ".bai"))){
+      stop("Index file for ", bam, " not found!")
+    }
+
     gsub(pattern = "\\.bam$", replacement = "", x = basename(x), ignore.case = TRUE)
   })
 
