@@ -69,3 +69,8 @@ Below are some more useful software packages for somatic variant analysis
 #### Powered By
 
 * [data.table](https://github.com/Rdatatable/data.table/wiki) at [warp speed](https://en.wikipedia.org/wiki/Warp_drive)
+
+
+### GitHub star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=poisonalien/maftools&type=date)]
