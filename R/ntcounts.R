@@ -29,7 +29,11 @@ bamreadcounts = function(bam = NULL, loci = NULL, zerobased = FALSE, mapq = 10, 
     }
 
     if(!file.exists(paste0(x , ".bai"))){
-      stop("Index file for ", x, " not found!")
+      #Check for foo.bai as well
+      x_bn = unlist(data.table::tstrsplit(x = basename(x), split = "\\.", keep = 1))
+      if(! file.exists(paste0(dirname(x),"/", x_bn, ".bai"))){
+        stop("Index file for ", x, " not found!")
+      }
     }
 
     gsub(pattern = "\\.bam$", replacement = "", x = basename(x), ignore.case = TRUE)
