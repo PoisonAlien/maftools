@@ -110,9 +110,9 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
       data.table::data.table(
         X_bam = names(rc_af)[idx],
         Y_bam = names(rc_af)[rest_idx],
-        concordant_snps = concordant_snps[[1]],
-        discordant_snps = concordant_snps[[2]],
-        fract_concordant_snps = prop.table(concordant_snps)[[1]],
+        concordant_snps = ifelse(length(concordant_snps) > 0, concordant_snps[[1]], 0),
+        discordant_snps = ifelse(length(concordant_snps) > 1, concordant_snps[[2]], 0),
+        fract_concordant_snps = ifelse(length(concordant_snps) > 0, prop.table(concordant_snps)[[1]], 0),
         cor_coef = cor_coef
       )
     })
