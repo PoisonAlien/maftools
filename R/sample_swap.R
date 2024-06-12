@@ -136,7 +136,7 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
       }
     }
   })
-  pos_mathces = pos_mathces[which(lapply(pos_mathces, function(x) length(x) > 0) == TRUE)]
+  pos_mathces = pos_mathces[which(sapply(pos_mathces, function(x) length(x) > 0))]
 
   cat("Done!\n")
 
