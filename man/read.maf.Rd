@@ -28,7 +28,7 @@ read.maf(
 
 \item{rmFlags}{Default FALSE. Can be TRUE or an integer. If TRUE removes all the top 20 FLAG genes. If integer, remove top n FLAG genes.}
 
-\item{removeDuplicatedVariants}{removes repeated variants in a particuar sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
+\item{removeDuplicatedVariants}{removes repeated variants in a particular sample, mapped to multiple transcripts of same Gene. See Description. Default TRUE.}
 
 \item{useAll}{logical. Whether to use all variants irrespective of values in Mutation_Status. Defaults to TRUE. If FALSE, only uses with values Somatic.}
 
