@@ -27,7 +27,8 @@ Imports:
     RColorBrewer,
     Rhtslib,
     survival,
-    DNAcopy
+    DNAcopy,
+    pheatmap
 Suggests: 
     berryFunctions,
     Biostrings,
@@ -43,7 +44,6 @@ Suggests:
     RaggedExperiment,
     rmarkdown,
     S4Vectors,
-    pheatmap,
     curl
 LinkingTo: 
     Rhtslib,
