@@ -191,19 +191,25 @@ oncoplot(maf = laml, genes = aml_genes, clinicalFeatures = 'FAB_classification')
 
 More than one annotations can be included by passing them to the argument `clinicalFeatures`. Above plot can be further enhanced by sorting according to annotations. Custom colors can be specified as a list of named vectors for each levels.
  
-```{r oncoplotFABcolors}
+```{r oncoplotFABcolors, fig.height=7}
 #Color coding for FAB classification
 fabcolors = RColorBrewer::brewer.pal(n = 8,name = 'Spectral')
 names(fabcolors) = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
-fabcolors = list(FAB_classification = fabcolors)
 
-print(fabcolors)
+#For continuous numrical annotations, use one of the below palettes 
+# c("Blues", "BuGn", "BuPu", "GnBu", "Greens", "Greys", "Oranges",
+#         "OrRd", "PuBu", "PuBuGn", "PuRd", "Purples", "RdPu", "Reds",
+#         "YlGn", "YlGnBu", "YlOrBr", "YlOrRd")
+
+anno_cols = list(FAB_classification = fabcolors, days_to_last_followup = "Blues")
+
+print(anno_cols)
 
 oncoplot(
   maf = laml, genes = aml_genes,
-  clinicalFeatures = 'FAB_classification',
+  clinicalFeatures = c('FAB_classification', 'days_to_last_followup'),
   sortByAnnotation = TRUE,
-  annotationColor = fabcolors
+  annotationColor = anno_cols
 )
 ```
 
@@ -296,7 +302,7 @@ oncoplot(
   maf = laml.plus.gistic,
   draw_titv = TRUE,
   pathways = pathways,
-  clinicalFeatures = c('FAB_classification', 'Overall_Survival_Status'),
+  clinicalFeatures = c('FAB_classification', 'days_to_last_followup'),
   sortByAnnotation = TRUE,
   additionalFeature = c("Tumor_Seq_Allele2", "C"),
   leftBarData = aml_genes_vaf,
