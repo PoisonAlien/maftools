@@ -167,6 +167,7 @@ sortByAnnotation <-function(numMat,maf, anno, annoOrder = NULL, group = TRUE, is
     #anno.spl = split(anno, as.numeric(as.character(anno[,1]))) #sorting only first annotation
     mat_samps = colnames(numMat)[colnames(numMat) %in% rownames(anno)]
     anno = anno[mat_samps,, drop = FALSE]
+    anno[,1] = as.numeric(as.character(anno[,1]))
     anno = anno[order(anno[,1], na.last = TRUE),, drop = FALSE]
     numMat.sorted = numMat[,rownames(anno)]
   }else{
@@ -575,19 +576,24 @@ parse_annotation_dat = function(annotationDat = NULL, clinicalFeatures = NULL){
   return(annotation)
 }
 
-get_anno_cols = function(ann, numericAnnoCol = NULL){
+get_anno_cols = function(ann, numericAnnoCol = "YlOrBr"){
   ann_cols = list()
-  if(is.null(numericAnnoCol)){
-    numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = "YlOrBr")
-  }else{
-    numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = numericAnnoCol)
-  }
+  col_class = c()
+
   for(i in 1:ncol(ann)){
     if(is.numeric(ann[,i])){
-      x = ann[,i]
-      ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x))
-      names(ann_lvls_cols) = x[order(x, na.last = TRUE)]
+      x = as.numeric(as.character(ann[,i]))
+      x_unique = unique(x)
+      numericAnnoCol = sample(x = c("Blues", "BuGn", "BuPu", "GnBu", "Greens", "Greys", "Oranges",
+        "OrRd", "PuBu", "PuBuGn", "PuRd", "Purples", "RdPu", "Reds",
+        "YlGn", "YlGnBu", "YlOrBr", "YlOrRd"), size = 1)
+      #message("Using ", numericAnnoCol)
+      numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = numericAnnoCol)
+      ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x_unique))
+      names(ann_lvls_cols) = x_unique[order(x_unique, na.last = TRUE)]
+      ann_lvls_cols = ann_lvls_cols[as.character(x)]
       ann_cols[[i]] = ann_lvls_cols
+      col_class = c(col_class, "numeric")
     }else{
       ann_lvls = unique(as.character(ann[,i]))
       if(length(ann_lvls) <= 9){
@@ -595,12 +601,15 @@ get_anno_cols = function(ann, numericAnnoCol = NULL){
       }else{
         ann_lvls_cols = colors()[sample(x = 1:100, size = length(ann_lvls), replace = FALSE)]
       }
+      names(ann_lvls_cols) = ann_lvls
+      ann_lvls_cols = ann_lvls_cols[as.character(ann[,i])]
       ann_cols[[i]] = ann_lvls_cols
-      names(ann_cols[[i]]) = ann_lvls
+      col_class = c(col_class, "char")
     }
   }
 
   names(ann_cols) = colnames(ann)
+  attr(ann_cols, "class") = col_class
 
   return(ann_cols)
 }

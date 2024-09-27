@@ -39,7 +39,7 @@
 
 
 gisticOncoPlot = function(gistic = NULL, top = NULL, bands = NULL,
-                           showTumorSampleBarcodes = FALSE, gene_mar = 5, barcode_mar = 6, sepwd_genes = 0.5, sepwd_samples = 0.25, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE, sampleOrder = NULL,
+                           showTumorSampleBarcodes = FALSE, gene_mar = 5, barcode_mar = 6, right_mar = 2.5, sepwd_genes = 0.5, sepwd_samples = 0.25, clinicalData = NULL, clinicalFeatures = NULL, sortByAnnotation = FALSE, sampleOrder = NULL,
                            annotationColor = NULL, bandsToIgnore = NULL,
                            removeNonAltered = TRUE, colors = NULL, SampleNamefontSize = 0.6, fontSize = 0.8, legendFontSize = 1.2, annotationFontSize = 1.2, borderCol = "white", bgCol = "#CCCCCC") {
 
@@ -133,15 +133,15 @@ gisticOncoPlot = function(gistic = NULL, top = NULL, bands = NULL,
 
   if(is.null(clinicalFeatures)){
     if(showTumorSampleBarcodes){
-      par(mar = c(barcode_mar, gene_mar, 1, 2.5), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 1, right_mar), xpd = TRUE)
     }else{
-      par(mar = c(0.5, gene_mar, 1, 2.5), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 1, right_mar), xpd = TRUE)
     }
   }else{
     if(showTumorSampleBarcodes){
-      par(mar = c(barcode_mar, gene_mar, 1, 5), xpd = TRUE)
+      par(mar = c(barcode_mar, gene_mar, 1, right_mar), xpd = TRUE)
     }else{
-      par(mar = c(0.5, gene_mar, 1, 5), xpd = TRUE)
+      par(mar = c(0.5, gene_mar, 1, right_mar), xpd = TRUE)
     }
   }
 
@@ -207,7 +207,7 @@ gisticOncoPlot = function(gistic = NULL, top = NULL, bands = NULL,
 
     annotation = annotation[colnames(numMat), ncol(annotation):1, drop = FALSE]
 
-    par(mar = c(0, gene_mar, 0, 5), xpd = TRUE)
+    par(mar = c(0, gene_mar, 0, right_mar), xpd = TRUE)
 
     image(x = 1:nrow(annotation), y = 1:ncol(annotation), z = as.matrix(annotation),
           axes = FALSE, xaxt="n", yaxt="n", bty = "n",

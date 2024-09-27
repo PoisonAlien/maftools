@@ -11,6 +11,7 @@ gisticOncoPlot(
   showTumorSampleBarcodes = FALSE,
   gene_mar = 5,
   barcode_mar = 6,
+  right_mar = 2.5,
   sepwd_genes = 0.5,
   sepwd_samples = 0.25,
   clinicalData = NULL,

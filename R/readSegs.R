@@ -160,7 +160,7 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL, y_lims = NUL
   chr.labels= c(1:22, 'X', 'Y')
   chr.lvls = levels(seg.spl.transformed[,Chromosome])
 
-  print(chr.colors)
+  #print(chr.colors)
   if(is.null(chr.colors)){
     chr.colors = c('gray70', 'midnightblue')
   }
@@ -170,6 +170,8 @@ plotCBS = function(segData, tsb, build = 'hg19', chr.colors = NULL, y_lims = NUL
 
   data.table::setkey(seg.spl.transformed, "Chromosome")
   N <- seg.spl.transformed[levels(Chromosome), .N, .EACHI][, N]
+
+  colnames(seg.spl.transformed)[1:6] = c("Sample", "Chromosome",  "Start_Position",  "End_Position", "Num_Probes", "Segment_Mean")
 
   if(is.null(y_lims)){
     y_lims = pretty(round(range(seg.spl.transformed$Segment_Mean, na.rm = TRUE, finite = TRUE), digits = 2))
