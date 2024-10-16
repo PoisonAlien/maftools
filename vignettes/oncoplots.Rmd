@@ -301,7 +301,7 @@ oncoplot(maf = laml, pathways = "sigpw", gene_mar = 8, fontSize = 0.6, topPathwa
 oncoplot(
   maf = laml.plus.gistic,
   draw_titv = TRUE,
-  pathways = pathways,
+  pathways = pathways, topPathways = 5,
   clinicalFeatures = c('FAB_classification', 'days_to_last_followup'),
   sortByAnnotation = TRUE,
   additionalFeature = c("Tumor_Seq_Allele2", "C"),

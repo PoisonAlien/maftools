@@ -19,7 +19,7 @@ pathways(
 
 \item{pathdb}{Either `sigpw` or `smgbp`,  `sigpw` uses known oncogenic signalling pathways (Sanchez/Vega et al) whereas `smgbp` uses pan cancer significantly mutated genes classified according to biological process (Bailey et al). Default \code{smgbp}}
 
-\item{pathways}{Can be a two column data.frame/tsv-file with pathway-name and genes involved in them. Default `NULL`. This argument is mutually exclusive with \code{pathdb}}
+\item{pathways}{Can be a two column data.frame/tsv-file with gene names and pathway-name involved in them. Default `NULL`. This argument is mutually exclusive with \code{pathdb}}
 
 \item{fontSize}{Default 1}
 

@@ -22,6 +22,7 @@
 #' @param annotationFontSize font size for annotations. Default 1.2
 #' @param gene_mar Default 5
 #' @param barcode_mar Default 6
+#' @param right_mar Default 2.5
 #' @param sepwd_genes Default 0.5
 #' @param sepwd_samples Default 0.25
 #' @param bgCol Default "#CCCCCC"

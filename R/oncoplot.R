@@ -147,21 +147,12 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       pathways = data.table::copy(pathways)
       colnames(pathways)[1:2] = c('Gene', 'Pathway')
       data.table::setDT(x = pathways)
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-      if(!is.null(selectedPathways)){
-        pathways = pathways[Pathway %in% selectedPathways]
-      }
     }else if(file.exists(pathways)){
       pathways = data.table::fread(file = pathways)
       colnames(pathways)[1:2] = c('Gene', 'Pathway')
       data.table::setDT(x = pathways)
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-      if(!is.null(selectedPathways)){
-        pathways = pathways[Pathway %in% selectedPathways]
-      }
     }else{
       pathways = match.arg(arg = pathways, choices = c("sigpw", "smgbp"))
-      pathwayLoad = get_pw_summary(maf = maf, pathways = pathways)
 
       if(pathways == "sigpw"){
         pathdb <- system.file("extdata", "oncogenic_sig_patwhays.tsv", package = "maftools")
@@ -172,23 +163,45 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       }
 
       pathways = data.table::fread(file = pathdb, skip = "Gene")
-      pathways = pathways[!duplicated(Gene)][,.(Gene, Pathway)]
-      #pathways$Pathway = gsub(pattern = " ", replacement = "_", x = pathways$Pathway)
-
-
-      if(is.null(selectedPathways)){
-        message("Drawing upto top ", topPathways, " mutated pathways")
-        print(pathwayLoad)
-        if(ncol(pathwayLoad) >= topPathways){
-          pathways = pathways[Pathway %in% pathwayLoad[1:topPathways, Pathway]]
-        }else{
-          pathways = pathways[Pathway %in% pathwayLoad[, Pathway]]
-        }
-      }else{
-        pathways = pathways[Pathway %in% selectedPathways]
-      }
-
     }
+
+    #Convert to characters in case of factors
+    pathways$Gene = as.character(pathways$Gene)
+    pathways$Pathway = as.character(pathways$Pathway)
+
+    if(is.null(selectedPathways)){
+      pathwayLoad = get_pw_summary(maf = maf, pathways = pathways[,.(Pathway, Gene)])
+      message("Drawing upto top ", topPathways, " mutated pathways")
+      if(ncol(pathwayLoad) >= topPathways){
+        pathways = pathways[Pathway %in% pathwayLoad[1:topPathways, Pathway]]
+      }else{
+        pathways = pathways[Pathway %in% pathwayLoad[, Pathway]]
+      }
+    }else{
+      pws_missing = setdiff(selectedPathways, pathways[,.N,Pathway][,Pathway])
+      if(length(pws_missing) > 0){
+        warning("Could not find the following pathways: ", paste(pws_missing, collapse = ", "), immediate. = TRUE)
+      }
+      pathways = pathways[Pathway %in% selectedPathways]
+      if(nrow(pathways) == 0){
+        stop("Zero pathways to plot!")
+      }
+    }
+
+    #Make sure pathway names are distinct from the gene names
+    dup_pw_names = intersect(pathways$Pathway, pathways$Gene)
+    if(length(dup_pw_names) > 0){
+      warning("Found following pathways with the same name as gene symbols. Renamed them with the suffix _pw\n", paste(dup_pw_names, collapse = ", "), immediate. = TRUE)
+      unique_pw_names = setdiff(pathways$Pathway, dup_pw_names)
+      pw_named_list = setNames(nm = c(unique_pw_names, dup_pw_names), object = c(unique_pw_names, paste0(dup_pw_names, "_pw")))
+      pathways$Pathway = unname(obj = pw_named_list[pathways$Pathway])
+    }
+
+    if(nrow(pathways[duplicated(Gene)]) > 0){
+      warning("Duplicated genes found across multiple pathways! This might cause issue while plotting.", immediate. = TRUE)
+      # pathways = pathways[!duplicated(Gene)]
+    }
+
     genes = as.character(pathways$Gene)
 
     om = createOncoMatrix(m = maf, g = genes, cbio = cBioPortal)
@@ -410,10 +423,15 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     nm = lapply(seq_along(temp_dat), function(i){
       x = numMat[temp_dat[[i]]$Gene,, drop = FALSE]
       x = rbind(x, apply(x, 2, function(y) ifelse(test = sum(y) == 0, yes = 0, no = 99)))
+      if(names(temp_dat)[i] %in% rownames(x)){
+        stop("pathway name ", names(temp_dat)[i], " is same as one of its member genes! Please rename it.\ne.g, ", names(temp_dat)[i], " to ", names(temp_dat)[i], "_pw")
+      }
       rownames(x)[nrow(x)] = names(temp_dat)[i]
       x
     })
+
     numMat = do.call(rbind, nm)
+
     #Add pathway information to the character matrix
     mat_origin_path = rownames(numMat)[!rownames(numMat) %in% rownames(mat_origin)]
 
@@ -422,7 +440,6 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     mat_origin_path[mat_origin_path == "99"] = "pathway"
     mat_origin_path = mat_origin_path[,colnames(mat_origin), drop = FALSE]
     if(collapsePathway){
-      #print(mat_origin_path)
       mat_origin = mat_origin_path
       numMat = numMat[rownames(mat_origin),, drop = FALSE]
       row_ord = names(sort(apply(numMat, 1, function(x) length(x[x == 0])), decreasing = FALSE))
@@ -433,7 +450,6 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
       if(sortByAnnotation){
         numMat = sortByAnnotation(numMat = numMat, maf = maf, anno = annotation, annoOrder = annotationOrder, group = groupAnnotationBySize, isNumeric = FALSE)
       }
-      #return(numMat)
     }else{
       mat_origin = rbind(mat_origin, mat_origin_path)
     }

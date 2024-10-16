@@ -43,6 +43,8 @@ gisticOncoPlot(
 
 \item{barcode_mar}{Default 6}
 
+\item{right_mar}{Default 2.5}
+
 \item{sepwd_genes}{Default 0.5}
 
 \item{sepwd_samples}{Default 0.25}

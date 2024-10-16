@@ -1,7 +1,7 @@
-# CHANGES IN VERSION 2.21.1
-(GitHub master branch - version bumped from 2.18.1 to 2.20.1 to match BC release branch)
+# CHANGES IN VERSION 2.21.2
 
 ## BUG FIXES
+- Bug fix in using `selectedPathways` in `oncoplot()`. Issue: [1041](https://github.com/PoisonAlien/maftools/issues/1041)
 - Add an error message when bai files are missing `sampleSwaps()`. Issue: [1028](https://github.com/PoisonAlien/maftools/issues/1028)
 - Bug fix in `tmb` while handling multiple MAFs. Issue: [1018](https://github.com/PoisonAlien/maftools/issues/1018)
 - Handle missing `NA`s while sub-setting for ranges. Issue: [1013](https://github.com/PoisonAlien/maftools/issues/1013)
@@ -16,6 +16,9 @@
 - Changed default background for oncoplot from `gray` to `#ecf0f1`
 - Changed default signature database to SBS_v3.4 (from legacy)
 - Update `tmb` function
+
+## BREAKING CHNAGES
+- Column order required for `pathways()` function changed from Pathway,Gene to Gene,Pathway. Issue: [1041](https://github.com/PoisonAlien/maftools/issues/1041)
 
 ## NEW FUNCTIONS
 - `gisticCompare()` for comparing two GISTIC objects
