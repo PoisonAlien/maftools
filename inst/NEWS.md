@@ -1,6 +1,7 @@
 # CHANGES IN VERSION 2.21.2
 
 ## BUG FIXES
+- Bug fix in using `keepGeneOrder` in `coOncoplot()`. Issue: [1061](https://github.com/PoisonAlien/maftools/issues/1061)
 - Bug fix in using `selectedPathways` in `oncoplot()`. Issue: [1041](https://github.com/PoisonAlien/maftools/issues/1041)
 - Add an error message when bai files are missing `sampleSwaps()`. Issue: [1028](https://github.com/PoisonAlien/maftools/issues/1028)
 - Bug fix in `tmb` while handling multiple MAFs. Issue: [1018](https://github.com/PoisonAlien/maftools/issues/1018)

@@ -48,7 +48,7 @@ coOncoplot(
   legendFontSize = 1.2,
   titleFontSize = 1.5,
   keepGeneOrder = FALSE,
-  bgCol = "#CCCCCC",
+  bgCol = "#ecf0f1",
   borderCol = "white"
 )
 }

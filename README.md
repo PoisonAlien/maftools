@@ -7,7 +7,7 @@
 
 ## Introduction
 
-`maftools` provides a comprehensive set of functions for processing [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) files and to perform most commonly used analyses in cancer genomics. See [here](http://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html) for a detailed usage and a case study.
+maftools is a comprehensive toolkit for processing somatic variants from cohort-based cancer genomic studies. maftools offers over 80 functions to perform the most commonly required tasks in cancer genomics, using [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) as the only input file type.
 
 ## Installation
 
@@ -27,11 +27,31 @@ A complete documentation of maftools using [TCGA LAML](https://www.nejm.org/doi/
 <img src="https://user-images.githubusercontent.com/8164062/97981605-d8a59500-1dd2-11eb-9f5e-cc808f7b3f91.gif" height="320" height="400">
 </p>
 
-Besides the MAF files, maftools also facilitates processing of BAM files. Please refer to below vignettes and sections to learn more.
+## Primary applications 
 
-- [Copy number analysis](https://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/cnv_analysis.html) with [ASCAT](https://github.com/VanLoo-lab/ascat) and [mosdepth](https://github.com/brentp/mosdepth)
+maftools is extremely easy to use, starting with importing an [MAF](https://docs.gdc.cancer.gov/Data/File_Formats/MAF_Format/) file along with the associated clinical data. Once the data is successfully imported, the resulting MAF object can be passed to various functions. Key applications include:
+
+- [Cohort summarization using oncoplots](https://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/oncoplots.html#08_Combining_everything)
+- [Identify co-occurring and mutually exclusive events](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#91_Somatic_Interactions)
+- [Clinical enrichment analysis](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#96_Clinical_enrichment_analysis)
+- [Detect cancer driver genes](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#92_Detecting_cancer_driver_genes_based_on_positional_clustering)
+- [Infer tumor heterogeneity](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#99_Tumor_heterogeneity_and_MATH_scores)
+- [Analyze known cancer signaling pathways](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#98_Oncogenic_Signaling_Pathways)
+- [De-novo somatic signature analysis with NMF](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#9103_Signature_analysis)
+- [Compare two cohorts to identify differentially mutated genes](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#95_Comparing_two_cohorts_(MAFs))
+- [Perform survival analysis and predict genesets associated with survival](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#942_Predict_genesets_associated_with_survival)
+- [Drug-gene interactions](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#97_Drug-Gene_Interactions)
+
+Besides the MAF files, maftools can handle sequencing alignment BAM files, copy number output from GISTIC and mosdepth. Please refer to the package documentation sections below to learn more.
+
 - [Generate personalized cancer report](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/cancer_hotspots.html) for known somatic [hotspots](https://www.cancerhotspots.org/)
 - [Sample mismatch and relatedness analysis](https://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/maftools.html#12_Sample_swap_identification)
+- [Copy number analysis](https://bioconductor.org/packages/devel/bioc/vignettes/maftools/inst/doc/cnv_analysis.html) with [ASCAT](https://github.com/VanLoo-lab/ascat) and [mosdepth](https://github.com/brentp/mosdepth)
+
+Moreover, analyzing all 33 TCGA cohorts along with the harmonized clinical data is a breeze. 
+
+- A single command [tcgaLoad](https://bioconductor.org/packages/release/bioc/vignettes/maftools/inst/doc/maftools.html#13_TCGA_cohorts) will import the desired TCGA cohort thereby avoiding costly time spent on data mining from public databases. 
+- Please refer to an associated software package [TCGAmutations](https://github.com/PoisonAlien/TCGAmutations) that provides ready to use `MAF` objects for 33 TCGA cohorts and 2427 cell line profiles from CCLE - along with relevant clinical information for all sequenced samples.
 
 ## Citation
 
