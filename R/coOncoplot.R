@@ -70,10 +70,12 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
                        colors = NULL, removeNonMutated = TRUE, anno_height = 2, legend_height = 4,
                        geneNamefont = 0.8, showSampleNames = FALSE, SampleNamefont = 0.5, barcode_mar = 1, outer_mar = 3, gene_mar = 1,
                        legendFontSize = 1.2, titleFontSize = 1.5, keepGeneOrder=FALSE,
-                       bgCol = "#CCCCCC", borderCol = "white"){
+                       bgCol = "#ecf0f1", borderCol = "white"){
 
   if(is.null(genes)){
     genes = unique(c(getGeneSummary(m1)[1:5, Hugo_Symbol], getGeneSummary(m2)[1:5, Hugo_Symbol]))
+  }else{
+    genes = unique(as.character(genes))
   }
 
   m1.genes = getGeneSummary(x = m1)[Hugo_Symbol %in% genes]
@@ -86,6 +88,9 @@ coOncoplot = function(m1, m2, genes = NULL, m1Name = NULL, m2Name = NULL,
       mdt = mdt[order(MutatedSamples_m1, decreasing = TRUE)]
     }else if(sortByM2){
       mdt = mdt[order(MutatedSamples_m2, decreasing = TRUE)]
+    }else if(keepGeneOrder) {
+      mdt = split(mdt, mdt$Hugo_Symbol)[genes]
+      mdt = data.table::rbindlist(l = mdt, use.names = TRUE, fill = TRUE)
     }else{
       mdt = mdt[order(max, decreasing = TRUE)]
     }
