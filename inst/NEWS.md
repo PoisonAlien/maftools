@@ -1,4 +1,4 @@
-# CHANGES IN VERSION 2.21.2
+# CHANGES IN VERSION 2.22.0
 
 ## BUG FIXES
 - Bug fix in using `keepGeneOrder` in `coOncoplot()`. Issue: [1061](https://github.com/PoisonAlien/maftools/issues/1061)
