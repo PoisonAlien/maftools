@@ -57,4 +57,4 @@ LazyData: TRUE
 NeedsCompilation: no
 Packaged: 2016-04-08 02:06:05 UTC; anand
 RoxygenNote: 7.3.1
-SystemRequirements: GNU make curl
+SystemRequirements: GNU make, curl
