@@ -110,9 +110,9 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
       data.table::data.table(
         X_bam = names(rc_af)[idx],
         Y_bam = names(rc_af)[rest_idx],
-        concordant_snps = concordant_snps[[1]],
-        discordant_snps = concordant_snps[[2]],
-        fract_concordant_snps = prop.table(concordant_snps)[[1]],
+        concordant_snps = ifelse(length(concordant_snps) > 0, concordant_snps[[1]], 0),
+        discordant_snps = ifelse(length(concordant_snps) > 1, concordant_snps[[2]], 0),
+        fract_concordant_snps = ifelse(length(concordant_snps) > 0, prop.table(concordant_snps)[[1]], 0),
         cor_coef = cor_coef
       )
     })
@@ -126,11 +126,17 @@ sampleSwaps = function(bams = NULL, build = "hg19", prefix = NULL, add = TRUE, m
   sample_matches = sample_matches[1:(length(sample_matches)-1)]
 
   pos_mathces = lapply(sample_matches, function(sample_pair){
-    if(nrow(sample_pair) > 0){
-      unique(unlist(sample_pair[XY_possibly_paired == "Yes", .(X_bam, Y_bam)], use.names = FALSE))
+    if (all(c("XY_possibly_paired", "X_bam", "Y_bam") %in% colnames(sample_pair))) {
+      # Filter out rows where X_bam or Y_bam have length zero
+      valid_rows <- sapply(sample_pair$X_bam, nchar) > 0 & sapply(sample_pair$Y_bam, nchar) > 0
+      filtered_sample_pair <- sample_pair[valid_rows, ]
+      
+      if(nrow(filtered_sample_pair) > 0){
+        unique(unlist(filtered_sample_pair[XY_possibly_paired == "Yes", .(X_bam, Y_bam)], use.names = FALSE))
+      }
     }
   })
-  pos_mathces = pos_mathces[which(lapply(pos_mathces, function(x) length(x) > 0) == TRUE)]
+  pos_mathces = pos_mathces[which(sapply(pos_mathces, function(x) length(x) > 0))]
 
   cat("Done!\n")
 
