@@ -998,12 +998,14 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
           if(!col_match){
             stop("numeric annotation color for ", names(annotationColor)[idx] , " must be a sequential color palette!\n", paste(seq_col_pal, collapse = " "))
           }
+
           x = annotation[,idx]
-          x_unique = unique(x)
+          x = x[!is.na(x)]
+          x_ord = order(x)
+
           numericAnnoCol = RColorBrewer::brewer.pal(n = 9, name = annotationColor[[idx]])
-          ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x_unique))
-          names(ann_lvls_cols) = x_unique[order(x_unique, na.last = TRUE)]
-          ann_lvls_cols = ann_lvls_cols[as.character(x)]
+          ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x))
+          names(ann_lvls_cols) = x[x_ord]
         }else{
           ann_lvls_cols = annotationColor[[idx]]
           ann_lvls_cols = ann_lvls_cols[as.character(annotation[,idx])]
