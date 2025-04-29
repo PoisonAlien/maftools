@@ -591,6 +591,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   if(drawRowBar){
     if(is.null(rightBarData)){
       side_bar_lims = c(0, max(unlist(apply(numMat, 1, function(x) cumsum(table(x[x!=0])))), na.rm = TRUE))
+      rightBarTitle = "No. of samples"
     }else{
       rightBarTitle = colnames(rightBarData)[2]
       colnames(rightBarData) = c('genes', 'exprn')
@@ -621,7 +622,6 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
       plot(x = NA, y = NA, type = "n", axes = FALSE,
            xlim = side_bar_lims, ylim = c(0, 1), xaxs = "i")
-      rightBarTitle = "No. of samples"
     }
   }
 
@@ -761,8 +761,8 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
   }
 
   #Add grids
-  abline(h = (0:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
-  abline(v = (0:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
+  abline(h = (0:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes, xpd = FALSE)
+  abline(v = (0:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples, xpd = FALSE)
 
   #Add boxes if pathways are opted
   if(!is.null(pathways)){
@@ -998,12 +998,14 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
           if(!col_match){
             stop("numeric annotation color for ", names(annotationColor)[idx] , " must be a sequential color palette!\n", paste(seq_col_pal, collapse = " "))
           }
+
           x = annotation[,idx]
-          x_unique = unique(x)
+          x = x[!is.na(x)]
+          x_ord = order(x)
+
           numericAnnoCol = RColorBrewer::brewer.pal(n = 9, name = annotationColor[[idx]])
-          ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x_unique))
-          names(ann_lvls_cols) = x_unique[order(x_unique, na.last = TRUE)]
-          ann_lvls_cols = ann_lvls_cols[as.character(x)]
+          ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x))
+          names(ann_lvls_cols) = x[x_ord]
         }else{
           ann_lvls_cols = annotationColor[[idx]]
           ann_lvls_cols = ann_lvls_cols[as.character(annotation[,idx])]
@@ -1067,7 +1069,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
 
       #Add grids
       rect(xleft = 0.5, ybottom = (0:(ncol(annotation))) + 0.5, xright = nrow(annotation)+0.5, ytop = (0:(ncol(annotation))) + 0.5, border = annoBorderCol, lwd = 0.7)
-      abline(v = (0:(nrow(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_samples)
+      abline(v = (0:(nrow(nm))) + 0.5, col = annoBorderCol, lwd = sepwd_samples, xpd = FALSE)
       mtext(text = colnames(annotation), side = 4,
             font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
 

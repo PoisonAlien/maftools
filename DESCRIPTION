@@ -1,7 +1,7 @@
 Type: Package
 Package: maftools
 Title: Summarize, Analyze and Visualize MAF Files
-Version: 2.21.2
+Version: 2.22.10
 Date: 2021-04-30
 Authors@R: 
     person(given = "Anand",
@@ -43,8 +43,7 @@ Suggests:
     R.utils,
     RaggedExperiment,
     rmarkdown,
-    S4Vectors,
-    curl
+    S4Vectors
 LinkingTo: 
     Rhtslib,
     zlibbioc
@@ -58,4 +57,4 @@ LazyData: TRUE
 NeedsCompilation: no
 Packaged: 2016-04-08 02:06:05 UTC; anand
 RoxygenNote: 7.3.1
-SystemRequirements: GNU make
+SystemRequirements: GNU make, curl

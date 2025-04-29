@@ -582,16 +582,17 @@ get_anno_cols = function(ann, numericAnnoCol = "YlOrBr"){
 
   for(i in 1:ncol(ann)){
     if(is.numeric(ann[,i])){
-      x = as.numeric(as.character(ann[,i]))
-      x_unique = unique(x)
+      x = ann[,i]
+      x = x[!is.na(x)]
+      x_ord = order(x)
+
       numericAnnoCol = sample(x = c("Blues", "BuGn", "BuPu", "GnBu", "Greens", "Greys", "Oranges",
         "OrRd", "PuBu", "PuBuGn", "PuRd", "Purples", "RdPu", "Reds",
         "YlGn", "YlGnBu", "YlOrBr", "YlOrRd"), size = 1)
       #message("Using ", numericAnnoCol)
       numericAnnoCol =  RColorBrewer::brewer.pal(n = 9, name = numericAnnoCol)
-      ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x_unique))
-      names(ann_lvls_cols) = x_unique[order(x_unique, na.last = TRUE)]
-      ann_lvls_cols = ann_lvls_cols[as.character(x)]
+      ann_lvls_cols = colorRampPalette(numericAnnoCol)(length(x))
+      names(ann_lvls_cols) = x[x_ord]
       ann_cols[[i]] = ann_lvls_cols
       col_class = c(col_class, "numeric")
     }else{

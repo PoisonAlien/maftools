@@ -1,5 +1,5 @@
 print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
-                     bgCol = 'gray70', borderCol = 'white', fontSize = 1,
+                     bgCol = '#ecf0f1', borderCol = 'white', fontSize = 1,
                      plot2 = FALSE, test = FALSE, clinicalFeatures = NULL, sampleOrder = NULL,
                      additionalFeature = NULL, additionalFeaturePch = 20, additionalFeatureCol = "white", additionalFeatureCex = 0.9,
                      annotationDat = NULL, annotationOrder = NULL, annotationColor = NULL,
@@ -243,8 +243,8 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
   }
 
   #Add grids
-  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
-  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
+  abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes, xpd = FALSE)
+  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples, xpd = FALSE)
   title(title, cex.main = title_size, outer = FALSE, font = 2)
 
   # mtext(text = colnames(nm), side = 2, at = 1:ncol(nm),
@@ -330,8 +330,8 @@ print_mat = function(maf, genes, removeNonMutated = TRUE, colors = NULL,
     }
 
     #Add grids
-    abline(h = (1:ncol(nm)) + 0.5, col = "white", lwd = sepwd_genes)
-    abline(v = (1:nrow(nm)) + 0.5, col = "white", lwd = sepwd_samples)
+    abline(h = (1:ncol(nm)) + 0.5, col = "white", lwd = sepwd_genes, xpd = FALSE)
+    abline(v = (1:nrow(nm)) + 0.5, col = "white", lwd = sepwd_samples, xpd = FALSE)
     if(plot2){
       mtext(text = colnames(annotation), side = 4,
             font = 1, line = 0.4, cex = fontSize, las = 2, at = 1:ncol(annotation))
