@@ -4,5 +4,6 @@ RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
     'Rhtslib::pkgconfig("PKG_CPPFLAGS")')
 PKG_LIBS=$(RHTSLIB_LIBS)
 PKG_CPPFLAGS=$(RHTSLIB_CPPFLAGS)
+PKG_CFLAGS=-std=c99 -O2 -Wno-strict-prototypes
 #PKG_CPPFLAGS=-I "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/"
 #https://github.com/Rdatatable/data.table/issues/4907#issuecomment-806131096 Makevars for macOS big sur
