@@ -304,9 +304,12 @@ void bamcounts_engine(const char *bam, const char *input_file, processing_params
     if (params->mode == MODE_SOMATICFREQ) {
         // Create both HTML and TSV files
         char *bn = basename(bam);
-        char *bnn = removeExt(bn);
+        char *bnn = NULL;
+        if (bn) {
+            bnn = removeExt(bn);
+        }
         
-        if (params->output_prefix == NULL) {
+        if (params->output_prefix == NULL && bnn) {
             snprintf(html_file, sizeof(html_file), "%s.html", bnn);
             snprintf(tsv_file, sizeof(tsv_file), "%s.tsv", bnn);
         } else {
@@ -314,8 +317,8 @@ void bamcounts_engine(const char *bam, const char *input_file, processing_params
             snprintf(tsv_file, sizeof(tsv_file), "%s.tsv", params->output_prefix);
         }
         
-        free(bn);
-        free(bnn);
+        if (bn) free(bn);
+        if (bnn) free(bnn);
     } else {
         // Only TSV file
         snprintf(tsv_file, sizeof(tsv_file), "%s.tsv", params->output_prefix);
@@ -402,10 +405,15 @@ void bamcounts_engine(const char *bam, const char *input_file, processing_params
     // Print headers
     if (html_fp) {
         char *bn = basename(bam);
-        char *bnn = removeExt(bn);
-        printhead(html_fp, bnn);
-        free(bn);
-        free(bnn);
+        char *bnn = NULL;
+        if (bn) {
+            bnn = removeExt(bn);
+        }
+        if (bnn) {
+            printhead(html_fp, bnn);
+        }
+        if (bn) free(bn);
+        if (bnn) free(bnn);
     }
     
     // Write TSV header based on mode
@@ -497,10 +505,12 @@ void bamcounts_engine(const char *bam, const char *input_file, processing_params
         mean_doc = mean_doc / vars_processed;
         
         char *bn = basename(bam);
-        printargtbl(html_fp, params->mapq, bn, vars_processed, som_vars, 
-                   params->vaf_threshold, params->min_depth, mean_doc, params->min_alt_reads);
+        if (bn) {
+            printargtbl(html_fp, params->mapq, bn, vars_processed, som_vars, 
+                       params->vaf_threshold, params->min_depth, mean_doc, params->min_alt_reads);
+            free(bn);
+        }
         printfooter(html_fp);
-        free(bn);
         
         Rprintf("Done!\n\n");
         Rprintf("Summary:\n");
