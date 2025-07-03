@@ -96,14 +96,8 @@ gtMarkers = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL, 
     fa = "NULL"
   }
 
-  loci = split(loci, loci$Chr)
-
-  loci_files = lapply(1:length(loci), function(idx){
-    chrname = names(loci)[idx]
-    lfile = tempfile(pattern = paste0(chrname, "_"), fileext = paste0("_loci.tsv"))
-    data.table::fwrite(x = loci[[idx]][,c(1:2)], file = lfile, col.names = FALSE, sep = "\t", row.names = FALSE)
-    lfile
-  })
+  # Convert fa parameter for bamrc_c
+  fasta_param = if(is.null(fa) || fa == "NULL") NULL else fa
 
   if(verbose){
     cat("Fetching readcounts from BAM files..\n")
@@ -118,26 +112,29 @@ gtMarkers = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL, 
       cat("Processing", basename(b), ":\n")
     }
 
-    bam_counts = parallel::mclapply(loci_files, function(lfile){
-      chr = unlist(data.table::tstrsplit(basename(path = lfile), split = "_", keep = 1))
+    # Process all loci at once using bamrc_c with idxstats
+    result = .Call("bamrc_c", b, loci$Chr, loci$start, as.integer(mapq), as.integer(sam_flag), fasta_param, TRUE, verbose, NULL, PACKAGE = "maftools")
 
-      if(verbose){
-        system(paste("echo ' current chromosome:",chr,"'"))
-      }
-
-      opcount = tempfile(pattern = paste0(chr, "_", basename(b)), fileext = ".tsv")
-
-      withCallingHandlers(suppressWarnings(invisible(.Call("snpc", b, lfile, mapq, sam_flag, fa, opcount,  PACKAGE = "maftools"))))
-
-      paste0(opcount, ".tsv")
-    }, mc.cores = nthreads)
-
-    #print(unlist(bam_counts, use.names = FALSE))
-
-    idxstat = apply(data.table::fread(file = bam_counts[[1]], nrow = 1, sep = "\t"), 1, paste, collapse = " ")
+    # Extract idxstats
+    total_mapped = attr(result, "total_mapped_reads")
+    idxstat = paste("#idxstats_mapped_reads", total_mapped)
     bam_idxstats[[length(bam_idxstats)+1]] = idxstat
-    res[[length(res)+1]] = data.table::rbindlist(lapply(bam_counts, data.table::fread), use.names = TRUE, fill = TRUE)
-    lapply(bam_counts, unlink)
+
+    # Create loci column in format chr:pos
+    result$loci = paste0(result$chr, ":", result$pos)
+
+    # Reorder columns to match expected format
+    if("ref_base" %in% colnames(result)) {
+      result = result[, c("loci", "ref_base", "A", "T", "G", "C", "INS", "DEL")]
+      colnames(result) = c("loci", "fa_ref", "A", "T", "G", "C", "Ins", "Del")
+    } else {
+      result = result[, c("loci", "A", "T", "G", "C", "INS", "DEL")]
+      result$fa_ref = "N"  # Default if no fasta provided
+      result = result[, c("loci", "fa_ref", "A", "T", "G", "C", "INS", "DEL")]
+      colnames(result) = c("loci", "fa_ref", "A", "T", "G", "C", "Ins", "Del")
+    }
+
+    res[[length(res)+1]] = result
   }
 
   names(res) = op
@@ -145,5 +142,7 @@ gtMarkers = function(t_bam = NULL, n_bam = NULL, build = "hg19", prefix = NULL, 
   lapply(seq_along(res), function(idx){
     cat(paste0(bam_idxstats[[idx]], "\n"), file = paste0(op_files[[idx]], ".tsv"))
     data.table::fwrite(x = res[[idx]], file = paste0(op_files[[idx]], ".tsv"), append = TRUE, sep = "\t", na = "NA", quote = FALSE, col.names = TRUE)
-  })
+    paste0(op_files[[idx]], ".tsv")
+  }) |> unlist(use.names = FALSE)
+
 }

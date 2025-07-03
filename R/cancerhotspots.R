@@ -53,12 +53,26 @@ cancerhotspots = function(bam = NULL, refbuild = "GRCh37", mapq = 10, sam_flag =
     bed = system.file("extdata", "cancerhotspots_v2_hg38.tsv", package = "maftools")
   }
 
+  cat("Hotspot file path:", bed, "\n")
 
-  withCallingHandlers(suppressWarnings(invisible(.Call("readb", bam, bed, t_depth, t_alt_count, vaf, fa, op, mapq, sam_flag, PACKAGE = "maftools"))))
+  bed_df = data.table::fread(bed)
+  colnames(bed_df) = c("chr", "pos", "ref", "alt", "gene", "variant_class", "protein_change", "meta")
+  cat("Dimensions of hotspot file:", dim(bed_df), "\n")
+  bed_df$pos = as.integer(bed_df$pos)
+  
+  hotspot_data = list(
+    hotspots = bed_df,
+    vaf_threshold = vaf,
+    min_depth = as.integer(t_depth),
+    min_alt_reads = as.integer(t_alt_count),
+    output_prefix = op
+  )
 
+  .Call("bamrc_c", bam, bed_df$chr, bed_df$pos, as.integer(mapq), as.integer(sam_flag), fa, FALSE, TRUE, hotspot_data, PACKAGE = "maftools")
+  
   if(browse){
     browseURL(url = paste0(op, ".html"))
   }
-
+  
   data.table::fread(file = paste0(op, ".tsv"))
 }
