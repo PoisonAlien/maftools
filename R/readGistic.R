@@ -19,19 +19,20 @@
 #' @details
 #' Requires output files generated from GISTIC. Gistic documentation can be found here ftp://ftp.broadinstitute.org/pub/GISTIC2.0/GISTICDocumentation_standalone.htm
 
-readGistic = function(gisticDir = NULL, gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gisticDelGenesFile = NULL, gisticScoresFile = NULL, cnLevel = 'all', isTCGA = FALSE, verbose = TRUE){
+readGistic = function(gisticDir = NULL, gisticAllLesionsFile = NULL, gisticAmpGenesFile = NULL, gisticDelGenesFile = NULL, gisticScoresFile = NULL, cnLevel = 'all', conf=NULL, prefix="", isTCGA = FALSE, verbose = TRUE){
 
   if(!is.null(gisticDir)){
     lf = list.files(gisticDir)
     lf = lf[startsWith(lf,'all_lesions.conf_')]
 
     #Parse conf interval from all_lesions.conf_99.txt file
-    conf = gsub(pattern = "[A-Z]|[[:punct:]]", replacement = "", x = basename(lf), ignore.case = TRUE)
-
-    gisticAllLesionsFile <- file.path(gisticDir, paste0("all_lesions.conf_",conf,".txt"))
-    gisticAmpGenesFile <- file.path(gisticDir, paste0("amp_genes.conf_",conf,".txt"))
-    gisticDelGenesFile <- file.path(gisticDir, paste0("del_genes.conf_",conf,".txt"))
-    gisticScoresFile <- file.path(gisticDir, "scores.gistic")
+    if (is.null(conf)){
+      conf = gsub(pattern = "[A-Z]|[[:punct:]]", replacement = "", x = basename(lf), ignore.case = TRUE)
+    }
+    gisticAllLesionsFile <- file.path(gisticDir, paste0(prefix, "all_lesions.conf_",conf,".txt"))
+    gisticAmpGenesFile <- file.path(gisticDir, paste0(prefix, "amp_genes.conf_",conf,".txt"))
+    gisticDelGenesFile <- file.path(gisticDir, paste0(prefix, "del_genes.conf_",conf,".txt"))
+    gisticScoresFile <- file.path(gisticDir, paste0(prefix, "scores.gistic"))
 
     if(!file.exists(gisticAllLesionsFile)){
       gisticAllLesionsFile = NULL
@@ -76,8 +77,9 @@ readGistic = function(gisticDir = NULL, gisticAllLesionsFile = NULL, gisticAmpGe
   }
 
   # get 99 from "all_lesions.conf_99.txt", get 95 from "all_lesions.conf_95.txt", etc.
-  conf = gsub(pattern = "[A-Z]|[[:punct:]]", replacement = "", x = basename(gisticAllLesionsFile), ignore.case = TRUE)
-
+  if (is.null(conf)){
+    conf = gsub(pattern = "[A-Z]|[[:punct:]]", replacement = "", x = basename(gisticAllLesionsFile), ignore.case = TRUE)
+  }
   if(verbose){
     cat('-Processing Gistic files..\n')
   }
