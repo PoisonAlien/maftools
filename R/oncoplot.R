@@ -25,6 +25,7 @@
 #' @param topBarLims limits for `topBarData`. Default `NULL`.
 #' @param topBarHline Draw horizontal lines at these values. Default `NULL`.
 #' @param topBarHlineCol Line color for `topBarHline.` Default gray70
+#' @param topBarLabel Label for the top bar plot y-axis. Default "TMB"
 #' @param rightBarData Data for rightside barplot. Must be a data.frame with two columns containing to gene names and values. Default `NULL` which draws distribution by variant classification. This option is applicable when only `drawRowBar` is TRUE.
 #' @param rightBarLims limits for `rightBarData`. Default `NULL`.
 #' @param rightBarVline Draw vertical lines at these values. Default `NULL`.
@@ -110,7 +111,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
                                drawRowBar = TRUE, drawColBar = TRUE,
                                leftBarData = NULL, leftBarLims = NULL, leftBarVline = NULL, leftBarVlineCol = 'gray70',
                                rightBarData = NULL, rightBarLims = NULL,rightBarVline = NULL, rightBarVlineCol = 'gray70',
-                               topBarData = NULL, topBarLims = NULL, topBarHline = NULL, topBarHlineCol = 'gray70', logColBar = FALSE, includeColBarCN = TRUE,
+                               topBarData = NULL, topBarLims = NULL, topBarHline = NULL, topBarHlineCol = 'gray70', topBarLabel = "TMB", logColBar = FALSE, includeColBarCN = TRUE,
                                clinicalFeatures = NULL, annotationColor = NULL, annotationDat = NULL,
                                pathways = NULL, topPathways = 3,path_order = NULL, selectedPathways = NULL, collapsePathway = FALSE, pwLineCol = "#535c68", pwLineWd = 1, draw_titv = FALSE, titv_col = NULL,
                                showTumorSampleBarcodes = FALSE, tsbToPIDs = NULL, barcode_mar = 4, barcodeSrt = 90, gene_mar = 5,
@@ -531,7 +532,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     if(logColBar){
       mtext(text = "(log10)", side = 2, line = 2, cex = 0.6)
     }else{
-      mtext(text = "TMB", side = 2, line = 2, cex = 0.6)
+      mtext(text = topBarLabel, side = 2, line = 2, cex = 0.6)
     }
     if(!is.null(topBarHline)){
       abline(h = topBarHline, lty = 2, col = topBarHlineCol, xpd = FALSE)
