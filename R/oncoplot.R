@@ -660,7 +660,7 @@ oncoplot = oncoplot = function(maf, top = 20, minMut = NULL, genes = NULL, alter
     axis(side = 3, at = rev(-exprs_bar_lims), outer = FALSE, line = 0.25, labels = rev(exprs_bar_lims))
     mtext(text = leftBarTitle, side = 3, line = 0.50, cex = 0.6)
     if(!is.null(leftBarVline)){
-      abline(h = leftBarVline, lty = 2, col = leftBarVlineCol, xpd = FALSE)
+      abline(v = -leftBarVline, lty = 2, col = leftBarVlineCol, xpd = FALSE)
     }
   }
 
