@@ -133,20 +133,20 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
   sigPairsTbl[, pAdj := p.adjust(pValue, method = 'fdr')]
   sigPairsTbl[is.na(sigPairsTbl)] = 0
-  sigPairsTbl$Event = ifelse(test = sigPairsTbl$oddsRatio > 1, yes = "Co_Occurence", no = "Mutually_Exclusive")
+  sigPairsTbl$Event = ifelse(test = sigPairsTbl$oddsRatio > 1, yes = "Co_Occurrence", no = "Mutually_Exclusive")
   sigPairsTbl$pair = apply(X = sigPairsTbl[,.(gene1, gene2)], MARGIN = 1, FUN = function(x) paste(sort(unique(x)), collapse = ", "))
   sigPairsTbl[,event_ratio := `01`+`10`]
   sigPairsTbl[,event_ratio := paste0(`11`, '/', event_ratio)]
   sigPairsTblSig = sigPairsTbl[order(as.numeric(pValue))][!duplicated(pair)]
 
   if(plotPadj){
-    sigPairsTblSig$pAdjLog = ifelse(sigPairsTblSig$oddsRatio > 1, yes = -log10(sigPairsTblSig$pAdj), no = log10(sigPairsTblSig$pAdj))
-    interactionsFDR = data.table::dcast(data = sigPairsTblSig, gene1 ~ gene2, value.var = 'pAdjLog')
+    sigPairsTbl$pAdjLog = ifelse(sigPairsTbl$oddsRatio > 1, yes = -log10(sigPairsTbl$pAdj), no = log10(sigPairsTbl$pAdj))
+    interactionsFDR = data.table::dcast(data = sigPairsTbl, gene1 ~ gene2, value.var = 'pAdjLog')
     data.table::setDF(interactionsFDR, rownames = interactionsFDR$gene1)
     interactionsFDR$gene1 = NULL
     interactions = interactionsFDR[rownames(interactions), colnames(interactions)]
     interactions = as.matrix(interactions)
-    sigPairsTblSig$pAdjLog = NULL
+    sigPairsTbl$pAdjLog = NULL
   }
 
   sigPairsTblSig = sigPairsTblSig[!gene1 == gene2] #Remove diagonal elements
@@ -228,7 +228,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
           if(countType == 'all'){
             e = sigPairsTblSig[pValue < max(pvalue)][pair %in% g12, event_ratio]
           }else if(countType == 'cooccur'){
-            e = sigPairsTblSig[pValue < max(pvalue)][Event %in% "Co_Occurence"][pair %in% g12, `11`]
+            e = sigPairsTblSig[pValue < max(pvalue)][Event %in% "Co_Occurrence"][pair %in% g12, `11`]
           }else if(countType == 'mutexcl'){
             e = sigPairsTblSig[pValue < max(pvalue)][Event %in% "Mutually_Exclusive"][pair %in% g12, `11`]
           }
@@ -296,7 +296,7 @@ somaticInteractions = function(maf, top = 25, genes = NULL, pvalue = c(0.05, 0.0
 
     #atLims = seq(nrow(interactions), 0.9*nrow(interactions), length.out = 7)
     atLims = seq(0, 1, length.out = 7)
-    axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurence)"), lwd=.5, cex.axis = sigSymbolsFontSize, line = 0.2)
+    axis(side = 4, at = atLims,  tcl=-.15, labels =c("> 3 (Mutually exclusive)", 2, 1, 0, 1, 2, ">3 (Co-occurrence)"), lwd=.5, cex.axis = sigSymbolsFontSize, line = 0.2)
     if(plotPadj){
       text(x = 0.4, y = 0.5, labels = "-log10(fdr)", srt = 90, cex = sigSymbolsFontSize, xpd = TRUE)
     }else{
