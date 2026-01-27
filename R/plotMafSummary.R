@@ -9,6 +9,7 @@
 #' @param addStat Can be either mean or median. Default NULL.
 #' @param showBarcodes include sample names in the top bar plot.
 #' @param color named vector of colors for each Variant_Classification.
+#' @param vcLabels named vector to customize Variant_Classification labels. Names should be original labels, values are display labels. Default NULL uses original labels.
 #' @param textSize font size if showBarcodes is TRUE. Default 0.8
 #' @param titleSize font size for title and subtitle. Default c(10, 8)
 #' @param fs base size for text. Default 1
@@ -25,7 +26,7 @@
 
 plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRUE, log_scale = FALSE,
                           addStat = NULL, showBarcodes = FALSE, fs = 1,
-                          textSize = 0.8, color = NULL, titleSize = c(1, 0.8), titvColor = NULL, top = 10){
+                          textSize = 0.8, color = NULL, vcLabels = NULL, titleSize = c(1, 0.8), titvColor = NULL, top = 10){
 
 
   addStat.opts = c('mean', 'median')
@@ -63,9 +64,24 @@ plotmafSummary = function(maf, rmOutlier = TRUE, dashboard = TRUE, titvRaw = TRU
     vcs.m = data.table::melt(data = vcs, id = 'Tumor_Sample_Barcode')
     colnames(vcs.m) = c('Tumor_Sample_Barcode', 'Variant_Classification', 'N')
 
+    # Apply custom labels if provided
+    if(!is.null(vcLabels)){
+      vcs.m$Variant_Classification = factor(vcs.m$Variant_Classification,
+                                            levels = names(vcLabels),
+                                            labels = vcLabels)
+    }
+
     data.table::setDF(vcs)
     rownames(x = vcs) = vcs$Tumor_Sample_Barcode
     vcs = vcs[,-1]
+
+    # Apply custom labels to column names if provided
+    if(!is.null(vcLabels)){
+      colnames(vcs) = ifelse(colnames(vcs) %in% names(vcLabels),
+                            vcLabels[colnames(vcs)],
+                            colnames(vcs))
+    }
+
     vcs = t(vcs)
 
     #--------------------------- variant per sample plot -----------------
