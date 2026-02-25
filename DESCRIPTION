@@ -44,9 +44,8 @@ Suggests:
     RaggedExperiment,
     rmarkdown,
     S4Vectors
-LinkingTo: 
-    Rhtslib,
-    zlibbioc
+LinkingTo:
+    Rhtslib
 VignetteBuilder: 
     knitr
 biocViews: DataRepresentation, DNASeq, Visualization, DriverMutation,
